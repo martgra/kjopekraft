@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  app:
+    user: vscode
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VARIANT: bookworm
+    volumes:
+      - ..:/workspace:cached # Shared workspace between host and devcontainer
+      - kjopekraft_extensions:/home/vscode/.vscode-server/extensions # Storing extensions
+      - kjopekraft_commandhistory:/home/vscode/commandhistory # Persistant command line history
+      - kjopekraft_cache:/home/vscode/.cache
+      - kjopekraft_bun:/home/vscode/.bun
+      - /workspace/node_modules
+    command: sleep infinity
+
+# Volumes that are not shared between Host and Devcontainer must be listed here.
+volumes:
+  kjopekraft_extensions:
+  kjopekraft_commandhistory:
+  kjopekraft_cache:
+  kjopekraft_bun:
