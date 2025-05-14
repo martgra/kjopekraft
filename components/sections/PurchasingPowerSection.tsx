@@ -4,19 +4,22 @@
 import React from 'react';
 import PayPointsManager from '@/components/features/PayPointsManager';
 import PayDevelopmentChart from '@/components/features/PayDevelopmentChart';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import SalaryStats from '@/components/ui/SalaryStats';
-import { usePayPoints } from '@/components/context/PayPointsContext';
-import { calculateSalaryStatistics } from '@/lib/salaryCalculations';
+import { useSalaryCalculations } from '@/lib/hooks/useSalaryCalculations';
 
 export default function PurchasingPowerSection() {
-  // Use the context instead of local state
-  const { payPoints } = usePayPoints();
+  // Use our custom hook for all salary calculations
+  const { statistics, hasData, isLoading } = useSalaryCalculations();
 
-  // Calculate statistics using our business logic
-  const { startingPay, latestPay, inflationAdjustedPay, gapPercent } = 
-    payPoints.length > 0 
-      ? calculateSalaryStatistics(payPoints)
-      : { startingPay: '--', latestPay: '--', inflationAdjustedPay: '--', gapPercent: '--' };
+  // Extract statistics using destructuring and apply proper formatting
+  // For empty state, we'll use placeholders
+  const displayStats = {
+    startingPay: hasData ? statistics.startingPay : '--',
+    latestPay: hasData ? statistics.latestPay : '--',
+    inflationAdjustedPay: hasData ? statistics.inflationAdjustedPay : '--',
+    gapPercent: hasData ? statistics.gapPercent : '--'
+  };
 
   return (
     <section
@@ -31,12 +34,18 @@ export default function PurchasingPowerSection() {
       </header>
 
       {/* Stats Cards */}
-      <SalaryStats
-        startingPay={startingPay}
-        latestPay={latestPay}
-        inflationAdjustedPay={inflationAdjustedPay}
-        gapPercent={gapPercent}
-      />
+      {isLoading ? (
+        <div className="w-full max-w-5xl flex justify-center p-6 bg-white rounded-xl shadow-lg">
+          <LoadingSpinner size="medium" text="Loading statistics..." />
+        </div>
+      ) : (
+        <SalaryStats
+          startingPay={displayStats.startingPay}
+          latestPay={displayStats.latestPay}
+          inflationAdjustedPay={displayStats.inflationAdjustedPay}
+          gapPercent={displayStats.gapPercent}
+        />
+      )}
 
       {/* Chart + Input */}
       <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-8">

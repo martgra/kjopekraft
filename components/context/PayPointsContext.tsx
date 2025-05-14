@@ -9,18 +9,15 @@ import React, {
   ReactNode,
   useMemo,
 } from 'react';
-
-// Define PayPoint type here to avoid circular dependencies
-export interface PayPoint {
-  year: number;
-  pay: number;
-}
+import { PayPoint } from '@/lib/models/salary';
 
 interface PayPointsContextValue {
   payPoints: PayPoint[];
   addPoint: (pt: PayPoint) => void;
   removePoint: (year: number, pay: number) => void;
+  editPoint: (oldYear: number, oldPay: number, newPoint: PayPoint) => void;
   resetPoints: (defaultPoints: PayPoint[]) => void;
+  isLoading: boolean; // Added to track initial loading state
 }
 
 const PayPointsContext = createContext<PayPointsContextValue | null>(null);
@@ -35,22 +32,41 @@ export function PayPointsProvider({
   children: ReactNode;
   initialPoints?: PayPoint[];
 }) {
-  // Initialize with server-side initial points first
-  const [payPoints, setPayPoints] = useState<PayPoint[]>([...initialPoints].sort((a, b) => a.year - b.year));
+  // Track if we've loaded client-side data
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Then use useEffect to update from localStorage only on client-side
-  // This avoids hydration mismatch as it only runs after first render
+  // Initialize with a placeholder empty array
+  // We'll only show data after hydration is complete and localStorage is checked
+  const [payPoints, setPayPoints] = useState<PayPoint[]>([]);
+  
+  // Load data from localStorage on client-side only
   useEffect(() => {
     try {
       const storedPoints = localStorage.getItem(STORAGE_KEY);
       if (storedPoints) {
+        // We have stored data, use it
         const parsedPoints = JSON.parse(storedPoints) as PayPoint[];
         setPayPoints(parsedPoints.sort((a, b) => a.year - b.year));
+      } else {
+        // No stored data, use the initial points
+        setPayPoints(
+          initialPoints.length > 0
+            ? [...initialPoints].sort((a, b) => a.year - b.year)
+            : []
+        );
       }
     } catch (err) {
       console.error('Error loading points from localStorage:', err);
+      // On error, fall back to initial points
+      setPayPoints(
+        initialPoints.length > 0
+          ? [...initialPoints].sort((a, b) => a.year - b.year)
+          : []
+      );
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  }, [initialPoints]);
 
   // Save to localStorage whenever points change
   useEffect(() => {
@@ -72,6 +88,14 @@ export function PayPointsProvider({
     setPayPoints((curr) =>
       curr.filter((p) => !(p.year === yr && p.pay === pay))
     );
+  
+  // Function to edit an existing point
+  const editPoint = (oldYear: number, oldPay: number, newPoint: PayPoint) => {
+    setPayPoints((curr) => {
+      const newPoints = curr.filter((p) => !(p.year === oldYear && p.pay === oldPay));
+      return [...newPoints, newPoint].sort((a, b) => a.year - b.year);
+    });
+  };
     
   // Function to reset points to default values
   const resetPoints = (defaultPoints: PayPoint[]) => {
@@ -79,8 +103,8 @@ export function PayPointsProvider({
   };
 
   const value = useMemo(
-    () => ({ payPoints, addPoint, removePoint, resetPoints }),
-    [payPoints]
+    () => ({ payPoints, addPoint, removePoint, editPoint, resetPoints, isLoading }),
+    [payPoints, isLoading]
   );
 
   return (

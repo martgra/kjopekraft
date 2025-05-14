@@ -6,11 +6,21 @@ interface StatsCardProps {
 }
 
 function StatsCard({ label, value }: StatsCardProps) {
+  // Format the value based on its type and value
+  const formattedValue = (() => {
+    if (value === '--' || value === undefined || value === null) return '--';
+    if (typeof value === 'number') {
+      if (isNaN(value)) return '--';
+      return value.toLocaleString('nb-NO');
+    }
+    return value;
+  })();
+
   return (
     <div className="flex flex-col bg-white rounded-xl shadow-md p-4">
       <h3 className="text-sm font-medium text-gray-500 mb-1">{label}</h3>
       <p className="text-xl font-semibold text-gray-900">
-        {value === '--' ? value : typeof value === 'number' ? value.toLocaleString('nb-NO') : value}
+        {formattedValue}
       </p>
     </div>
   );

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { usePayPoints } from '@/components/context/PayPointsContext';
-import { calculateInflationAdjustedPay } from '@/lib/salaryCalculations';
+import { useSalaryCalculations } from '@/lib/hooks/useSalaryCalculations';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
   Chart,
   LineController,
@@ -28,41 +29,91 @@ Chart.register(
 );
 
 export default function PayDevelopmentChart() {
-  const { payPoints } = usePayPoints();
+  const { payPoints, addPoint, isLoading } = usePayPoints();
+  const { salaryData: adjustedPayData, yearRange, isLoading: isSalaryDataLoading } = useSalaryCalculations();
   const chartRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstance = useRef<Chart | null>(null);
+  
+  // Create a function to add example data
+  const addExampleData = () => {
+    const currentYear = new Date().getFullYear();
+    const defaultSalary = 500000;
+    addPoint({ year: currentYear - 5, pay: defaultSalary * 0.85 });
+    addPoint({ year: currentYear, pay: defaultSalary });
+  };
+
+  // If data is loading or there are no points, show a placeholder or loading state
+  const renderContent = () => {
+    if (isLoading || isSalaryDataLoading) {
+      return (
+        <div className="h-full w-full flex items-center justify-center">
+          <LoadingSpinner size="large" text="Loading salary data..." />
+        </div>
+      );
+    }
+    
+    if (payPoints.length < 1) {
+      return (
+        <div className="h-full w-full flex flex-col items-center justify-center p-8 text-center">
+          <p className="text-gray-500 mb-4">No salary data available. Add your first data point to get started.</p>
+          <button 
+            onClick={addExampleData}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Add Example Data
+          </button>
+        </div>
+      );
+    }
+    
+    return (
+      <canvas ref={chartRef} className="w-full h-full"></canvas>
+    );
+  };
 
   useEffect(() => {
-    if (!chartRef.current || payPoints.length < 1) return;
-
-    // Destroy previous chart if it exists
+    // Only initialize chart when not loading and we have data
+    if (isLoading || isSalaryDataLoading || payPoints.length < 1 || !chartRef.current) return;
+    
+    // Always destroy previous chart to avoid memory leaks
     if (chartInstance.current) {
       chartInstance.current.destroy();
+      chartInstance.current = null;
     }
-
-    const adjustedPayData = calculateInflationAdjustedPay(payPoints);
     
     // Create datasets for the chart
     const ctx = chartRef.current.getContext('2d');
     if (!ctx) return;
 
-    // Find min and max years in the data
-    const years = adjustedPayData.map(point => point.year);
-    const minYear = Math.min(...years);
-    const maxYear = Math.max(...years);
+    // Use min and max years from our hooks
+    const { minYear, maxYear } = yearRange;
     
     // Generate a complete dataset with all years, including those without data points
     const generateCompleteDataset = () => {
+      // If we have no data, return empty dataset
+      if (!adjustedPayData || adjustedPayData.length === 0) {
+        return [];
+      }
+      
       const completeDataset = [];
+      
+      // First add all the actual data points - this ensures we use real data when available
+      const actualDataPointsByYear = new Map();
+      adjustedPayData.forEach(point => {
+        actualDataPointsByYear.set(point.year, point);
+      });
+
+      // Now generate all years in the range, using the actual data points when available
       for (let year = minYear; year <= maxYear; year++) {
-        const exactMatch = adjustedPayData.find(point => point.year === year);
+        const exactMatch = actualDataPointsByYear.get(year);
         
         if (exactMatch) {
           // Use exact data if available
           completeDataset.push({
             x: year,
             y: exactMatch.actualPay,
-            inflationY: exactMatch.inflationAdjustedPay
+            inflationY: exactMatch.inflationAdjustedPay,
+            isInterpolated: false
           });
         } else {
           // For years without exact data points, calculate interpolated values
@@ -80,7 +131,8 @@ export default function PayDevelopmentChart() {
             completeDataset.push({
               x: year,
               y: interpolatedActualPay,
-              inflationY: interpolatedInflationPay
+              inflationY: interpolatedInflationPay,
+              isInterpolated: true
             });
           }
         }
@@ -93,12 +145,20 @@ export default function PayDevelopmentChart() {
     // Format data for Chart.js in x,y coordinate format
     const actualPayDataPoints = completeDataset.map(point => ({
       x: point.x,
-      y: point.y
+      y: point.y,
+      // Custom properties for styling
+      r: point.isInterpolated ? 3 : 5, // Smaller radius for interpolated points
+      borderWidth: point.isInterpolated ? 1 : 2,
+      hoverRadius: point.isInterpolated ? 4 : 6
     }));
     
     const inflationAdjustedDataPoints = completeDataset.map(point => ({
       x: point.x,
-      y: point.inflationY
+      y: point.inflationY,
+      // Custom properties for styling
+      r: point.isInterpolated ? 3 : 5, // Smaller radius for interpolated points
+      borderWidth: point.isInterpolated ? 1 : 2,
+      hoverRadius: point.isInterpolated ? 4 : 6
     }));
 
     chartInstance.current = new Chart(ctx, {
@@ -112,7 +172,9 @@ export default function PayDevelopmentChart() {
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
             fill: true,
             tension: 0.4,
-            pointRadius: 4,
+            pointRadius: undefined, // Use the custom radius from data points
+            pointHoverRadius: undefined, // Use the custom radius from data points
+            pointBorderWidth: undefined, // Use the custom width from data points
           },
           {
             label: 'Inflasjonsjustert lønn',
@@ -121,7 +183,9 @@ export default function PayDevelopmentChart() {
             backgroundColor: 'rgba(16, 185, 129, 0.1)',
             fill: true,
             tension: 0.4,
-            pointRadius: 4,
+            pointRadius: undefined, // Use the custom radius from data points
+            pointHoverRadius: undefined, // Use the custom radius from data points
+            pointBorderWidth: undefined, // Use the custom width from data points
           }
         ]
       },
@@ -131,8 +195,10 @@ export default function PayDevelopmentChart() {
           y: {
             beginAtZero: true,
             ticks: {
-              callback: function(value: number): string {
-                return value.toLocaleString('nb-NO');
+              callback: function(tickValue: string | number): string {
+                // Ensure we're working with a number before calling toLocaleString
+                const numValue = typeof tickValue === 'string' ? parseFloat(tickValue) : tickValue;
+                return numValue.toLocaleString('nb-NO');
               }
             },
             title: {
@@ -148,8 +214,10 @@ export default function PayDevelopmentChart() {
               stepSize: 1, // Force whole-number (year) ticks
               precision: 0, // Remove decimal points
               autoSkip: false, // Show all ticks
-              callback: function(value: number): number | string {
-                return Math.floor(value); // Ensure whole numbers for years
+              callback: function(tickValue: string | number): number | string {
+                // Ensure we're working with a number before calling Math.floor
+                const numValue = typeof tickValue === 'string' ? parseFloat(tickValue) : tickValue;
+                return Math.floor(numValue); // Ensure whole numbers for years
               }
             },
             title: {
@@ -161,7 +229,7 @@ export default function PayDevelopmentChart() {
         plugins: {
           tooltip: {
             callbacks: {
-              label: function(context: {dataset: {label?: string}, parsed: {x: number, y: number | null}}): string {
+              label: function(context: {dataset: {label?: string}, parsed: {x: number, y: number | null}, raw: any}): string {
                 let label = context.dataset.label || '';
                 if (label) {
                   label += ': ';
@@ -169,9 +237,10 @@ export default function PayDevelopmentChart() {
                 if (context.parsed.y !== null) {
                   label += context.parsed.y.toLocaleString('nb-NO') + ' NOK';
                   
-                  // Check if this is an interpolated point
-                  const yearExists = adjustedPayData.some(point => point.year === context.parsed.x);
-                  if (!yearExists) {
+                  // Check if this is an interpolated point using the flag we added
+                  // Raw contains the original data object
+                  const point = completeDataset.find(p => p.x === context.parsed.x);
+                  if (point && point.isInterpolated) {
                     label += ' (estimert)';
                   }
                 }
@@ -195,17 +264,11 @@ export default function PayDevelopmentChart() {
         chartInstance.current.destroy();
       }
     };
-  }, [payPoints]);
+  }, [payPoints, adjustedPayData, isLoading, isSalaryDataLoading]);
 
   return (
-    <div className="w-full max-w-5xl bg-white p-6 rounded-xl shadow-md">
-      {payPoints.length > 0 ? (
-        <canvas ref={chartRef} height="300" />
-      ) : (
-        <div className="h-64 flex items-center justify-center text-gray-400">
-          Legg til lønnspunkter for å se diagram
-        </div>
-      )}
+    <div className="w-full h-full bg-white p-6 rounded-xl shadow-md">
+      {renderContent()}
     </div>
   );
 }
