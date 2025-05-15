@@ -17,9 +17,9 @@ function StatsCard({ label, value }: StatsCardProps) {
   })();
 
   return (
-    <div className="flex flex-col bg-white rounded-xl shadow-md p-4">
-      <h3 className="text-sm font-medium text-gray-500 mb-1">{label}</h3>
-      <p className="text-xl font-semibold text-gray-900">
+    <div className="flex flex-col bg-white rounded-xl shadow-md p-3 sm:p-4">
+      <h3 className="text-xs sm:text-sm font-medium text-gray-500 mb-1">{label}</h3>
+      <p className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
         {formattedValue}
       </p>
     </div>
@@ -47,7 +47,7 @@ export default function SalaryStats({
   ];
 
   return (
-    <div className="w-full max-w-5xl grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="w-full max-w-5xl grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
       {cards.map(({ label, value }) => (
         <StatsCard key={label} label={label} value={value} />
       ))}

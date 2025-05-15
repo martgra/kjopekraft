@@ -24,3 +24,51 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Chart Mobile Optimization */
+.chart-mobile canvas {
+  touch-action: manipulation;
+  user-select: none;
+}
+
+/* Better tooltip visibility on mobile */
+.chart-mobile .chartjs-tooltip {
+  opacity: 1 !important;
+  backdrop-filter: blur(3px);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  max-width: 150px;
+  white-space: normal;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Optimize mobile chart taps */
+@media (max-width: 768px) {
+  .chart-container {
+    touch-action: pan-y;
+    padding: 0;
+  }
+  
+  .mobile-chart-container {
+    padding: 8px !important;
+  }
+  
+  .chart-container canvas {
+    max-height: 350px;
+    margin: 0 auto;
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 769px) {
+  .chart-container {
+    padding: 0;
+  }
+  
+  .chart-container canvas {
+    margin: 0 auto;
+  }
+}

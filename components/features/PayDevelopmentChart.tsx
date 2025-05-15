@@ -67,7 +67,7 @@ export default function PayDevelopmentChart() {
     }
     
     return (
-      <canvas ref={chartRef} className="w-full h-full"></canvas>
+      <canvas ref={chartRef} className="w-full h-60 px-0"></canvas>
     );
   };
 
@@ -191,19 +191,33 @@ export default function PayDevelopmentChart() {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 5,
+            bottom: 5,
+            left: 5,
+            right: 15
+          }
+        },
         scales: {
           y: {
-            beginAtZero: true,
+            beginAtZero: false,
             ticks: {
               callback: function(tickValue: string | number): string {
                 // Ensure we're working with a number before calling toLocaleString
                 const numValue = typeof tickValue === 'string' ? parseFloat(tickValue) : tickValue;
                 return numValue.toLocaleString('nb-NO');
-              }
+              },
+              padding: 5,
+              maxTicksLimit: 8
             },
             title: {
               display: true,
-              text: 'Lønn (NOK)'
+              text: 'Lønn (NOK)',
+              padding: {
+                bottom: 10
+              }
             }
           },
           x: {
@@ -213,22 +227,50 @@ export default function PayDevelopmentChart() {
             ticks: {
               stepSize: 1, // Force whole-number (year) ticks
               precision: 0, // Remove decimal points
-              autoSkip: false, // Show all ticks
+              autoSkip: true, // Allow skipping ticks when needed
+              maxTicksLimit: 10, // Limit number of ticks for better spacing
               callback: function(tickValue: string | number): number | string {
                 // Ensure we're working with a number before calling Math.floor
                 const numValue = typeof tickValue === 'string' ? parseFloat(tickValue) : tickValue;
                 return Math.floor(numValue); // Ensure whole numbers for years
-              }
+              },
+              padding: 5
             },
             title: {
               display: true,
-              text: 'År'
+              text: 'År',
+              padding: {
+                top: 10
+              }
             }
           }
         },
         plugins: {
           tooltip: {
+            enabled: true,
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#333',
+            bodyColor: '#333',
+            titleFont: {
+              size: 14,
+              weight: 'bold'
+            },
+            bodyFont: {
+              size: 13
+            },
+            padding: 10,
+            borderColor: 'rgba(0, 0, 0, 0.1)',
+            borderWidth: 1,
+            displayColors: true,
+            boxWidth: 8,
+            boxHeight: 8,
+            usePointStyle: true,
             callbacks: {
+              title: function(context) {
+                return 'År: ' + context[0].parsed.x;
+              },
               label: function(context: {dataset: {label?: string}, parsed: {x: number, y: number | null}, raw: any}): string {
                 let label = context.dataset.label || '';
                 if (label) {
@@ -250,10 +292,30 @@ export default function PayDevelopmentChart() {
           },
           legend: {
             position: 'top',
+            align: 'center',
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'circle',
+              boxWidth: 8,
+              boxHeight: 8,
+              padding: 15,
+              font: {
+                size: 13
+              }
+            },
+            maxHeight: 40
           },
           title: {
             display: true,
-            text: 'Lønnsutvikling vs. Inflasjon'
+            text: 'Lønnsutvikling vs. Inflasjon',
+            font: {
+              size: 16,
+              weight: 'bold'
+            },
+            padding: {
+              top: 5,
+              bottom: 15
+            }
           }
         }
       }
@@ -267,7 +329,7 @@ export default function PayDevelopmentChart() {
   }, [payPoints, adjustedPayData, isLoading, isSalaryDataLoading]);
 
   return (
-    <div className="w-full h-full bg-white p-6 rounded-xl shadow-md">
+    <div className="w-full h-full bg-white p-2 sm:p-3 md:p-4 rounded-xl shadow-md">
       {renderContent()}
     </div>
   );
