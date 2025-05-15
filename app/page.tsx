@@ -2,14 +2,14 @@
 import PurchasingPowerSection from '@/components/sections/PurchasingPowerSection';
 import { PayPointsProvider } from '@/components/context/PayPointsContext';
 import { DEFAULT_SALARY } from '@/lib/constants';
-import { getCachedInflationData } from '@/app/actions/getInflation';
+import { getInflationData } from '@/app/actions/getInflation';
 import { InflationDataPoint } from '@/lib/models/inflation';
 
 // This function pre-loads data for the entire page using server components
 async function getInflationServerData() {
   try {
     // Pre-fetch inflation data on the server
-    const data = await getCachedInflationData();
+    const data = await getInflationData();
     return { inflationData: data };
   } catch (error) {
     console.error('Failed to pre-fetch inflation data:', error);

@@ -1,6 +1,6 @@
 import { InflationDataPoint } from '../models/inflation';
 import { INFLATION_DATA } from '../constants';
-import { getCachedInflationData } from '@/app/actions/getInflation';
+import { getInflationData } from '@/app/actions/getInflation';
 
 /**
  * Service for managing inflation data
@@ -59,7 +59,7 @@ export class InflationService {
     
     try {
       console.log('Fetching inflation data from API...');
-      const apiData = await getCachedInflationData();
+      const apiData = await getInflationData();
       
       // Mark as complete regardless of result
       InflationService.apiLoadComplete = true;

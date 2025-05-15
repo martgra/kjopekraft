@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getCachedInflationData } from '@/app/actions/getInflation';
+import { getInflationData } from '@/app/actions/getInflation';
 import { InflationDataPoint } from '@/lib/models/inflation';
 import { INFLATION_DATA } from '@/lib/constants';
 
@@ -13,7 +13,7 @@ export default function ApiTest() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getCachedInflationData();
+        const data = await getInflationData();
         setApiData(data);
       } catch (err) {
         console.error('Error fetching data:', err);
