@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { InflationService } from '@/lib/services/inflationService';
+import { usePayPoints } from '@/components/context/PayPointsContext';
 
 interface PayPointFormProps {
   newYear: string;
@@ -30,17 +31,25 @@ export default function PayPointForm({
   // Combine internal and external validation errors
   const validationError = externalValidationError || internalValidationError;
   
+  // Get the inflation data from context
+  const { inflationData } = usePayPoints();
+  
   // Get minimum year if not provided via props
   useEffect(() => {
     if (propMinYear) {
+      // Use prop if provided
       setMinYear(propMinYear);
+    } else if (inflationData && inflationData.length > 0) {
+      // Use dynamic inflation data if available
+      setMinYear(Math.min(...inflationData.map(d => d.year)));
     } else {
+      // Fall back to standard method if needed
       const years = InflationService.getInflationYears();
       if (years.length > 0) {
         setMinYear(Math.min(...years));
       }
     }
-  }, [propMinYear]);
+  }, [propMinYear, inflationData]);
   
   // parse for validation
   const yearNum = Number(newYear);

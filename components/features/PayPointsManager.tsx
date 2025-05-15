@@ -9,16 +9,22 @@ import { DEFAULT_SALARY } from '@/lib/constants';
 import { InflationService } from '@/lib/services/inflationService';
 
 export default function PayPointsManager() {
-  const { payPoints, addPoint, removePoint, editPoint, validatePoint, resetPoints, isLoading } = usePayPoints();
+  const { payPoints, addPoint, removePoint, editPoint, validatePoint, resetPoints, isLoading, inflationData } = usePayPoints();
   const sorted = isLoading ? [] : [...payPoints].sort((a, b) => a.year - b.year);
   const currentYear = new Date().getFullYear();
   
   // Get minimum year from inflation data
-  const [minYear, setMinYear] = useState<number>(2015); // Default value
+  const [minYear, setMinYear] = useState<number>(2015); // Default value as fallback
   
   useEffect(() => {
-    setMinYear(Math.min(...InflationService.getInflationYears()));
-  }, []);
+    // Use dynamic inflation data if available
+    if (inflationData && inflationData.length > 0) {
+      setMinYear(Math.min(...inflationData.map(d => d.year)));
+    } else {
+      // Fall back to standard method if dynamic data isn't available
+      setMinYear(Math.min(...InflationService.getInflationYears()));
+    }
+  }, [inflationData]);
 
   // local state for the "new" row (strings so backspace works)
   const [newYear, setNewYear] = useState<string>('');
@@ -45,16 +51,23 @@ export default function PayPointsManager() {
     }
   };
 
-  // Default points for reset
-  const defaultPoints = [
-    { year: 2015, pay: DEFAULT_SALARY },
-    { year: 2023, pay: DEFAULT_SALARY },
-  ];
-  
-  // Function to handle reset
+  // Function to handle reset - calculate default points at the time of reset
   const handleReset = () => {
     if (confirm('Er du sikker på at du vil tilbakestille alle lønnspunkter?')) {
-      resetPoints(defaultPoints);
+      // Get the latest min year from inflation data
+      const latestMinYear = inflationData && inflationData.length > 0 
+        ? Math.min(...inflationData.map(d => d.year))
+        : minYear;
+      
+      // Create fresh default points with the latest data
+      const freshDefaultPoints = [
+        { year: latestMinYear, pay: DEFAULT_SALARY },
+        { year: currentYear, pay: DEFAULT_SALARY },
+      ];
+      
+      resetPoints(freshDefaultPoints);
+      
+      console.log('Reset points with min year:', latestMinYear);
     }
   };
 

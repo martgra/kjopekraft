@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { usePayPoints } from '@/components/context/PayPointsContext';
 import { useSalaryCalculations } from '@/lib/hooks/useSalaryCalculations';
+import { InflationService } from '@/lib/services/inflationService';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
   Chart,
@@ -29,7 +30,7 @@ Chart.register(
 );
 
 export default function PayDevelopmentChart() {
-  const { payPoints, addPoint, isLoading } = usePayPoints();
+  const { payPoints, addPoint, isLoading, inflationData } = usePayPoints();
   const { salaryData: adjustedPayData, yearRange, isLoading: isSalaryDataLoading } = useSalaryCalculations();
   const chartRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstance = useRef<Chart | null>(null);
@@ -44,10 +45,11 @@ export default function PayDevelopmentChart() {
 
   // If data is loading or there are no points, show a placeholder or loading state
   const renderContent = () => {
-    if (isLoading || isSalaryDataLoading) {
+    // Check for both loading states and inflation data
+    if (isLoading || isSalaryDataLoading || inflationData.length === 0) {
       return (
         <div className="h-full w-full flex items-center justify-center">
-          <LoadingSpinner size="large" text="Loading salary data..." />
+          <LoadingSpinner size="large" text="Laster inflasjonsdata og lønnsstatistikk..." />
         </div>
       );
     }
@@ -67,13 +69,25 @@ export default function PayDevelopmentChart() {
     }
     
     return (
-      <canvas ref={chartRef} className="w-full h-60 px-0"></canvas>
+      <div className="w-full h-full flex items-center justify-center">
+        <canvas ref={chartRef} className="w-full h-full"></canvas>
+      </div>
     );
   };
 
   useEffect(() => {
+    console.log('Chart redrawing with payPoints:', payPoints, 'inflationData length:', inflationData.length);
+    
     // Only initialize chart when not loading and we have data
-    if (isLoading || isSalaryDataLoading || payPoints.length < 1 || !chartRef.current) return;
+    if (isLoading || isSalaryDataLoading || payPoints.length < 1 || !chartRef.current || inflationData.length === 0) {
+      console.log('Skipping chart render due to:', { 
+        isLoading, 
+        isSalaryDataLoading, 
+        payPointsLength: payPoints.length,
+        inflationDataLength: inflationData.length
+      });
+      return;
+    }
     
     // Always destroy previous chart to avoid memory leaks
     if (chartInstance.current) {
@@ -85,8 +99,11 @@ export default function PayDevelopmentChart() {
     const ctx = chartRef.current.getContext('2d');
     if (!ctx) return;
 
-    // Use min and max years from our hooks
-    const { minYear, maxYear } = yearRange;
+    // Calculate min and max years directly from payPoints
+    const minYear = Math.min(...payPoints.map(p => p.year));
+    const maxYear = Math.max(...payPoints.map(p => p.year));
+    
+    console.log('Chart using year range:', { minYear, maxYear });
     
     // Generate a complete dataset with all years, including those without data points
     const generateCompleteDataset = () => {
@@ -95,10 +112,16 @@ export default function PayDevelopmentChart() {
         return [];
       }
       
+      // Coalesce null to empty array before mapping
+      const rawInflationData = InflationService.getInflationData() ?? [];
+      const inflationByYear = new Map(
+        rawInflationData.map(item => [item.year, item.inflation])
+      );
+      
       const completeDataset = [];
       
       // First add all the actual data points - this ensures we use real data when available
-      const actualDataPointsByYear = new Map();
+      const actualDataPointsByYear = new Map<number, typeof adjustedPayData[0]>();
       adjustedPayData.forEach(point => {
         actualDataPointsByYear.set(point.year, point);
       });
@@ -113,6 +136,7 @@ export default function PayDevelopmentChart() {
             x: year,
             y: exactMatch.actualPay,
             inflationY: exactMatch.inflationAdjustedPay,
+            inflationRate: inflationByYear.get(year) || 0,
             isInterpolated: false
           });
         } else {
@@ -132,6 +156,7 @@ export default function PayDevelopmentChart() {
               x: year,
               y: interpolatedActualPay,
               inflationY: interpolatedInflationPay,
+              inflationRate: inflationByYear.get(year) || 0,
               isInterpolated: true
             });
           }
@@ -194,10 +219,10 @@ export default function PayDevelopmentChart() {
         maintainAspectRatio: false,
         layout: {
           padding: {
-            top: 5,
-            bottom: 5,
-            left: 5,
-            right: 15
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 10
           }
         },
         scales: {
@@ -210,7 +235,8 @@ export default function PayDevelopmentChart() {
                 return numValue.toLocaleString('nb-NO');
               },
               padding: 5,
-              maxTicksLimit: 8
+              maxTicksLimit: 6,
+              precision: 0
             },
             title: {
               display: true,
@@ -222,8 +248,8 @@ export default function PayDevelopmentChart() {
           },
           x: {
             type: 'linear',
-            min: minYear,
-            max: maxYear,
+            min: minYear, // Using our directly calculated minYear
+            max: maxYear, // Using our directly calculated maxYear
             ticks: {
               stepSize: 1, // Force whole-number (year) ticks
               precision: 0, // Remove decimal points
@@ -269,7 +295,15 @@ export default function PayDevelopmentChart() {
             usePointStyle: true,
             callbacks: {
               title: function(context) {
-                return 'År: ' + context[0].parsed.x;
+                const year = context[0].parsed.x;
+                const point = completeDataset.find(p => p.x === year);
+                
+                // Add inflation rate to the title
+                if (point && point.inflationRate !== undefined) {
+                  return `År: ${year} (Inflasjon: ${point.inflationRate.toFixed(1)}%)`;
+                }
+                
+                return 'År: ' + year;
               },
               label: function(context: {dataset: {label?: string}, parsed: {x: number, y: number | null}, raw: any}): string {
                 let label = context.dataset.label || '';
@@ -287,6 +321,18 @@ export default function PayDevelopmentChart() {
                   }
                 }
                 return label;
+              },
+              // Add a footer to show additional information about inflation
+              footer: function(context) {
+                const year = context[0].parsed.x;
+                const point = completeDataset.find(p => p.x === year);
+                
+                // If we have inflation data, add information about the effect on purchasing power
+                if (point && point.inflationRate > 0) {
+                  return [`Inflasjon reduserer kjøpekraften med ${point.inflationRate.toFixed(1)}% dette året`];
+                }
+                
+                return [];
               }
             }
           },
@@ -298,12 +344,12 @@ export default function PayDevelopmentChart() {
               pointStyle: 'circle',
               boxWidth: 8,
               boxHeight: 8,
-              padding: 15,
+              padding: 10,
               font: {
-                size: 13
+                size: 12
               }
             },
-            maxHeight: 40
+            maxHeight: 36
           },
           title: {
             display: true,
@@ -313,8 +359,8 @@ export default function PayDevelopmentChart() {
               weight: 'bold'
             },
             padding: {
-              top: 5,
-              bottom: 15
+              top: 2,
+              bottom: 10
             }
           }
         }
@@ -326,7 +372,7 @@ export default function PayDevelopmentChart() {
         chartInstance.current.destroy();
       }
     };
-  }, [payPoints, adjustedPayData, isLoading, isSalaryDataLoading]);
+  }, [payPoints, yearRange, adjustedPayData, isLoading, isSalaryDataLoading, inflationData]);
 
   return (
     <div className="w-full h-full bg-white p-2 sm:p-3 md:p-4 rounded-xl shadow-md">

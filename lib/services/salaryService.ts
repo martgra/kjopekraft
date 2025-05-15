@@ -16,8 +16,19 @@ export class SalaryService {
       return [];
     }
 
-    // Get inflation data from the proper service
+    // Get inflation data 
     const inflationData = InflationService.getInflationData();
+    
+    // If inflation data is still loading, return empty array
+    if (!inflationData || inflationData.length === 0) {
+      console.warn('Cannot calculate inflation-adjusted pay: Inflation data not available');
+      return [];
+    }
+    
+    // Create a map for easy inflation lookup
+    const inflationMap = new Map(
+      inflationData.map(d => [d.year, d.inflation])
+    );
 
     // Sort the pay points by year (ascending)
     const sortedPoints = [...payPoints].sort((a, b) => a.year - b.year);
@@ -28,7 +39,7 @@ export class SalaryService {
     const baseYear = basePoint.year;
 
     // Create a map of user-provided pay points for easy lookup
-    const payPointMap = new Map(sortedPoints.map(point => [point.year, point]));
+    const payPointMap = new Map(sortedPoints.map(point => [point.year, point.pay]));
     
     // Get all unique years from both inflation data and pay points
     const allYears = Array.from(
@@ -45,7 +56,7 @@ export class SalaryService {
     const interpolatePay = (year: number): number => {
       // If there's a direct pay point, use it
       if (payPointMap.has(year)) {
-        return payPointMap.get(year)!.pay;
+        return payPointMap.get(year)!;
       }
       
       // Otherwise, find surrounding points and interpolate
@@ -63,24 +74,31 @@ export class SalaryService {
       return before.pay + ratio * (after.pay - before.pay);
     };
     
-    // Calculate cumulative inflation index
-    let cumulativeInflationIndex = 1;
+    // Build a cumulative inflation index starting from the base year
+    const inflationIndices = new Map<number, number>();
+    inflationIndices.set(baseYear, 1.0); // Base year is always 1.0 (100%)
+    
+    // Calculate indices for all years after the base year
+    for (let i = 1; i < relevantYears.length; i++) {
+      const year = relevantYears[i];
+      const prevYear = relevantYears[i-1];
+      const prevIndex = inflationIndices.get(prevYear) || 1.0;
+      
+      // Get inflation rate for this year
+      const inflation = inflationMap.get(year) || 0;
+      
+      // Compound the inflation
+      const currentIndex = prevIndex * (1 + inflation / 100);
+      inflationIndices.set(year, currentIndex);
+    }
+    
+    // Create the result array
     const result: SalaryDataPoint[] = [];
     
-    for (let i = 0; i < relevantYears.length; i++) {
-      const year = relevantYears[i];
+    for (const year of relevantYears) {
       const actualPay = interpolatePay(year);
-      
-      // Only apply inflation after the base year
-      if (i > 0) {
-        const inflationEntry = InflationService.getInflationForYear(year);
-        if (inflationEntry) {
-          cumulativeInflationIndex *= (1 + inflationEntry.inflation / 100);
-        }
-      }
-      
-      // Calculate what the base salary would be if adjusted for inflation
-      const inflationAdjustedPay = basePay * cumulativeInflationIndex;
+      const inflationIndex = inflationIndices.get(year) || 1.0;
+      const inflationAdjustedPay = basePay * inflationIndex;
       
       result.push({
         year,
@@ -97,9 +115,8 @@ export class SalaryService {
    */
   static calculateSalaryStatistics(payPoints: PayPoint[]): SalaryStatistics {
     if (!payPoints.length) {
-      const currentYear = new Date().getFullYear();
       return {
-        startingPay: NaN, // Using NaN makes it easier for consumers to detect empty state
+        startingPay: NaN,
         latestPay: NaN,
         inflationAdjustedPay: NaN,
         gapPercent: NaN
@@ -107,6 +124,17 @@ export class SalaryService {
     }
 
     const salaryData = SalaryService.calculateInflationAdjustedPay(payPoints);
+    
+    // If we couldn't calculate salary data (likely due to missing inflation data)
+    if (!salaryData || salaryData.length === 0) {
+      return {
+        startingPay: NaN,
+        latestPay: NaN,
+        inflationAdjustedPay: NaN,
+        gapPercent: NaN
+      };
+    }
+    
     const lastDataPoint = salaryData[salaryData.length - 1];
 
     return {

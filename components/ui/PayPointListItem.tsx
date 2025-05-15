@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { PayPoint } from '@/lib/models/salary';
 import { InflationService } from '@/lib/services/inflationService';
+import { usePayPoints } from '@/components/context/PayPointsContext';
 
 interface ValidationResult {
   isValid: boolean;
@@ -26,17 +27,25 @@ export default function PayPointListItem({ point, onRemove, onEdit, currentYear,
   const [validationError, setValidationError] = useState('');
   const [minYear, setMinYear] = useState<number>(propMinYear || 2015); // Use prop if provided, else default
   
+  // Get the inflation data from context
+  const { inflationData } = usePayPoints();
+  
   // Get minimum year if not provided as prop
   useEffect(() => {
-    if (!propMinYear) {
+    if (propMinYear) {
+      // Use prop if provided
+      setMinYear(propMinYear);
+    } else if (inflationData && inflationData.length > 0) {
+      // Use dynamic inflation data if available
+      setMinYear(Math.min(...inflationData.map(d => d.year)));
+    } else {
+      // Fall back to standard method if needed
       const years = InflationService.getInflationYears();
       if (years.length > 0) {
         setMinYear(Math.min(...years));
       }
-    } else {
-      setMinYear(propMinYear);
     }
-  }, [propMinYear]);
+  }, [propMinYear, inflationData]);
   
   const handleSave = () => {
     const newYear = Number(editedYear);

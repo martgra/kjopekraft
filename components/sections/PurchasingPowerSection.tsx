@@ -8,6 +8,7 @@ import MobileChartSwitcher from '@/components/features/MobileChartSwitcher';
 import ResponsiveChartWrapper from '@/components/ui/ResponsiveChartWrapper';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import SalaryStats from '@/components/ui/SalaryStats';
+import InflationDataDisplay from '@/components/ui/InflationDataDisplay';
 import { useSalaryCalculations } from '@/lib/hooks/useSalaryCalculations';
 
 export default function PurchasingPowerSection() {
@@ -38,7 +39,7 @@ export default function PurchasingPowerSection() {
       {/* Stats Cards */}
       {isLoading ? (
         <div className="w-full max-w-5xl flex justify-center p-6 bg-white rounded-xl shadow-lg">
-          <LoadingSpinner size="medium" text="Loading statistics..." />
+          <LoadingSpinner size="medium" text="Henter statistikk..." />
         </div>
       ) : (
         <SalaryStats
@@ -53,10 +54,11 @@ export default function PurchasingPowerSection() {
       <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-6 sm:gap-8">
         {/* Chart with responsive wrapper */}
         <div className="flex-1 bg-white shadow-xl rounded-xl overflow-hidden">
-          <div className="h-[300px] sm:h-[400px] md:h-[550px] lg:h-[50vh] xl:h-[50vh] p-0">
+          <div className="h-[320px] sm:h-[420px] md:h-[550px] lg:h-[60vh] xl:h-[60vh] p-0">
             <ResponsiveChartWrapper 
               mobileBreakpoint={768}
               mobileView={<MobileChartSwitcher />}
+              className="h-full w-full"
             >
               <PayDevelopmentChart />
             </ResponsiveChartWrapper>
@@ -69,6 +71,9 @@ export default function PurchasingPowerSection() {
             Legg til lønnspunkter
           </h3>
           <PayPointsManager />
+          
+          {/* Show inflation data from the API */}
+          <InflationDataDisplay />
         </aside>
       </div>
     </section>
