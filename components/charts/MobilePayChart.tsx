@@ -147,7 +147,14 @@ export default function MobilePayChart({
             type: 'linear',
             min: minYear,
             max: maxYear,
-            ticks: { stepSize: 1, precision: 0 },
+            ticks: { 
+              stepSize: 1, 
+              precision: 0,
+              callback: (val) => {
+                // Ensure val is a number before using Math.floor
+                return typeof val === 'number' ? Math.floor(val) : val;
+              }
+            },
             title: { display: true, text: 'År' },
           },
           y: {

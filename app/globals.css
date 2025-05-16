@@ -72,10 +72,6 @@ body {
     padding-right: 8px !important;
   }
   
-  /* Make more vertical space available for the chart */
-  .max-w-5xl > div:not(:first-child) {
-    margin-top: 16px !important;
-  }
   
   /* Optimize spacing between stats cards */
   .stat-card {
@@ -121,4 +117,24 @@ input {
 
 html, body {
   height: 100%;
+  /* Replace fixed padding with a more responsive approach */
+  padding-bottom: env(safe-area-inset-bottom, 2rem);
+}
+
+/* Mobile-specific bottom spacing */
+@media (max-width: 768px) {
+  /* Main content container - assuming you have one */
+  main {
+    padding-bottom: max(env(safe-area-inset-bottom, 1.5rem), 5vh);
+  }
+  
+  /* Container for fixed-position elements at the bottom */
+  .bottom-container {
+    margin-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  
+  /* For screens with navigation bars */
+  .has-bottom-nav {
+    padding-bottom: calc(env(safe-area-inset-bottom, 1rem) + 4rem);
+  }
 }

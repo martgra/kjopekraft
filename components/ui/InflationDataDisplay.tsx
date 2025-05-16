@@ -40,7 +40,7 @@ export default function InflationDataDisplay({ data: inflationData }: InflationD
         <summary className="text-xs text-blue-800 font-medium cursor-pointer hover:text-blue-900 hover:underline focus:outline-none">
           Vis alle år ({inflationData.length})
         </summary>
-        <div className="mt-3 overflow-y-auto max-h-48 bg-white rounded-md shadow-sm">
+        <div className="mt-3 bg-white rounded-md shadow-sm md:overflow-y-auto md:max-h-48">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-blue-900 bg-blue-100">

@@ -17,11 +17,13 @@ function StatsCard({ label, value }: StatsCardProps) {
   })();
 
   return (
-    <div className="flex flex-col bg-white rounded-xl shadow-md p-3 sm:p-4 stat-card">
+    <div className="flex flex-col bg-white rounded-xl shadow-md p-3 sm:p-4 stat-card h-full">
       <h3 className="text-xs sm:text-sm font-medium text-gray-500 mb-1">{label}</h3>
-      <p className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
-        {formattedValue}
-      </p>
+      <div className="flex items-center h-7 sm:h-8">
+        <p className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
+          {formattedValue}
+        </p>
+      </div>
     </div>
   );
 }
