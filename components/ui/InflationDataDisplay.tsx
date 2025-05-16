@@ -1,22 +1,21 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { usePayPoints } from '@/components/context/PayPointsContext';
+import React, { useState, useEffect } from 'react';
 import { InflationDataPoint } from '@/lib/models/inflation';
 
-export default function InflationDataDisplay() {
-  const { inflationData } = usePayPoints();
+interface InflationDataDisplayProps {
+  data: InflationDataPoint[];
+}
+
+export default function InflationDataDisplay({ data: inflationData }: InflationDataDisplayProps) {
   const [isClient, setIsClient] = useState(false);
-  
-  // Set isClient to true after component mounts
+
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // If not on client yet, show nothing (avoid hydration mismatch)
   if (!isClient) return null;
-  
-  // If no inflation data, show a message
+
   if (!inflationData || inflationData.length === 0) {
     return (
       <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-md">
@@ -28,9 +27,9 @@ export default function InflationDataDisplay() {
     );
   }
 
-  // Find the latest year with inflation data
+  // Sort descending by year and take the latest entry
   const latestData = [...inflationData].sort((a, b) => b.year - a.year)[0];
-  
+
   return (
     <div className="mt-6 p-4 bg-blue-100 border border-blue-300 rounded-md">
       <h3 className="text-sm font-medium text-blue-900">Inflasjonsdata fra SSB</h3>
@@ -50,15 +49,18 @@ export default function InflationDataDisplay() {
               </tr>
             </thead>
             <tbody>
-              {[...inflationData]
+              {inflationData
+                .slice()
                 .sort((a, b) => b.year - a.year)
                 .map(item => (
-                  <tr 
-                    key={item.year} 
+                  <tr
+                    key={item.year}
                     className="border-t border-blue-200 hover:bg-blue-200 transition-colors"
                   >
                     <td className="p-1 text-blue-900 font-medium">{item.year}</td>
-                    <td className="text-right p-1 text-blue-900 font-medium">{item.inflation.toFixed(1)}%</td>
+                    <td className="text-right p-1 text-blue-900 font-medium">
+                      {item.inflation.toFixed(1)}%
+                    </td>
                   </tr>
                 ))}
             </tbody>

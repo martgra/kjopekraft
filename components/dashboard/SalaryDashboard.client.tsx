@@ -1,0 +1,114 @@
+'use client';
+
+import React from 'react';
+import { useInflation } from '@/features/inflation/hooks/useInflation';
+import { useSalaryPoints } from '@/features/paypoints/hooks/useSalaryPoints';
+import { useSalaryCalculations } from '@/features/paypoints/hooks/useSalaryCalculations';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ResponsiveChartWrapper from '@/components/ui/ResponsiveChartWrapper';
+import MobileChartSwitcher from '@/components/ui/MobileChartSwitcher';
+import PayDevelopmentChart from '@/components/charts/PayDevelopmentChart';
+import PayPointsManager from '@/features/paypoints/PayPointsManager';
+import InflationDataDisplay from '@/components/ui/InflationDataDisplay';
+import SalaryStats from '@/components/stats/SalaryStats';
+
+export default function SalaryDashboard() {
+  // Fetch inflation data via SWR
+  const { data: inflationData = [], error: infError, isLoading: infLoading } = useInflation();
+
+  // Manage salary points in localStorage once inflationData is ready
+  const {
+    payPoints,
+    addPoint,
+    removePoint,
+    editPoint,
+    resetPoints,
+    validatePoint,
+    isLoading: ptsLoading,
+  } = useSalaryPoints(inflationData);
+
+  // Derive salary statistics
+  const {
+    statistics,
+    hasData,
+    isLoading: statsLoading,
+  } = useSalaryCalculations(payPoints, inflationData);
+
+  // Global loading or error
+  if (infLoading || ptsLoading || statsLoading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <LoadingSpinner size="large" text="Laster data…" />
+      </div>
+    );
+  }
+  if (infError) {
+    return <div>Kunne ikke hente inflasjonsdata.</div>;
+  }
+
+  // Display stats fallback
+  const displayStats = {
+    startingPay: hasData ? statistics.startingPay : '--',
+    latestPay: hasData ? statistics.latestPay : '--',
+    inflationAdjustedPay: hasData ? statistics.inflationAdjustedPay : '--',
+    gapPercent: hasData ? statistics.gapPercent : '--',
+  };
+
+  return (
+    <section className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 bg-gray-50 flex flex-col items-center space-y-8 sm:space-y-12 w-full">
+      {/* Header */}
+      <header className="w-full max-w-5xl flex justify-between items-center">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
+          Din lønnsutvikling vs. inflasjon
+        </h2>
+      </header>
+
+      {/* Stats Cards */}
+      <div className="w-full max-w-5xl">
+        <SalaryStats
+          startingPay={displayStats.startingPay}
+          latestPay={displayStats.latestPay}
+          inflationAdjustedPay={displayStats.inflationAdjustedPay}
+          gapPercent={displayStats.gapPercent}
+        />
+      </div>
+
+      {/* Chart + Input */}
+      <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-6 sm:gap-8">
+        {/* Chart area */}
+        <div className="flex-1 bg-white shadow-xl rounded-xl overflow-hidden flex flex-col">
+          <div className="flex-grow h-full p-0">
+            <ResponsiveChartWrapper
+              mobileBreakpoint={768}
+              mobileView={<MobileChartSwitcher />}
+              className="h-full w-full"
+            >
+              <PayDevelopmentChart
+                payPoints={payPoints}
+                inflationData={inflationData}
+              />
+            </ResponsiveChartWrapper>
+          </div>
+        </div>
+
+        {/* Sidebar Input */}
+        <aside className="w-full lg:w-1/3 bg-white shadow-lg rounded-xl p-4 sm:p-6 space-y-4">
+          <h3 className="text-lg sm:text-xl font-medium text-gray-700">
+            Legg til lønnspunkter
+          </h3>
+          <PayPointsManager
+            payPoints={payPoints}
+            onAdd={addPoint}
+            onRemove={removePoint}
+            onEdit={editPoint}
+            onReset={resetPoints}
+            validatePoint={validatePoint}
+            isLoading={ptsLoading}
+            inflationData={inflationData}
+          />
+          <InflationDataDisplay data={inflationData} />
+        </aside>
+      </div>
+    </section>
+  );
+}

@@ -4,7 +4,7 @@ export interface SsbApiConfig {
   baseUrl: string;
 }
 
-export type SsbRawResponse = {
+type SsbRawResponse = {
   dataset: {
     value: number[];
     size: [number, number, number];

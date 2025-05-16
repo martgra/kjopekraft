@@ -1,7 +1,7 @@
 // Data constants used throughout the application
 
 // Mock inflation data; replace with real API later
-export const INFLATION_DATA = [
+const INFLATION_DATA = [
   { year: 2015, inflation: 2.3 },
   { year: 2016, inflation: 3.5 },
   { year: 2017, inflation: 1.6 },

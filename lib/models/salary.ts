@@ -12,7 +12,7 @@ export interface PayPoint {
 /**
  * Represents a salary data point with inflation-adjusted calculation
  */
-export interface SalaryDataPoint {
+interface SalaryDataPoint {
   year: number;
   actualPay: number;
   inflationAdjustedPay: number;
@@ -21,7 +21,7 @@ export interface SalaryDataPoint {
 /**
  * Statistics about salary development
  */
-export interface SalaryStatistics {
+interface SalaryStatistics {
   startingPay: number;
   latestPay: number;
   inflationAdjustedPay: number;

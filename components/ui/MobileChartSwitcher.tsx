@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import MobilePayChart from './MobilePayChart';
+import MobilePayChart from '@/components/charts/MobilePayChart';
 
 export default function MobileChartSwitcher() {
   return (
