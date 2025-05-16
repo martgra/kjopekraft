@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { PayPoint } from '@/lib/models/salary';
+import { TEXT } from '@/lib/constants/text';
+import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa'; // Changed to react-icons
 
 interface ValidationResult {
   isValid: boolean;
@@ -94,13 +96,13 @@ export default function PayPointListItem({
             onClick={handleCancel}
             className="px-3 py-1 text-sm text-gray-600 border rounded-md hover:bg-gray-100"
           >
-            Avbryt
+            {TEXT.common.cancel}
           </button>
           <button
             onClick={handleSave}
             className="px-3 py-1 text-sm text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
           >
-            Lagre
+            {TEXT.common.save}
           </button>
         </div>
       </div>
@@ -115,18 +117,20 @@ export default function PayPointListItem({
           {point.pay.toLocaleString('nb-NO')}
         </span>
       </div>
-      <div className="flex space-x-2">
+      <div className="flex space-x-3"> {/* Increased space between buttons */}
         <button
           onClick={() => setIsEditing(true)}
-          className="px-2 py-1 text-sm text-indigo-600 border rounded-md hover:bg-indigo-50"
+          className="p-1.5 text-indigo-600 rounded-full hover:bg-indigo-50"
+          title={TEXT.common.edit} // Add tooltip for accessibility
         >
-          Endre
+          <FaPencilAlt size={16} />
         </button>
         <button
           onClick={onRemove}
-          className="px-2 py-1 text-sm text-red-600 border rounded-md hover:bg-red-50"
+          className="p-1.5 text-red-600 rounded-full hover:bg-red-50"
+          title={TEXT.common.remove} // Add tooltip for accessibility
         >
-          Fjern
+          <FaTrashAlt size={16} />
         </button>
       </div>
     </div>

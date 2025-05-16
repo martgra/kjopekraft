@@ -4,6 +4,7 @@ import React from 'react';
 import { useInflation } from '@/features/inflation/hooks/useInflation';
 import { useSalaryPoints } from '@/features/paypoints/hooks/useSalaryPoints';
 import { useSalaryCalculations } from '@/features/paypoints/hooks/useSalaryCalculations';
+import { TEXT } from '@/lib/constants/text';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ResponsiveChartWrapper from '@/components/ui/ResponsiveChartWrapper';
 import PayDevelopmentChart from '@/components/charts/PayDevelopmentChart';
@@ -37,12 +38,12 @@ export default function SalaryDashboard() {
   if (infLoading || ptsLoading || statsLoading) {
     return (
       <div className="flex justify-center items-center h-full">
-        <LoadingSpinner size="large" text="Laster data…" />
+        <LoadingSpinner size="large" text={TEXT.common.loadingData} />
       </div>
     );
   }
   if (infError) {
-    return <div>Kunne ikke hente inflasjonsdata.</div>;
+    return <div>{TEXT.common.error}</div>;
   }
 
   // Display stats fallback
@@ -56,9 +57,9 @@ export default function SalaryDashboard() {
   return (
     <section className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 bg-gray-50 flex flex-col items-center space-y-8 sm:space-y-12 w-full h-full">
       {/* Header */}
-      <header className="w-full max-w-5xl flex justify-between items-center">
-        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
-          Din lønnsutvikling vs. inflasjon
+      <header className="w-full max-w-5xl flex justify-center items-center">
+        <h2 className="text-2xl sm:text-4xl text-center font-semibold text-gray-800">
+          {TEXT.dashboard.title}
         </h2>
       </header>
 
@@ -98,7 +99,7 @@ export default function SalaryDashboard() {
         {/* Sidebar Input */}
         <aside className="w-full lg:w-1/3 bg-white shadow-lg rounded-xl p-3 sm:p-4 space-y-3 sm:space-y-4">
           <h3 className="text-lg sm:text-xl font-medium text-gray-700">
-            Legg til lønnspunkter
+            {TEXT.dashboard.addPointsTitle}
           </h3>
           <PayPointsManager
             payPoints={payPoints}

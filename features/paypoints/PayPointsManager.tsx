@@ -5,6 +5,7 @@ import PayPointForm from '@/components/forms/PayPointForm';
 import PayPointListItem from '@/components/forms/PayPointListItem';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { DEFAULT_SALARY } from '@/lib/constants';
+import { TEXT } from '@/lib/constants/text';
 import type { PayPoint } from '@/lib/models/salary';
 import type { InflationDataPoint } from '@/lib/models/inflation';
 
@@ -60,7 +61,7 @@ export default function PayPointsManager({
   };
 
   const handleReset = () => {
-    if (confirm('Er du sikker på at du vil tilbakestille alle lønnspunkter?')) {
+    if (confirm(TEXT.common.confirmReset)) {
       const freshMin = inflationData.length > 0 ? Math.min(...inflationData.map(d => d.year)) : currentYear;
       const defaults: PayPoint[] = [
         { year: freshMin, pay: DEFAULT_SALARY },
@@ -78,7 +79,7 @@ export default function PayPointsManager({
       {/* Header */}
       <div className="flex justify-between items-center">
         <h4 className="text-xs sm:text-sm font-medium text-gray-500">
-          Dine lønnspunkter ({loading ? '...' : sorted.length})
+          {TEXT.forms.yourPoints} ({loading ? '...' : sorted.length})
         </h4>
         {!loading && sorted.length > 0 && (
           <button
@@ -86,7 +87,7 @@ export default function PayPointsManager({
             onClick={handleReset}
             className="text-xs text-gray-500 hover:text-red-600 underline"
           >
-            Tilbakestill
+            {TEXT.common.reset}
           </button>
         )}
       </div>
@@ -95,7 +96,7 @@ export default function PayPointsManager({
       <div className="space-y-2">
         {loading ? (
           <div className="flex justify-center py-4">
-            <LoadingSpinner size="small" text="Laster data..." />
+            <LoadingSpinner size="small" text={TEXT.common.loadingData} />
           </div>
         ) : sorted.length > 0 ? (
           sorted.map((point, idx) => (
@@ -111,7 +112,7 @@ export default function PayPointsManager({
         ) : (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3 sm:p-4 text-blue-700 text-xs sm:text-sm">
             <p>
-              Ingen lønnspunkter lagt til ennå. Bruk skjemaet nedenfor for å legge til ditt første lønnspunkt.
+              {TEXT.forms.noPointsMessage}
             </p>
           </div>
         )}

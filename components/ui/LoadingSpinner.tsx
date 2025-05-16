@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { TEXT } from '@/lib/constants/text';
 
 type LoadingSpinnerProps = {
   size?: 'small' | 'medium' | 'large';
@@ -9,7 +10,7 @@ type LoadingSpinnerProps = {
 
 export default function LoadingSpinner({ 
   size = 'medium', 
-  text = 'Loading...' 
+  text = TEXT.common.loading 
 }: LoadingSpinnerProps) {
   const sizeClasses = {
     small: 'h-5 w-5 border-2',

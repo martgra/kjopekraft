@@ -1,5 +1,7 @@
 'use client';
 
+import { TEXT } from '@/lib/constants/text';
+
 interface StatsCardProps {
   label: string;
   value: number | string;
@@ -42,10 +44,10 @@ export default function SalaryStats({
   gapPercent 
 }: SalaryStatsProps) {
   const cards = [
-    { label: 'Startlønn', value: startingPay },
-    { label: 'Nåværende lønn', value: latestPay },
-    { label: 'Inflasjonsjustert', value: inflationAdjustedPay },
-    { label: 'Gap (%)', value: gapPercent },
+    { label: TEXT.stats.startingSalary, value: startingPay },
+    { label: TEXT.stats.currentSalary, value: latestPay },
+    { label: TEXT.stats.inflationAdjusted, value: inflationAdjustedPay },
+    { label: TEXT.stats.gap, value: gapPercent },
   ];
 
   return (

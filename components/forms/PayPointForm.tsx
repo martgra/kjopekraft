@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { PayPoint } from '@/lib/models/salary';
+import { TEXT } from '@/lib/constants/text';
 
 interface ValidationResult {
   isValid: boolean;
@@ -43,9 +44,9 @@ export default function PayPointForm({
   // Validate inputs on change
   useEffect(() => {
     if (newYear && (!isNaN(yearNum) && !isYearValid)) {
-      setInternalValidationError(`År må være mellom ${minYear} og ${currentYear}`);
+      setInternalValidationError(TEXT.forms.validation.yearRange.replace('{min}', String(minYear)).replace('{max}', String(currentYear)));
     } else if (newPay && (!isNaN(payNum) && !isPayValid)) {
-      setInternalValidationError('Lønn må være større enn 0');
+      setInternalValidationError(TEXT.forms.validation.payPositive);
     } else {
       setInternalValidationError('');
     }
@@ -64,7 +65,7 @@ export default function PayPointForm({
       <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
         <div className="flex-1">
           <label htmlFor="new-year" className="block text-xs sm:text-sm font-medium text-gray-600 mb-1">
-            År ({minYear}-{currentYear})
+            {TEXT.forms.yearLabel} ({minYear}-{currentYear})
           </label>
           <input
             id="new-year"
@@ -84,7 +85,7 @@ export default function PayPointForm({
         </div>
         <div className="flex-1">
           <label htmlFor="new-pay" className="block text-xs sm:text-sm font-medium text-gray-600 mb-1">
-            Lønn (NOK)
+            {TEXT.forms.payLabel}
           </label>
           <input
             id="new-pay"
@@ -92,7 +93,7 @@ export default function PayPointForm({
             inputMode="numeric"
             value={newPay}
             onChange={e => onPayChange(e.target.value.replace(/[^\d\s]/g, ''))}
-            placeholder="f.eks. 550 000"
+            placeholder={TEXT.forms.payPlaceholder}
             className={`w-full border rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900 placeholder-gray-600 text-sm sm:text-base ${
               newPay && !isPayValid ? 'border-red-500' : ''
             }`}
@@ -106,9 +107,9 @@ export default function PayPointForm({
         onClick={onAdd}
         disabled={disabled}
         className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 sm:py-2.5 rounded-md disabled:opacity-50 transition text-sm sm:text-base font-medium"
-        title={disabled ? 'Fyll ut gyldige verdier før du legger til' : 'Legg til nytt lønnspunkt'}
+        title={disabled ? TEXT.forms.addButtonDisabledTitle : TEXT.forms.addButtonTitle}
       >
-        Legg til punkt
+        {TEXT.forms.addPointButton}
       </button>
     </div>
   );
