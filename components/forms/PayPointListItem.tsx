@@ -78,7 +78,7 @@ export default function PayPointListItem({
             inputMode="numeric"
             value={editedPay}
             onChange={e => setEditedPay(e.target.value.replace(/[^\d\s]/g, ''))}
-            className={`flex-1 border rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 ${
+            className={`flex-1 border rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 placeholder-gray-600 ${
               Number(editedPay.replace(/\s/g, '')) <= 0 ? 'border-red-500' : ''
             }`}
             placeholder="Positiv lønn"

@@ -4,7 +4,7 @@ import { InflationDataPoint } from '@/lib/models/inflation';
 /**
  * Represents a salary data point adjusted for inflation.
  */
-export interface SalaryDataPoint {
+interface SalaryDataPoint {
   year: number;
   actualPay: number;
   inflationAdjustedPay: number;
@@ -14,7 +14,7 @@ export interface SalaryDataPoint {
 
 /**
  * Build a per-year salary series (actual vs. inflation) starting from the earliest pay point,
- * scaling each year’s salary by cumulative CPI.
+ * scaling the *initial* salary forward by CPI alone.
  */
 export function adjustSalaries(
   payPoints: PayPoint[],
@@ -26,17 +26,19 @@ export function adjustSalaries(
   const pts = [...payPoints].sort((a, b) => a.year - b.year);
   const cpi = [...inflation].sort((a, b) => a.year - b.year);
 
-  // Create a map of year → CPI cumulative index
+  // Determine base salary (earliest point) and base year
   const baseYear = pts[0].year;
+  const baseSalary = pts[0].pay;
+
+  // Build a map of year → CPI cumulative index relative to baseYear
   const rateMap = new Map<number, number>(cpi.map(d => [d.year, d.inflation / 100]));
   const indexMap = new Map<number, number>();
-  let index = 1;
-  indexMap.set(baseYear, index);
-
+  let idx = 1;
+  indexMap.set(baseYear, idx);
   for (let y = baseYear + 1; y <= pts[pts.length - 1].year; y++) {
     const r = rateMap.get(y) ?? 0;
-    index *= 1 + r;
-    indexMap.set(y, index);
+    idx *= 1 + r;
+    indexMap.set(y, idx);
   }
 
   // Interpolate actual salary per year between payPoints
@@ -50,15 +52,16 @@ export function adjustSalaries(
     }
   }
 
-  // Build output series, one entry per year
+  // Build output series: actual (interpolated) vs. inflation growth of baseSalary
   const result: SalaryDataPoint[] = [];
   for (let y = baseYear; y <= pts[pts.length - 1].year; y++) {
-    const actual = salaryMap.get(y) ?? pts[pts.length - 1].pay;
-    const idx = indexMap.get(y) ?? 1;
+    const actual = salaryMap.get(y) ?? baseSalary;
+    const factor = indexMap.get(y) ?? 1;
     result.push({
       year: y,
       actualPay: actual,
-      inflationAdjustedPay: Math.round(actual * idx),
+      // Use *baseSalary* multiplied by CPI index only
+      inflationAdjustedPay: Math.round(baseSalary * factor),
       inflationRate: (rateMap.get(y) ?? 0) * 100,
       isInterpolated: !pts.some(pt => pt.year === y)
     });

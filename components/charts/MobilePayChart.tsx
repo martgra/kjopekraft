@@ -1,8 +1,9 @@
+// components/charts/MobilePayChart.tsx
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { useInflation } from '@/features/inflation/hooks/useInflation';
-import { useSalaryPoints } from '@/features/paypoints/hooks/useSalaryPoints';
+import { PayPoint } from '@/lib/models/salary';
+import { InflationDataPoint } from '@/lib/models/inflation';
 import { useSalaryCalculations } from '@/features/paypoints/hooks/useSalaryCalculations';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
@@ -17,7 +18,6 @@ import {
   CategoryScale,
 } from 'chart.js';
 
-// Register Chart.js components
 Chart.register(
   LineController,
   LineElement,
@@ -31,17 +31,16 @@ Chart.register(
 
 type Point = { x: number; y: number | null };
 
-export default function MobilePayChart() {
-  // Fetch inflation data
-  const { data: inflationData = [], isLoading: infLoading } = useInflation();
+interface MobilePayChartProps {
+  payPoints: PayPoint[];
+  inflationData: InflationDataPoint[];
+}
 
-  // Manage salary points with inflation data range
-  const {
-    payPoints,
-    isLoading: ptsLoading,
-  } = useSalaryPoints(inflationData);
-
-  // Compute adjusted salary series and yearRange
+export default function MobilePayChart({
+  payPoints,
+  inflationData,
+}: MobilePayChartProps) {
+  // derive the per‐year series & range
   const {
     salaryData: adjustedPayData,
     yearRange,
@@ -51,7 +50,7 @@ export default function MobilePayChart() {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstance = useRef<Chart<'line', Point[], number> | null>(null);
 
-  // Interpolation helper
+  // interpolate missing years
   function interpolateYearly(
     points: { x: number; y: number }[],
     minYear: number,
@@ -67,7 +66,7 @@ export default function MobilePayChart() {
       }
       const prev = known.filter((p) => p.x < year).pop();
       const next = known.find((p) => p.x > year);
-      if (prev && next) {
+      if (prev && next && prev.y != null && next.y != null) {
         const t = (year - prev.x) / (next.x - prev.x);
         result.push({ x: year, y: prev.y + t * (next.y - prev.y) });
       } else {
@@ -77,30 +76,27 @@ export default function MobilePayChart() {
     return result;
   }
 
-  const loading = infLoading || ptsLoading || calcLoading;
+  // show loading or empty states
+  if (calcLoading) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <LoadingSpinner size="small" text="Laster graf…" />
+      </div>
+    );
+  }
+  if (payPoints.length < 2) {
+    return (
+      <div className="h-full w-full flex flex-col items-center justify-center p-4 text-center">
+        <p className="text-gray-500 text-sm">
+          Legg til minst to lønnspunkter for å vise graf.
+        </p>
+      </div>
+    );
+  }
 
-  const renderContent = () => {
-    if (loading) {
-      return (
-        <div className="h-full w-full flex items-center justify-center">
-          <LoadingSpinner size="small" text="Laster data..." />
-        </div>
-      );
-    }
-    if (payPoints.length < 1) {
-      return (
-        <div className="h-full w-full flex flex-col items-center justify-center p-4 text-center">
-          <p className="text-gray-500 mb-3 text-sm">Ingen lønnsdata tilgjengelig.</p>
-        </div>
-      );
-    }
-    return <canvas ref={chartRef} className="w-full h-full" />;
-  };
-
+  // render chart
   useEffect(() => {
-    if (loading || payPoints.length < 1 || !chartRef.current) return;
-
-    // Destroy previous chart instance
+    if (!chartRef.current) return;
     chartInstance.current?.destroy();
 
     const ctx = chartRef.current.getContext('2d');
@@ -108,17 +104,13 @@ export default function MobilePayChart() {
 
     const { minYear, maxYear } = yearRange;
     const rawActual = payPoints.map((p) => ({ x: p.year, y: p.pay }));
-    const rawAdjusted = adjustedPayData.map((p) => ({ x: p.year, y: p.inflationAdjustedPay }));
-    const fullActual = interpolateYearly(rawActual, minYear, maxYear);
-    const fullAdjusted = interpolateYearly(rawAdjusted, minYear, maxYear);
+    const rawInfl = adjustedPayData.map((p) => ({
+      x: p.year,
+      y: p.inflationAdjustedPay,
+    }));
 
-    // Helper to hide excess dots
-    const makePointRadius = (maxMarkers: number) => (ctx: any) => {
-      const total = ctx.dataset.data.length;
-      if (total <= maxMarkers) return 4;
-      const interval = Math.ceil(total / maxMarkers);
-      return ctx.dataIndex % interval === 0 ? 4 : 0;
-    };
+    const fullActual = interpolateYearly(rawActual, minYear, maxYear);
+    const fullInfl = interpolateYearly(rawInfl, minYear, maxYear);
 
     chartInstance.current = new Chart(ctx, {
       type: 'line',
@@ -129,82 +121,69 @@ export default function MobilePayChart() {
             data: fullActual,
             borderColor: 'rgb(37, 99, 235)',
             backgroundColor: 'rgba(37, 99, 235, 0.1)',
-            pointBackgroundColor: 'rgb(37, 99, 235)',
-            pointRadius: makePointRadius(10),
+            pointRadius: 4,
             tension: 0.3,
-            fill: false,
             spanGaps: true,
             borderWidth: 3,
           },
           {
             label: 'Inflasjonsjustert',
-            data: fullAdjusted,
+            data: fullInfl,
             borderColor: 'rgb(220, 38, 38)',
             backgroundColor: 'rgba(220, 38, 38, 0.1)',
-            pointBackgroundColor: 'rgb(220, 38, 38)',
-            pointRadius: makePointRadius(10),
+            pointRadius: 4,
             tension: 0.3,
-            fill: false,
             spanGaps: true,
-            borderWidth: 3,
             borderDash: [5, 5],
+            borderWidth: 3,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        locale: 'nb-NO',
-        aspectRatio: 1,
         scales: {
           x: {
             type: 'linear',
             min: minYear,
             max: maxYear,
-            ticks: { stepSize: 1, precision: 0, maxTicksLimit: 5 },
+            ticks: { stepSize: 1, precision: 0 },
             title: { display: true, text: 'År' },
           },
           y: {
             beginAtZero: false,
             ticks: {
-              maxTicksLimit: 5,
-              callback: (val) => Math.round(+val / 1000) + 'k',
+              callback: (val) => (typeof val === 'number' ? val.toLocaleString('nb-NO') : ''),
             },
-            title: { display: true, text: 'Lønn (k NOK)' },
+            title: { display: true, text: 'Lønn (NOK)' },
           },
         },
         plugins: {
+          legend: { position: 'bottom', align: 'center' },
           tooltip: {
             mode: 'nearest',
             intersect: false,
             callbacks: {
-              title: (items) => 'År: ' + items[0].parsed.x,
-              label: (ctx) => {
-                const prefix = ctx.dataset.label ? ctx.dataset.label + ': ' : ''; 
-                return prefix + (ctx.parsed.y !== null ? ctx.parsed.y.toLocaleString('nb-NO') + ' kr' : '—');
-              },
+              title: (items) => `År: ${items[0].parsed.x}`,
+              label: (ctx) =>
+                `${ctx.dataset.label}: ${
+                  ctx.parsed.y != null ? ctx.parsed.y.toLocaleString('nb-NO') + ' kr' : '—'
+                }`,
             },
           },
-          legend: { position: 'bottom', align: 'center' },
           title: {
             display: true,
             text: 'Lønn vs. Inflasjon',
-            font: { size: 14, weight: 'bold' },
-            padding: { top: 10, bottom: 15 },
+            padding: { top: 5, bottom: 10 },
           },
         },
       },
     });
 
-    return () => chartInstance.current?.destroy();
-  }, [loading, payPoints, adjustedPayData, yearRange]);
+    return () => {
+      chartInstance.current?.destroy();
+    };
+  }, [payPoints, adjustedPayData, yearRange]);
 
-  return (
-    <div className="w-full h-full bg-white p-3 rounded-xl shadow-md mobile-chart-container">
-      <div className="text-center text-xs text-gray-500 mb-1 md:hidden">
-        Trykk på punktene for detaljer
-      </div>
-      {renderContent()}
-    </div>
-  );
+  return <canvas ref={chartRef} className="w-full h-full" />;
 }

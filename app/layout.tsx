@@ -1,3 +1,5 @@
+// app/layout.tsx
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import MobileMetaScript from "@/components/ui/MobileMetaScript";
@@ -16,7 +18,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kjøpekraft",
   description: "Sjekk kjøpekraften din!",
-  // you can leave this here or remove it; links below are the source of truth
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -30,12 +31,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-base`}
+        className={`
+          ${geistSans.variable} ${geistMono.variable}
+          antialiased text-base
+          bg-white        /* white background */
+          h-full   /* at least viewport height */
+          flex flex-col
+        `}
       >
         <MobileMetaScript />
         {children}

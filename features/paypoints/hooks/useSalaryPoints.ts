@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { PayPoint } from '@/lib/models/salary';
 import type { InflationDataPoint } from '@/lib/models/inflation';
-import { DEFAULT_SALARY } from '@/lib/constants';
+import { DEFAULT_SALARY_POINTS } from '@/lib/constants';
 
 interface ValidationResult {
   isValid: boolean;
@@ -11,7 +11,7 @@ interface ValidationResult {
 const STORAGE_KEY = 'salary-calculator-points';
 
 /**
- * Hook for managing salary points in localStorage, once inflation data is available.
+ * Hook for managing salary points in localStorage, with fallback to example data.
  * @param inflationData - Array of inflation records to determine valid year range
  */
 export function useSalaryPoints(
@@ -20,42 +20,40 @@ export function useSalaryPoints(
   const [isLoading, setIsLoading] = useState(true);
   const [payPoints, setPayPoints] = useState<PayPoint[]>([]);
 
-  // Initialize pay points when inflation data arrives
+  // Initialize pay points when inflation data is ready
   useEffect(() => {
-    if (!inflationData.length) {
-      return;
-    }
+    if (!inflationData.length) return;
 
+    let initial: PayPoint[];
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const parsed: PayPoint[] = JSON.parse(stored);
-        setPayPoints(parsed.sort((a, b) => a.year - b.year));
+        initial = JSON.parse(stored) as PayPoint[];
       } else {
-        const currentYear = new Date().getFullYear();
-        const minYear = Math.min(...inflationData.map(d => d.year));
-        const defaults: PayPoint[] = [
-          { year: minYear, pay: DEFAULT_SALARY },
-          { year: currentYear, pay: DEFAULT_SALARY },
-        ];
-        setPayPoints(defaults.sort((a, b) => a.year - b.year));
+        initial = DEFAULT_SALARY_POINTS;
       }
     } catch (err) {
       console.error('Error loading salary points:', err);
-      setPayPoints([]);
-    } finally {
-      setIsLoading(false);
+      initial = DEFAULT_SALARY_POINTS;
     }
+
+    setPayPoints(
+      initial
+        .map(p => ({ year: p.year, pay: p.pay }))
+        .sort((a, b) => a.year - b.year)
+    );
+    setIsLoading(false);
   }, [inflationData]);
 
   // Persist pay points on change
   useEffect(() => {
+    if (isLoading) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payPoints));
     } catch (err) {
       console.error('Error saving salary points:', err);
     }
-  }, [payPoints]);
+  }, [payPoints, isLoading]);
 
   // Validate a salary point against inflation data range
   const validatePoint = (pt: PayPoint): ValidationResult => {
@@ -97,16 +95,19 @@ export function useSalaryPoints(
   ): ValidationResult => {
     const result = validatePoint(newPoint);
     if (result.isValid) {
-      setPayPoints(curr => {
-        const filtered = curr.filter(p => !(p.year === oldYear && p.pay === oldPay));
-        return [...filtered, newPoint].sort((a, b) => a.year - b.year);
-      });
+      setPayPoints(curr =>
+        [...curr.filter(p => !(p.year === oldYear && p.pay === oldPay)), newPoint]
+          .sort((a, b) => a.year - b.year)
+      );
     }
     return result;
   };
 
-  const resetPoints = (defaults: PayPoint[]) => {
-    setPayPoints([...defaults].sort((a, b) => a.year - b.year));
+  const resetPoints = () => {
+    setPayPoints(
+      [...DEFAULT_SALARY_POINTS]
+        .sort((a, b) => a.year - b.year)
+    );
   };
 
   return useMemo(

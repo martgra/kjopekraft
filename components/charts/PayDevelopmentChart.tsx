@@ -63,12 +63,16 @@ function interpolateYearly(
     } else {
       const prev = sorted.filter(p => p.x < year).pop();
       const next = sorted.find(p => p.x > year);
-      if (prev && next) {
-        const t = (year - prev.x) / (next.x - prev.x);
-        out.push({ x: year, y: prev.y + t * (next.y - prev.y) });
-      } else {
-        out.push({ x: year, y: null });
-      }
+  if (prev && next && prev.y != null && next.y != null) {
+      // compute interpolation factor t here
+      const t = (year - prev.x) / (next.x - prev.x);
+      out.push({
+       x: year,
+        y: prev.y + t * (next.y - prev.y),
+      });
+    } else {
+      out.push({ x: year, y: null });
+    }
     }
   }
   

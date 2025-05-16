@@ -74,7 +74,7 @@ export default function PayPointForm({
             value={newYear}
             onChange={e => onYearChange(e.target.value)}
             placeholder={`f.eks. ${currentYear}`}
-            className={`w-full border rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900 placeholder-gray-400 text-sm sm:text-base ${
+            className={`w-full border rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900 placeholder-gray-600 text-sm sm:text-base ${
               newYear && !isYearValid ? 'border-red-500' : ''
             }`}
             spellCheck="false"
@@ -93,7 +93,7 @@ export default function PayPointForm({
             value={newPay}
             onChange={e => onPayChange(e.target.value.replace(/[^\d\s]/g, ''))}
             placeholder="f.eks. 550 000"
-            className={`w-full border rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900 placeholder-gray-400 text-sm sm:text-base ${
+            className={`w-full border rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900 placeholder-gray-600 text-sm sm:text-base ${
               newPay && !isPayValid ? 'border-red-500' : ''
             }`}
             spellCheck="false"

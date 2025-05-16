@@ -6,12 +6,11 @@ import { useSalaryPoints } from '@/features/paypoints/hooks/useSalaryPoints';
 import { useSalaryCalculations } from '@/features/paypoints/hooks/useSalaryCalculations';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ResponsiveChartWrapper from '@/components/ui/ResponsiveChartWrapper';
-import MobileChartSwitcher from '@/components/ui/MobileChartSwitcher';
 import PayDevelopmentChart from '@/components/charts/PayDevelopmentChart';
 import PayPointsManager from '@/features/paypoints/PayPointsManager';
 import InflationDataDisplay from '@/components/ui/InflationDataDisplay';
 import SalaryStats from '@/components/stats/SalaryStats';
-
+import MobilePayChart from '@/components/charts/MobilePayChart';
 export default function SalaryDashboard() {
   // Fetch inflation data via SWR
   const { data: inflationData = [], error: infError, isLoading: infLoading } = useInflation();
@@ -55,7 +54,7 @@ export default function SalaryDashboard() {
   };
 
   return (
-    <section className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 bg-gray-50 flex flex-col items-center space-y-8 sm:space-y-12 w-full">
+    <section className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 bg-gray-50 flex flex-col items-center space-y-8 sm:space-y-12 w-full h-full">
       {/* Header */}
       <header className="w-full max-w-5xl flex justify-between items-center">
         <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
@@ -74,14 +73,19 @@ export default function SalaryDashboard() {
       </div>
 
       {/* Chart + Input */}
-      <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-6 sm:gap-8">
+      <div className="w-full h-full max-w-5xl flex flex-col lg:flex-row gap-4 sm:gap-6">
         {/* Chart area */}
-        <div className="flex-1 bg-white shadow-xl rounded-xl overflow-hidden flex flex-col">
+        <div className="flex-1 bg-white shadow-xl rounded-xl flex flex-col">
           <div className="flex-grow h-full p-0">
             <ResponsiveChartWrapper
               mobileBreakpoint={768}
-              mobileView={<MobileChartSwitcher />}
-              className="h-full w-full"
+                mobileView={
+    <MobilePayChart
+      payPoints={payPoints}
+      inflationData={inflationData}
+    />
+  }
+              className="w-full"
             >
               <PayDevelopmentChart
                 payPoints={payPoints}
@@ -92,7 +96,7 @@ export default function SalaryDashboard() {
         </div>
 
         {/* Sidebar Input */}
-        <aside className="w-full lg:w-1/3 bg-white shadow-lg rounded-xl p-4 sm:p-6 space-y-4">
+        <aside className="w-full lg:w-1/3 bg-white shadow-lg rounded-xl p-3 sm:p-4 space-y-3 sm:space-y-4">
           <h3 className="text-lg sm:text-xl font-medium text-gray-700">
             Legg til lønnspunkter
           </h3>

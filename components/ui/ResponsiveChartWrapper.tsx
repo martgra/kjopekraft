@@ -9,45 +9,31 @@ interface ResponsiveChartWrapperProps {
   mobileBreakpoint?: number;
 }
 
-export default function ResponsiveChartWrapper({ 
-  children, 
+export default function ResponsiveChartWrapper({
+  children,
   mobileView,
   className = '',
-  mobileBreakpoint = 640
+  mobileBreakpoint = 640,
 }: ResponsiveChartWrapperProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  
+
   useEffect(() => {
     setIsClient(true);
-    
-    // Function to check screen size and set the mobile flag
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < mobileBreakpoint);
-    };
-    
-    // Check on mount
+    const checkMobile = () => setIsMobile(window.innerWidth < mobileBreakpoint);
     checkMobile();
-    
-    // Listen for window resize events
     window.addEventListener('resize', checkMobile);
-    
-    // Clean up
     return () => window.removeEventListener('resize', checkMobile);
   }, [mobileBreakpoint]);
 
-  // During SSR and initial render, we'll show the default children
-  // After client-side hydration, we'll show the appropriate view
+  // Before hydration: just render without any forced height/overflow
   if (!isClient) {
-    return (
-      <div className={`chart-container w-full h-full ${className}`}>
-        {children}
-      </div>
-    );
+    return <div className={`chart-container w-full ${className}`}>{children}</div>;
   }
 
+  // After hydration: pick mobile or desktop view, container autosizes to content
   return (
-    <div className={`chart-container w-full h-full ${isMobile ? 'overflow-x-auto chart-mobile' : ''} ${className}`}>
+    <div className={`chart-container w-full h-full overflow-visible ${className}`}>  
       {isMobile && mobileView ? mobileView : children}
     </div>
   );
