@@ -6,21 +6,15 @@ import type { InflationDataPoint } from '@/lib/models/inflation'
 /**
  * Hook to derive a per-year salary series + summary stats
  */
-export function useSalaryCalculations(
-  payPoints: PayPoint[],
-  inflationData: InflationDataPoint[]
-) {
+export function useSalaryCalculations(payPoints: PayPoint[], inflationData: InflationDataPoint[]) {
   // 1. Build the adjusted per-year salary series
   const salaryData = useMemo(
     () => adjustSalaries(payPoints, inflationData),
-    [payPoints, inflationData]
+    [payPoints, inflationData],
   )
 
   // 2. Compute summary statistics from that series
-  const statistics = useMemo(
-    () => computeStatistics(salaryData),
-    [salaryData]
-  )
+  const statistics = useMemo(() => computeStatistics(salaryData), [salaryData])
 
   // 3. Derive the full year range for chart axes
   const yearRange = useMemo(() => {
@@ -43,6 +37,6 @@ export function useSalaryCalculations(
     statistics,
     yearRange,
     hasData,
-    isLoading
+    isLoading,
   }
 }

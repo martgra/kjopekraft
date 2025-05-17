@@ -63,10 +63,8 @@ export const TEXT = {
   inflation: {
     title: '📈 Inflasjonsdata fra SSB',
     noDataTitle: 'Ingen inflasjonsdata',
-    noDataMessage:
-      'Kunne ikke laste inflasjonsdata fra SSB API. Bruker forhåndsdefinerte verdier.',
-    latestData:
-      'Siste år: {year} med inflasjon på {inflation}% 🔥',
+    noDataMessage: 'Kunne ikke laste inflasjonsdata fra SSB API. Bruker forhåndsdefinerte verdier.',
+    latestData: 'Siste år: {year} med inflasjon på {inflation}% 🔥',
     showAllYears: 'Vis alle år ({count})',
     yearHeader: 'År',
     inflationHeader: 'Inflasjon (%)',
@@ -76,4 +74,4 @@ export const TEXT = {
     reportIssue: 'Rapporter problemer',
     license: 'Apache 2.0 lisens',
   },
-};
+}

@@ -1,4 +1,3 @@
-// components/charts/MobilePayChart.tsx
 'use client'
 
 import React from 'react'
@@ -6,11 +5,11 @@ import PaypointChart from './PaypointChart'
 import { PayPoint } from '@/lib/models/salary'
 import { InflationDataPoint } from '@/lib/models/inflation'
 
-interface MobilePayChartProps {
+interface DesktopPayChartProps {
   payPoints: PayPoint[]
   inflationData: InflationDataPoint[]
 }
 
-export default function MobilePayChart(props: MobilePayChartProps) {
-  return <PaypointChart {...props} className="h-64 w-full" />
+export default function DesktopPayChart(props: DesktopPayChartProps) {
+  return <PaypointChart {...props} className="h-96 w-full" />
 }

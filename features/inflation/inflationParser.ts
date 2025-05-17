@@ -1,78 +1,41 @@
-import { InflationDataPoint } from '@/lib/models/inflation';
+// features/inflation/inflationParser.ts
+import type { InflationDataPoint } from '@/lib/models/inflation'
+import type { SsbRawResponse } from './api/ssbClient.types'
 
-export function parseJsonInflation(raw: any): InflationDataPoint[] {
-  // 1) unwrap if needed
-  const ds = raw.dataset ?? raw;
+export function parseJsonInflation(ds: SsbRawResponse['dataset']): InflationDataPoint[] {
+  // 1) pull out timeCount & metricCount from dimension.size
+  const [, timeCount, metricCount] = ds.dimension.size
 
-  // 2) find size (could be ds.size or ds.dimension.size)
-  const maybeSize = Array.isArray(ds.size)
-    ? ds.size
-    : Array.isArray(ds.dimension?.size)
-    ? ds.dimension.size
-    : undefined;
-  if (!maybeSize || maybeSize.length < 3) {
-    throw new Error(
-      `parseJsonInflation: couldn't find [grpCount,timeCount,metricCount] in ds.size or ds.dimension.size.`
-      + ` Got keys: ${JSON.stringify(Object.keys(ds))}`
-    );
-  }
-  const [grpCount, timeCount, metricCount] = maybeSize;
-
-  // 3) find values
-  const values: number[] = Array.isArray(ds.value)
-    ? ds.value
-    : Array.isArray(raw.value)
-    ? raw.value
-    : [];
+  // 2) raw values array
+  const values = ds.value
   if (!values.length) {
-    throw new Error(
-      `parseJsonInflation: couldn't find numeric array at ds.value or raw.value.`
-    );
+    throw new Error(`parseJsonInflation: no numeric array at ds.value.`)
   }
 
-  // 4) find dimensions
-  const dims =
-    typeof ds.dimension === 'object'
-      ? ds.dimension
-      : undefined;
-  if (!dims) {
-    throw new Error(
-      `parseJsonInflation: missing ds.dimension. Got keys: ${JSON.stringify(
-        Object.keys(ds)
-      )}`
-    );
-  }
+  // 3) pick the “all-groups” and “12-month change” indices
+  const grpIdx = ds.dimension.Konsumgrp.category.index.TOTAL
+  const metricIdx = ds.dimension.ContentsCode.category.index.Tolvmanedersendring
+  const timeIdxMap = ds.dimension.Tid.category.index
 
-  // 5) pull out the indexes we need
-  const grpIdx = dims.Konsumgrp.category.index.TOTAL;
-  const metricIdx =
-    dims.ContentsCode.category.index.Tolvmanedersendring;
-  const timeIdxMap = dims.Tid.category.index as Record<string, number>;
+  // 4) sort timestamps by their numeric index
+  const times = Object.entries(timeIdxMap).sort(([, a], [, b]) => a - b)
 
-  // 6) build a sorted list of [monthKey, timeIndex]
-  const times = Object.entries(timeIdxMap).sort(([, a], [, b]) => a - b);
-
-  // 7) pick one value per year (prefer December)
-  const yearMap = new Map<number, number>();
+  // 5) pick one value per year (prefer December)
+  const yearMap = new Map<number, number>()
   for (const [monthKey, t] of times as [string, number][]) {
-    const offset =
-      grpIdx * timeCount * metricCount +
-      t * metricCount +
-      metricIdx;
+    const offset = grpIdx * timeCount * metricCount + t * metricCount + metricIdx
+    const rawVal = values[offset]
+    if (rawVal == null || isNaN(rawVal)) continue
 
-    const rawVal = values[offset];
-    if (rawVal == null || isNaN(rawVal)) continue;
-
-    const year = parseInt(monthKey.slice(0, 4), 10);
-    const monthNum = parseInt(monthKey.slice(5), 10);
-
+    const year = parseInt(monthKey.slice(0, 4), 10)
+    const monthNum = parseInt(monthKey.slice(5), 10)
     if (monthNum === 12 || !yearMap.has(year)) {
-      yearMap.set(year, rawVal);
+      yearMap.set(year, rawVal)
     }
   }
 
-  // 8) turn into sorted array
+  // 6) build sorted array
   return Array.from(yearMap.entries())
     .map(([year, inflation]) => ({ year, inflation }))
-    .sort((a, b) => a.year - b.year);
+    .sort((a, b) => a.year - b.year)
 }

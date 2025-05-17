@@ -1,19 +1,19 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { FaGithub, FaFileAlt } from 'react-icons/fa';
-import { TEXT } from '@/lib/constants/text';
+import Link from 'next/link'
+import { FaGithub, FaFileAlt } from 'react-icons/fa'
+import { TEXT } from '@/lib/constants/text'
 
 export default function Footer() {
   return (
-    <footer className="mt-auto pt-6 pb-4 px-4 text-xs text-gray-500 border-t border-gray-100">
-      <div className="container mx-auto flex justify-between items-center gap-2">
+    <footer className="mt-auto border-t border-gray-100 px-4 pt-6 pb-4 text-xs text-gray-500">
+      <div className="container mx-auto flex items-center justify-between gap-2">
         <div className="text-left">
           <Link
             href="https://github.com/martgra/kjopekraft/blob/main/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-700 transition"
+            className="flex items-center gap-1 text-gray-500 transition hover:text-gray-700"
           >
             <FaFileAlt className="text-base" />
             <span>{TEXT.footer.license}</span>
@@ -28,12 +28,11 @@ export default function Footer() {
               `https://github.com/martgra/kjopekraft/issues/new
                 ?template=bug_report.md
                 &labels=bug
-                &assignees=martgra`
-                .replace(/\s+/g, '') // strip the whitespace/newlines
+                &assignees=martgra`.replace(/\s+/g, '') // strip the whitespace/newlines
             }
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-700 transition"
+            className="flex items-center gap-1 text-gray-500 transition hover:text-gray-700"
             aria-label={TEXT.footer.reportIssue}
           >
             <FaGithub className="text-base" />
@@ -42,5 +41,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

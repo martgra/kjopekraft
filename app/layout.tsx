@@ -1,28 +1,28 @@
 // app/layout.tsx
 
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import MobileMetaScript from "@/components/ui/MobileMetaScript";
-import Footer from "@/components/ui/Footer";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import MobileMetaScript from '@/components/ui/MobileMetaScript'
+import Footer from '@/components/ui/Footer'
+import './globals.css'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "Kjøpekraft",
-  description: "Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge.",
+  title: 'Kjøpekraft',
+  description: 'Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge.',
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
   // Add Open Graph metadata for social sharing
   openGraph: {
@@ -33,23 +33,25 @@ export const metadata: Metadata = {
     description: 'Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge.',
     siteName: 'Kjøpekraft',
     // Make image optional until we create it
-    ...(process.env.NODE_ENV === 'production' ? {
-      images: [
-        {
-          url: '/og-image.png',
-          width: 1200,
-          height: 630,
-          alt: 'Kjøpekraft - Sjekk kjøpekraften din!',
+    ...(process.env.NODE_ENV === 'production'
+      ? {
+          images: [
+            {
+              url: '/og-image.png',
+              width: 1200,
+              height: 630,
+              alt: 'Kjøpekraft - Sjekk kjøpekraften din!',
+            },
+          ],
         }
-      ]
-    } : {})
+      : {}),
   },
   // Add Twitter card metadata
   twitter: {
     card: 'summary_large_image',
     title: 'Kjøpekraft',
     description: 'Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge.',
-    ...(process.env.NODE_ENV === 'production' ? { images: ['/og-image.jpg'] } : {})
+    ...(process.env.NODE_ENV === 'production' ? { images: ['/og-image.jpg'] } : {}),
   },
   // Add robots directives for better indexing
   robots: {
@@ -61,57 +63,54 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
       'max-video-preview': -1,
-    }
+    },
   },
   // Add canonical URL
   alternates: {
     canonical: 'https://kjopekraft.no',
   },
   // Add keywords (less important nowadays but still used)
-  keywords: ['kjøpekraft', 'lønn', 'lønnsforhandling','økonomi', 'personlig økonomi', 'Norge', 'beregning']
-};
+  keywords: [
+    'kjøpekraft',
+    'lønn',
+    'lønnsforhandling',
+    'økonomi',
+    'personlig økonomi',
+    'Norge',
+    'beregning',
+  ],
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="nb" className="h-full">
       <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
         {/* JSON-LD structured data for better search understanding */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "url": "https://kjopekraft.no",
-              "name": "Kjøpekraft",
-              "description": "Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge."
-            })
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              url: 'https://kjopekraft.no',
+              name: 'Kjøpekraft',
+              description: 'Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge.',
+            }),
           }}
         />
       </head>
       <body
-        className={`
-          ${geistSans.variable} ${geistMono.variable}
-          antialiased text-base
-          bg-white        /* white background */
-          h-full   /* at least viewport height */
-          flex flex-col
-        `}
+        className={` ${geistSans.variable} ${geistMono.variable} /* white background */ /* at least viewport height */ flex h-full flex-col bg-white text-base antialiased`}
       >
         <MobileMetaScript />
-        <main className="flex-grow">
-          {children}
-        </main>
+        <main className="flex-grow">{children}</main>
         <Footer />
       </body>
     </html>
-  );
+  )
 }

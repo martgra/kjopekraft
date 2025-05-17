@@ -36,4 +36,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ vars.AZURE_APP_NAME }}
-          images:   ${{ env.IMAGE }}
+          images: ${{ env.IMAGE }}
