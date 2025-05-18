@@ -1,6 +1,6 @@
 // features/inflation/inflationParser.ts
 import type { InflationDataPoint } from '@/lib/models/inflation'
-import type { SsbRawResponse } from './api/ssbClient.types'
+import type { SsbRawResponse } from '@/lib/models/inflation'
 
 export function parseJsonInflation(ds: SsbRawResponse['dataset']): InflationDataPoint[] {
   // 1) pull out timeCount & metricCount from dimension.size
