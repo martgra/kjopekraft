@@ -1,49 +1,49 @@
 import { useState, useEffect, useMemo } from 'react'
 import { PayPoint } from '@/lib/models/salary'
 import type { InflationDataPoint } from '@/lib/models/inflation'
-import { DEFAULT_SALARY_POINTS } from '@/lib/constants'
+
+const STORAGE_KEY = 'salary-calculator-points'
 
 interface ValidationResult {
   isValid: boolean
   errorMessage?: string
 }
 
-const STORAGE_KEY = 'salary-calculator-points'
-
 /**
- * Hook for managing salary points in localStorage, with fallback to example data.
+ * Hook for managing salary points in localStorage, without example fallbacks.
  * @param inflationData - Array of inflation records to determine valid year range
  */
 export function useSalaryPoints(inflationData: InflationDataPoint[]) {
   const [isLoading, setIsLoading] = useState(true)
   const [payPoints, setPayPoints] = useState<PayPoint[]>([])
 
-  // Initialize pay points when inflation data is ready
+  // Initialize from localStorage only (no default examples)
   useEffect(() => {
     if (!inflationData.length) return
 
-    let initial: PayPoint[]
+    let initial: PayPoint[] = []
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         initial = JSON.parse(stored) as PayPoint[]
-      } else {
-        initial = DEFAULT_SALARY_POINTS
       }
     } catch (err) {
       console.error('Error loading salary points:', err)
-      initial = DEFAULT_SALARY_POINTS
     }
 
-    setPayPoints(initial.map(p => ({ year: p.year, pay: p.pay })).sort((a, b) => a.year - b.year))
+    setPayPoints(initial.sort((a, b) => a.year - b.year))
     setIsLoading(false)
   }, [inflationData])
 
-  // Persist pay points on change
+  // Persist to localStorage on changes; clear key if empty
   useEffect(() => {
     if (isLoading) return
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payPoints))
+      if (payPoints.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payPoints))
+      } else {
+        localStorage.removeItem(STORAGE_KEY)
+      }
     } catch (err) {
       console.error('Error saving salary points:', err)
     }
@@ -95,7 +95,7 @@ export function useSalaryPoints(inflationData: InflationDataPoint[]) {
   }
 
   const resetPoints = () => {
-    setPayPoints([...DEFAULT_SALARY_POINTS].sort((a, b) => a.year - b.year))
+    setPayPoints([])
   }
 
   return useMemo(

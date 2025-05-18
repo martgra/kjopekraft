@@ -12,3 +12,5 @@ export const DEFAULT_SALARY_POINTS: PayPoint[] = [
   { year: 2020, pay: DEFAULT_SALARY * 0.8 },
   { year: new Date().getFullYear(), pay: DEFAULT_SALARY },
 ]
+
+export const ONBOARDED_KEY = 'salary-calculator-onboarded'
