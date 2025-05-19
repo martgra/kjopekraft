@@ -1,4 +1,3 @@
-//components/forms/PayPointForm.tsx
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -10,6 +9,7 @@ interface PayPointFormProps {
   currentYear: number
   minYear: number
   validationError?: string
+  isNetMode?: boolean
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
   onAdd: () => void
@@ -21,6 +21,7 @@ export default function PayPointForm({
   currentYear,
   minYear,
   validationError: externalValidationError,
+  isNetMode = false,
   onYearChange,
   onPayChange,
   onAdd,
@@ -101,7 +102,7 @@ export default function PayPointForm({
             htmlFor="new-pay"
             className="mb-1 block text-xs font-medium text-gray-600 sm:text-sm"
           >
-            {TEXT.forms.payLabel}
+            {isNetMode ? 'Nettolønn (NOK)' : TEXT.forms.payLabel}
           </label>
           <input
             id="new-pay"
@@ -109,7 +110,7 @@ export default function PayPointForm({
             inputMode="numeric"
             value={newPay}
             onChange={e => onPayChange(e.target.value.replace(/[^\d\s]/g, ''))}
-            placeholder={TEXT.forms.payPlaceholder}
+            placeholder={isNetMode ? 'f.eks. 450 000' : TEXT.forms.payPlaceholder}
             className={`w-full rounded-md border px-2 py-2 text-sm text-gray-900 placeholder-gray-600 focus:ring-2 focus:ring-indigo-300 focus:outline-none sm:px-3 sm:text-base ${
               newPay && !isPayValid ? 'border-red-500' : ''
             }`}

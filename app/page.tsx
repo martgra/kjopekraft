@@ -18,7 +18,6 @@ export default function Home() {
     addPoint,
     removePoint,
     editPoint,
-    resetPoints,
     validatePoint,
     isLoading: ptsLoading,
   } = useSalaryPoints(inflationData)
@@ -110,7 +109,6 @@ export default function Home() {
             onAdd={addPoint}
             onRemove={pt => removePoint(pt.year, pt.pay)}
             onEdit={(oldPt, newPt) => editPoint(oldPt.year, oldPt.pay, newPt)}
-            onReset={resetPoints}
             validatePoint={validatePoint}
             inflationData={inflationData}
           />
