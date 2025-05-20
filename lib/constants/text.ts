@@ -14,6 +14,7 @@ export const TEXT = {
     currency: 'NOK',
     reset: '🔄 Tilbakestill',
     confirmReset: '⚠️ Er du sikker på at du vil tilbakestille alle lønnspunkter?',
+    perYear: 'per år',
   },
 
   dashboard: {

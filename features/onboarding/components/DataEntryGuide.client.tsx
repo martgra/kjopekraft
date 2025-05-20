@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState, useMemo, useEffect } from 'react'
-import PayPointForm from '@/components/forms/PayPointForm'
-import PayPointListItem from '@/components/forms/PayPointListItem'
-import TaxSummary from '@/components/taxation/TaxSummary'
+import PayPointForm from '@/features/salary/components/PayPointForm'
+import PayPointListItem from '@/features/salary/components/PayPointListItem'
+import TaxSummary from '@/features/tax/components/TaxSummary'
 import { TEXT } from '@/lib/constants/text'
 import type { PayPoint } from '@/lib/models/salary'
 import type { InflationDataPoint } from '@/lib/models/inflation'
@@ -11,7 +11,8 @@ import {
   calculateTax,
   calculateNetIncome,
   calculateGrossFromNet,
-} from '@/features/paypoints/taxCalculator'
+} from '@/features/tax/taxCalculator'
+import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
 
 interface ValidationResult {
   isValid: boolean
@@ -40,13 +41,7 @@ export default function DataEntryGuide({
   const [error, setError] = useState<string>()
 
   // Load/save display mode to localStorage
-  const [isNetMode, setIsNetMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('salaryDisplayMode')
-      return saved === null ? true : saved === 'net'
-    }
-    return true
-  })
+  const { isNetMode, toggleMode } = useDisplayMode()
 
   useEffect(() => {
     localStorage.setItem('salaryDisplayMode', isNetMode ? 'net' : 'gross')
@@ -54,13 +49,6 @@ export default function DataEntryGuide({
 
   const currentYear = new Date().getFullYear()
   const minYear = useMemo(() => Math.min(...inflationData.map(d => d.year)), [inflationData])
-
-  const toggleMode = () => {
-    setIsNetMode(m => !m)
-    setError(undefined)
-    setYear('')
-    setPay('')
-  }
 
   const handleAdd = (): ValidationResult => {
     const yr = Number(year)
@@ -97,28 +85,31 @@ export default function DataEntryGuide({
     const rawPay = newPt.pay
     const gross = isNetMode ? calculateGrossFromNet(yr, rawPay) : rawPay
 
-    // prevent year collision (except for the point being edited)
-    if (yr !== oldPt.year && payPoints.some(pt => pt.year === yr)) {
-      const msg = `Du har allerede en post for året ${yr}.`
-      setError(msg)
-      return { isValid: false, errorMessage: msg }
+    // Create a new point with the ID preserved from the old point
+    const pointToEdit = {
+      ...newPt,
+      id: oldPt.id, // Preserve the ID
+      pay: gross,
+      year: yr,
     }
 
-    const validation = validatePoint({ year: yr, pay: gross })
+    // Let the validatePoint function handle the duplicate year check
+    // The validatePoint function correctly checks for duplicates excluding the current ID
+    const validation = validatePoint(pointToEdit)
     if (!validation.isValid) {
       setError(validation.errorMessage)
       return validation
     }
 
     setError(undefined)
-    const result = onEdit(oldPt, { year: yr, pay: gross })
+    const result = onEdit(oldPt, pointToEdit)
     if (!result.isValid) {
       setError(result.errorMessage)
     }
     return result
   }
 
-  // Recompute whenever payPoints *or* isNetMode changes
+  // Recompute whenever payPoints changes
   const taxData = useMemo(
     () =>
       payPoints.map(pt => {
@@ -131,7 +122,7 @@ export default function DataEntryGuide({
           tax: calculateTax(pt.year, gross),
         }
       }),
-    [payPoints, isNetMode],
+    [payPoints],
   )
 
   return (
@@ -151,7 +142,7 @@ export default function DataEntryGuide({
         onYearChange={setYear}
         onPayChange={setPay}
         onAdd={handleAdd}
-        isNetMode={isNetMode}
+        isNetMode={isNetMode} // now from context
       />
 
       <div className="space-y-2">
@@ -163,7 +154,7 @@ export default function DataEntryGuide({
             onEdit={newPt => handleEdit(pt, newPt)}
             currentYear={currentYear}
             minYear={minYear}
-            isNetMode={isNetMode}
+            isNetMode={isNetMode} // now from context
           />
         ))}
       </div>
@@ -173,9 +164,8 @@ export default function DataEntryGuide({
         <span className={`text-sm ${!isNetMode ? 'font-medium text-blue-600' : 'text-gray-500'}`}>
           Bruttolønn
         </span>
-
         <button
-          onClick={toggleMode}
+          onClick={toggleMode} // now from context
           className="relative inline-flex h-6 w-11 items-center rounded-full"
           aria-pressed={isNetMode}
         >

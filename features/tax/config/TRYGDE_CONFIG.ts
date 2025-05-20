@@ -1,4 +1,4 @@
-import { TrygdeConfig } from './taxCalculator'
+import { TrygdeConfig } from '../taxCalculator'
 
 /**
  * Trygdeavgift configurations (2007–2025).

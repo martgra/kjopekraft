@@ -1,8 +1,8 @@
-// features/paypoints/hooks/usePaypointChartData.ts
+// features/salary/hooks/usePaypointChartData.ts
 
 import { PayPoint } from '@/lib/models/salary'
 import { InflationDataPoint } from '@/lib/models/inflation'
-import { useSalaryCalculations } from '@/features/paypoints/hooks/useSalaryCalculations'
+import { useSalaryCalculations } from '@/features/salary/hooks/useSalaryCalculations'
 import type { ScatterDataPoint } from 'chart.js'
 
 type RawPoint = { x: number; y: number | null }

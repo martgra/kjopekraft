@@ -10,9 +10,10 @@ const fetcher = (url: string) =>
     return res.json() as Promise<InflationDataPoint[]>
   })
 
-export function useInflation() {
+export function useInflation(fallbackData?: InflationDataPoint[]) {
   return useSWR<InflationDataPoint[]>('/api/inflation', fetcher, {
     revalidateOnFocus: false,
     refreshInterval: 0,
+    fallbackData,
   })
 }

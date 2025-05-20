@@ -1,10 +1,10 @@
-// components/dashboard/SalaryDashboard.client.tsx
+// features/salary/components/SalaryDashboard.client.tsx
 'use client'
 
 import React from 'react'
-import ResponsiveChartWrapper from '@/components/ui/ResponsiveChartWrapper'
-import MobilePayChart from '@/components/charts/MobilePayChart'
-import DesktopPayChart from '@/components/charts/DesktopPayChart'
+import ResponsiveChartWrapper from '@/features/visualization/components/ResponsiveChartWrapper'
+import MobilePayChart from '@/features/visualization/components/MobilePayChart'
+import DesktopPayChart from '@/features/visualization/components/DesktopPayChart'
 import { TEXT } from '@/lib/constants/text'
 import type { PayPoint } from '@/lib/models/salary'
 import type { InflationDataPoint } from '@/lib/models/inflation'

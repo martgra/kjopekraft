@@ -1,5 +1,5 @@
-import { TRYGDE_CONFIG } from './TRYGDE_CONFIG'
-import { YEARLY_TAX_CONFIG } from './YEARLY_TAX_CONFIG'
+import { TRYGDE_CONFIG } from './config/TRYGDE_CONFIG'
+import { YEARLY_TAX_CONFIG } from './config/YEARLY_TAX_CONFIG'
 
 /**
  * lib/taxation/taxCalculators.ts
@@ -53,39 +53,39 @@ function getTrygdeConfig(year: number): TrygdeConfig {
 }
 
 // 1) Standard deduction (minstefradrag)
-export function calculateStandardDeduction(year: number, grossIncome: number): number {
+function calculateStandardDeduction(year: number, grossIncome: number): number {
   const { rate, floor, cap } = getConfig(year).standardDeduction
   const raw = grossIncome * rate
   return Math.min(Math.max(raw, floor), cap)
 }
 
 // 2) Ordinary income (alminnelig inntekt) = gross - minstefradrag
-export function calculateOrdinaryIncome(year: number, grossIncome: number): number {
+function calculateOrdinaryIncome(year: number, grossIncome: number): number {
   const stdDed = calculateStandardDeduction(year, grossIncome)
   return Math.max(0, grossIncome - stdDed)
 }
 
 // 3) Personal deduction (personfradrag)
-export function calculatePersonalDeduction(year: number): number {
+function calculatePersonalDeduction(year: number): number {
   return getConfig(year).personalDeduction
 }
 
 // 4) Tax base for general income tax = ordinary income - personfradrag
-export function calculateGeneralTaxBase(year: number, grossIncome: number): number {
+function calculateGeneralTaxBase(year: number, grossIncome: number): number {
   const ordinary = calculateOrdinaryIncome(year, grossIncome)
   const persDed = calculatePersonalDeduction(year)
   return Math.max(0, ordinary - persDed)
 }
 
 // 5) General income tax (22%)
-export function calculateGeneralTax(year: number, grossIncome: number): number {
+function calculateGeneralTax(year: number, grossIncome: number): number {
   const base = calculateGeneralTaxBase(year, grossIncome)
   const rate = getConfig(year).generalIncomeRate
   return roundToNearest10(base * rate)
 }
 
 // 6) Bracket tax (trinnskatt or surtax)
-export function calculateBracketTax(year: number, grossIncome: number): number {
+function calculateBracketTax(year: number, grossIncome: number): number {
   const brackets = getConfig(year).brackets
   let sum = 0
   let remaining = grossIncome
@@ -102,7 +102,7 @@ export function calculateBracketTax(year: number, grossIncome: number): number {
 }
 
 // 7) Social security contribution (trygdeavgift) for employees
-export function calculateTrygde(year: number, grossIncome: number): number {
+function calculateTrygde(year: number, grossIncome: number): number {
   const { rate, threshold } = getTrygdeConfig(year)
   if (grossIncome <= threshold) return 0
   const raw = grossIncome * rate
@@ -112,7 +112,7 @@ export function calculateTrygde(year: number, grossIncome: number): number {
 }
 
 // Combined breakdown for debugging intermediate values
-export interface TaxBreakdown {
+interface TaxBreakdown {
   grossIncome: number
   minstefradrag: number
   ordinaryIncome: number // alminnelig inntekt
@@ -125,7 +125,7 @@ export interface TaxBreakdown {
   netIncome: number
 }
 
-export function calculateTaxBreakdown(year: number, grossIncome: number): TaxBreakdown {
+function calculateTaxBreakdown(year: number, grossIncome: number): TaxBreakdown {
   const minstefradrag = calculateStandardDeduction(year, grossIncome)
   const ordinaryIncome = calculateOrdinaryIncome(year, grossIncome)
   const personfradrag = calculatePersonalDeduction(year)

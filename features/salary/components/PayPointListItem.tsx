@@ -41,7 +41,11 @@ export default function PayPointListItem({
   const handleSave = () => {
     const newYearNum = Number(editedYear)
     const newPayNum = Number(editedPay.replace(/\s/g, ''))
-    const newPoint = { year: newYearNum, pay: newPayNum }
+    const newPoint = {
+      year: newYearNum,
+      pay: newPayNum,
+      id: point.id, // Preserve the ID when editing
+    }
     const result = onEdit(newPoint)
     if (result.isValid) {
       setIsEditing(false)

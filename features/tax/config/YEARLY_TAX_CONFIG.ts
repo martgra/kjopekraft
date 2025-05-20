@@ -1,4 +1,4 @@
-import { YearlyTaxConfig } from './taxCalculator'
+import { YearlyTaxConfig } from '../taxCalculator'
 
 /**
  * Yearly tax configurations (2007–2025). Adjust deduction caps/floors as needed.

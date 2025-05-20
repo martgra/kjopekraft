@@ -45,11 +45,11 @@ export default function SalaryStats({
   ]
 
   return (
-    <dl className="grid grid-cols-2 gap-6 text-center">
+    <dl className="grid w-full grid-cols-2 gap-4 text-center md:grid-cols-4 md:gap-6">
       {stats.map(({ key, label, value }) => (
-        <div key={key} className="rounded-lg bg-white p-4 shadow">
-          <dt className="text-sm font-medium text-gray-500">{label}</dt>
-          <dd className="mt-1 text-xl font-semibold text-gray-900">{value}</dd>
+        <div key={key} className="rounded-lg bg-white p-3 shadow md:p-4">
+          <dt className="text-xs font-medium text-gray-500 sm:text-sm">{label}</dt>
+          <dd className="mt-1 text-lg font-semibold text-gray-900 sm:text-xl">{value}</dd>
         </div>
       ))}
     </dl>

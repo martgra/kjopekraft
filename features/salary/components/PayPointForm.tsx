@@ -21,10 +21,10 @@ export default function PayPointForm({
   currentYear,
   minYear,
   validationError: externalValidationError,
-  isNetMode = false,
   onYearChange,
   onPayChange,
   onAdd,
+  isNetMode,
 }: PayPointFormProps) {
   const [internalValidationError, setInternalValidationError] = useState<string>('')
   const validationError = externalValidationError || internalValidationError

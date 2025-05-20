@@ -1,16 +1,6 @@
 import { PayPoint } from '@/lib/models/salary'
 import { InflationDataPoint } from '@/lib/models/inflation'
-
-/**
- * Represents a salary data point adjusted for inflation.
- */
-interface SalaryDataPoint {
-  year: number
-  actualPay: number
-  inflationAdjustedPay: number
-  inflationRate: number // annual rate, e.g. percent (e.g. 2.5 for 2.5%)
-  isInterpolated: boolean
-}
+import type { SalaryDataPoint } from '@/lib/models/types'
 
 /**
  * Build a per-year salary series (actual vs. inflation) starting from the earliest pay point,

@@ -20,6 +20,30 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Project Structure
+
+The project follows a feature-based architecture aligned with Next.js App Router patterns:
+
+### Features
+
+The code is organized into feature modules:
+
+- **Salary Feature** (`/features/salary/`): Components and hooks for salary calculations and display
+- **Tax Feature** (`/features/tax/`): Components and utils for tax calculations
+- **Inflation Feature** (`/features/inflation/`): Functionality for inflation data and calculations
+- **Visualization Feature** (`/features/visualization/`): Chart components and data visualization
+- **Onboarding Feature** (`/features/onboarding/`): User onboarding components and guides
+
+### Shared Components
+
+- **Common UI** (`/components/ui/common/`): Reusable UI components like Footer, LoadingSpinner, etc.
+
+### Contexts
+
+- **Display Mode Context** (`/contexts/displayMode/`): Context for toggling between net and gross salary display
+
+For more detailed information, see the [project-description.md](./project-description.md) file.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

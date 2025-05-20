@@ -2,8 +2,9 @@
 
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import MobileMetaScript from '@/components/ui/MobileMetaScript'
-import Footer from '@/components/ui/Footer'
+import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
+import Footer from '@/components/ui/common/Footer'
+import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import './globals.css'
 
 const geistSans = Geist({
@@ -108,7 +109,9 @@ export default function RootLayout({
         className={` ${geistSans.variable} ${geistMono.variable} /* white background */ /* at least viewport height */ flex h-full flex-col bg-white text-base antialiased`}
       >
         <MobileMetaScript />
-        <main className="flex-grow">{children}</main>
+        <DisplayModeProvider>
+          <main className="flex-grow">{children}</main>
+        </DisplayModeProvider>
         <Footer />
       </body>
     </html>
