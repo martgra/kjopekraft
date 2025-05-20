@@ -25,7 +25,7 @@ export default function TaxSummary({ taxData }: TaxSummaryProps) {
         className="flex cursor-pointer items-center justify-between"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h3 className="text-lg font-medium">Skatteberegning per år</h3>
+        <h3 className="text-lg font-medium">Utregning av nettolønn per år</h3>
         <button className="text-gray-600 hover:text-gray-900">
           {isExpanded ? <FiChevronUp className="h-5 w-5" /> : <FiChevronDown className="h-5 w-5" />}
         </button>

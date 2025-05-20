@@ -1,32 +1,8 @@
+// components/stats/SalaryStats.tsx
 'use client'
 
+import React from 'react'
 import { TEXT } from '@/lib/constants/text'
-
-interface StatsCardProps {
-  label: string
-  value: number | string
-}
-
-function StatsCard({ label, value }: StatsCardProps) {
-  // Format the value based on its type and value
-  const formattedValue = (() => {
-    if (value === '--' || value === undefined || value === null) return '--'
-    if (typeof value === 'number') {
-      if (isNaN(value)) return '--'
-      return value.toLocaleString('nb-NO')
-    }
-    return value
-  })()
-
-  return (
-    <div className="stat-card flex h-full flex-col rounded-xl bg-white p-3 shadow-md sm:p-4">
-      <h3 className="mb-1 text-xs font-medium text-gray-500 sm:text-sm">{label}</h3>
-      <div className="flex h-7 items-center sm:h-8">
-        <p className="truncate text-lg font-semibold text-gray-900 sm:text-xl">{formattedValue}</p>
-      </div>
-    </div>
-  )
-}
 
 interface SalaryStatsProps {
   startingPay: number | string
@@ -41,18 +17,41 @@ export default function SalaryStats({
   inflationAdjustedPay,
   gapPercent,
 }: SalaryStatsProps) {
-  const cards = [
-    { label: TEXT.stats.startingSalary, value: startingPay },
-    { label: TEXT.stats.currentSalary, value: latestPay },
-    { label: TEXT.stats.inflationAdjusted, value: inflationAdjustedPay },
-    { label: TEXT.stats.gap, value: gapPercent },
+  // Build a list of the stats with explicit keys
+  const stats = [
+    {
+      key: 'startingPay',
+      label: TEXT.stats.startingPay, // updated
+      value: typeof startingPay === 'number' ? startingPay.toLocaleString('nb-NO') : startingPay,
+    },
+    {
+      key: 'latestPay',
+      label: TEXT.stats.latestPay, // updated
+      value: typeof latestPay === 'number' ? latestPay.toLocaleString('nb-NO') : latestPay,
+    },
+    {
+      key: 'inflationAdjustedPay',
+      label: TEXT.stats.inflationAdjustedPay, // updated
+      value:
+        typeof inflationAdjustedPay === 'number'
+          ? inflationAdjustedPay.toLocaleString('nb-NO')
+          : inflationAdjustedPay,
+    },
+    {
+      key: 'gapPercent',
+      label: TEXT.stats.gapPercent, // updated
+      value: typeof gapPercent === 'number' ? `${gapPercent.toFixed(1)}%` : gapPercent,
+    },
   ]
 
   return (
-    <div className="grid w-full max-w-5xl grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4 md:gap-4">
-      {cards.map(({ label, value }) => (
-        <StatsCard key={label} label={label} value={value} />
+    <dl className="grid grid-cols-2 gap-6 text-center">
+      {stats.map(({ key, label, value }) => (
+        <div key={key} className="rounded-lg bg-white p-4 shadow">
+          <dt className="text-sm font-medium text-gray-500">{label}</dt>
+          <dd className="mt-1 text-xl font-semibold text-gray-900">{value}</dd>
+        </div>
       ))}
-    </div>
+    </dl>
   )
 }

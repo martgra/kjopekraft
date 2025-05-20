@@ -1,3 +1,4 @@
+// app/page.tsx    (or wherever your Home lives)
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -11,7 +12,6 @@ import { useSalaryPoints } from '@/features/paypoints/hooks/useSalaryPoints'
 import { useSalaryCalculations } from '@/features/paypoints/hooks/useSalaryCalculations'
 
 export default function Home() {
-  // Shared data hooks
   const { data: inflationData = [], error: infError, isLoading: infLoading } = useInflation()
   const {
     payPoints,
@@ -27,10 +27,21 @@ export default function Home() {
     isLoading: statsLoading,
   } = useSalaryCalculations(payPoints, inflationData)
 
+  // net/gross toggle lifted here
+  const [isNetMode, setIsNetMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('salaryDisplayMode')
+      return saved === 'gross' ? false : true
+    }
+    return true
+  })
+  useEffect(() => {
+    localStorage.setItem('salaryDisplayMode', isNetMode ? 'net' : 'gross')
+  }, [isNetMode])
+
   const [activeTab, setActiveTab] = useState<'chart' | 'edit'>('chart')
   const [initialTabSet, setInitialTabSet] = useState(false)
 
-  // Initialize activeTab once after loading
   useEffect(() => {
     if (!initialTabSet && !infLoading && !ptsLoading) {
       setActiveTab(payPoints.length >= 2 ? 'chart' : 'edit')
@@ -38,7 +49,6 @@ export default function Home() {
     }
   }, [infLoading, ptsLoading, initialTabSet, payPoints.length])
 
-  // Global loading or error
   if (infLoading || ptsLoading || statsLoading) {
     return (
       <div className="flex h-full items-center justify-center px-4 py-12">
@@ -54,7 +64,6 @@ export default function Home() {
     )
   }
 
-  // Prepare stats display once data is ready
   const displayStats = {
     startingPay: hasData ? statistics.startingPay : '--',
     latestPay: hasData ? statistics.latestPay : '--',
@@ -69,40 +78,34 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:space-y-12 sm:px-6 lg:px-8">
-      {/* Page title */}
       <header className="text-center">
         <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl md:text-6xl">
           {TEXT.dashboard.title}
         </h1>
       </header>
 
-      {/* Live stats */}
       <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-around">
-        <div className="w-full sm:w-auto">
-          <SalaryStats
-            startingPay={displayStats.startingPay}
-            latestPay={displayStats.latestPay}
-            inflationAdjustedPay={displayStats.inflationAdjustedPay}
-            gapPercent={displayStats.gapPercent}
-          />
-        </div>
+        <SalaryStats {...displayStats} />
       </div>
 
-      {/* Navigation tabs */}
       <div className="overflow-x-auto">
         <div className="min-w-[300px]">
           <TabBar
             tabs={tabs}
             active={activeTab}
-            onChange={key => setActiveTab(key as 'chart' | 'edit')}
+            onChange={k => setActiveTab(k as 'chart' | 'edit')}
           />
         </div>
       </div>
 
-      {/* Main content panels */}
       <div className="w-full">
         {activeTab === 'chart' ? (
-          <SalaryDashboard payPoints={payPoints} inflationData={inflationData} />
+          <SalaryDashboard
+            payPoints={payPoints}
+            inflationData={inflationData}
+            displayNet={isNetMode}
+            onToggleDisplay={() => setIsNetMode(m => !m)}
+          />
         ) : (
           <DataEntryGuide
             payPoints={payPoints}

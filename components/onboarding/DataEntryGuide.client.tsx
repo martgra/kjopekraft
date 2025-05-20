@@ -11,7 +11,7 @@ import {
   calculateTax,
   calculateNetIncome,
   calculateGrossFromNet,
-} from '@/lib/taxation/taxCalculator'
+} from '@/features/paypoints/taxCalculator'
 
 interface ValidationResult {
   isValid: boolean
@@ -39,17 +39,15 @@ export default function DataEntryGuide({
   const [pay, setPay] = useState('')
   const [error, setError] = useState<string>()
 
-  // Initialize from localStorage if available, or default to true (nettolønn)
+  // Load/save display mode to localStorage
   const [isNetMode, setIsNetMode] = useState(() => {
-    // Only run in the browser, not during SSR
     if (typeof window !== 'undefined') {
-      const savedMode = localStorage.getItem('salaryDisplayMode')
-      return savedMode === null ? true : savedMode === 'net'
+      const saved = localStorage.getItem('salaryDisplayMode')
+      return saved === null ? true : saved === 'net'
     }
     return true
   })
 
-  // Save to localStorage whenever mode changes
   useEffect(() => {
     localStorage.setItem('salaryDisplayMode', isNetMode ? 'net' : 'gross')
   }, [isNetMode])
@@ -69,14 +67,14 @@ export default function DataEntryGuide({
     const rawPay = Number(pay.replace(/\s/g, ''))
     const gross = isNetMode ? calculateGrossFromNet(yr, rawPay) : rawPay
 
-    // 1) duplicate-year guard
+    // prevent duplicate year
     if (payPoints.some(pt => pt.year === yr)) {
       const msg = `Du har allerede en post for året ${yr}.`
       setError(msg)
       return { isValid: false, errorMessage: msg }
     }
 
-    // 2) your existing validation
+    // run your existing validation
     const validation = validatePoint({ year: yr, pay: gross })
     if (!validation.isValid) {
       setError(validation.errorMessage)
@@ -84,10 +82,10 @@ export default function DataEntryGuide({
     }
 
     setError(undefined)
-    // 3) call handler
     const result = onAdd({ year: yr, pay: gross })
-    if (!result.isValid) setError(result.errorMessage)
-    else {
+    if (!result.isValid) {
+      setError(result.errorMessage)
+    } else {
       setYear('')
       setPay('')
     }
@@ -99,7 +97,7 @@ export default function DataEntryGuide({
     const rawPay = newPt.pay
     const gross = isNetMode ? calculateGrossFromNet(yr, rawPay) : rawPay
 
-    // duplicate-year guard (ignore oldPt)
+    // prevent year collision (except for the point being edited)
     if (yr !== oldPt.year && payPoints.some(pt => pt.year === yr)) {
       const msg = `Du har allerede en post for året ${yr}.`
       setError(msg)
@@ -114,10 +112,13 @@ export default function DataEntryGuide({
 
     setError(undefined)
     const result = onEdit(oldPt, { year: yr, pay: gross })
-    if (!result.isValid) setError(result.errorMessage)
+    if (!result.isValid) {
+      setError(result.errorMessage)
+    }
     return result
   }
 
+  // Recompute whenever payPoints *or* isNetMode changes
   const taxData = useMemo(
     () =>
       payPoints.map(pt => {
@@ -130,14 +131,13 @@ export default function DataEntryGuide({
           tax: calculateTax(pt.year, gross),
         }
       }),
-    [payPoints],
+    [payPoints, isNetMode],
   )
 
   return (
     <section className="mx-auto max-w-3xl space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{TEXT.forms.yourPoints}</h2>
-        {/* Reset button removed */}
       </div>
 
       <p className="text-gray-600">{TEXT.forms.noPointsMessage}</p>
@@ -168,7 +168,7 @@ export default function DataEntryGuide({
         ))}
       </div>
 
-      {/* Mode Toggle Switch - Moved here above TaxSummary */}
+      {/* Mode Toggle */}
       <div className="flex items-center justify-center space-x-2 rounded-lg bg-gray-50 p-3">
         <span className={`text-sm ${!isNetMode ? 'font-medium text-blue-600' : 'text-gray-500'}`}>
           Bruttolønn
@@ -183,10 +183,14 @@ export default function DataEntryGuide({
             {isNetMode ? 'Bytt til bruttolønn' : 'Bytt til nettolønn'}
           </span>
           <div
-            className={` ${isNetMode ? 'bg-blue-600' : 'bg-gray-300'} absolute inset-0 rounded-full transition-colors duration-200`}
+            className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+              isNetMode ? 'bg-blue-600' : 'bg-gray-300'
+            }`}
           />
           <div
-            className={` ${isNetMode ? 'translate-x-5' : 'translate-x-1'} absolute h-4 w-4 transform rounded-full bg-white transition duration-200`}
+            className={`absolute h-4 w-4 transform rounded-full bg-white transition ${
+              isNetMode ? 'translate-x-5' : 'translate-x-1'
+            }`}
           />
         </button>
 

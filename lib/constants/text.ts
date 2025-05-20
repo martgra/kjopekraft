@@ -31,13 +31,17 @@ export const TEXT = {
     yearPrefix: 'År: ',
     notAvailable: '—',
     minPointsRequired: 'Legg til minst to lønnspunkter for å vise graf.',
+    // **New** toggle button labels:
+    showGross: 'Vis bruttolønn',
+    showNet: 'Vis nettolønn',
   },
 
   stats: {
-    startingSalary: 'Startlønn',
-    currentSalary: 'Nåværende lønn',
-    inflationAdjusted: 'Inflasjons-justert',
-    gap: 'Gap (%)',
+    // Renamed to match your props:
+    startingPay: 'Startlønn',
+    latestPay: 'Nåværende lønn',
+    inflationAdjustedPay: 'Inflasjons-justert',
+    gapPercent: 'Gap (%)',
   },
 
   forms: {
