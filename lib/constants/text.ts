@@ -15,6 +15,7 @@ export const TEXT = {
     reset: '🔄 Tilbakestill',
     confirmReset: '⚠️ Er du sikker på at du vil tilbakestille alle lønnspunkter?',
     perYear: 'per år',
+    lastTabPersistence: 'Du vil bli returnert til siste fanen du brukte ved neste besøk.',
   },
 
   dashboard: {
@@ -35,6 +36,8 @@ export const TEXT = {
     // **New** toggle button labels:
     showGross: 'Vis bruttolønn',
     showNet: 'Vis nettolønn',
+    tabGuide:
+      'Se hvordan lønnen din har utviklet seg sammenlignet med inflasjonen. Bruk denne grafen for å forstå din kjøpekraft over tid og forberede deg til lønnsforhandlinger.',
   },
 
   stats: {
@@ -57,6 +60,8 @@ export const TEXT = {
     saveButton: '✅ Lagre',
     addButtonDisabledTitle: 'Fyll ut gyldige verdier før du legger til',
     addButtonTitle: 'Legg til nytt lønnspunkt',
+    tabGuide:
+      'Legg inn lønnspunktene dine for å få en oversikt over lønnsutviklingen. Jo flere punkter, jo bedre analyse får du!',
     validation: {
       yearRange: 'År må være mellom {min} og {max}',
       payPositive: 'Lønn må være større enn 0',
@@ -78,5 +83,37 @@ export const TEXT = {
   footer: {
     reportIssue: 'Rapporter problemer',
     license: 'Apache 2.0 lisens',
+  },
+
+  negotiation: {
+    guide:
+      'Legg inn dine viktigste argumenter for lønnsforhandling. Skriv fritt og bruk flere punkter – dette hjelper deg å forberede en god forhandlingsstrategi! Du kan også generere en e-post eller et forhandlings-playbook basert på punktene dine.',
+    descriptionPlaceholder: 'Beskriv et argument, prestasjon eller markedssituasjon',
+    typePlaceholder: 'Velg type',
+    typeAchievement: 'Prestasjon',
+    typeMarket: 'Marked',
+    typeResponsibility: 'Ansvar',
+    typeCertification: 'Sertifisering',
+    addButton: 'Legg til',
+    generateEmail: 'Generer e-post',
+    generatePlaybook: 'Generer playbook',
+    generatingEmail: 'Genererer e-post...',
+    generatingPlaybook: 'Genererer playbook...',
+    tabGuide:
+      'Legg inn dine viktigste argumenter og generer e-post eller playbook for forhandling. Dette hjelper deg å være best mulig forberedt!',
+    minPointsWarning: 'Legg til minst ett forhandlingspunkt før du genererer innhold.',
+    maxGenerationsWarning: 'Du har nådd maks antall genereringer.',
+    copyMarkdown: 'Kopier markdown',
+    copyMarkdownSuccess: 'Markdown kopiert!',
+    copyMarkdownError: 'Kunne ikke kopiere markdown',
+    copyRich: 'Kopier som rik tekst',
+    copyRichSuccess: 'Rik tekst kopiert!',
+    copyRichError: 'Kunne ikke kopiere rik tekst',
+    downloadDocx: 'Last ned som DOCX',
+    collapseEmail: 'Vis/skjul e-post',
+    collapsePlaybook: 'Vis/skjul spillbok',
+    emailSectionTitle: 'Forslag til e-post',
+    playbookSectionTitle: 'Spillbok',
+    copyPrompt: 'Kopier prompt',
   },
 }

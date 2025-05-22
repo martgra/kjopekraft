@@ -18,8 +18,19 @@ export function useOnboarding() {
   }, [])
 
   const reset = useCallback(() => {
+    // Remove all app-specific localStorage keys
     localStorage.removeItem(ONBOARDED_KEY)
     localStorage.removeItem('salary-calculator-points')
+    localStorage.removeItem('salaryDisplayMode')
+    localStorage.removeItem('salary-onboarding-v1')
+    // Negotiation tab keys
+    localStorage.removeItem('negotiation_data_points')
+    localStorage.removeItem('negotiation_data_email')
+    localStorage.removeItem('negotiation_data_playbook')
+    localStorage.removeItem('negotiation_data_email_count')
+    localStorage.removeItem('negotiation_data_playbook_count')
+    // Remove last tab
+    localStorage.removeItem('salary-last-tab')
     window.location.reload()
   }, [])
 

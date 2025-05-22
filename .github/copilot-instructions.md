@@ -8,17 +8,12 @@ The appliation supports "net pay" comparison and will therefore have a gross vs 
 
 Coding principals
 
-1. Every time you complete a change - you should update the project-description.md so its easier for you next time to understand
+1. Every time you complete a change - you should update the [docs/project-description.md](docs/project-description.md) so its easier for you next time to understand
    how this project is linked
-
-2. Every time you plan a change consult project-description.md to understand the project quickly.
-
+2. Every time you plan a change consult [docs/project-description.md](docs/project-description.md) to understand the project quickly.
 3. You will work after decoupeling principles and best practise for Frontend React and NextJS
-
 4. The techstack is defined in package.json - you are not allowed to introduce new libraries without a justification.
-
 5. Always remember that you are on NextJS 15. We use both SSR and Client side functions here.
-
 6. Always update lib/constants/text.ts if text is introduced.
-
 7. Code should be easily testable once we introduce tests.
+8. If you are to run commands for the app use "bun"

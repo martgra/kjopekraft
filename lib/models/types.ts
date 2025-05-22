@@ -34,3 +34,17 @@ export interface ChartPoint {
   x: number
   y: number | null
 }
+export type NegotiationPoint = {
+  description: string
+  type: string
+}
+export interface NegotiationUserInfo {
+  jobTitle: string
+  industry: string
+  isNewJob: boolean | null
+  currentSalary: string
+  desiredSalary: string
+  achievements: string
+  marketData: string
+  otherBenefits: string
+}

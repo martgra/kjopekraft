@@ -11,6 +11,9 @@ export default function Footer() {
   const handleReset = () => {
     if (window.confirm(TEXT.common.confirmReset)) {
       reset()
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('salary-onboarding-v1')
+      }
     }
   }
 
