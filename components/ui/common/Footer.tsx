@@ -18,16 +18,16 @@ export default function Footer() {
   }
 
   return (
-    <footer className="mt-auto border-t border-gray-100 px-4 pt-6 pb-4 text-xs text-gray-500">
-      <div className="container mx-auto flex items-center justify-between gap-2">
-        <div className="flex items-center space-x-4">
+    <footer className="mt-auto border-t border-neutral-200 bg-white px-4 pt-6 pb-4 text-xs text-neutral-600">
+      <div className="container mx-auto flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center space-x-4">
           <Link
             href="https://github.com/martgra/kjopekraft/blob/main/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-gray-500 transition hover:text-gray-700"
+            className="hover:text-primary-600 flex items-center gap-1.5 text-neutral-600 transition"
           >
-            <FaFileAlt className="text-base" />
+            <FaFileAlt className="text-sm" />
             <span>{TEXT.footer.license}</span>
           </Link>
 
@@ -35,17 +35,17 @@ export default function Footer() {
             href={`https://github.com/martgra/kjopekraft/issues/new?template=bug_report.md&labels=bug&assignees=martgra`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-gray-500 transition hover:text-gray-700"
+            className="hover:text-primary-600 flex items-center gap-1.5 text-neutral-600 transition"
             aria-label={TEXT.footer.reportIssue}
           >
-            <FaGithub className="text-base" />
+            <FaGithub className="text-sm" />
             <span>{TEXT.footer.reportIssue}</span>
           </Link>
         </div>
 
         <button
           onClick={handleReset}
-          className="flex items-center gap-1 text-gray-500 transition hover:text-gray-700"
+          className="hover:text-danger-600 flex items-center gap-1.5 text-neutral-600 transition"
           title={TEXT.common.reset}
         >
           <span>{TEXT.common.reset}</span>

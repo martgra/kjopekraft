@@ -106,7 +106,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={` ${geistSans.variable} ${geistMono.variable} /* white background */ /* at least viewport height */ flex h-full flex-col bg-white text-base antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex h-full flex-col bg-neutral-50 font-sans text-base antialiased`}
       >
         <MobileMetaScript />
         <DisplayModeProvider>

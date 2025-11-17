@@ -1,4 +1,3 @@
-// components/stats/SalaryStats.tsx
 'use client'
 
 import React from 'react'
@@ -17,21 +16,20 @@ export default function SalaryStats({
   inflationAdjustedPay,
   gapPercent,
 }: SalaryStatsProps) {
-  // Build a list of the stats with explicit keys
   const stats = [
     {
       key: 'startingPay',
-      label: TEXT.stats.startingPay, // updated
+      label: TEXT.stats.startingPay,
       value: typeof startingPay === 'number' ? startingPay.toLocaleString('nb-NO') : startingPay,
     },
     {
       key: 'latestPay',
-      label: TEXT.stats.latestPay, // updated
+      label: TEXT.stats.latestPay,
       value: typeof latestPay === 'number' ? latestPay.toLocaleString('nb-NO') : latestPay,
     },
     {
       key: 'inflationAdjustedPay',
-      label: TEXT.stats.inflationAdjustedPay, // updated
+      label: TEXT.stats.inflationAdjustedPay,
       value:
         typeof inflationAdjustedPay === 'number'
           ? inflationAdjustedPay.toLocaleString('nb-NO')
@@ -39,7 +37,7 @@ export default function SalaryStats({
     },
     {
       key: 'gapPercent',
-      label: TEXT.stats.gapPercent, // updated
+      label: TEXT.stats.gapPercent,
       value: typeof gapPercent === 'number' ? `${gapPercent.toFixed(1)}%` : gapPercent,
     },
   ]
@@ -47,9 +45,12 @@ export default function SalaryStats({
   return (
     <dl className="grid w-full grid-cols-2 gap-4 text-center md:grid-cols-4 md:gap-6">
       {stats.map(({ key, label, value }) => (
-        <div key={key} className="rounded-lg bg-white p-3 shadow md:p-4">
-          <dt className="text-xs font-medium text-gray-500 sm:text-sm">{label}</dt>
-          <dd className="mt-1 text-lg font-semibold text-gray-900 sm:text-xl">{value}</dd>
+        <div
+          key={key}
+          className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md md:p-5"
+        >
+          <dt className="text-xs font-medium text-neutral-600 sm:text-sm">{label}</dt>
+          <dd className="mt-2 text-xl font-bold text-neutral-900 sm:text-2xl">{value}</dd>
         </div>
       ))}
     </dl>

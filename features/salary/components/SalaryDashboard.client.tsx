@@ -23,10 +23,10 @@ export default function SalaryDashboard({
   onToggleDisplay,
 }: SalaryDashboardProps) {
   return (
-    <div className="relative mt-8 w-full max-w-5xl rounded-xl bg-white p-6 shadow-xl">
+    <div className="relative w-full rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
       {payPoints.length < 2 && (
-        <div className="bg-opacity-75 absolute inset-0 z-10 flex items-center justify-center bg-white">
-          <p className="px-4 text-center text-lg text-gray-500">{TEXT.dashboard.noData}</p>
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm">
+          <p className="px-4 text-center text-lg text-neutral-600">{TEXT.dashboard.noData}</p>
         </div>
       )}
 
@@ -48,15 +48,17 @@ export default function SalaryDashboard({
         />
       </ResponsiveChartWrapper>
 
-      {/* Mode Toggle - Moved below chart */}
-      <div className="mt-4 flex items-center justify-center space-x-2 rounded-lg bg-gray-50 p-3">
-        <span className={`text-sm ${!displayNet ? 'font-medium text-blue-600' : 'text-gray-500'}`}>
+      {/* Mode Toggle */}
+      <div className="mt-6 flex items-center justify-center space-x-3 rounded-lg bg-neutral-50 p-4">
+        <span
+          className={`text-sm font-medium ${!displayNet ? 'text-primary-600' : 'text-neutral-500'}`}
+        >
           Bruttolønn
         </span>
 
         <button
           onClick={onToggleDisplay}
-          className="relative inline-flex h-6 w-11 items-center rounded-full"
+          className="focus:ring-primary-500 relative inline-flex h-6 w-11 items-center rounded-full focus:ring-2 focus:ring-offset-2 focus:outline-none"
           aria-pressed={displayNet}
         >
           <span className="sr-only">
@@ -64,17 +66,19 @@ export default function SalaryDashboard({
           </span>
           <div
             className={`absolute inset-0 rounded-full transition-colors duration-200 ${
-              displayNet ? 'bg-blue-600' : 'bg-gray-300'
+              displayNet ? 'bg-primary-600' : 'bg-neutral-300'
             }`}
           />
           <div
-            className={`absolute h-4 w-4 transform rounded-full bg-white transition ${
-              displayNet ? 'translate-x-5' : 'translate-x-1'
+            className={`absolute h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+              displayNet ? 'translate-x-6' : 'translate-x-1'
             }`}
           />
         </button>
 
-        <span className={`text-sm ${displayNet ? 'font-medium text-blue-600' : 'text-gray-500'}`}>
+        <span
+          className={`text-sm font-medium ${displayNet ? 'text-primary-600' : 'text-neutral-500'}`}
+        >
           Nettolønn
         </span>
       </div>

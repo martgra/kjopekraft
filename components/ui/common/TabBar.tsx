@@ -10,23 +10,25 @@ interface TabBarProps {
 
 export function TabBar({ tabs, active, onChange }: TabBarProps) {
   return (
-    <nav className="mb-6 border-b border-gray-200">
-      <ul className="-mb-px flex space-x-6">
-        {tabs.map(tab => (
-          <li key={tab.key}>
-            <button
-              onClick={() => onChange(tab.key)}
-              className={
-                active === tab.key
-                  ? 'border-b-2 border-indigo-600 pb-2 text-indigo-600'
-                  : 'pb-2 text-gray-500 hover:text-gray-700'
-              }
-            >
-              {tab.label}
-            </button>
-          </li>
-        ))}
-      </ul>
+    <nav className="mb-6">
+      <div className="border-b border-neutral-200">
+        <ul className="-mb-px flex space-x-1">
+          {tabs.map(tab => (
+            <li key={tab.key}>
+              <button
+                onClick={() => onChange(tab.key)}
+                className={`rounded-t-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                  active === tab.key
+                    ? 'border-primary-600 text-primary-600 border-b-2 bg-white'
+                    : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+                } `}
+              >
+                {tab.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   )
 }
