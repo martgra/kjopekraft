@@ -1,6 +1,6 @@
 import SalaryPointForm from './SalaryPointForm'
 import ActivityTimeline from './ActivityTimeline'
-import type { PayPoint } from '@/lib/models/salary'
+import type { PayPoint } from '@/lib/models/types'
 
 interface RightPanelProps {
   newYear: string

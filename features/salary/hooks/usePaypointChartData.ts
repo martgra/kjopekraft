@@ -1,6 +1,6 @@
 // features/salary/hooks/usePaypointChartData.ts
 
-import { PayPoint } from '@/lib/models/salary'
+import { PayPoint } from '@/lib/models/types'
 import { InflationDataPoint } from '@/lib/models/inflation'
 import { useSalaryCalculations } from '@/features/salary/hooks/useSalaryCalculations'
 import type { ScatterDataPoint } from 'chart.js'

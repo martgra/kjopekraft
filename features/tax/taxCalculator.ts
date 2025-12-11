@@ -149,30 +149,6 @@ function calculateTaxBreakdown(year: number, grossIncome: number): TaxBreakdown 
   }
 }
 
-// Legacy single-call APIs
-export function calculateTax(year: number, grossIncome: number): number {
-  return calculateTaxBreakdown(year, grossIncome).totalTax
-}
-
 export function calculateNetIncome(year: number, grossIncome: number): number {
   return calculateTaxBreakdown(year, grossIncome).netIncome
-}
-
-export function calculateGrossFromNet(
-  year: number,
-  targetNet: number,
-  tol = 1,
-  maxIter = 100,
-): number {
-  let low = targetNet
-  let high = targetNet * 3
-  for (let i = 0; i < maxIter; i++) {
-    const mid = (low + high) / 2
-    const net = calculateNetIncome(year, roundToNearest10(mid))
-    const diff = net - targetNet
-    if (Math.abs(diff) <= tol) return roundToNearest10(mid)
-    if (diff > 0) high = mid
-    else low = mid
-  }
-  return roundToNearest10((low + high) / 2)
 }

@@ -1,4 +1,4 @@
-import { PayPoint } from '@/lib/models/salary'
+import { PayPoint } from '@/lib/models/types'
 import { InflationDataPoint } from '@/lib/models/inflation'
 import type { SalaryDataPoint } from '@/lib/models/types'
 

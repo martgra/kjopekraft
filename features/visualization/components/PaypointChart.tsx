@@ -6,7 +6,7 @@ import type { ChartConfiguration, ScatterDataPoint } from 'chart.js'
 import LoadingSpinner from '@/components/ui/common/LoadingSpinner'
 import { calculateNetIncome } from '@/features/tax/taxCalculator'
 import { usePaypointChartData } from '@/features/salary/hooks/usePaypointChartData'
-import type { PayPoint } from '@/lib/models/salary'
+import type { PayPoint } from '@/lib/models/types'
 import type { InflationDataPoint } from '@/lib/models/inflation'
 import { TEXT } from '@/lib/constants/text'
 

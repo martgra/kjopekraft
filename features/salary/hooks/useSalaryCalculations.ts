@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { adjustSalaries, computeStatistics } from '@/features/inflation/inflationCalc'
-import type { PayPoint } from '@/lib/models/salary'
+import type { PayPoint } from '@/lib/models/types'
 import type { InflationDataPoint } from '@/lib/models/inflation'
 
 /**
