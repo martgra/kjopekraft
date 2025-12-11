@@ -2,7 +2,7 @@
 
 import { memo } from 'react'
 import PaypointChart from '@/features/visualization/components/PaypointChart'
-import type { PayPoint } from '@/lib/models/salary'
+import type { PayPoint } from '@/lib/models/types'
 import type { InflationDataPoint } from '@/lib/models/inflation'
 import { TEXT } from '@/lib/constants/text'
 

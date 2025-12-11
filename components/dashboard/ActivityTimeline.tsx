@@ -1,4 +1,4 @@
-import type { PayPoint } from '@/lib/models/salary'
+import type { PayPoint } from '@/lib/models/types'
 import { TEXT } from '@/lib/constants/text'
 
 interface ActivityTimelineProps {
