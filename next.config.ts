@@ -1,5 +1,12 @@
-/** @type {import('next').NextConfig} */
-module.exports = {
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  // Next.js 16: Cache Components (commented - requires client component refactoring)
+  // Enable when ready: cacheComponents: true,
+
+  // Next.js 16: Enable React Compiler for automatic memoization
+  reactCompiler: true,
+
   images: {
     remotePatterns: [
       {
@@ -11,9 +18,6 @@ module.exports = {
     ],
   },
   output: 'standalone',
-  eslint: {
-    // Disable no-page-custom-font rule for App Router
-    ignoreDuringBuilds: false,
-    dirs: ['app', 'components', 'features', 'lib'],
-  },
 }
+
+export default nextConfig

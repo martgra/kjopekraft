@@ -1,26 +1,16 @@
 // app/layout.tsx
 
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Manrope } from 'next/font/google'
 import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
-
-const manrope = Manrope({
-  variable: '--font-manrope',
-  subsets: ['latin'],
-  weight: ['200', '300', '400', '500', '600', '700', '800'],
-})
+// System font stacks (fallback when Google Fonts unavailable)
+const fontVariables = `
+  --font-geist-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  --font-manrope: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+`
 
 export const metadata: Metadata = {
   title: 'Kjøpekraft',
@@ -115,9 +105,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body
-        className={` ${geistSans.variable} ${geistMono.variable} ${manrope.variable} h-full bg-[var(--background-light)] text-base antialiased`}
-      >
+      <body className="h-full bg-[var(--background-light)] text-base antialiased font-sans">
+        <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <MobileMetaScript />
         <DisplayModeProvider>{children}</DisplayModeProvider>
       </body>
