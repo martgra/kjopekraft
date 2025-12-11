@@ -27,6 +27,11 @@ The core functionality includes:
 - Changed default time range to 'ALL' for better initial UX
 - Fixed import path in `features/tax/config/TRYGDE_CONFIG.ts` to correctly import `TrygdeConfig` type from the parent directory's `taxCalculator.ts` (changed import path from './taxCalculator' to '../taxCalculator')
 - Fixed import path in `features/tax/config/YEARLY_TAX_CONFIG.ts` to correctly import `YearlyTaxConfig` type from the parent directory's `taxCalculator.ts` (changed import path from './taxCalculator' to '../taxCalculator')
+- Fixed responsive card scaling issues:
+  - Updated MetricCard component to use responsive padding (p-4 sm:p-5 md:p-6), font sizes, and icon sizes
+  - Updated MetricGrid to use better responsive grid layout (1 column mobile, 2 columns small screens, 3 columns large screens)
+  - Added responsive typography with smaller base sizes and scaling at breakpoints
+  - Made trend indicators wrap properly and scale with viewport
 - **Package Manager**: Bun
 
 ## Project Structure
@@ -40,7 +45,6 @@ The codebase is organized around feature modules, each with its own components, 
 #### Salary Feature (`/features/salary/`)
 
 - **Components**
-
   - `SalaryDashboard.client.tsx`: Main dashboard component integrating salary data
   - `PayPointForm.tsx`: Form for entering and editing pay point data
   - `PayPointListItem.tsx`: Component for displaying individual pay points
@@ -55,11 +59,9 @@ The codebase is organized around feature modules, each with its own components, 
 #### Tax Feature (`/features/tax/`)
 
 - **Components**
-
   - `TaxSummary.tsx`: Component for summarizing tax calculations
 
 - **Utils**
-
   - `taxCalculator.ts`: Logic for tax calculations
   - `taxService.ts`: Service class with caching mechanism for tax calculations
 
@@ -70,7 +72,6 @@ The codebase is organized around feature modules, each with its own components, 
 #### Inflation Feature (`/features/inflation/`)
 
 - **Utils**
-
   - `inflationCalc.ts`: Logic for inflation calculations
   - `inflationParser.ts`: Parser for inflation data
 
@@ -88,7 +89,6 @@ The codebase is organized around feature modules, each with its own components, 
 #### Onboarding Feature (`/features/onboarding/`)
 
 - **Components**
-
   - `DataEntryGuide.client.tsx`: Guide to help users understand how to enter data into the system
 
 - **Hooks**
@@ -135,21 +135,18 @@ The application follows Next.js App Router patterns:
 ### Data Flow
 
 1. **User Input Flow**:
-
    - Users input salary data through `PayPointForm.tsx`
    - Data is centrally managed by `useSalaryData.ts` hook, which integrates functionality that was previously split across multiple hooks
    - The `useSalaryData` hook handles validation, data transformation, and memoizes calculations for performance
    - Results are displayed in charts and summaries
 
 2. **Visualization Flow**:
-
    - Raw data is processed by hooks in the features directory
    - `usePaypointChartData.ts` transforms data for chart consumption
    - `ResponsiveChartWrapper.tsx` determines which chart to display
    - Either `DesktopPayChart.tsx` or `MobilePayChart.tsx` renders the data
 
 3. **Tax Calculation Flow**:
-
    - Salary data is processed by `taxCalculator.ts`
    - Configuration from `YEARLY_TAX_CONFIG.ts` and `TRYGDE_CONFIG.ts` is applied
    - Results are displayed in `TaxSummary.tsx`
@@ -163,13 +160,11 @@ The application follows Next.js App Router patterns:
 ### State Management
 
 1. **Display Mode Context**:
-
    - `DisplayModeContext.tsx` manages the toggle between net and gross salary modes
    - Persists user preference in localStorage
    - Provides context across the application
 
 2. **Local Component State**:
-
    - Each component maintains its own state for UI interactions
    - Custom hooks manage feature-specific state
    - `useSalaryData.ts` provides a unified interface for salary-related state management
@@ -183,12 +178,10 @@ The application follows Next.js App Router patterns:
 The project uses several configuration files and utilities:
 
 - **Tax and Social Security Configuration**:
-
   - `YEARLY_TAX_CONFIG.ts` defines tax brackets and rates
   - `TRYGDE_CONFIG.ts` defines social security contribution rates
 
 - **Scripts**:
-
   - Various scripts in the `/scripts` directory for calculating specific tax components:
     - `get_bracket.js`
     - `get_general_income.js`
@@ -207,18 +200,15 @@ The project uses several configuration files and utilities:
 The application recently underwent refactoring to improve code organization and performance:
 
 1. **Unified Salary Data Hook**:
-
    - Created `useSalaryData.ts` hook that combines functionality from multiple hooks
    - Implemented proper memoization for calculations to reduce unnecessary re-renders
    - Added consistent validation patterns for user input
 
 2. **Tax Calculation Optimization**:
-
    - Added caching via `taxService.ts` to avoid redundant calculations
    - Improved type safety with consolidated types in `/lib/models/types.ts`
 
 3. **Type System Improvements**:
-
    - Consolidated related types in a central location
    - Enhanced component interfaces for better type checking
 
@@ -292,7 +282,6 @@ The application is built with responsive design principles, ensuring a good user
   - Enhanced styling of list items for better visual hierarchy
   - Improved responsive design for better mobile experience
 - **Stateful Negotiation Data (May 22, 2025):** Implemented complete stateful persistence for the negotiation tab:
-
   - Persists negotiation points, email content, and playbook content across page refreshes
   - Tracks generation counts for both email and playbook in a unified way
   - Enhanced useNegotiationData hook with localStorage integration
