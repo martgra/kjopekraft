@@ -2,6 +2,7 @@
 
 import { Icon, Badge } from '@/components/ui/atoms'
 import { cn } from '@/lib/utils/cn'
+import { TEXT } from '@/lib/constants/text'
 
 export interface PointItemProps {
   index: number
@@ -19,8 +20,18 @@ const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   Certification: { bg: 'bg-teal-100', text: 'text-teal-600' },
 }
 
+// Map English type values to Norwegian labels
+const TYPE_LABELS: Record<string, string> = {
+  Achievement: TEXT.negotiation.typeAchievement,
+  Experience: TEXT.negotiation.typeExperience,
+  'Market Data': TEXT.negotiation.typeMarket,
+  Responsibility: TEXT.negotiation.typeResponsibility,
+  Certification: TEXT.negotiation.typeCertification,
+}
+
 export function PointItem({ index, type, description, onRemove, className }: PointItemProps) {
   const colors = TYPE_COLORS[type] || TYPE_COLORS.Achievement
+  const typeLabel = TYPE_LABELS[type] || type
 
   return (
     <div
@@ -45,7 +56,7 @@ export function PointItem({ index, type, description, onRemove, className }: Poi
       {/* Content */}
       <div className="min-w-0 flex-1">
         <Badge variant="default" size="sm" className={cn(colors.bg, colors.text, 'mb-1')}>
-          {type}
+          {typeLabel}
         </Badge>
         <p className="text-sm leading-snug break-words text-[var(--text-main)]">{description}</p>
       </div>

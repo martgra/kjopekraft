@@ -17,7 +17,14 @@ export interface ArgumentBuilderProps {
   className?: string
 }
 
-const POINT_TYPES = ['Achievement', 'Experience', 'Market Data', 'Responsibility', 'Certification']
+// Map internal type values to Norwegian labels
+const POINT_TYPES = [
+  { value: 'Achievement', label: TEXT.negotiation.typeAchievement },
+  { value: 'Experience', label: TEXT.negotiation.typeExperience },
+  { value: 'Market Data', label: TEXT.negotiation.typeMarket },
+  { value: 'Responsibility', label: TEXT.negotiation.typeResponsibility },
+  { value: 'Certification', label: TEXT.negotiation.typeCertification },
+]
 
 function EmptyState() {
   return (
@@ -70,8 +77,8 @@ export function ArgumentBuilder({
             onChange={(e) => setType(e.target.value)}
           >
             {POINT_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t}
+              <option key={t.value} value={t.value}>
+                {t.label}
               </option>
             ))}
           </select>
