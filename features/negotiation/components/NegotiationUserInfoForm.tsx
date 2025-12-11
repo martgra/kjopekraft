@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { TEXT } from '@/lib/constants/text'
 
 interface NegotiationUserInfo {
   jobTitle: string
@@ -15,6 +16,11 @@ interface Props {
   onChange: (data: NegotiationUserInfo) => void
 }
 
+const inputBaseClasses =
+  'w-full rounded-lg border border-[var(--border-light)] bg-white text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)] text-sm py-2.5 px-3 transition-colors'
+
+const labelClasses = 'block text-sm font-medium text-[var(--text-main)] mb-1.5'
+
 const NegotiationUserInfoForm: React.FC<Props> = ({ initialData = {}, onChange }) => {
   const [form, setForm] = useState<NegotiationUserInfo>({
     jobTitle: initialData.jobTitle || '',
@@ -26,6 +32,13 @@ const NegotiationUserInfoForm: React.FC<Props> = ({ initialData = {}, onChange }
     otherBenefits: initialData.otherBenefits || '',
   })
 
+  // Sync with initialData when it changes (e.g., when derived salary loads)
+  useEffect(() => {
+    if (initialData.currentSalary && initialData.currentSalary !== form.currentSalary) {
+      setForm(prev => ({ ...prev, currentSalary: initialData.currentSalary || prev.currentSalary }))
+    }
+  }, [initialData.currentSalary, form.currentSalary])
+
   function handleChange<K extends keyof NegotiationUserInfo>(
     key: K,
     value: NegotiationUserInfo[K],
@@ -36,36 +49,34 @@ const NegotiationUserInfoForm: React.FC<Props> = ({ initialData = {}, onChange }
   }
 
   return (
-    <form className="mx-auto max-w-xl space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Stillingstittel</label>
+    <div className="rounded-xl border border-[var(--border-light)] bg-white p-6 shadow-sm md:p-8">
+      <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-1.5">
+          <label className={labelClasses}>{TEXT.negotiationForm.jobTitleLabel}</label>
           <input
             type="text"
-            className="w-full rounded border px-2 py-1 transition outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+            className={inputBaseClasses}
             value={form.jobTitle}
-            placeholder="F.eks. Utvikler, Prosjektleder"
+            placeholder={TEXT.negotiationForm.jobTitlePlaceholder}
             onChange={e => handleChange('jobTitle', e.target.value)}
             autoComplete="off"
           />
         </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Bransje</label>
+        <div className="space-y-1.5">
+          <label className={labelClasses}>{TEXT.negotiationForm.industryLabel}</label>
           <input
             type="text"
-            className="w-full rounded border px-2 py-1 transition outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+            className={inputBaseClasses}
             value={form.industry}
-            placeholder="F.eks. IT, Helse, Bygg"
+            placeholder={TEXT.negotiationForm.industryPlaceholder}
             onChange={e => handleChange('industry', e.target.value)}
             autoComplete="off"
           />
         </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Er dette en ny jobb?
-          </label>
+        <div className="space-y-1.5">
+          <label className={labelClasses}>{TEXT.negotiationForm.isNewJobLabel}</label>
           <select
-            className="w-full rounded border px-2 py-1 transition outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+            className={inputBaseClasses}
             value={form.isNewJob === null ? '' : form.isNewJob ? 'yes' : 'no'}
             onChange={e =>
               handleChange(
@@ -74,62 +85,62 @@ const NegotiationUserInfoForm: React.FC<Props> = ({ initialData = {}, onChange }
               )
             }
           >
-            <option value="">Velg</option>
-            <option value="yes">Ja</option>
-            <option value="no">Nei</option>
+            <option value="">{TEXT.negotiationForm.selectPlaceholder}</option>
+            <option value="yes">{TEXT.negotiationForm.yesOption}</option>
+            <option value="no">{TEXT.negotiationForm.noOption}</option>
           </select>
         </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Nåværende lønnsnivå
-          </label>
+        <div className="space-y-1.5">
+          <label className={labelClasses}>{TEXT.negotiationForm.currentSalaryLabel}</label>
           <input
             type="text"
-            className="w-full rounded border px-2 py-1 transition outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+            className={inputBaseClasses}
             value={form.currentSalary}
-            placeholder="F.eks. 650 000 kr"
+            placeholder={TEXT.negotiationForm.currentSalaryPlaceholder}
             onChange={e => handleChange('currentSalary', e.target.value)}
             autoComplete="off"
           />
         </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Ønsket lønnsnivå</label>
+        <div className="space-y-1.5 md:col-span-1">
+          <label className={labelClasses}>{TEXT.negotiationForm.desiredSalaryLabel}</label>
           <input
             type="text"
-            className="w-full rounded border px-2 py-1 transition outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+            className={inputBaseClasses}
             value={form.desiredSalary}
-            placeholder="F.eks. 700 000 kr"
+            placeholder={TEXT.negotiationForm.desiredSalaryPlaceholder}
             onChange={e => handleChange('desiredSalary', e.target.value)}
             autoComplete="off"
           />
         </div>
-        <div className="md:col-span-2">
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Markedsdata/lønnsstatistikk
-          </label>
+      </div>
+
+      <div className="space-y-6">
+        <div className="space-y-1.5">
+          <label className={labelClasses}>{TEXT.negotiationForm.marketDataLabel}</label>
           <textarea
-            className="min-h-[48px] w-full rounded border px-2 py-1 transition outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+            className={`${inputBaseClasses} resize-none`}
             value={form.marketData}
-            placeholder="F.eks. SSB: Medianlønn for din rolle, rapporter, etc."
+            placeholder={TEXT.negotiationForm.marketDataPlaceholder}
             onChange={e => handleChange('marketData', e.target.value)}
+            rows={2}
           />
         </div>
-        <div className="md:col-span-2">
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Andre betingelser/goder
-          </label>
+        <div className="space-y-1.5">
+          <label className={labelClasses}>{TEXT.negotiationForm.otherBenefitsLabel}</label>
           <textarea
-            className="min-h-[48px] w-full rounded border px-2 py-1 transition outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+            className={`${inputBaseClasses} resize-none`}
             value={form.otherBenefits}
-            placeholder="F.eks. bonus, ekstra ferie, fleksibilitet"
+            placeholder={TEXT.negotiationForm.otherBenefitsPlaceholder}
             onChange={e => handleChange('otherBenefits', e.target.value)}
+            rows={2}
           />
         </div>
       </div>
-      <div className="mt-2 text-xs text-gray-500">
-        <span>Prestasjoner/resultater legges til som egne forhandlingspunkter nedenfor.</span>
-      </div>
-    </form>
+
+      <p className="mt-4 text-xs text-[var(--text-muted)] italic">
+        {TEXT.negotiationForm.achievementsNote}
+      </p>
+    </div>
   )
 }
 

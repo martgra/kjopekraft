@@ -11,4 +11,9 @@ module.exports = {
     ],
   },
   output: 'standalone',
+  eslint: {
+    // Disable no-page-custom-font rule for App Router
+    ignoreDuringBuilds: false,
+    dirs: ['app', 'components', 'features', 'lib'],
+  },
 }

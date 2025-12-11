@@ -1,9 +1,8 @@
 // app/layout.tsx
 
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, Manrope } from 'next/font/google'
 import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
-import Footer from '@/components/ui/common/Footer'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import './globals.css'
 
@@ -15,6 +14,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+})
+
+const manrope = Manrope({
+  variable: '--font-manrope',
+  subsets: ['latin'],
+  weight: ['200', '300', '400', '500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {
@@ -91,6 +96,11 @@ export default function RootLayout({
     <html lang="nb" className="h-full">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+        {/* Material Symbols Icons */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
         {/* JSON-LD structured data for better search understanding */}
         <script
           type="application/ld+json"
@@ -106,13 +116,10 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={` ${geistSans.variable} ${geistMono.variable} /* white background */ /* at least viewport height */ flex h-full flex-col bg-white text-base antialiased`}
+        className={` ${geistSans.variable} ${geistMono.variable} ${manrope.variable} h-full bg-[var(--background-light)] text-base antialiased`}
       >
         <MobileMetaScript />
-        <DisplayModeProvider>
-          <main className="flex-grow">{children}</main>
-        </DisplayModeProvider>
-        <Footer />
+        <DisplayModeProvider>{children}</DisplayModeProvider>
       </body>
     </html>
   )

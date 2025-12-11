@@ -38,6 +38,11 @@
   "remoteEnv": {
     "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin:/home/vscode/.bun/bin"
   },
+  "containerEnv": {
+    "HTTP_PROXY": "http://host.docker.internal:3128",
+    "HTTPS_PROXY": "http://host.docker.internal:3128",
+    "NO_PROXY": "localhost,127.0.0.1,::1,host.docker.internal,.local,.internal"
+  },
   "postStartCommand": "bash .devcontainer/postStartCommand.sh",
   "postCreateCommand": "bash .devcontainer/postCreateCommand.sh"
 }

@@ -13,9 +13,13 @@ interface NegotiationPointsInputProps {
     typeMarket: string
     typeResponsibility: string
     typeCertification: string
+    typeExperience: string
     addButton: string
   }
 }
+
+const inputBaseClasses =
+  'rounded-lg border border-[var(--border-light)] bg-white text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)] text-sm transition-colors'
 
 export default function NegotiationPointsInput({
   desc,
@@ -26,35 +30,39 @@ export default function NegotiationPointsInput({
   text,
 }: NegotiationPointsInputProps) {
   return (
-    <div className="flex flex-col items-stretch gap-2 md:flex-row">
+    <div className="flex flex-col items-start gap-4 md:flex-row md:items-stretch">
       <textarea
-        className="min-h-[80px] flex-1 resize-y rounded border px-2 py-1 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        className={`${inputBaseClasses} flex-1 resize-none px-4 py-3`}
         placeholder={text.descriptionPlaceholder}
         value={desc}
         onChange={e => setDesc(e.target.value)}
         aria-label="Forhandlingspunkt beskrivelse"
+        rows={3}
       />
-      <select
-        className="min-w-[160px] rounded border px-2 py-1 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        value={type}
-        onChange={e => setType(e.target.value)}
-        aria-label="Velg type forhandlingspunkt"
-      >
-        <option value="">{text.typePlaceholder}</option>
-        <option value="Achievement">{text.typeAchievement}</option>
-        <option value="Market Data">{text.typeMarket}</option>
-        <option value="Responsibility">{text.typeResponsibility}</option>
-        <option value="Certification">{text.typeCertification}</option>
-      </select>
-      <button
-        type="button"
-        className="self-end rounded bg-blue-600 px-3 py-1 text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
-        onClick={onAdd}
-        disabled={!desc || !type}
-        aria-label="Legg til forhandlingspunkt"
-      >
-        {text.addButton}
-      </button>
+      <div className="flex w-full flex-col gap-4 md:w-48">
+        <select
+          className={`${inputBaseClasses} h-[50px] w-full px-3 py-3`}
+          value={type}
+          onChange={e => setType(e.target.value)}
+          aria-label="Velg type forhandlingspunkt"
+        >
+          <option value="">{text.typePlaceholder}</option>
+          <option value="Achievement">{text.typeAchievement}</option>
+          <option value="Experience">{text.typeExperience}</option>
+          <option value="Market Data">{text.typeMarket}</option>
+          <option value="Responsibility">{text.typeResponsibility}</option>
+          <option value="Certification">{text.typeCertification}</option>
+        </select>
+        <button
+          type="button"
+          className="flex h-[42px] items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2.5 font-medium text-white shadow-sm transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          onClick={onAdd}
+          disabled={!desc || !type}
+          aria-label="Legg til forhandlingspunkt"
+        >
+          {text.addButton}
+        </button>
+      </div>
     </div>
   )
 }
