@@ -13,8 +13,6 @@ import { DownloadDocxButton } from './DownloadDocxButton'
 import CollapsibleSection from './CollapsibleSection'
 import Sidebar from '@/components/layout/Sidebar'
 
-export type NegotiationPoint = { description: string; type: string }
-
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   Achievement: { bg: 'bg-green-100', text: 'text-green-600' },
   Experience: { bg: 'bg-blue-100', text: 'text-blue-600' },
