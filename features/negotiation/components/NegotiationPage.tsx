@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useNegotiationData } from '../hooks/useNegotiationData'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
@@ -50,7 +50,7 @@ export default function NegotiationPage() {
   // Update current salary when derived value changes
   useEffect(() => {
     if (derivedCurrentSalary && !userInfo.currentSalary) {
-      setUserInfo((prev) => ({ ...prev, currentSalary: derivedCurrentSalary }))
+      setUserInfo(prev => ({ ...prev, currentSalary: derivedCurrentSalary }))
     }
   }, [derivedCurrentSalary, userInfo.currentSalary])
 
@@ -59,7 +59,7 @@ export default function NegotiationPage() {
 
   // Handler for updating user info
   const updateUserInfo = (updates: Partial<UserInfo>) => {
-    setUserInfo((prev) => ({ ...prev, ...updates }))
+    setUserInfo(prev => ({ ...prev, ...updates }))
   }
 
   // Email generation handler

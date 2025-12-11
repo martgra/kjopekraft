@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent, Icon, Badge } from '@/components/ui/atoms'
+import { Card, CardHeader, CardTitle, CardContent, Icon } from '@/components/ui/atoms'
 import { cn } from '@/lib/utils/cn'
 
 export interface MetricCardProps {
@@ -40,7 +40,7 @@ export function MetricCard({ title, value, suffix, trend, icon, className }: Met
             <span
               className={cn(
                 'text-sm font-bold',
-                trend.isPositive ? 'text-green-600' : 'text-red-600'
+                trend.isPositive ? 'text-green-600' : 'text-red-600',
               )}
             >
               {trend.value}

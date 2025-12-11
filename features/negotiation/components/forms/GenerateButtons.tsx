@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Icon, Spinner } from '@/components/ui/atoms'
+import { Icon, Spinner } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 
 export interface GenerateButtonsProps {

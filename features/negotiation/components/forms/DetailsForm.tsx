@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, Icon, Input } from '@/components/ui/atoms'
+import { Card, Icon } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 
 export interface UserInfo {
@@ -40,7 +40,7 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
             className={inputClasses}
             placeholder={TEXT.negotiationForm.jobTitlePlaceholder}
             value={userInfo.jobTitle}
-            onChange={(e) => onChange({ jobTitle: e.target.value })}
+            onChange={e => onChange({ jobTitle: e.target.value })}
           />
         </div>
 
@@ -54,7 +54,7 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
             className={inputClasses}
             placeholder={TEXT.negotiationForm.industryPlaceholder}
             value={userInfo.industry}
-            onChange={(e) => onChange({ industry: e.target.value })}
+            onChange={e => onChange({ industry: e.target.value })}
           />
         </div>
 
@@ -66,7 +66,7 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
           <select
             className={inputClasses}
             value={userInfo.isNewJob ? 'yes' : 'no'}
-            onChange={(e) => onChange({ isNewJob: e.target.value === 'yes' })}
+            onChange={e => onChange({ isNewJob: e.target.value === 'yes' })}
           >
             <option value="no">{TEXT.negotiationForm.noOption}</option>
             <option value="yes">{TEXT.negotiationForm.yesOption}</option>
@@ -84,7 +84,7 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
               className={`${inputClasses} pr-12 font-mono`}
               placeholder="650 000"
               value={userInfo.currentSalary}
-              onChange={(e) => onChange({ currentSalary: e.target.value })}
+              onChange={e => onChange({ currentSalary: e.target.value })}
             />
             <span className="absolute top-1.5 right-3 text-xs text-gray-400">NOK</span>
           </div>
@@ -101,7 +101,7 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
               className={`${inputClasses} border-[var(--primary)]/50 bg-white pr-12 font-mono font-bold`}
               placeholder="700 000"
               value={userInfo.desiredSalary}
-              onChange={(e) => onChange({ desiredSalary: e.target.value })}
+              onChange={e => onChange({ desiredSalary: e.target.value })}
             />
             <span className="absolute top-1.5 right-3 text-xs text-gray-400">NOK</span>
           </div>
