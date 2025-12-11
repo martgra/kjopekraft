@@ -14,14 +14,35 @@ export const TEXT = {
     currency: 'NOK',
     reset: '🔄 Tilbakestill',
     confirmReset: '⚠️ Er du sikker på at du vil tilbakestille alle lønnspunkter?',
+    confirmDelete: '⚠️ Er du sikker på at du vil slette dette lønnspunktet?',
     perYear: 'per år',
     lastTabPersistence: 'Du vil bli returnert til siste fanen du brukte ved neste besøk.',
+    pts: 'kr',
+  },
+
+  // Sidebar navigation
+  sidebar: {
+    brandName: 'Kjøpekraft',
+    planLabel: '',
+    navDashboard: 'Oversikt',
+    navNegotiation: 'Forhandling',
+    navHistory: 'Historikk',
+    navReports: 'Rapporter',
+    navSettings: 'Innstillinger',
   },
 
   dashboard: {
     title: 'Har kjøpekraften din økt? 💸💸',
     noData: 'Legg til minst 2 lønnspunkter ➕ for å se grafen.',
     addPointsTitle: '➕ Legg til lønnspunkter',
+    // New dashboard header text
+    annualOverview: 'Lønnsoversikt',
+    annualOverviewSubtitle: 'Følg din lønnsutvikling over tid sammenlignet med inflasjon',
+    fiscalYear: '{year}',
+    addDataPrompt: 'Legg til lønnsdata for å se metrikker og grafer',
+    noDataTitle: 'Ingen data å vise ennå',
+    noDataSubtitle: 'Legg til lønnspunkter ved hjelp av skjemaet for å se vekstgrafen din',
+    showNetSalary: 'Vis nettolønn (etter skatt)',
   },
 
   charts: {
@@ -33,19 +54,31 @@ export const TEXT = {
     yearPrefix: 'År: ',
     notAvailable: '—',
     minPointsRequired: 'Legg til minst to lønnspunkter for å vise graf.',
-    // **New** toggle button labels:
-    showGross: 'Vis bruttolønn',
-    showNet: 'Vis nettolønn',
+    showGross: 'Bruttolønn',
+    showNet: 'Nettolønn',
     tabGuide:
       'Se hvordan lønnen din har utviklet seg sammenlignet med inflasjonen. Bruk denne grafen for å forstå din kjøpekraft over tid og forberede deg til lønnsforhandlinger.',
+    // ChartSection header
+    chartTitle: 'Årlig lønnsvekst vs. Inflasjon',
+    chartSubtitle: 'Følg dine årlige lønnspunkter mot reell kjøpekraft.',
   },
 
   stats: {
-    // Renamed to match your props:
     startingPay: 'Startlønn',
     latestPay: 'Nåværende lønn',
     inflationAdjustedPay: 'Inflasjons-justert',
     gapPercent: 'Gap (%)',
+  },
+
+  // Metrics grid
+  metrics: {
+    totalAnnualSalary: 'Total årslønn',
+    totalAnnualNetSalary: 'Total årslønn (netto)',
+    vsStart: 'vs start',
+    realAnnualValue: 'Reell årsverdi (just.)',
+    vsInflation: 'vs Inflasjon',
+    yearlyChange: 'Årlig endring',
+    thisYear: 'i år',
   },
 
   forms: {
@@ -67,7 +100,24 @@ export const TEXT = {
       payPositive: 'Lønn må være større enn 0',
       required: 'Fyll ut alle felter',
       yearExists: 'Dette året er allerede lagt til',
+      invalidInput: 'Ugyldig input',
     },
+    // SalaryPointForm specific
+    logSalaryPoint: 'Logg lønnspunkt',
+    grossAmount: 'Bruttobeløp',
+    netAmount: 'Nettobeløp',
+    yearRange: 'År ({min}-{max})',
+    saveLog: 'Lagre logg',
+  },
+
+  // Activity timeline
+  activity: {
+    recentActivity: 'Nylig aktivitet',
+    noActivityYet: 'Ingen aktivitet ennå. Legg til ditt første lønnspunkt for å komme i gang!',
+    salaryAdded: 'Lønn lagt til',
+    thisYear: 'I år',
+    lastYear: 'I fjor',
+    yearsAgo: '{count} år siden',
   },
 
   inflation: {
@@ -85,24 +135,65 @@ export const TEXT = {
     license: 'Apache 2.0 lisens',
   },
 
+  negotiationPage: {
+    title: 'Lønnsforhandlings-assistent',
+    subtitle: 'Generer personlige forhandlingsstrategier og e-poster drevet av AI.',
+    backToDashboard: 'Tilbake til oversikt',
+  },
+
+  negotiationForm: {
+    detailsTitle: 'Detaljer',
+    contextTitle: 'Kontekst',
+    jobTitleLabel: 'Stillingstittel',
+    jobTitlePlaceholder: 'F.eks. Utvikler, Prosjektleder',
+    industryLabel: 'Bransje',
+    industryPlaceholder: 'F.eks. IT, Helse, Bygg',
+    isNewJobLabel: 'Ny jobb?',
+    selectPlaceholder: 'Velg',
+    yesOption: 'Ja',
+    noOption: 'Nei',
+    currentSalaryLabel: 'Nåværende lønnsnivå',
+    currentSalaryPlaceholder: 'F.eks. 650 000 kr',
+    desiredSalaryLabel: 'Ønsket lønnsnivå',
+    desiredSalaryPlaceholder: 'F.eks. 700 000 kr',
+    marketDataLabel: 'Markedsdata/lønnsstatistikk',
+    marketDataPlaceholder: 'F.eks. SSB: Medianlønn for din rolle, rapporter, etc.',
+    otherBenefitsLabel: 'Betingelser/goder',
+    otherBenefitsPlaceholder: 'F.eks. bonus, ekstra ferie, fleksibilitet',
+    achievementsNote: 'Prestasjoner/resultater legges til som egne forhandlingspunkter nedenfor.',
+  },
+
   negotiation: {
+    sectionTitle: 'Forhandling',
+    argumentBuilderTitle: 'Argumentbygger',
     guide:
       'Legg inn dine viktigste argumenter for lønnsforhandling. Skriv fritt og bruk flere punkter – dette hjelper deg å forberede en god forhandlingsstrategi! Du kan også generere en e-post eller et forhandlings-playbook basert på punktene dine.',
     descriptionPlaceholder: 'Beskriv et argument, prestasjon eller markedssituasjon',
+    keyPointPlaceholder: 'Beskriv nøkkelpunktet ditt...',
     typePlaceholder: 'Velg type',
     typeAchievement: 'Prestasjon',
+    typeExperience: 'Erfaring',
     typeMarket: 'Marked',
     typeResponsibility: 'Ansvar',
     typeCertification: 'Sertifisering',
     addButton: 'Legg til',
+    addToList: 'Legg til i listen',
+    emailButton: 'E-post',
+    playbookButton: 'Spillbok',
+    generating: 'Genererer...',
+    remaining: 'igjen',
     generateEmail: 'Generer e-post',
-    generatePlaybook: 'Generer playbook',
+    generatePlaybook: 'Generer spillbok',
     generatingEmail: 'Genererer e-post...',
-    generatingPlaybook: 'Genererer playbook...',
+    generatingPlaybook: 'Genererer spillbok...',
     tabGuide:
-      'Legg inn dine viktigste argumenter og generer e-post eller playbook for forhandling. Dette hjelper deg å være best mulig forberedt!',
+      'Legg inn dine viktigste argumenter og generer e-post eller spillbok for forhandling. Dette hjelper deg å være best mulig forberedt!',
     minPointsWarning: 'Legg til minst ett forhandlingspunkt før du genererer innhold.',
+    suggestionMorePoints: 'Tips: Legg til flere punkter for bedre resultater (anbefalt: 3+)',
+    addPointsHint: 'Legg til dine nøkkelpunkter ovenfor',
     maxGenerationsWarning: 'Du har nådd maks antall genereringer.',
+    emailErrorTitle: 'Det oppstod en feil med e-post generering',
+    playbookErrorTitle: 'Det oppstod en feil med spillbok generering',
     copyMarkdown: 'Kopier markdown',
     copyMarkdownSuccess: 'Markdown kopiert!',
     copyMarkdownError: 'Kunne ikke kopiere markdown',
@@ -115,5 +206,8 @@ export const TEXT = {
     emailSectionTitle: 'Forslag til e-post',
     playbookSectionTitle: 'Spillbok',
     copyPrompt: 'Kopier prompt',
+    noPointsYet: 'Ingen punkter lagt til ennå',
+    yourPoints: 'Dine forhandlingspunkter',
+    removePoint: 'Fjern punkt',
   },
 }

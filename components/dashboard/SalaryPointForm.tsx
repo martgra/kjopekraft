@@ -54,14 +54,14 @@ export default function SalaryPointForm({
     <div className="border-b border-[var(--border-light)] p-6">
       <div className="mb-4 flex items-center gap-2">
         <span className="material-symbols-outlined text-[var(--primary)]">add_circle</span>
-        <h3 className="text-base font-bold text-[var(--text-main)]">Log Salary Point</h3>
+        <h3 className="text-base font-bold text-[var(--text-main)]">{TEXT.forms.logSalaryPoint}</h3>
       </div>
 
       <form className="flex flex-col gap-4" onSubmit={e => e.preventDefault()}>
         {/* Amount Field */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold tracking-wide text-[var(--text-muted)] uppercase">
-            {isNetMode ? 'Net Amount' : 'Gross Amount'}
+            {isNetMode ? TEXT.forms.netAmount : TEXT.forms.grossAmount}
           </label>
           <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -81,7 +81,9 @@ export default function SalaryPointForm({
         {/* Year Field */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold tracking-wide text-[var(--text-muted)] uppercase">
-            Year ({minYear}-{currentYear})
+            {TEXT.forms.yearRange
+              .replace('{min}', String(minYear))
+              .replace('{max}', String(currentYear))}
           </label>
           <input
             type="number"
@@ -108,7 +110,7 @@ export default function SalaryPointForm({
           disabled={disabled}
           className="mt-2 flex w-full justify-center rounded-lg border border-transparent bg-[var(--primary)] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:outline-none disabled:opacity-50"
         >
-          Save Log
+          {TEXT.forms.saveLog}
         </button>
       </form>
     </div>

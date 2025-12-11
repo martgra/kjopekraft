@@ -12,7 +12,7 @@ export default function DashboardLayout({ children, rightPanel }: DashboardLayou
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[var(--background-light)] lg:flex-row">
       {/* Left Sidebar - Hidden on mobile, shown on desktop */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:flex lg:h-full">
         <Sidebar />
       </div>
 

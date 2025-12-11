@@ -13,6 +13,8 @@ interface RightPanelProps {
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
   onAdd: () => void
+  onEdit?: (point: PayPoint) => void
+  onRemove?: (year: number, pay: number) => void
 }
 
 export default function RightPanel({
@@ -26,6 +28,8 @@ export default function RightPanel({
   onYearChange,
   onPayChange,
   onAdd,
+  onEdit,
+  onRemove,
 }: RightPanelProps) {
   return (
     <>
@@ -40,7 +44,7 @@ export default function RightPanel({
         onPayChange={onPayChange}
         onAdd={onAdd}
       />
-      <ActivityTimeline payPoints={payPoints} />
+      <ActivityTimeline payPoints={payPoints} onEdit={onEdit} onRemove={onRemove} />
     </>
   )
 }

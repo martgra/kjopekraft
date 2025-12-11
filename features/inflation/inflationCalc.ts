@@ -67,9 +67,18 @@ export function computeStatistics(series: SalaryDataPoint[]): {
   latestPay: number
   inflationAdjustedPay: number
   gapPercent: number
+  startingYear: number
+  latestYear: number
 } {
   if (!series.length) {
-    return { startingPay: NaN, latestPay: NaN, inflationAdjustedPay: NaN, gapPercent: NaN }
+    return {
+      startingPay: NaN,
+      latestPay: NaN,
+      inflationAdjustedPay: NaN,
+      gapPercent: NaN,
+      startingYear: NaN,
+      latestYear: NaN,
+    }
   }
   const start = series[0].actualPay
   const end = series[series.length - 1].actualPay
@@ -80,5 +89,7 @@ export function computeStatistics(series: SalaryDataPoint[]): {
     latestPay: end,
     inflationAdjustedPay: adj,
     gapPercent: Math.round(gap * 10) / 10,
+    startingYear: series[0].year,
+    latestYear: series[series.length - 1].year,
   }
 }

@@ -21,6 +21,8 @@ export interface SalaryStatistics {
   latestPay: number
   inflationAdjustedPay: number
   gapPercent: number
+  startingYear: number
+  latestYear: number
 }
 
 // Validation

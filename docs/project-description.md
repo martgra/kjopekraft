@@ -22,6 +22,9 @@ The core functionality includes:
 
 ## Recent Fixes
 
+- Fixed time range toggle (1Y, 3Y, ALL) in ChartSection to properly filter both payPoints and inflationData
+- Fixed chart container sizing by removing flex-1 and min-h-[400px], now uses fixed h-[300px] to prevent overflow
+- Changed default time range to 'ALL' for better initial UX
 - Fixed import path in `features/tax/config/TRYGDE_CONFIG.ts` to correctly import `TrygdeConfig` type from the parent directory's `taxCalculator.ts` (changed import path from './taxCalculator' to '../taxCalculator')
 - Fixed import path in `features/tax/config/YEARLY_TAX_CONFIG.ts` to correctly import `YearlyTaxConfig` type from the parent directory's `taxCalculator.ts` (changed import path from './taxCalculator' to '../taxCalculator')
 - **Package Manager**: Bun
@@ -437,3 +440,154 @@ The negotiation feature was refactored to improve separation of concerns, mainta
 ---
 
 _Last updated: 2025-05-21_
+
+## Negotiation Tab UI Redesign (December 2025)
+
+### Overview
+
+The negotiation tab received a complete visual overhaul with a new two-column layout. The new design features:
+
+- Full-screen layout with sidebar integration
+- Two-column responsive design: Details/Context on left, Argument Builder on right
+- Modern card-based layout with rounded corners and subtle shadows
+- Consistent styling using CSS variables for theme support
+- Material Icons and Material Symbols integration
+- Enhanced color scheme with green/purple action buttons
+- Inline generated content panel at bottom when content exists
+
+### Layout Structure
+
+#### Header Section
+
+- Application branding with logo icon
+- Back navigation for mobile
+- Subtitle with feature description
+
+#### Left Column (7/12 width on desktop)
+
+- **Details Card**: Job title, Industry, New Job dropdown, Current Salary, Desired Salary
+- **Context Card**: Market Statistics textarea, Conditions/Benefits textarea
+- Both cards have section icons using Material Symbols
+
+#### Right Column (5/12 width on desktop)
+
+- **Argument Builder Panel**:
+  - Type dropdown + description input
+  - Add button with Material Icon
+  - Scrollable points list with numbered badges
+  - Info/warning banners
+  - Generate Email/Playbook buttons with remaining count
+
+#### Generated Content Section
+
+- Appears at bottom when content exists
+- Collapsible sections for Email and Playbook
+- Copy/download action buttons
+
+### Updated Components
+
+#### NegotiationTab.client.tsx
+
+- Complete rewrite with full-screen two-column layout
+- Integrated sidebar from layout component
+- Uses CSS variables (--background-light, --text-main, --border-light, --primary)
+- Inline form management instead of separate form components
+- Type-colored badges for argument list items
+- Mobile-responsive with floating home button
+
+### CSS Variables Used
+
+The component uses design system CSS variables:
+
+- `--background-light`: Page background
+- `--text-main`: Primary text color
+- `--text-muted`: Secondary text color
+- `--border-light`: Border color
+- `--primary`: Primary brand color
+
+---
+
+## Text Constants System (Updated 2025-12-11)
+
+### Overview
+
+All user-facing text in the application is centralized in `/lib/constants/text.ts`. This ensures:
+
+- **Consistency**: Single source of truth for all UI text
+- **Internationalization ready**: Easy to add language support in the future
+- **Maintainability**: Text changes can be made in one place
+- **Testing**: Text strings can be verified against constants
+
+### TEXT Structure
+
+The `TEXT` object is organized by feature/component area:
+
+```typescript
+TEXT = {
+  common: { ... }      // Shared strings (loading, error, currency, etc.)
+  sidebar: { ... }     // Navigation and sidebar labels
+  dashboard: { ... }   // Dashboard-specific text
+  charts: { ... }      // Chart labels and titles
+  stats: { ... }       // Statistics labels
+  metrics: { ... }     // Metric card labels
+  forms: { ... }       // Form labels, placeholders, validation messages
+  activity: { ... }    // Activity timeline text
+  inflation: { ... }   // Inflation-related text
+  footer: { ... }      // Footer text
+  negotiationPage: { ... }  // Negotiation page headers
+  negotiationForm: { ... }  // Negotiation form labels
+  negotiation: { ... }      // Negotiation feature text
+}
+```
+
+### Text with Placeholders
+
+Some text strings use placeholders for dynamic values:
+
+- `{year}` - replaced with year value
+- `{min}`, `{max}` - replaced with min/max values
+- `{count}` - replaced with count value
+
+Example usage:
+
+```typescript
+TEXT.dashboard.fiscalYear.replace('{year}', String(currentYear))
+TEXT.activity.yearsAgo.replace('{count}', String(diff))
+```
+
+### Recent Text Updates (2025-12-11)
+
+**Removed "Pro Plan" references:**
+
+- Removed `planLabel` from sidebar to eliminate misleading premium tier indication
+- Updated sidebar component to conditionally show plan label only if present
+
+**Improved frontpage clarity:**
+
+- Changed `annualOverview` from "Årsoversikt" to "Lønnsoversikt" (Annual overview → Salary overview)
+- Updated `annualOverviewSubtitle` from "Her er din lønnsutvikling for inneværende år" to "Følg din lønnsutvikling over tid sammenlignet med inflasjon" (Development for current year → Development over time compared to inflation)
+- Changed `fiscalYear` from "Regnskapsår {year}" to "{year}" to avoid misleading accounting year implication - the app tracks multi-year salary development, not a single fiscal year
+
+**Enhanced activity timeline:**
+
+- Updated activity timeline to display year alongside relative time (e.g., "I år (2025)" instead of just "I år")
+- Added edit and delete buttons to each activity item for better data management
+- Added `confirmDelete` text constant for confirming deletion of individual salary points
+
+These changes better reflect the app's actual functionality: tracking salary development across multiple years compared to inflation, rather than focusing on a single accounting year.
+
+### Language
+
+All text is in **Norwegian (Bokmål)** to match the target audience. The application uses `nb-NO` locale for number formatting.
+
+### Adding New Text
+
+When adding new text to the application:
+
+1. Add the constant to the appropriate section in `text.ts`
+2. Import `TEXT` from `@/lib/constants/text`
+3. Use the constant in the component
+
+---
+
+_Last updated: 2025-12-11_
