@@ -18,15 +18,11 @@ const STORAGE_KEY = 'salary-calculator-points'
 /**
  * A unified hook for managing salary data, calculations, and chart preparation
  * with proper memoization and caching.
+ *
+ * @param inflationData - Inflation data passed from server
+ * @param currentYear - Current year (passed from server to avoid runtime Date access)
  */
-export function useSalaryData(fallbackInflationData?: InflationDataPoint[]) {
-  // Fetch inflation data with SWR, using fallbackData if provided
-  const {
-    data: inflationData = [],
-    error: inflationError,
-    isLoading: inflationLoading,
-  } = useInflation(fallbackInflationData)
-
+export function useSalaryData(inflationData: InflationDataPoint[], currentYear: number) {
   // Local state for pay points
   const [isLoading, setIsLoading] = useState(true)
   const [payPoints, setPayPoints] = useState<PayPoint[]>([])
@@ -136,12 +132,12 @@ export function useSalaryData(fallbackInflationData?: InflationDataPoint[]) {
 
   const yearRange = useMemo(() => {
     if (!salaryData.length) {
-      const current = new Date().getFullYear()
-      return { minYear: current - 5, maxYear: current }
+      // Use currentYear passed from server to avoid runtime Date access
+      return { minYear: currentYear - 5, maxYear: currentYear }
     }
     const years = salaryData.map(p => p.year)
     return { minYear: Math.min(...years), maxYear: Math.max(...years) }
-  }, [salaryData])
+  }, [salaryData, currentYear])
 
   // Chart data preparation with memoization
   const chartData = useMemo(() => {
@@ -209,7 +205,7 @@ export function useSalaryData(fallbackInflationData?: InflationDataPoint[]) {
     validatePoint,
 
     // Status
-    isLoading: isLoading || inflationLoading,
-    error: inflationError,
+    isLoading,
+    error: null,
   }
 }

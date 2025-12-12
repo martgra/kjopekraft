@@ -8,6 +8,7 @@ import { TEXT } from '@/lib/constants/text'
 interface DesktopPayChartProps {
   actualSeries: ScatterDataPoint[]
   inflSeries: ScatterDataPoint[]
+  referenceSeries: ScatterDataPoint[]
   yearRange: { minYear: number; maxYear: number }
   displayNet: boolean
   className?: string
@@ -16,6 +17,7 @@ interface DesktopPayChartProps {
 export default function DesktopPayChart({
   actualSeries,
   inflSeries,
+  referenceSeries,
   yearRange,
   displayNet,
   className = '',
@@ -57,6 +59,23 @@ export default function DesktopPayChart({
             spanGaps: true,
             borderDash: [5, 5],
           },
+          ...(referenceSeries.length > 0
+            ? [
+                {
+                  label: TEXT.referenceSalary?.chartLabel ?? 'Referanse',
+                  data: referenceSeries,
+                  tension: 0.4,
+                  fill: false,
+                  backgroundColor: 'transparent',
+                  borderColor: '#f59e0b',
+                  borderWidth: 2,
+                  pointRadius: 4,
+                  pointHoverRadius: 6,
+                  spanGaps: true,
+                  borderDash: [3, 3],
+                },
+              ]
+            : []),
         ],
       },
       options: {
@@ -151,7 +170,7 @@ export default function DesktopPayChart({
       instance.destroy()
       chartRef.current = null
     }
-  }, [actualSeries, inflSeries, yearRange, displayNet])
+  }, [actualSeries, inflSeries, referenceSeries, yearRange, displayNet])
 
   return <canvas ref={canvasRef} className={className} />
 }

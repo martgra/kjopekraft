@@ -16,11 +16,12 @@ import { TEXT } from '@/lib/constants/text'
 
 interface DashboardProps {
   inflationData: InflationDataPoint[]
+  currentYear: number
 }
 
-export default function Dashboard({ inflationData }: DashboardProps) {
+export default function Dashboard({ inflationData, currentYear }: DashboardProps) {
   const { payPoints, statistics, hasData, addPoint, removePoint, validatePoint, isLoading, error } =
-    useSalaryData(inflationData)
+    useSalaryData(inflationData, currentYear)
 
   const { isNetMode, toggleMode } = useDisplayMode()
   const [isDemoMode, setIsDemoMode] = useState(false)
@@ -31,7 +32,6 @@ export default function Dashboard({ inflationData }: DashboardProps) {
   const [newPay, setNewPay] = useState('')
   const [validationError, setValidationError] = useState('')
 
-  const currentYear = new Date().getFullYear()
   const minYear = 1900
 
   // Track if we have real user data

@@ -68,6 +68,7 @@ export const TEXT = {
     modeBadgeGross: 'Brutto',
     modeBadgeNet: 'Netto',
     modeToggleLabel: 'Vis nettolønn (etter skatt)',
+    controlsLabel: 'Visningsalternativer',
   },
 
   stats: {
@@ -242,5 +243,19 @@ export const TEXT = {
       'Viser hvordan lønnen din ville utviklet seg hvis den hadde fulgt inflasjonen fra starttidspunktet. Hjelper deg se om du har fått reell lønnsvekst.',
     yearlyChange:
       'Den prosentvise endringen i lønnen din fra start til nå, korrigert for inflasjon. Viser om kjøpekraften din har økt eller sunket.',
+  },
+
+  referenceSalary: {
+    toggleLabel: 'Sammenlign med referanselønn',
+    chartLabel: 'Referanse (Sykepleiere)',
+    occupation: 'Sykepleiere',
+    sourceLabel: 'Kilde: SSB',
+    description: 'Median årslønn for sykepleiere (SSB)',
+    enabledBadge: 'Referanse aktiv',
+    helpText:
+      'Sammenlign din lønnsutvikling med gjennomsnittslønn for sykepleiere i Norge basert på SSB data.',
+    estimated: 'Estimert',
+    official: 'Offisiell',
+    estimatedNote: 'Estimert basert på SSB lønnsindeks',
   },
 }

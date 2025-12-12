@@ -8,6 +8,7 @@ import { TEXT } from '@/lib/constants/text'
 interface MobilePayChartProps {
   actualSeries: ScatterDataPoint[]
   inflSeries: ScatterDataPoint[]
+  referenceSeries: ScatterDataPoint[]
   yearRange: { minYear: number; maxYear: number }
   displayNet: boolean
   className?: string
@@ -16,6 +17,7 @@ interface MobilePayChartProps {
 export default function MobilePayChart({
   actualSeries,
   inflSeries,
+  referenceSeries,
   yearRange,
   displayNet,
   className = '',
@@ -57,6 +59,23 @@ export default function MobilePayChart({
             spanGaps: true,
             borderDash: [5, 5],
           },
+          ...(referenceSeries.length > 0
+            ? [
+                {
+                  label: TEXT.referenceSalary?.chartLabel ?? 'Referanse',
+                  data: referenceSeries,
+                  tension: 0.4,
+                  fill: false,
+                  backgroundColor: 'transparent',
+                  borderColor: '#f59e0b',
+                  borderWidth: 2,
+                  pointRadius: 3,
+                  pointHoverRadius: 5,
+                  spanGaps: true,
+                  borderDash: [3, 3],
+                },
+              ]
+            : []),
         ],
       },
       options: {
@@ -150,7 +169,7 @@ export default function MobilePayChart({
       instance.destroy()
       chartRef.current = null
     }
-  }, [actualSeries, inflSeries, yearRange, displayNet])
+  }, [actualSeries, inflSeries, referenceSeries, yearRange, displayNet])
 
   return <canvas ref={canvasRef} className={className} />
 }

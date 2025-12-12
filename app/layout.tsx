@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
 import MobileBottomNav from '@/components/layout/MobileBottomNav'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
+import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeContext'
 import './globals.css'
 
 // System font stacks (fallback when Google Fonts unavailable)
@@ -110,8 +111,10 @@ export default function RootLayout({
         <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <MobileMetaScript />
         <DisplayModeProvider>
-          {children}
-          <MobileBottomNav />
+          <ReferenceModeProvider>
+            {children}
+            <MobileBottomNav />
+          </ReferenceModeProvider>
         </DisplayModeProvider>
       </body>
     </html>
