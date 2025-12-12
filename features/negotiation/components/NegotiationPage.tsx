@@ -70,23 +70,12 @@ export default function NegotiationPage({
   const [emailPrompt, setEmailPrompt] = useState<string | null>(null)
   const [playbookPrompt, setPlaybookPrompt] = useState<string | null>(null)
 
-  // Collapsible state for ArgumentBuilder on mobile (only when NOT in drawer)
-  const [isArgumentBuilderCollapsed, setIsArgumentBuilderCollapsed] = useState(false)
-
   // Track if component is mounted to avoid hydration mismatch
   const [isMounted, setIsMounted] = useState(false)
 
-  // Collapse ArgumentBuilder on mobile by default (only when NOT in drawer), expand on desktop
   useEffect(() => {
     setIsMounted(true)
-    const checkMobile = () => {
-      setIsArgumentBuilderCollapsed(window.innerWidth < 1024 && !isDrawerOpen)
-    }
-
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [isDrawerOpen])
+  }, [])
 
   // Handler for updating user info
   const updateUserInfo = (updates: Partial<UserInfo>) => {
@@ -171,7 +160,7 @@ export default function NegotiationPage({
   const emailRemaining = isMounted ? MAX_GENERATIONS - emailGenerationCount : MAX_GENERATIONS
   const playbookRemaining = isMounted ? MAX_GENERATIONS - playbookGenerationCount : MAX_GENERATIONS
 
-  // Argument builder content (for desktop sidebar or mobile drawer)
+  // Argument builder content (shared between desktop sidebar and mobile drawer)
   const argumentBuilderContent = (
     <>
       <ArgumentBuilder
@@ -196,41 +185,9 @@ export default function NegotiationPage({
     </>
   )
 
-  // Right panel content - for desktop only (mobile uses drawer)
-  const rightPanelContent = isDrawerOpen ? null : (
-    <div className="flex h-full flex-col">
-      {/* Collapsible toggle button - only visible on mobile */}
-      <button
-        onClick={() => setIsArgumentBuilderCollapsed(!isArgumentBuilderCollapsed)}
-        className="flex w-full items-center justify-between border-b border-[var(--border-light)] bg-gray-50/50 p-4 text-sm font-semibold text-[var(--text-main)] transition-colors hover:bg-gray-100 lg:hidden"
-        aria-expanded={!isArgumentBuilderCollapsed}
-        aria-controls="argument-builder-content"
-      >
-        <span className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[var(--primary)]">
-            {isArgumentBuilderCollapsed ? 'expand_more' : 'expand_less'}
-          </span>
-          {isArgumentBuilderCollapsed
-            ? TEXT.negotiation.showArguments
-            : TEXT.negotiation.hideArguments}
-        </span>
-        {isMounted && points.length > 0 && (
-          <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
-            {points.length}
-          </span>
-        )}
-      </button>
-
-      {/* Collapsible content */}
-      <div
-        id="argument-builder-content"
-        className={`flex flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out lg:flex ${
-          isArgumentBuilderCollapsed ? 'hidden' : 'flex'
-        }`}
-      >
-        {argumentBuilderContent}
-      </div>
-    </div>
+  // Right panel content - CSS handles mobile/desktop visibility
+  const rightPanelContent = (
+    <div className="flex h-full flex-col overflow-hidden">{argumentBuilderContent}</div>
   )
 
   return (
@@ -238,7 +195,7 @@ export default function NegotiationPage({
       <MobileBottomDrawer
         isOpen={isDrawerOpen}
         onClose={onDrawerClose}
-        negotiationContent={<div className="flex h-full flex-col">{argumentBuilderContent}</div>}
+        negotiationContent={argumentBuilderContent}
         pointsCount={points.length}
       />
       <DashboardLayout rightPanel={rightPanelContent}>
