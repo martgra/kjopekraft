@@ -8,7 +8,8 @@ interface DrawerContextType {
   closeDrawer: () => void
   toggleDrawer: () => void
   pointsCount: number
-  setPointsCount: (count: number) => void
+  setDashboardPointsCount: (count: number) => void
+  setNegotiationPointsCount: (count: number) => void
 }
 
 const DrawerContext = createContext<DrawerContextType | undefined>(undefined)
@@ -23,15 +24,26 @@ export function useDrawer() {
 
 interface DrawerProviderProps {
   children: ReactNode
+  pathname: string
 }
 
-export function DrawerProvider({ children }: DrawerProviderProps) {
+export function DrawerProvider({ children, pathname }: DrawerProviderProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [pointsCount, setPointsCount] = useState(0)
+  const [dashboardPointsCount, setDashboardPointsCount] = useState(0)
+  const [negotiationPointsCount, setNegotiationPointsCount] = useState(0)
 
   const openDrawer = () => setIsOpen(true)
   const closeDrawer = () => setIsOpen(false)
   const toggleDrawer = () => setIsOpen(prev => !prev)
+
+  // Return the appropriate points count based on the current route
+  const isDashboard = pathname === '/'
+  const isNegotiation = pathname === '/negotiation'
+  const pointsCount = isDashboard
+    ? dashboardPointsCount
+    : isNegotiation
+      ? negotiationPointsCount
+      : 0
 
   return (
     <DrawerContext.Provider
@@ -41,7 +53,8 @@ export function DrawerProvider({ children }: DrawerProviderProps) {
         closeDrawer,
         toggleDrawer,
         pointsCount,
-        setPointsCount,
+        setDashboardPointsCount,
+        setNegotiationPointsCount,
       }}
     >
       {children}

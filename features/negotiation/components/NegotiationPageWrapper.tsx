@@ -15,13 +15,13 @@ export default function NegotiationPageWrapper() {
   const [inflationData, setInflationData] = useState<InflationDataPoint[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { isOpen, closeDrawer, setPointsCount } = useDrawer()
+  const { isOpen, closeDrawer, setNegotiationPointsCount } = useDrawer()
   const { points } = useNegotiationData()
 
   // Update points count for the FAB badge
   useEffect(() => {
-    setPointsCount(points.length)
-  }, [points.length, setPointsCount])
+    setNegotiationPointsCount(points.length)
+  }, [points.length, setNegotiationPointsCount])
 
   useEffect(() => {
     async function fetchData() {
