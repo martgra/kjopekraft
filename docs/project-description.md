@@ -1,5 +1,18 @@
 # Salary and Tax Calculator Project
 
+> **⚠️ DOCUMENTATION UPDATE (December 2024)**  
+> This file has been superseded by a new documentation structure with clearer separation of concerns:
+>
+> - **[README.md](../README.md)** - Project overview and quick start
+> - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and design patterns
+> - **[GETTING_STARTED.md](GETTING_STARTED.md)** - Setup and development workflow
+> - **[FUNCTIONAL_DESCRIPTION.md](FUNCTIONAL_DESCRIPTION.md)** - Features and user workflows
+>
+> This file is kept for historical reference but should not be the primary documentation source.  
+> Please update the relevant new documentation file when making changes to the project.
+
+---
+
 ## Project Overview
 
 This project is a Next.js web application designed to help users calculate and visualize salary data, tax information, and inflation effects. The application provides interactive tools for salary planning, tax calculation, and understanding how inflation impacts purchasing power over time.
