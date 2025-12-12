@@ -16,13 +16,17 @@ interface ChartSectionProps {
 
 function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: ChartSectionProps) {
   return (
-    <div className="flex w-full flex-1 flex-col rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-6 shadow-sm">
+    <div className="flex w-full flex-1 flex-col rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-4 shadow-sm md:p-6">
       {/* Header */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3 md:mb-4 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-3">
           <div>
-            <h2 className="text-lg font-bold text-[var(--text-main)]">{TEXT.charts.chartTitle}</h2>
-            <p className="text-sm text-[var(--text-muted)]">{TEXT.charts.chartSubtitle}</p>
+            <h2 className="text-base font-bold text-[var(--text-main)] md:text-lg">
+              {TEXT.charts.chartTitle}
+            </h2>
+            <p className="hidden text-sm text-[var(--text-muted)] md:block">
+              {TEXT.charts.chartSubtitle}
+            </p>
           </div>
           <Badge variant={isNetMode ? 'info' : 'default'}>
             {isNetMode ? TEXT.charts.modeBadgeNet : TEXT.charts.modeBadgeGross}
