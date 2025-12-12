@@ -32,6 +32,20 @@ The core functionality includes:
   - Updated MetricGrid to use better responsive grid layout (1 column mobile, 2 columns small screens, 3 columns large screens)
   - Added responsive typography with smaller base sizes and scaling at breakpoints
   - Made trend indicators wrap properly and scale with viewport
+- **Mobile UX Improvements**:
+  - Made RightPanel (salary data entry panel) collapsible on mobile to reduce visual dominance
+  - Panel is collapsed by default on mobile (<1024px) and expanded on desktop
+  - Added toggle button with expand/collapse icons and badge showing number of data points
+  - Smooth transitions for expand/collapse animations
+  - Added text constants `showDataEntry` and `hideDataEntry` in TEXT.dashboard
+  - **Chart Mobile Optimization**:
+    - Separated chart rendering into dedicated `MobilePayChart.tsx` and `DesktopPayChart.tsx` components for better code organization and maintainability
+    - Each chart component is optimized for its specific use case without conditional logic
+    - `ResponsiveChartWrapper.tsx` handles screen size detection and component selection (768px breakpoint)
+    - Mobile chart features: simplified legend, cleaner tooltips, no grid lines, compact labels (e.g., "500k")
+    - Desktop chart features: full grid, detailed tooltips, complete labels, larger touch targets
+    - Added `inflationLabel` text constant for simpler legend label
+    - Better separation of concerns following React best practices
 - **Package Manager**: Bun
 
 ## Project Structure
@@ -81,10 +95,10 @@ The codebase is organized around feature modules, each with its own components, 
 #### Visualization Feature (`/features/visualization/`)
 
 - **Components**
-  - `DesktopPayChart.tsx`: Chart visualization optimized for desktop view
-  - `MobilePayChart.tsx`: Chart visualization optimized for mobile devices
-  - `PaypointChart.tsx`: Chart for displaying pay point data visualizations
-  - `ResponsiveChartWrapper.tsx`: Wrapper component that conditionally renders the appropriate chart based on screen size
+  - `DesktopPayChart.tsx`: Chart visualization optimized for desktop view with full features, grid lines, and detailed tooltips
+  - `MobilePayChart.tsx`: Chart visualization optimized for mobile devices with simplified UI, cleaner legend, and compact formatting
+  - `PaypointChart.tsx`: Main chart component that handles data transformation and rendering logic
+  - `ResponsiveChartWrapper.tsx`: Wrapper component that conditionally renders the appropriate chart (mobile/desktop) based on screen size (768px breakpoint)
 
 #### Onboarding Feature (`/features/onboarding/`)
 
