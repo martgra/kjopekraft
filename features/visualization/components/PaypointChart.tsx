@@ -28,6 +28,7 @@ export default function PaypointChart({
     isLoading,
     actualSeries: rawSeries,
     inflSeries: rawInflSeries,
+    referenceSeries: rawReferenceSeries,
     yearRange,
   } = usePaypointChartData(payPoints, inflationData)
 
@@ -52,6 +53,9 @@ export default function PaypointChart({
     }))
   }, [rawSeries, rawInflSeries, actualSeries])
 
+  // Reference series is already net/gross adjusted in the hook
+  const referenceSeries: ScatterDataPoint[] = rawReferenceSeries
+
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
@@ -72,6 +76,7 @@ export default function PaypointChart({
     <ResponsiveChartWrapper
       actualSeries={actualSeries}
       inflSeries={inflSeries}
+      referenceSeries={referenceSeries}
       yearRange={yearRange}
       displayNet={displayNet}
       className={className}

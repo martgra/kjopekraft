@@ -16,11 +16,12 @@ The core functionality includes:
 
 ## Technical Stack
 
-- **Framework**: Next.js 15 with TypeScript and App Router
+- **Framework**: Next.js 16 with TypeScript and App Router
+- **Caching**: Next.js 16 `"use cache"` directive with `cacheComponents: true`
 - **Styling**: CSS Modules and Tailwind CSS
 - **Data Visualization**: Chart.js (configured in lib/chartjs.ts)
 - **State Management**: React Context and custom hooks
-- **API**: Server-side API routes for data fetching
+- **API**: Server-side API routes with function-level caching
 - **Package Manager**: Bun
 
 ## Recent Major UX Improvements (December 2025)
@@ -123,6 +124,50 @@ The core functionality includes:
   - Desktop users still see full detailed metric cards
   - Better mobile-first approach prioritizing data visualization
 
+### 8. Reference Salary Comparison (December 2025)
+
+- **New Feature**: Toggleable reference salary line in main chart for external benchmarking
+- **Implementation**:
+  - Created `features/referenceSalary/` module with extensible architecture
+  - SSB API integration via `/app/api/ssb/salary/route.ts` (table 11418 for official data, table 11654 for wage index)
+  - Context-based toggle (`ReferenceModeContext.tsx`) with localStorage persistence (default: disabled)
+  - Third dataset conditionally rendered in both mobile and desktop charts
+  - **Server-side caching**: Next.js 16 `"use cache"` directive with 1h cache (`cacheLife("hours")`)
+  - Cache is shared across all users (efficient, no redundant SSB API calls)
+  - Tagged with `cacheTag("ssb-salary")` for on-demand invalidation via `updateTag()`
+- **MVP Occupation**: Nurses (SSB code 2223, "Sykepleiere")
+  - Monthly earnings data (`Manedslonn`) converted to yearly
+  - Averages across all sectors, both sexes, all employees
+  - Official data: 2015-2024 from SSB table 11418
+  - **2025 Estimate**: Calculated using wage index (table 11654, health sector 86-88, Q3-to-Q3 growth)
+  - Estimated data marked with `type: "estimated"` and includes methodology explanation
+- **UI/UX**:
+  - **NEW**: Control panel moved below chart (no layout shift when toggling)
+  - Toggle controls in bottom section with "Visningsalternativer" label
+  - Responsive layout: stacked on mobile, horizontal on tablet/desktop
+  - Visual badge in header when enabled: "Referanse aktiv"
+  - Amber reference line (#f59e0b) with dashed pattern (3px dash) for distinction
+  - Reference data respects net/gross mode (same tax calculation as user data)
+  - Automatically filtered to match user's salary year range
+- **Data Flow**:
+  - `usePaypointChartData` hook conditionally fetches via `useReferenceSalary`
+  - Reference series transformed to same `ScatterDataPoint[]` format
+  - Net/gross conversion applied identically to user's actual salary
+  - Chart components render third dataset only when `referenceSeries.length > 0`
+- **Architecture Benefits**:
+  - `occupations.ts` registry allows easy addition of new occupations
+  - `referenceCalculator.ts` isolates business logic for testability
+  - Occupation-specific logic can be added per registry entry
+  - Clean separation from core salary calculation features
+  - Server-side caching shared across all users (efficient, no redundant SSB API calls)
+- **Text Constants**: Added `referenceSalary` section with Norwegian labels, and `charts.controlsLabel`
+- **User Benefit**:
+  - Benchmark personal salary against industry standards
+  - External validation for negotiation preparation
+  - Context for understanding whether salary growth is competitive
+  - Optional feature (off by default) - doesn't clutter primary use case
+  - Stable UI (chart doesn't shift when toggling reference)
+
 ## Previous Fixes
 
 - Fixed time range toggle (1Y, 3Y, ALL) in ChartSection to properly filter both payPoints and inflationData
@@ -205,6 +250,47 @@ The codebase is organized around feature modules, each with its own components, 
 - **Hooks**
   - `useInflation.ts`: Custom hook for accessing inflation data and calculations
 
+#### Reference Salary Feature (`/features/referenceSalary/`)
+
+**Purpose**: Allows users to compare their salary progression with reference benchmarks from external data sources (SSB - Statistics Norway).
+
+- **Hooks**
+  - `useReferenceSalary.ts`: Fetches and manages reference salary data from SSB API
+    - Uses SWR for client-side caching (24h dedupe)
+    - Conditional fetching based on toggle state (enabled prop)
+    - Returns yearly NOK data pre-calculated by API route
+    - Current implementation: Nurses (occupation code 2223) hardcoded for MVP
+
+- **Utils**
+  - `referenceCalculator.ts`: Business logic for reference data transformation
+    - `filterReferenceByYearRange`: Filters data to match user's salary year range
+    - `convertMonthlyToYearly`: Converts monthly to yearly values
+    - `getEarliestValue`: Helper for baseline calculations
+    - `hasValidCoverage`: Validates data quality (50% threshold)
+
+- **Data**
+  - `occupations.ts`: Registry of supported occupations with extensible structure
+    - Current: `nurses` (code 2223, "Sykepleiere")
+    - Designed for easy expansion to multiple occupations with different business logic
+  - `types.ts`: Type definitions for reference salary data
+    - `ReferenceDataPoint`: Year-value pairs with status markers
+    - `ReferenceSalaryResponse`: Full API response structure
+    - `OccupationDefinition`: Occupation metadata (code, labels)
+
+- **Integration Points**
+  - Charts automatically show reference line when toggle enabled
+  - Reference data respects net/gross mode via same `calculateNetIncome` transformation
+  - Conditional third dataset in both desktop and mobile charts
+  - Visual styling: Amber color (#f59e0b), dashed line (3px dash), lighter weight
+
+- **API Route**: `/app/api/ssb/salary/route.ts`
+  - Fetches from SSB table 11418 (earnings by occupation)
+  - Uses PxWebApi v2 with JSON-stat2 parsing
+  - Default filters: occupation=2223, contents=Manedslonn (monthly earnings), stat=02 (average), sector=ALLE, sex=0 (both), hours=0 (all employees)
+  - Server-side caching: `unstable_cache` with 24h revalidation (matches inflation API pattern)
+  - Returns monthly series + derived yearly series (value \* 12)
+  - Error handling: Returns 502 with message on SSB API failure
+
 #### Visualization Feature (`/features/visualization/`)
 
 - **Components**
@@ -233,6 +319,17 @@ The codebase is organized around feature modules, each with its own components, 
 #### Context Providers (`/contexts/`)
 
 - `DisplayModeContext.tsx`: Context provider for toggling between net and gross salary modes
+  - Lazy initialization from localStorage with default 'net'
+  - Persists user preference in `salaryDisplayMode` key
+  - Provides `isNetMode` boolean and `toggleMode` function
+  - Memoized context value to prevent unnecessary re-renders
+
+- `ReferenceModeContext.tsx`: Context provider for toggling reference salary comparison
+  - Lazy initialization from localStorage (default: false/disabled)
+  - Persists user preference in `salaryReferenceEnabled` key
+  - Provides `isReferenceEnabled` boolean and `toggleReference` function
+  - Memoized context value following same pattern as DisplayModeContext
+  - Integrated in chart data pipeline to conditionally fetch/display reference data
 
 #### Models (`/lib/models/`)
 
@@ -246,7 +343,12 @@ The codebase is organized around feature modules, each with its own components, 
 
 #### API Routes
 
-- `/api/inflation/route.ts`: API endpoint for fetching inflation data
+- `/api/inflation/route.ts`: API endpoint for fetching inflation data from SSB (Statistics Norway)
+  - Uses Next.js 16 `"use cache"` directive with `cacheLife("hours")` and `cacheTag("inflation")`
+  - Cache shared server-side across all users for 1 hour
+- `/api/ssb/salary/route.ts`: API endpoint for fetching reference salary data from SSB table 11418 with configurable occupation, filters, and year range
+  - Uses Next.js 16 `"use cache"` directive at function level (`getCachedSalaryData()`)
+  - Cache shared server-side across all users with 1h revalidation
 
 ### App Router Structure
 

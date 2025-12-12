@@ -8,6 +8,7 @@ import DesktopPayChart from './DesktopPayChart'
 interface ResponsiveChartWrapperProps {
   actualSeries: ScatterDataPoint[]
   inflSeries: ScatterDataPoint[]
+  referenceSeries: ScatterDataPoint[]
   yearRange: { minYear: number; maxYear: number }
   displayNet: boolean
   className?: string
@@ -16,6 +17,7 @@ interface ResponsiveChartWrapperProps {
 export default function ResponsiveChartWrapper({
   actualSeries,
   inflSeries,
+  referenceSeries,
   yearRange,
   displayNet,
   className = '',
@@ -34,6 +36,7 @@ export default function ResponsiveChartWrapper({
       <MobilePayChart
         actualSeries={actualSeries}
         inflSeries={inflSeries}
+        referenceSeries={referenceSeries}
         yearRange={yearRange}
         displayNet={displayNet}
         className={className}
@@ -45,6 +48,7 @@ export default function ResponsiveChartWrapper({
     <DesktopPayChart
       actualSeries={actualSeries}
       inflSeries={inflSeries}
+      referenceSeries={referenceSeries}
       yearRange={yearRange}
       displayNet={displayNet}
       className={className}

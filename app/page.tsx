@@ -1,8 +1,6 @@
 import Dashboard from '@/components/dashboard/Dashboard'
 import { getInflationData } from '@/lib/models/getInflationData'
-
-// Force dynamic rendering for API data
-export const dynamic = 'force-dynamic'
+import { connection } from 'next/server'
 
 export default async function Page() {
   let inflationData: Awaited<ReturnType<typeof getInflationData>> = []
@@ -14,5 +12,11 @@ export default async function Page() {
     // Component will handle empty data gracefully
   }
 
-  return <Dashboard inflationData={inflationData} />
+  // Access connection to opt into dynamic rendering (required for Date access)
+  await connection()
+
+  // Pass current year from server to avoid runtime date access in client
+  const currentYear = new Date().getFullYear()
+
+  return <Dashboard inflationData={inflationData} currentYear={currentYear} />
 }

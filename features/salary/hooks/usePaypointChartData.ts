@@ -3,6 +3,14 @@
 import { PayPoint } from '@/lib/models/types'
 import { InflationDataPoint } from '@/lib/models/inflation'
 import { useSalaryCalculations } from '@/features/salary/hooks/useSalaryCalculations'
+import { useReferenceSalary } from '@/features/referenceSalary/hooks/useReferenceSalary'
+import { useReferenceMode } from '@/contexts/referenceMode/ReferenceModeContext'
+import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
+import {
+  filterReferenceByYearRange,
+  convertMonthlyToYearly,
+} from '@/features/referenceSalary/referenceCalculator'
+import { calculateNetIncome } from '@/features/tax/taxCalculator'
 import type { ScatterDataPoint } from 'chart.js'
 
 export function usePaypointChartData(payPoints: PayPoint[], inflationData: InflationDataPoint[]) {
@@ -11,6 +19,20 @@ export function usePaypointChartData(payPoints: PayPoint[], inflationData: Infla
     yearRange,
     isLoading,
   } = useSalaryCalculations(payPoints, inflationData)
+
+  const { isReferenceEnabled } = useReferenceMode()
+  const { isNetMode } = useDisplayMode()
+
+  // Fetch reference salary data (only when enabled)
+  const {
+    data: referenceData,
+    isLoading: isReferenceLoading,
+    error: referenceError,
+  } = useReferenceSalary({
+    occupation: 'nurses',
+    fromYear: 2015,
+    enabled: isReferenceEnabled,
+  })
 
   // Build series from actual data points only (no interpolation)
   const actualSeries: ScatterDataPoint[] = payPoints.map(p => ({
@@ -23,5 +45,28 @@ export function usePaypointChartData(payPoints: PayPoint[], inflationData: Infla
     y: p.inflationAdjustedPay,
   }))
 
-  return { isLoading, actualSeries, inflSeries, yearRange }
+  // Build reference series (pre-calculated yearly, filtered to user's year range)
+  const referenceSeries: ScatterDataPoint[] =
+    isReferenceEnabled && referenceData.length > 0 && yearRange
+      ? filterReferenceByYearRange(referenceData, yearRange.minYear, yearRange.maxYear).map(
+          point => ({
+            x: point.year,
+            y:
+              point.value === null
+                ? null
+                : isNetMode
+                  ? calculateNetIncome(point.year, point.value)
+                  : point.value,
+          }),
+        )
+      : []
+
+  return {
+    isLoading: isLoading || (isReferenceEnabled && isReferenceLoading),
+    actualSeries,
+    inflSeries,
+    referenceSeries,
+    yearRange,
+    referenceError,
+  }
 }
