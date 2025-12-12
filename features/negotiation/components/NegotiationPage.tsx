@@ -6,6 +6,7 @@ import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 import { DetailsForm, ContextForm, GenerateButtons, type UserInfo } from './forms'
 import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import { Badge } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import type { InflationDataPoint } from '@/lib/models/inflation'
@@ -13,9 +14,16 @@ import type { InflationDataPoint } from '@/lib/models/inflation'
 interface NegotiationPageProps {
   inflationData: InflationDataPoint[]
   currentYear: number
+  isDrawerOpen: boolean
+  onDrawerClose: () => void
 }
 
-export default function NegotiationPage({ inflationData, currentYear }: NegotiationPageProps) {
+export default function NegotiationPage({
+  inflationData,
+  currentYear,
+  isDrawerOpen,
+  onDrawerClose,
+}: NegotiationPageProps) {
   const {
     points,
     addPoint,
@@ -62,23 +70,23 @@ export default function NegotiationPage({ inflationData, currentYear }: Negotiat
   const [emailPrompt, setEmailPrompt] = useState<string | null>(null)
   const [playbookPrompt, setPlaybookPrompt] = useState<string | null>(null)
 
-  // Collapsible state for ArgumentBuilder on mobile
+  // Collapsible state for ArgumentBuilder on mobile (only when NOT in drawer)
   const [isArgumentBuilderCollapsed, setIsArgumentBuilderCollapsed] = useState(false)
 
   // Track if component is mounted to avoid hydration mismatch
   const [isMounted, setIsMounted] = useState(false)
 
-  // Collapse ArgumentBuilder on mobile by default, expand on desktop
+  // Collapse ArgumentBuilder on mobile by default (only when NOT in drawer), expand on desktop
   useEffect(() => {
     setIsMounted(true)
     const checkMobile = () => {
-      setIsArgumentBuilderCollapsed(window.innerWidth < 1024)
+      setIsArgumentBuilderCollapsed(window.innerWidth < 1024 && !isDrawerOpen)
     }
 
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  }, [isDrawerOpen])
 
   // Handler for updating user info
   const updateUserInfo = (updates: Partial<UserInfo>) => {
@@ -163,8 +171,33 @@ export default function NegotiationPage({ inflationData, currentYear }: Negotiat
   const emailRemaining = isMounted ? MAX_GENERATIONS - emailGenerationCount : MAX_GENERATIONS
   const playbookRemaining = isMounted ? MAX_GENERATIONS - playbookGenerationCount : MAX_GENERATIONS
 
-  // Right panel content - ArgumentBuilder with collapsible functionality
-  const rightPanelContent = (
+  // Argument builder content (for desktop sidebar or mobile drawer)
+  const argumentBuilderContent = (
+    <>
+      <ArgumentBuilder
+        points={points}
+        onAddPoint={addPoint}
+        onRemovePoint={removePoint}
+        className="flex-1 overflow-hidden border-0 shadow-none"
+      />
+      <GenerateButtons
+        pointsCount={points.length}
+        isGeneratingEmail={isGeneratingEmail}
+        emailRemaining={emailRemaining}
+        hasReachedEmailLimit={hasReachedEmailGenerationLimit()}
+        onGenerateEmail={handleEmailGenerate}
+        isGeneratingPlaybook={isGeneratingPlaybook}
+        playbookRemaining={playbookRemaining}
+        hasReachedPlaybookLimit={hasReachedPlaybookGenerationLimit()}
+        onGeneratePlaybook={handlePlaybookGenerate}
+        emailError={emailError}
+        playbookError={playbookError}
+      />
+    </>
+  )
+
+  // Right panel content - for desktop only (mobile uses drawer)
+  const rightPanelContent = isDrawerOpen ? null : (
     <div className="flex h-full flex-col">
       {/* Collapsible toggle button - only visible on mobile */}
       <button
@@ -195,55 +228,45 @@ export default function NegotiationPage({ inflationData, currentYear }: Negotiat
           isArgumentBuilderCollapsed ? 'hidden' : 'flex'
         }`}
       >
-        <ArgumentBuilder
-          points={points}
-          onAddPoint={addPoint}
-          onRemovePoint={removePoint}
-          className="flex-1 overflow-hidden border-0 shadow-none"
-        />
-        <GenerateButtons
-          pointsCount={points.length}
-          isGeneratingEmail={isGeneratingEmail}
-          emailRemaining={emailRemaining}
-          hasReachedEmailLimit={hasReachedEmailGenerationLimit()}
-          onGenerateEmail={handleEmailGenerate}
-          isGeneratingPlaybook={isGeneratingPlaybook}
-          playbookRemaining={playbookRemaining}
-          hasReachedPlaybookLimit={hasReachedPlaybookGenerationLimit()}
-          onGeneratePlaybook={handlePlaybookGenerate}
-          emailError={emailError}
-          playbookError={playbookError}
-        />
+        {argumentBuilderContent}
       </div>
     </div>
   )
 
   return (
-    <DashboardLayout rightPanel={rightPanelContent}>
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--text-main)]">
-            {TEXT.negotiationPage.title}
-          </h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">{TEXT.negotiationPage.subtitle}</p>
-        </div>
-        <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
-      </div>
-
-      {/* Forms */}
-      <div className="flex flex-col gap-4">
-        <DetailsForm userInfo={userInfo} onChange={updateUserInfo} />
-        <ContextForm userInfo={userInfo} onChange={updateUserInfo} />
-      </div>
-
-      {/* Generated Content */}
-      <GeneratedContent
-        emailContent={emailContent || undefined}
-        emailPrompt={emailPrompt || undefined}
-        playbookContent={playbookContent || undefined}
-        playbookPrompt={playbookPrompt || undefined}
+    <>
+      <MobileBottomDrawer
+        isOpen={isDrawerOpen}
+        onClose={onDrawerClose}
+        negotiationContent={<div className="flex h-full flex-col">{argumentBuilderContent}</div>}
+        pointsCount={points.length}
       />
-    </DashboardLayout>
+      <DashboardLayout rightPanel={rightPanelContent}>
+        {/* Header */}
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--text-main)]">
+              {TEXT.negotiationPage.title}
+            </h1>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">{TEXT.negotiationPage.subtitle}</p>
+          </div>
+          <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
+        </div>
+
+        {/* Forms */}
+        <div className="flex flex-col gap-4">
+          <DetailsForm userInfo={userInfo} onChange={updateUserInfo} />
+          <ContextForm userInfo={userInfo} onChange={updateUserInfo} />
+        </div>
+
+        {/* Generated Content */}
+        <GeneratedContent
+          emailContent={emailContent || undefined}
+          emailPrompt={emailPrompt || undefined}
+          playbookContent={playbookContent || undefined}
+          playbookPrompt={playbookPrompt || undefined}
+        />
+      </DashboardLayout>
+    </>
   )
 }

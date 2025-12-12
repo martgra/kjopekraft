@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import NegotiationPage from './NegotiationPage'
 import { Spinner } from '@/components/ui/atoms'
+import { useDrawer } from '@/contexts/drawer/DrawerContext'
+import { useNegotiationData } from '../hooks/useNegotiationData'
 import type { InflationDataPoint } from '@/lib/models/inflation'
 
 /**
@@ -13,6 +15,13 @@ export default function NegotiationPageWrapper() {
   const [inflationData, setInflationData] = useState<InflationDataPoint[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { isOpen, closeDrawer, setPointsCount } = useDrawer()
+  const { points } = useNegotiationData()
+
+  // Update points count for the FAB badge
+  useEffect(() => {
+    setPointsCount(points.length)
+  }, [points.length, setPointsCount])
 
   useEffect(() => {
     async function fetchData() {
@@ -57,5 +66,12 @@ export default function NegotiationPageWrapper() {
 
   const currentYear = new Date().getFullYear()
 
-  return <NegotiationPage inflationData={inflationData} currentYear={currentYear} />
+  return (
+    <NegotiationPage
+      inflationData={inflationData}
+      currentYear={currentYear}
+      isDrawerOpen={isOpen}
+      onDrawerClose={closeDrawer}
+    />
+  )
 }

@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import Dashboard from '@/components/dashboard/Dashboard'
+import DashboardWithDrawer from '@/components/dashboard/DashboardWithDrawer'
 import { getInflationData } from '@/lib/models/getInflationData'
 import { connection } from 'next/server'
 import { Spinner } from '@/components/ui/atoms'
@@ -31,7 +31,7 @@ async function DashboardWithData() {
   // Pass current year from server to avoid runtime date access in client
   const currentYear = new Date().getFullYear()
 
-  return <Dashboard inflationData={inflationData} currentYear={currentYear} />
+  return <DashboardWithDrawer inflationData={inflationData} currentYear={currentYear} />
 }
 
 export default function Page() {
