@@ -10,7 +10,7 @@ export interface ContextFormProps {
 }
 
 const inputClasses =
-  'w-full rounded-md border border-[var(--border-light)] bg-gray-50 text-[var(--text-main)] text-sm py-1.5 px-3 focus:ring-1 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition-colors'
+  'w-full rounded-md border border-[var(--border-light)] bg-gray-50 text-[var(--text-main)] text-base py-1.5 px-3 focus:ring-1 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition-colors'
 
 export function ContextForm({ userInfo, onChange }: ContextFormProps) {
   return (

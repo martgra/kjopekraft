@@ -61,7 +61,7 @@ export function Select({
         id={id}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'flex w-full items-center justify-between rounded-lg border border-[var(--border-light)] bg-white py-2.5 text-sm font-medium text-gray-900',
+          'flex w-full items-center justify-between rounded-lg border border-[var(--border-light)] bg-white py-2.5 text-base font-medium text-gray-900',
           'shadow-sm transition-all',
           'hover:border-gray-400 hover:shadow',
           'focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 focus:outline-none',
@@ -101,7 +101,7 @@ export function Select({
                   type="button"
                   onClick={() => handleSelect(optionValue)}
                   className={cn(
-                    'w-full px-3 py-2.5 text-left text-sm transition-colors',
+                    'w-full px-3 py-2.5 text-left text-base transition-colors',
                     isSelected
                       ? 'bg-[var(--primary)]/10 font-medium text-[var(--primary)]'
                       : 'text-gray-900 hover:bg-gray-50',
