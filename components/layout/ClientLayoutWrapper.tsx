@@ -1,14 +1,15 @@
 'use client'
 
 import { ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 import MobileBottomNav from './MobileBottomNav'
-import { useDrawer } from '@/contexts/drawer/DrawerContext'
+import { DrawerProvider, useDrawer } from '@/contexts/drawer/DrawerContext'
 
 interface ClientLayoutWrapperProps {
   children: ReactNode
 }
 
-export default function ClientLayoutWrapper({ children }: ClientLayoutWrapperProps) {
+function ClientLayoutWrapperInner({ children }: ClientLayoutWrapperProps) {
   const { toggleDrawer, pointsCount } = useDrawer()
 
   return (
@@ -16,5 +17,15 @@ export default function ClientLayoutWrapper({ children }: ClientLayoutWrapperPro
       {children}
       <MobileBottomNav onOpenDrawer={toggleDrawer} pointsCount={pointsCount} />
     </>
+  )
+}
+
+export default function ClientLayoutWrapper({ children }: ClientLayoutWrapperProps) {
+  const pathname = usePathname()
+
+  return (
+    <DrawerProvider pathname={pathname}>
+      <ClientLayoutWrapperInner>{children}</ClientLayoutWrapperInner>
+    </DrawerProvider>
   )
 }

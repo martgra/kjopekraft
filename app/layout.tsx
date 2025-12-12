@@ -4,7 +4,6 @@ import type { Metadata } from 'next'
 import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeContext'
-import { DrawerProvider } from '@/contexts/drawer/DrawerContext'
 import ClientLayoutWrapper from '@/components/layout/ClientLayoutWrapper'
 import './globals.css'
 
@@ -113,9 +112,7 @@ export default function RootLayout({
         <MobileMetaScript />
         <DisplayModeProvider>
           <ReferenceModeProvider>
-            <DrawerProvider>
-              <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
-            </DrawerProvider>
+            <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
           </ReferenceModeProvider>
         </DisplayModeProvider>
       </body>

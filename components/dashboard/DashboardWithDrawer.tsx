@@ -15,13 +15,13 @@ export default function DashboardWithDrawer({
   inflationData,
   currentYear,
 }: DashboardWithDrawerProps) {
-  const { isOpen, openDrawer, closeDrawer, setPointsCount } = useDrawer()
+  const { isOpen, openDrawer, closeDrawer, setDashboardPointsCount } = useDrawer()
   const { payPoints } = useSalaryData(inflationData, currentYear)
 
   // Update points count for the FAB badge
   useEffect(() => {
-    setPointsCount(payPoints.length)
-  }, [payPoints.length, setPointsCount])
+    setDashboardPointsCount(payPoints.length)
+  }, [payPoints.length, setDashboardPointsCount])
 
   return (
     <Dashboard
