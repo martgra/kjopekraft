@@ -1,8 +1,21 @@
+import { Suspense } from 'react'
 import Dashboard from '@/components/dashboard/Dashboard'
 import { getInflationData } from '@/lib/models/getInflationData'
 import { connection } from 'next/server'
+import { Spinner } from '@/components/ui/atoms'
 
-export default async function Page() {
+function LoadingFallback() {
+  return (
+    <div className="flex h-screen items-center justify-center bg-[var(--background-light)]">
+      <div className="text-center">
+        <Spinner size="lg" />
+        <p className="mt-4 text-[var(--text-muted)]">Laster...</p>
+      </div>
+    </div>
+  )
+}
+
+async function DashboardWithData() {
   let inflationData: Awaited<ReturnType<typeof getInflationData>> = []
 
   try {
@@ -19,4 +32,12 @@ export default async function Page() {
   const currentYear = new Date().getFullYear()
 
   return <Dashboard inflationData={inflationData} currentYear={currentYear} />
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <DashboardWithData />
+    </Suspense>
+  )
 }

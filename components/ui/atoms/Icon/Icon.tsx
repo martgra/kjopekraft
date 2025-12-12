@@ -22,7 +22,7 @@ export function Icon({ name, size = 'md', className, filled }: IconProps) {
         'material-symbols-outlined',
         sizes[size],
         filled && 'font-variation-settings-fill',
-        className
+        className,
       )}
       style={filled ? { fontVariationSettings: "'FILL' 1" } : undefined}
     >

@@ -74,9 +74,9 @@ export function ArgumentBuilder({
           <select
             className="w-[35%] rounded-md border border-[var(--border-light)] bg-gray-50 py-2 text-xs text-[var(--text-main)] focus:ring-1 focus:ring-[var(--primary)]"
             value={type}
-            onChange={(e) => setType(e.target.value)}
+            onChange={e => setType(e.target.value)}
           >
-            {POINT_TYPES.map((t) => (
+            {POINT_TYPES.map(t => (
               <option key={t.value} value={t.value}>
                 {t.label}
               </option>
@@ -84,7 +84,7 @@ export function ArgumentBuilder({
           </select>
           <Input
             value={desc}
-            onChange={(e) => setDesc(e.target.value)}
+            onChange={e => setDesc(e.target.value)}
             placeholder={TEXT.negotiation.keyPointPlaceholder}
             onKeyDown={handleKeyDown}
             className="flex-1"

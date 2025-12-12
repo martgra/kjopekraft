@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { useInflation } from '@/features/inflation/hooks/useInflation'
 import { adjustSalaries, computeStatistics } from '@/features/inflation/inflationCalc'
 import { calculateNetIncome } from '@/features/tax/taxCalculator'
 import type {

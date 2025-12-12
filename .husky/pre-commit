@@ -1,1 +1,15 @@
+#!/bin/sh
+# Husky pre-commit hook
+
+# Check for secrets with secretlint
+echo "🔍 Checking for secrets with secretlint..."
+if ! bunx secretlint "**/*"; then
+  echo "❌ Secretlint detected potential secrets in your commit!"
+  echo "Please remove any secrets before committing."
+  exit 1
+fi
+echo "✅ No secrets detected"
+
+# Run lint-staged (handles linting and formatting)
+echo "🔍 Running lint and format checks..."
 bunx lint-staged

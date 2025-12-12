@@ -6,10 +6,7 @@ import { useSalaryCalculations } from '@/features/salary/hooks/useSalaryCalculat
 import { useReferenceSalary } from '@/features/referenceSalary/hooks/useReferenceSalary'
 import { useReferenceMode } from '@/contexts/referenceMode/ReferenceModeContext'
 import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
-import {
-  filterReferenceByYearRange,
-  convertMonthlyToYearly,
-} from '@/features/referenceSalary/referenceCalculator'
+import { filterReferenceByYearRange } from '@/features/referenceSalary/referenceCalculator'
 import { calculateNetIncome } from '@/features/tax/taxCalculator'
 import type { ScatterDataPoint } from 'chart.js'
 

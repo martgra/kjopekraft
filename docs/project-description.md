@@ -808,4 +808,111 @@ When adding new text to the application:
 
 ---
 
-_Last updated: 2025-12-11_
+## CI/CD Pipeline (December 2025)
+
+### Overview
+
+The project uses GitHub Actions for automated quality checks and deployments. All pull requests must pass CI checks before merging.
+
+### CI Pipeline Components
+
+**1. Secret Detection**
+
+- Uses Gitleaks to scan for accidentally committed secrets
+- Prevents API keys, tokens, and credentials from being committed
+- Runs on all PRs and pushes
+
+**2. Lint & Format**
+
+- ESLint checks for code quality issues
+- Prettier ensures consistent code formatting
+- Commands: `bun run lint` and `bun run format:check`
+
+**3. Build Verification**
+
+- Ensures the application builds successfully
+- Catches build-time errors before production
+- Verifies `.next` directory is created
+
+**4. Type Checking**
+
+- Runs TypeScript compiler without emitting files
+- Catches type errors early
+- Command: `bunx tsc --noEmit`
+
+**5. CI Success Gate**
+
+- Summary job that requires all checks to pass
+- Used for branch protection rules
+
+### Package.json Scripts
+
+Added scripts for CI/CD:
+
+- `format:check` - Check if files are formatted (non-destructive)
+- `typecheck` - Run TypeScript type checking
+
+### Files Changed
+
+- `.github/workflows/ci.yml` - New CI pipeline configuration
+- `package.json` - Added `format:check` and `typecheck` scripts
+- `docs/ci-cd-pipeline.md` - Comprehensive CI/CD documentation
+
+### Code Quality Fixes
+
+During CI setup, the following issues were resolved:
+
+**TypeScript Errors:**
+
+- Fixed `NegotiationPage.tsx` to receive `inflationData` and `currentYear` props
+- Updated `app/negotiation/page.tsx` to fetch and pass required data
+- Removed legacy `NegotiationTab.client.tsx` file
+
+**Linting Warnings:**
+
+- Removed unused `useInflation` import from `useSalaryData.ts`
+- Removed unused `convertMonthlyToYearly` import from `usePaypointChartData.ts`
+
+**Formatting:**
+
+- Ran Prettier to format all files consistently
+
+### Usage
+
+Local development workflow:
+
+```bash
+# Run all checks before pushing
+bun run lint          # Check for code issues
+bun run format:check  # Check formatting
+bun run typecheck     # Check types
+bun run secrets       # Check for secrets
+bun run build         # Verify build
+
+# Auto-fix issues
+bun run lint:fix      # Fix linting issues
+bun run format        # Format all files
+```
+
+### Pre-commit Hooks (Husky)
+
+Automated checks run on every commit via Husky:
+
+1. **Secret Detection** - secretlint scans all files for secrets
+2. **Lint** - ESLint automatically fixes staged files
+3. **Format** - Prettier automatically formats staged files
+
+Configuration:
+
+- `.husky/pre-commit` - Pre-commit hook script
+- `.lintstagedrc.mjs` - Lint-staged rules
+- `.secretlintrc.json` - Secretlint rules
+- `.secretlintignore` - Files to exclude from secret scanning
+
+Pre-commit hooks ensure code quality before it even reaches the repository, preventing CI failures.
+
+See [docs/ci-cd-pipeline.md](./ci-cd-pipeline.md) for detailed documentation.
+
+---
+
+_Last updated: 2025-12-12_

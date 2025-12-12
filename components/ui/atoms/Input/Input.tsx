@@ -15,10 +15,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-xs font-medium text-[var(--text-muted)]"
-          >
+          <label htmlFor={inputId} className="block text-xs font-medium text-[var(--text-muted)]">
             {label}
           </label>
         )}
@@ -35,12 +32,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               'disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-60',
               error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
               suffix && 'pr-12',
-              className
+              className,
             )}
             {...props}
           />
           {suffix && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+            <span className="absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400">
               {suffix}
             </span>
           )}
@@ -49,7 +46,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {hint && !error && <p className="text-xs text-gray-400">{hint}</p>}
       </div>
     )
-  }
+  },
 )
 
 Input.displayName = 'Input'

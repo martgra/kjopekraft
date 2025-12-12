@@ -30,25 +30,21 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           'rounded-xl',
           variants[variant],
           paddings[padding],
-          interactive && 'transition-shadow duration-150 hover:shadow-lg cursor-pointer',
-          className
+          interactive && 'cursor-pointer transition-shadow duration-150 hover:shadow-lg',
+          className,
         )}
         {...props}
       >
         {children}
       </div>
     )
-  }
+  },
 )
 
 Card.displayName = 'Card'
 
 // Card subcomponents for better composition
-export function CardHeader({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+export function CardHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn('flex items-start justify-between', className)} {...props}>
       {children}
@@ -56,11 +52,7 @@ export function CardHeader({
   )
 }
 
-export function CardTitle({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLHeadingElement>) {
+export function CardTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3 className={cn('text-sm font-medium text-[var(--text-muted)]', className)} {...props}>
       {children}
@@ -68,11 +60,7 @@ export function CardTitle({
   )
 }
 
-export function CardContent({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+export function CardContent({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn('mt-3', className)} {...props}>
       {children}

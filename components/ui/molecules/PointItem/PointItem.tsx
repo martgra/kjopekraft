@@ -38,7 +38,7 @@ export function PointItem({ index, type, description, onRemove, className }: Poi
       className={cn(
         'group flex items-start gap-3 rounded-lg border border-gray-100 bg-white p-2.5',
         'shadow-sm transition-colors hover:border-blue-300',
-        className
+        className,
       )}
     >
       {/* Index Badge */}
@@ -47,7 +47,7 @@ export function PointItem({ index, type, description, onRemove, className }: Poi
           'mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full',
           'text-[10px] font-bold',
           colors.bg,
-          colors.text
+          colors.text,
         )}
       >
         {index + 1}

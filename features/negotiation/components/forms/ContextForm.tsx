@@ -14,11 +14,7 @@ const inputClasses =
 
 export function ContextForm({ userInfo, onChange }: ContextFormProps) {
   return (
-    <Card
-      variant="default"
-      padding="md"
-      className="flex min-h-0 flex-1 flex-col overflow-hidden"
-    >
+    <Card variant="default" padding="md" className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--text-main)]">
         <Icon name="query_stats" size="md" className="text-purple-500" />
         {TEXT.negotiationForm.contextTitle}
@@ -34,7 +30,7 @@ export function ContextForm({ userInfo, onChange }: ContextFormProps) {
             className={`${inputClasses} flex-1 resize-none p-3`}
             placeholder={TEXT.negotiationForm.marketDataPlaceholder}
             value={userInfo.marketData}
-            onChange={(e) => onChange({ marketData: e.target.value })}
+            onChange={e => onChange({ marketData: e.target.value })}
           />
         </div>
 
@@ -47,7 +43,7 @@ export function ContextForm({ userInfo, onChange }: ContextFormProps) {
             className={`${inputClasses} flex-1 resize-none p-3`}
             placeholder={TEXT.negotiationForm.otherBenefitsPlaceholder}
             value={userInfo.otherBenefits}
-            onChange={(e) => onChange({ otherBenefits: e.target.value })}
+            onChange={e => onChange({ otherBenefits: e.target.value })}
           />
         </div>
       </div>
