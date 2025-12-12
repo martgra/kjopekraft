@@ -2,9 +2,10 @@
 
 import type { Metadata } from 'next'
 import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
-import MobileBottomNav from '@/components/layout/MobileBottomNav'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeContext'
+import { DrawerProvider } from '@/contexts/drawer/DrawerContext'
+import ClientLayoutWrapper from '@/components/layout/ClientLayoutWrapper'
 import './globals.css'
 
 // System font stacks (fallback when Google Fonts unavailable)
@@ -112,8 +113,9 @@ export default function RootLayout({
         <MobileMetaScript />
         <DisplayModeProvider>
           <ReferenceModeProvider>
-            {children}
-            <MobileBottomNav />
+            <DrawerProvider>
+              <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
+            </DrawerProvider>
           </ReferenceModeProvider>
         </DisplayModeProvider>
       </body>

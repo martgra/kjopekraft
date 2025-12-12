@@ -18,6 +18,15 @@ export const TEXT = {
     perYear: 'per år',
     lastTabPersistence: 'Du vil bli returnert til siste fanen du brukte ved neste besøk.',
     pts: 'kr',
+    close: 'Lukk',
+  },
+
+  // Mobile drawer
+  drawer: {
+    openDrawer: 'Åpne datapanel',
+    closeDrawer: 'Lukk datapanel',
+    dashboardTitle: 'Legg til lønnspunkt',
+    negotiationTitle: 'Argumenter',
   },
 
   // Sidebar navigation

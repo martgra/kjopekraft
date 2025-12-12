@@ -21,6 +21,7 @@ interface RightPanelProps {
   onAdd: () => void
   onEdit?: (point: PayPoint) => void
   onRemove?: (year: number, pay: number) => void
+  isMobileDrawer?: boolean
 }
 
 export default function RightPanel({
@@ -37,19 +38,51 @@ export default function RightPanel({
   onAdd,
   onEdit,
   onRemove,
+  isMobileDrawer = false,
 }: RightPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
-  // Collapse on mobile by default, expand on desktop
+  // Collapse on mobile by default (only when NOT in drawer), expand on desktop
   useEffect(() => {
     const checkMobile = () => {
-      setIsCollapsed(window.innerWidth < 1024)
+      // If in drawer, always show content
+      if (isMobileDrawer) {
+        setIsCollapsed(false)
+      } else {
+        setIsCollapsed(window.innerWidth < 1024)
+      }
     }
 
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  }, [isMobileDrawer])
+
+  // If rendering in mobile drawer, skip the collapsible wrapper
+  if (isMobileDrawer) {
+    return (
+      <div className="flex h-full flex-col">
+        <SalaryPointForm
+          newYear={newYear}
+          newPay={newPay}
+          currentYear={currentYear}
+          minYear={minYear}
+          validationError={validationError}
+          isNetMode={isNetMode}
+          inflationData={inflationData}
+          onYearChange={onYearChange}
+          onPayChange={onPayChange}
+          onAdd={onAdd}
+        />
+        <ActivityTimeline
+          payPoints={payPoints}
+          onEdit={onEdit}
+          onRemove={onRemove}
+          currentYear={currentYear}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-full flex-col">

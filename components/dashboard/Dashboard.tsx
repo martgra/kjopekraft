@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import MetricGrid from './MetricGrid'
 import ChartSection from './ChartSection'
 import RightPanel from './RightPanel'
@@ -17,9 +18,16 @@ import { TEXT } from '@/lib/constants/text'
 interface DashboardProps {
   inflationData: InflationDataPoint[]
   currentYear: number
+  isDrawerOpen: boolean
+  onDrawerClose: () => void
 }
 
-export default function Dashboard({ inflationData, currentYear }: DashboardProps) {
+export default function Dashboard({
+  inflationData,
+  currentYear,
+  isDrawerOpen,
+  onDrawerClose,
+}: DashboardProps) {
   const { payPoints, statistics, hasData, addPoint, removePoint, validatePoint, isLoading, error } =
     useSalaryData(inflationData, currentYear)
 
@@ -110,171 +118,185 @@ export default function Dashboard({ inflationData, currentYear }: DashboardProps
     )
   }
 
+  // Right panel content - reused for both desktop sidebar and mobile drawer
+  const rightPanelContent = (
+    <RightPanel
+      newYear={newYear}
+      newPay={newPay}
+      currentYear={currentYear}
+      minYear={minYear}
+      validationError={validationError}
+      isNetMode={isNetMode}
+      payPoints={payPoints}
+      inflationData={inflationData}
+      onYearChange={setNewYear}
+      onPayChange={setNewPay}
+      onAdd={handleAddPoint}
+      onEdit={handleEditPoint}
+      onRemove={handleRemovePoint}
+      isMobileDrawer={isDrawerOpen}
+    />
+  )
+
   return (
-    <DashboardLayout
-      rightPanel={
-        <RightPanel
-          newYear={newYear}
-          newPay={newPay}
-          currentYear={currentYear}
-          minYear={minYear}
-          validationError={validationError}
-          isNetMode={isNetMode}
-          payPoints={payPoints}
-          inflationData={inflationData}
-          onYearChange={setNewYear}
-          onPayChange={setNewPay}
-          onAdd={handleAddPoint}
-          onEdit={handleEditPoint}
-          onRemove={handleRemovePoint}
-        />
-      }
-    >
-      {/* Main Dashboard Content */}
-      <div className="flex min-h-full flex-col gap-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-bold text-[var(--text-main)] md:text-3xl">
-              {TEXT.dashboard.annualOverview}
-            </h1>
-            <p className="text-sm text-[var(--text-muted)] md:mt-1">
-              {TEXT.dashboard.annualOverviewSubtitle}
-            </p>
+    <>
+      <MobileBottomDrawer
+        isOpen={isDrawerOpen}
+        onClose={onDrawerClose}
+        dashboardContent={rightPanelContent}
+        pointsCount={payPoints.length}
+      />
+      <DashboardLayout rightPanel={rightPanelContent}>
+        {/* Main Dashboard Content */}
+        <div className="flex min-h-full flex-col gap-6">
+          {/* Header */}
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-2xl font-bold text-[var(--text-main)] md:text-3xl">
+                {TEXT.dashboard.annualOverview}
+              </h1>
+              <p className="text-sm text-[var(--text-muted)] md:mt-1">
+                {TEXT.dashboard.annualOverviewSubtitle}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 shadow-sm">
+              <span className="material-symbols-outlined text-sm text-gray-400">
+                calendar_today
+              </span>
+              <span className="text-sm font-medium text-[var(--text-main)]">{currentYear}</span>
+              <span className="material-symbols-outlined text-sm text-gray-400">expand_more</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 shadow-sm">
-            <span className="material-symbols-outlined text-sm text-gray-400">calendar_today</span>
-            <span className="text-sm font-medium text-[var(--text-main)]">{currentYear}</span>
-            <span className="material-symbols-outlined text-sm text-gray-400">expand_more</span>
-          </div>
-        </div>
 
-        {/* Metrics Grid */}
-        {hasData ? (
-          <>
-            {isDemoMode && (
-              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-[24px] text-blue-600">info</span>
-                  <p className="text-sm text-blue-900">{TEXT.onboarding.demoDataInfo}</p>
-                </div>
-              </div>
-            )}
-            {/* Compact mobile summary */}
-            <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] md:hidden">
-              <button
-                onClick={() => setIsMetricsExpanded(!isMetricsExpanded)}
-                className="flex w-full items-center justify-between px-4 py-3"
-              >
-                <div className="flex flex-1 items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-[10px] font-medium text-[var(--text-muted)]">
-                      {isNetMode
-                        ? TEXT.metrics.totalAnnualNetSalary
-                        : TEXT.metrics.totalAnnualSalary}
-                    </p>
-                    <p className="text-lg font-bold text-[var(--text-main)]">
-                      {Math.round(
-                        isNetMode
-                          ? calculateNetIncome(statistics.latestYear, statistics.latestPay)
-                          : statistics.latestPay,
-                      ).toLocaleString('nb-NO')}
-                    </p>
-                  </div>
-                  <div className="flex-1 border-l border-[var(--border-light)] pl-4">
-                    <p className="text-[10px] font-medium text-[var(--text-muted)]">
-                      {TEXT.metrics.vsInflation}
-                    </p>
-                    <p
-                      className={`text-lg font-bold ${statistics.gapPercent >= 0 ? 'text-[#078838]' : 'text-red-600'}`}
-                    >
-                      {statistics.gapPercent >= 0 ? '+' : ''}
-                      {statistics.gapPercent.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-                <span className="material-symbols-outlined ml-2 text-[20px] text-[var(--text-muted)]">
-                  {isMetricsExpanded ? 'expand_less' : 'expand_more'}
-                </span>
-              </button>
-
-              {isMetricsExpanded && (
-                <div className="border-t border-[var(--border-light)] px-4 py-3">
-                  <div className="flex flex-col gap-3">
-                    {/* Real Annual Value */}
-                    <div>
-                      <p className="text-[10px] font-medium text-[var(--text-muted)]">
-                        {TEXT.metrics.realAnnualValue}
-                      </p>
-                      <p className="text-base font-bold text-[var(--text-main)]">
-                        {Math.round(
-                          isNetMode
-                            ? calculateNetIncome(
-                                statistics.latestYear,
-                                statistics.inflationAdjustedPay,
-                              )
-                            : statistics.inflationAdjustedPay,
-                        ).toLocaleString('nb-NO')}{' '}
-                        {TEXT.common.pts}
-                      </p>
-                    </div>
-
-                    {/* Yearly Change */}
-                    <div>
-                      <p className="text-[10px] font-medium text-[var(--text-muted)]">
-                        {TEXT.metrics.yearlyChange}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <p
-                          className={`text-base font-bold ${statistics.gapPercent >= 0 ? 'text-[#078838]' : 'text-red-600'}`}
-                        >
-                          {statistics.gapPercent >= 0 ? '+' : ''}
-                          {statistics.gapPercent.toFixed(1)}%
-                        </p>
-                        <span className="text-xs text-[var(--text-muted)]">
-                          ({statistics.gapPercent >= 0 ? '+' : ''}
-                          {Math.round(
-                            isNetMode
-                              ? calculateNetIncome(statistics.latestYear, statistics.latestPay) -
-                                  calculateNetIncome(
-                                    statistics.latestYear,
-                                    statistics.inflationAdjustedPay,
-                                  )
-                              : statistics.latestPay - statistics.inflationAdjustedPay,
-                          ).toLocaleString('nb-NO')}{' '}
-                          {TEXT.common.pts})
-                        </span>
-                      </div>
-                    </div>
+          {/* Metrics Grid */}
+          {hasData ? (
+            <>
+              {isDemoMode && (
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="material-symbols-outlined text-[24px] text-blue-600">
+                      info
+                    </span>
+                    <p className="text-sm text-blue-900">{TEXT.onboarding.demoDataInfo}</p>
                   </div>
                 </div>
               )}
-            </div>
-            {/* Full metrics grid - desktop only */}
-            <div className="hidden md:block">
-              <MetricGrid statistics={statistics} isNetMode={isNetMode} />
-            </div>
-          </>
-        ) : (
-          <div className="rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-6 text-center">
-            <p className="text-[var(--text-muted)]">{TEXT.dashboard.addDataPrompt}</p>
-          </div>
-        )}
+              {/* Compact mobile summary */}
+              <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] md:hidden">
+                <button
+                  onClick={() => setIsMetricsExpanded(!isMetricsExpanded)}
+                  className="flex w-full items-center justify-between px-4 py-3"
+                >
+                  <div className="flex flex-1 items-center justify-between">
+                    <div className="flex-1">
+                      <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                        {isNetMode
+                          ? TEXT.metrics.totalAnnualNetSalary
+                          : TEXT.metrics.totalAnnualSalary}
+                      </p>
+                      <p className="text-lg font-bold text-[var(--text-main)]">
+                        {Math.round(
+                          isNetMode
+                            ? calculateNetIncome(statistics.latestYear, statistics.latestPay)
+                            : statistics.latestPay,
+                        ).toLocaleString('nb-NO')}
+                      </p>
+                    </div>
+                    <div className="flex-1 border-l border-[var(--border-light)] pl-4">
+                      <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                        {TEXT.metrics.vsInflation}
+                      </p>
+                      <p
+                        className={`text-lg font-bold ${statistics.gapPercent >= 0 ? 'text-[#078838]' : 'text-red-600'}`}
+                      >
+                        {statistics.gapPercent >= 0 ? '+' : ''}
+                        {statistics.gapPercent.toFixed(1)}%
+                      </p>
+                    </div>
+                  </div>
+                  <span className="material-symbols-outlined ml-2 text-[20px] text-[var(--text-muted)]">
+                    {isMetricsExpanded ? 'expand_less' : 'expand_more'}
+                  </span>
+                </button>
 
-        {/* Chart Section */}
-        {hasData ? (
-          <div className="flex min-h-[350px] flex-1">
-            <ChartSection
-              payPoints={payPoints}
-              inflationData={inflationData}
-              isNetMode={isNetMode}
-              onToggleMode={toggleMode}
-            />
-          </div>
-        ) : (
-          <OnboardingEmptyState onLoadDemo={handleLoadDemo} />
-        )}
-      </div>
-    </DashboardLayout>
+                {isMetricsExpanded && (
+                  <div className="border-t border-[var(--border-light)] px-4 py-3">
+                    <div className="flex flex-col gap-3">
+                      {/* Real Annual Value */}
+                      <div>
+                        <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                          {TEXT.metrics.realAnnualValue}
+                        </p>
+                        <p className="text-base font-bold text-[var(--text-main)]">
+                          {Math.round(
+                            isNetMode
+                              ? calculateNetIncome(
+                                  statistics.latestYear,
+                                  statistics.inflationAdjustedPay,
+                                )
+                              : statistics.inflationAdjustedPay,
+                          ).toLocaleString('nb-NO')}{' '}
+                          {TEXT.common.pts}
+                        </p>
+                      </div>
+
+                      {/* Yearly Change */}
+                      <div>
+                        <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                          {TEXT.metrics.yearlyChange}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <p
+                            className={`text-base font-bold ${statistics.gapPercent >= 0 ? 'text-[#078838]' : 'text-red-600'}`}
+                          >
+                            {statistics.gapPercent >= 0 ? '+' : ''}
+                            {statistics.gapPercent.toFixed(1)}%
+                          </p>
+                          <span className="text-xs text-[var(--text-muted)]">
+                            ({statistics.gapPercent >= 0 ? '+' : ''}
+                            {Math.round(
+                              isNetMode
+                                ? calculateNetIncome(statistics.latestYear, statistics.latestPay) -
+                                    calculateNetIncome(
+                                      statistics.latestYear,
+                                      statistics.inflationAdjustedPay,
+                                    )
+                                : statistics.latestPay - statistics.inflationAdjustedPay,
+                            ).toLocaleString('nb-NO')}{' '}
+                            {TEXT.common.pts})
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/* Full metrics grid - desktop only */}
+              <div className="hidden md:block">
+                <MetricGrid statistics={statistics} isNetMode={isNetMode} />
+              </div>
+            </>
+          ) : (
+            <div className="rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-6 text-center">
+              <p className="text-[var(--text-muted)]">{TEXT.dashboard.addDataPrompt}</p>
+            </div>
+          )}
+
+          {/* Chart Section */}
+          {hasData ? (
+            <div className="flex min-h-[350px] flex-1">
+              <ChartSection
+                payPoints={payPoints}
+                inflationData={inflationData}
+                isNetMode={isNetMode}
+                onToggleMode={toggleMode}
+              />
+            </div>
+          ) : (
+            <OnboardingEmptyState onLoadDemo={handleLoadDemo} />
+          )}
+        </div>
+      </DashboardLayout>
+    </>
   )
 }

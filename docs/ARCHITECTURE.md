@@ -78,6 +78,7 @@ Kjøpekraft is built using a feature-based architecture with Next.js 15 App Rout
 ├── components/                   # Reusable UI components
 │   ├── dashboard/               # Dashboard-specific components
 │   │   ├── Dashboard.tsx        # Main dashboard orchestrator
+│   │   ├── DashboardWithDrawer.tsx # Client wrapper with drawer integration
 │   │   ├── ChartSection.tsx     # Chart with controls menu below
 │   │   ├── MetricGrid.tsx       # Statistics display
 │   │   ├── MetricCard.tsx       # Individual metric card (colored icon pills)
@@ -88,7 +89,9 @@ Kjøpekraft is built using a feature-based architecture with Next.js 15 App Rout
 │   ├── layout/                  # Layout components
 │   │   ├── DashboardLayout.tsx  # Main layout wrapper
 │   │   ├── Sidebar.tsx          # Navigation sidebar
-│   │   └── MobileBottomNav.tsx  # Mobile navigation
+│   │   ├── MobileBottomNav.tsx  # Mobile navigation with FAB
+│   │   ├── MobileBottomDrawer.tsx # Slide-up drawer for mobile
+│   │   └── ClientLayoutWrapper.tsx # Client wrapper for drawer integration
 │   │
 │   └── ui/                      # Atomic design system
 │       ├── atoms/               # Basic UI elements
@@ -162,8 +165,10 @@ Kjøpekraft is built using a feature-based architecture with Next.js 15 App Rout
 ├── contexts/                     # React Context providers
 │   ├── displayMode/             # Net/Gross toggle
 │   │   └── DisplayModeContext.tsx
-│   └── referenceMode/           # Reference salary toggle
-│       └── ReferenceModeContext.tsx
+│   ├── referenceMode/           # Reference salary toggle
+│   │   └── ReferenceModeContext.tsx
+│   └── drawer/                  # Mobile drawer state
+│       └── DrawerContext.tsx    # Global drawer open/close state
 │
 ├── lib/                          # Shared utilities
 │   ├── constants/
@@ -758,9 +763,18 @@ export default function ResponsiveChartWrapper() {
 
 ### Mobile Navigation
 
-- Desktop: Sidebar navigation
-- Mobile: Bottom tab navigation (`MobileBottomNav`)
-- Collapsible panels on mobile to maximize chart space
+- **Desktop**: Sidebar navigation with right panel for data entry/tools
+- **Mobile**:
+  - Bottom tab navigation (`MobileBottomNav`) with centered floating action button (FAB)
+  - Bottom drawer (`MobileBottomDrawer`) - slides up from bottom to show context-specific content
+  - Drawer replaces right panel on mobile for better screen space utilization
+  - Drawer content changes based on current route:
+    - Dashboard: Salary data entry form + activity timeline
+    - Negotiation: Argument builder + generation buttons
+  - Drawer state managed via `DrawerContext` shared across the app
+  - FAB shows badge count (number of data points/arguments)
+  - Smooth slide-up animation with backdrop and escape/swipe-to-close support
+  - Right panel hidden on mobile (drawer provides the same functionality)
 
 ## Performance Optimizations
 
