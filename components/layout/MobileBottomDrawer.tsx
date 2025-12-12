@@ -109,8 +109,8 @@ export default function MobileBottomDrawer({
           </button>
         </div>
 
-        {/* Content - scrollable */}
-        <div className="flex-1 overflow-y-auto">{content}</div>
+        {/* Content - scrollable with bottom padding for mobile nav */}
+        <div className="flex-1 overflow-y-auto pb-20">{content}</div>
       </div>
     </>
   )

@@ -34,22 +34,10 @@ export function GenerateButtons({
   playbookError,
 }: GenerateButtonsProps) {
   return (
-    <div className="flex-shrink-0 space-y-2 border-t border-gray-200 bg-white p-3">
-      {/* Warning Messages */}
-      {pointsCount === 0 && (
-        <div className="flex items-center gap-2 rounded-md border border-amber-100 bg-amber-50 px-3 py-1.5 text-xs text-amber-700">
-          <Icon name="info" size="sm" />
-          <span className="flex-1 truncate">{TEXT.negotiation.minPointsWarning}</span>
-        </div>
-      )}
-      {pointsCount > 0 && pointsCount < 3 && (
-        <div className="flex items-center gap-2 rounded-md border border-amber-100 bg-amber-50 px-3 py-1.5 text-xs text-amber-700">
-          <Icon name="info" size="sm" />
-          <span className="flex-1 truncate">{TEXT.negotiation.suggestionMorePoints}</span>
-        </div>
-      )}
+    <div className="flex-shrink-0 border-t border-gray-200 bg-white p-3">
+      {/* Warning Messages - Only show errors, hide tips to save space */}
       {(emailError || playbookError) && (
-        <div className="flex items-center gap-2 rounded-md border border-red-100 bg-red-50 px-3 py-1.5 text-xs text-red-700">
+        <div className="mb-2 flex items-center gap-2 rounded-md border border-red-100 bg-red-50 px-3 py-1.5 text-xs text-red-700">
           <Icon name="error" size="sm" />
           <span className="flex-1 truncate">{emailError || playbookError}</span>
         </div>
