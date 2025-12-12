@@ -1,13 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { useNegotiationData } from '../hooks/useNegotiationData'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 import { DetailsForm, ContextForm, GenerateButtons, type UserInfo } from './forms'
 import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
-import Sidebar from '@/components/layout/Sidebar'
-import { Icon, Badge } from '@/components/ui/atoms'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import { Badge } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 
 export default function NegotiationPage() {
@@ -56,6 +55,24 @@ export default function NegotiationPage() {
 
   const [emailPrompt, setEmailPrompt] = useState<string | null>(null)
   const [playbookPrompt, setPlaybookPrompt] = useState<string | null>(null)
+
+  // Collapsible state for ArgumentBuilder on mobile
+  const [isArgumentBuilderCollapsed, setIsArgumentBuilderCollapsed] = useState(false)
+
+  // Track if component is mounted to avoid hydration mismatch
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Collapse ArgumentBuilder on mobile by default, expand on desktop
+  useEffect(() => {
+    setIsMounted(true)
+    const checkMobile = () => {
+      setIsArgumentBuilderCollapsed(window.innerWidth < 1024)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Handler for updating user info
   const updateUserInfo = (updates: Partial<UserInfo>) => {
@@ -116,26 +133,16 @@ export default function NegotiationPage() {
     }
   }
 
-  // Hydrate from localStorage on mount
+  // Hydrate prompts from localStorage on mount (content is handled by the hook)
   useEffect(() => {
-    const storedEmailContent = localStorage.getItem('negotiation_emailContent')
-    const storedPlaybookContent = localStorage.getItem('negotiation_playbookContent')
     const storedEmailPrompt = localStorage.getItem('negotiation_emailPrompt')
     const storedPlaybookPrompt = localStorage.getItem('negotiation_playbookPrompt')
-    if (storedEmailContent !== null) setEmail(storedEmailContent)
-    if (storedPlaybookContent !== null) setPlaybook(storedPlaybookContent)
     if (storedEmailPrompt !== null) setEmailPrompt(storedEmailPrompt)
     if (storedPlaybookPrompt !== null) setPlaybookPrompt(storedPlaybookPrompt)
-    // eslint-disable-next-line
+     
   }, [])
 
-  // Persist to localStorage when values change
-  useEffect(() => {
-    localStorage.setItem('negotiation_emailContent', emailContent)
-  }, [emailContent])
-  useEffect(() => {
-    localStorage.setItem('negotiation_playbookContent', playbookContent)
-  }, [playbookContent])
+  // Persist prompts to localStorage when they change (content is handled by the hook)
   useEffect(() => {
     if (emailPrompt !== null) {
       localStorage.setItem('negotiation_emailPrompt', emailPrompt)
@@ -147,88 +154,91 @@ export default function NegotiationPage() {
     }
   }, [playbookPrompt])
 
-  const emailRemaining = MAX_GENERATIONS - emailGenerationCount
-  const playbookRemaining = MAX_GENERATIONS - playbookGenerationCount
+  // Use default values during SSR to avoid hydration mismatch
+  const emailRemaining = isMounted ? MAX_GENERATIONS - emailGenerationCount : MAX_GENERATIONS
+  const playbookRemaining = isMounted ? MAX_GENERATIONS - playbookGenerationCount : MAX_GENERATIONS
 
-  return (
-    <div className="flex h-screen overflow-hidden bg-[var(--background-light)]">
-      {/* Sidebar */}
-      <div className="hidden h-full md:flex">
-        <Sidebar />
-      </div>
+  // Right panel content - ArgumentBuilder with collapsible functionality
+  const rightPanelContent = (
+    <div className="flex h-full flex-col">
+      {/* Collapsible toggle button - only visible on mobile */}
+      <button
+        onClick={() => setIsArgumentBuilderCollapsed(!isArgumentBuilderCollapsed)}
+        className="flex w-full items-center justify-between border-b border-[var(--border-light)] bg-gray-50/50 p-4 text-sm font-semibold text-[var(--text-main)] transition-colors hover:bg-gray-100 lg:hidden"
+        aria-expanded={!isArgumentBuilderCollapsed}
+        aria-controls="argument-builder-content"
+      >
+        <span className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-[var(--primary)]">
+            {isArgumentBuilderCollapsed ? 'expand_more' : 'expand_less'}
+          </span>
+          {isArgumentBuilderCollapsed
+            ? TEXT.negotiation.showArguments
+            : TEXT.negotiation.hideArguments}
+        </span>
+        {points.length > 0 && (
+          <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
+            {points.length}
+          </span>
+        )}
+      </button>
 
-      {/* Main Content */}
-      <main className="flex h-full flex-1 flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex flex-shrink-0 items-center justify-between border-b border-[var(--border-light)] bg-white px-6 py-3 shadow-sm">
-          <div>
-            <div className="flex items-center gap-2">
-              <Link href="/" className="text-[var(--text-muted)] md:hidden">
-                <Icon name="arrow_back" />
-              </Link>
-              <h1 className="flex items-center gap-2 text-lg font-bold text-[var(--text-main)]">
-                {TEXT.negotiationPage.title}
-              </h1>
-            </div>
-            <p className="mt-0.5 text-xs text-[var(--text-muted)]">
-              {TEXT.negotiationPage.subtitle}
-            </p>
-          </div>
-          <div className="hidden items-center gap-3 text-xs md:flex">
-            <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
-          </div>
-        </header>
-
-        {/* Two Column Layout */}
-        <div className="flex flex-1 flex-col gap-4 overflow-hidden p-4 md:flex-row">
-          {/* Left Column - Details & Context */}
-          <div className="flex h-full w-full flex-col gap-4 overflow-y-auto md:w-7/12 md:overflow-hidden">
-            <DetailsForm userInfo={userInfo} onChange={updateUserInfo} />
-            <ContextForm userInfo={userInfo} onChange={updateUserInfo} />
-          </div>
-
-          {/* Right Column - Argument Builder */}
-          <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-[var(--border-light)] bg-white shadow-sm md:w-5/12">
-            <ArgumentBuilder
-              points={points}
-              onAddPoint={addPoint}
-              onRemovePoint={removePoint}
-              className="flex-1 overflow-hidden border-0 shadow-none"
-            />
-            <GenerateButtons
-              pointsCount={points.length}
-              isGeneratingEmail={isGeneratingEmail}
-              emailRemaining={emailRemaining}
-              hasReachedEmailLimit={hasReachedEmailGenerationLimit()}
-              onGenerateEmail={handleEmailGenerate}
-              isGeneratingPlaybook={isGeneratingPlaybook}
-              playbookRemaining={playbookRemaining}
-              hasReachedPlaybookLimit={hasReachedPlaybookGenerationLimit()}
-              onGeneratePlaybook={handlePlaybookGenerate}
-              emailError={emailError}
-              playbookError={playbookError}
-            />
-          </div>
-        </div>
-
-        {/* Generated Content */}
-        <GeneratedContent
-          emailContent={emailContent || undefined}
-          emailPrompt={emailPrompt || undefined}
-          playbookContent={playbookContent || undefined}
-          playbookPrompt={playbookPrompt || undefined}
+      {/* Collapsible content */}
+      <div
+        id="argument-builder-content"
+        className={`flex flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out lg:flex ${
+          isArgumentBuilderCollapsed ? 'hidden' : 'flex'
+        }`}
+      >
+        <ArgumentBuilder
+          points={points}
+          onAddPoint={addPoint}
+          onRemovePoint={removePoint}
+          className="flex-1 overflow-hidden border-0 shadow-none"
         />
-      </main>
-
-      {/* Mobile Menu Button */}
-      <div className="fixed right-6 bottom-6 z-50 md:hidden">
-        <Link
-          href="/"
-          className="flex items-center justify-center rounded-full bg-[var(--primary)] p-3 text-white shadow-lg transition-colors hover:opacity-90"
-        >
-          <Icon name="home" />
-        </Link>
+        <GenerateButtons
+          pointsCount={points.length}
+          isGeneratingEmail={isGeneratingEmail}
+          emailRemaining={emailRemaining}
+          hasReachedEmailLimit={hasReachedEmailGenerationLimit()}
+          onGenerateEmail={handleEmailGenerate}
+          isGeneratingPlaybook={isGeneratingPlaybook}
+          playbookRemaining={playbookRemaining}
+          hasReachedPlaybookLimit={hasReachedPlaybookGenerationLimit()}
+          onGeneratePlaybook={handlePlaybookGenerate}
+          emailError={emailError}
+          playbookError={playbookError}
+        />
       </div>
     </div>
+  )
+
+  return (
+    <DashboardLayout rightPanel={rightPanelContent}>
+      {/* Header */}
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--text-main)]">
+            {TEXT.negotiationPage.title}
+          </h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{TEXT.negotiationPage.subtitle}</p>
+        </div>
+        <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
+      </div>
+
+      {/* Forms */}
+      <div className="flex flex-col gap-4">
+        <DetailsForm userInfo={userInfo} onChange={updateUserInfo} />
+        <ContextForm userInfo={userInfo} onChange={updateUserInfo} />
+      </div>
+
+      {/* Generated Content */}
+      <GeneratedContent
+        emailContent={emailContent || undefined}
+        emailPrompt={emailPrompt || undefined}
+        playbookContent={playbookContent || undefined}
+        playbookPrompt={playbookPrompt || undefined}
+      />
+    </DashboardLayout>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import SalaryPointForm from './SalaryPointForm'
 import ActivityTimeline from './ActivityTimeline'
 import type { PayPoint } from '@/lib/models/types'
+import type { InflationDataPoint } from '@/lib/models/inflation'
 import { TEXT } from '@/lib/constants/text'
 
 interface RightPanelProps {
@@ -14,6 +15,7 @@ interface RightPanelProps {
   validationError?: string
   isNetMode?: boolean
   payPoints: PayPoint[]
+  inflationData?: InflationDataPoint[]
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
   onAdd: () => void
@@ -29,6 +31,7 @@ export default function RightPanel({
   validationError,
   isNetMode,
   payPoints,
+  inflationData,
   onYearChange,
   onPayChange,
   onAdd,
@@ -53,7 +56,7 @@ export default function RightPanel({
       {/* Collapsible toggle button - only visible on mobile */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="flex w-full items-center justify-between border-b border-[var(--border-light)] bg-[var(--surface-light)] p-4 text-sm font-semibold text-[var(--text-main)] transition-colors hover:bg-gray-50 lg:hidden"
+        className="flex w-full items-center justify-between border-b border-[var(--border-light)] bg-gray-50/50 p-4 text-sm font-semibold text-[var(--text-main)] transition-colors hover:bg-gray-100 lg:hidden"
         aria-expanded={!isCollapsed}
         aria-controls="right-panel-content"
       >
@@ -84,6 +87,7 @@ export default function RightPanel({
           minYear={minYear}
           validationError={validationError}
           isNetMode={isNetMode}
+          inflationData={inflationData}
           onYearChange={onYearChange}
           onPayChange={onPayChange}
           onAdd={onAdd}

@@ -2,6 +2,7 @@
 
 import type { Metadata } from 'next'
 import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
+import MobileBottomNav from '@/components/layout/MobileBottomNav'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import './globals.css'
 
@@ -105,10 +106,13 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="h-full bg-[var(--background-light)] text-base antialiased font-sans">
+      <body className="h-full bg-[var(--background-light)] font-sans text-base antialiased">
         <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <MobileMetaScript />
-        <DisplayModeProvider>{children}</DisplayModeProvider>
+        <DisplayModeProvider>
+          {children}
+          <MobileBottomNav />
+        </DisplayModeProvider>
       </body>
     </html>
   )

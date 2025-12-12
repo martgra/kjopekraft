@@ -59,7 +59,17 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
 
       {/* Real Annual Value (Inflation Adjusted) */}
       <MetricCard
-        title={TEXT.metrics.realAnnualValue}
+        title={
+          <span className="flex items-center gap-1">
+            {TEXT.metrics.realAnnualValue}
+            <span
+              className="material-symbols-outlined cursor-help text-[16px] text-[var(--text-muted)]"
+              title={TEXT.help.realAnnualValue}
+            >
+              info
+            </span>
+          </span>
+        }
         value={Math.round(displayInflationAdjustedPay)}
         suffix={TEXT.common.pts}
         icon="price_check"
@@ -72,7 +82,17 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
 
       {/* Yearly Change */}
       <MetricCard
-        title={TEXT.metrics.yearlyChange}
+        title={
+          <span className="flex items-center gap-1">
+            {TEXT.metrics.yearlyChange}
+            <span
+              className="material-symbols-outlined cursor-help text-[16px] text-[var(--text-muted)]"
+              title={TEXT.help.yearlyChange}
+            >
+              info
+            </span>
+          </span>
+        }
         value={`${displayGapPercent >= 0 ? '+' : ''}${displayGapPercent.toFixed(1)}%`}
         icon="calendar_today"
         trend={{
