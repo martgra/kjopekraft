@@ -15,7 +15,7 @@ export default function DashboardWithDrawer({
   inflationData,
   currentYear,
 }: DashboardWithDrawerProps) {
-  const { isOpen, closeDrawer, setPointsCount } = useDrawer()
+  const { isOpen, openDrawer, closeDrawer, setPointsCount } = useDrawer()
   const { payPoints } = useSalaryData(inflationData, currentYear)
 
   // Update points count for the FAB badge
@@ -28,6 +28,7 @@ export default function DashboardWithDrawer({
       inflationData={inflationData}
       currentYear={currentYear}
       isDrawerOpen={isOpen}
+      onDrawerOpen={openDrawer}
       onDrawerClose={closeDrawer}
     />
   )

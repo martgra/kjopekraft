@@ -5,6 +5,7 @@ import { TEXT } from '@/lib/constants/text'
 
 interface OnboardingEmptyStateProps {
   onLoadDemo: () => void
+  onOpenDrawer: () => void
 }
 
 const FEATURES = [
@@ -25,10 +26,14 @@ const FEATURES = [
   },
 ]
 
-export default function OnboardingEmptyState({ onLoadDemo }: OnboardingEmptyStateProps) {
-  const scrollToForm = () => {
-    // Scroll to the right panel where the form is
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+export default function OnboardingEmptyState({ onLoadDemo, onOpenDrawer }: OnboardingEmptyStateProps) {
+  const handleAddOwnData = () => {
+    // On mobile, open the drawer. On desktop, scroll to the form in the sidebar
+    if (window.innerWidth < 768) {
+      onOpenDrawer()
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   return (
@@ -54,7 +59,7 @@ export default function OnboardingEmptyState({ onLoadDemo }: OnboardingEmptyStat
         <Button onClick={onLoadDemo} variant="primary" icon="play_arrow" className="min-w-[180px]">
           {TEXT.onboarding.loadDemoButton}
         </Button>
-        <Button onClick={scrollToForm} variant="secondary" icon="add" className="min-w-[180px]">
+        <Button onClick={handleAddOwnData} variant="secondary" icon="add" className="min-w-[180px]">
           {TEXT.onboarding.addOwnDataButton}
         </Button>
       </div>
@@ -79,8 +84,8 @@ export default function OnboardingEmptyState({ onLoadDemo }: OnboardingEmptyStat
         ))}
       </div>
 
-      {/* Info box */}
-      <div className="w-full max-w-lg rounded-lg border border-blue-100 bg-blue-50/50 p-4">
+      {/* Info box - hidden on mobile */}
+      <div className="hidden w-full max-w-lg rounded-lg border border-blue-100 bg-blue-50/50 p-4 md:block">
         <div className="flex items-start gap-3">
           <span className="material-symbols-outlined flex-shrink-0 text-[24px] text-[var(--primary)]">
             lightbulb

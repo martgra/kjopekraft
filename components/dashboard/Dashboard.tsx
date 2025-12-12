@@ -19,6 +19,7 @@ interface DashboardProps {
   inflationData: InflationDataPoint[]
   currentYear: number
   isDrawerOpen: boolean
+  onDrawerOpen: () => void
   onDrawerClose: () => void
 }
 
@@ -26,6 +27,7 @@ export default function Dashboard({
   inflationData,
   currentYear,
   isDrawerOpen,
+  onDrawerOpen,
   onDrawerClose,
 }: DashboardProps) {
   const { payPoints, statistics, hasData, addPoint, removePoint, validatePoint, isLoading, error } =
@@ -97,9 +99,7 @@ export default function Dashboard({
   }
 
   const handleRemovePoint = (year: number, pay: number) => {
-    if (confirm(TEXT.common.confirmDelete)) {
-      removePoint(year, pay)
-    }
+    removePoint(year, pay)
   }
 
   if (isLoading) {
@@ -149,8 +149,8 @@ export default function Dashboard({
       <DashboardLayout rightPanel={rightPanelContent}>
         {/* Main Dashboard Content */}
         <div className="flex min-h-full flex-col gap-6">
-          {/* Header */}
-          <div className="flex flex-col gap-1">
+          {/* Header - hidden on mobile when showing welcome state */}
+          <div className={`${!hasData ? 'hidden md:flex' : 'flex'} flex-col gap-1`}>
             <h1 className="text-2xl font-bold text-[var(--text-main)] md:text-3xl">
               {TEXT.dashboard.annualOverview}
             </h1>
@@ -280,7 +280,7 @@ export default function Dashboard({
               />
             </div>
           ) : (
-            <OnboardingEmptyState onLoadDemo={handleLoadDemo} />
+            <OnboardingEmptyState onLoadDemo={handleLoadDemo} onOpenDrawer={onDrawerOpen} />
           )}
         </div>
       </DashboardLayout>
