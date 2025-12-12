@@ -8,8 +8,14 @@ import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Badge } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
+import type { InflationDataPoint } from '@/lib/models/inflation'
 
-export default function NegotiationPage() {
+interface NegotiationPageProps {
+  inflationData: InflationDataPoint[]
+  currentYear: number
+}
+
+export default function NegotiationPage({ inflationData, currentYear }: NegotiationPageProps) {
   const {
     points,
     addPoint,
@@ -32,7 +38,7 @@ export default function NegotiationPage() {
   const [playbookError, setPlaybookError] = useState<string | null>(null)
 
   // Get salary statistics for pre-filling current salary
-  const { statistics } = useSalaryData()
+  const { statistics } = useSalaryData(inflationData, currentYear)
   const derivedCurrentSalary = statistics?.latestPay ? String(statistics.latestPay) : ''
 
   // User info state
@@ -139,7 +145,6 @@ export default function NegotiationPage() {
     const storedPlaybookPrompt = localStorage.getItem('negotiation_playbookPrompt')
     if (storedEmailPrompt !== null) setEmailPrompt(storedEmailPrompt)
     if (storedPlaybookPrompt !== null) setPlaybookPrompt(storedPlaybookPrompt)
-     
   }, [])
 
   // Persist prompts to localStorage when they change (content is handled by the hook)

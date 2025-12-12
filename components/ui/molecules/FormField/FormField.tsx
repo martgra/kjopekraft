@@ -8,5 +8,5 @@ export interface FormFieldProps extends Omit<InputProps, 'onChange'> {
 }
 
 export function FormField({ value, onChange, ...props }: FormFieldProps) {
-  return <Input value={value} onChange={(e) => onChange(e.target.value)} {...props} />
+  return <Input value={value} onChange={e => onChange(e.target.value)} {...props} />
 }

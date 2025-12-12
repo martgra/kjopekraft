@@ -38,7 +38,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const isDisabled = disabled || loading
 
@@ -48,12 +48,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           'inline-flex items-center justify-center rounded-lg font-medium',
           'transition-all duration-150 ease-in-out',
-          'focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2',
+          'focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
           'active:scale-[0.98]',
           variants[variant],
           sizes[size],
-          className
+          className,
         )}
         disabled={isDisabled}
         {...props}
@@ -68,7 +68,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </button>
     )
-  }
+  },
 )
 
 Button.displayName = 'Button'
