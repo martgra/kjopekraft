@@ -329,6 +329,7 @@ Available argument categories:
 - Brief context and purpose
 - 2-3 key arguments highlighted
 - Salary expectation stated clearly
+- **[NEW] Market data analysis** (when job title provided): Automatic SSB median salary comparison
 - Call to action (meeting request)
 - Professional closing
 - ~200-300 words, ready to send
@@ -337,12 +338,70 @@ Available argument categories:
 
 - Executive summary
 - Detailed argument breakdown
+- **[NEW] Market position analysis** (when job title provided): SSB salary trends and positioning
 - Anticipate objections and counters
 - Market context and benchmarks
 - Negotiation strategy and tactics
 - Walk-away scenarios
 - Next steps checklist
 - ~800-1200 words, comprehensive guide
+
+#### Dynamic Market Data (AI-Powered SSB Integration)
+
+**How It Works**:
+
+When you fill in your job title (e.g., "Senior Developer", "Sykepleier"), the AI agent **autonomously queries SSB** (Statistics Norway) during generation to enrich your negotiation materials with official salary data.
+
+**What the AI Does Automatically**:
+
+1. **Translates Job Title → SSB Occupation Code**
+   - Example: "Programvareutvikler" → SSB code 2512
+   - Uses fuzzy matching for close matches (e.g., "Utvikler" → 2512)
+   - Notifies you if using approximate category
+
+2. **Fetches Median Salary**
+   - Gets latest official median salary for your occupation
+   - Example: Programvareutviklere median 820,000 NOK (2024)
+   - Source: SSB Table 11418
+
+3. **Compares Your Salary to Market**
+   - Calculates gap: "Your 900k request is 9.8% above market median"
+   - Position indicator: "above market", "at market", "below market"
+   - Justifies increase/decrease based on market position
+
+4. **Analyzes Salary Trends** (in playbook)
+   - Historical growth rates
+   - Example: "Median salary grew 4.2% annually 2020-2024"
+   - Context for timing your negotiation
+
+**Transparency & Notifications**:
+
+- If AI uses approximate occupation match, you'll see: _"Basert på SSB-data for nærmeste kategori (Programvareutviklere)..."_
+- All market data cites source: _"Kilde: SSB Tabell 11418"_
+- If no SSB match found, AI proceeds using your manually entered market data
+
+**Supported Occupations** (as of Dec 2024):
+
+- Sykepleiere (Nurses) - Code 2223
+- Programvareutviklere (Software Developers) - Code 2512
+- Lærere (Teachers) - Code 2330
+- Ingeniører (Civil Engineers) - Code 2146
+
+**Example AI Enhancement**:
+
+_User input_: Job title "Senior Developer", Current salary 750k, Desired 900k
+
+_AI generates_:
+
+> "Basert på SSB-data for Programvareutviklere er medianlønnen 820,000 NOK i 2024. Din ønskede lønn på 900,000 NOK ligger 9.8% over markedsmedianen. Dette kan forsvares dersom du har:
+>
+> - 5+ års erfaring (senior-nivå)
+> - Spesialkompetanse innen kritiske områder
+> - Dokumenterte resultater som overstiger forventninger..."
+
+_Without AI tools, generic response_:
+
+> "For å støtte din ønskede lønn på 900,000 NOK, bør du presentere..."
 
 #### Business Logic
 

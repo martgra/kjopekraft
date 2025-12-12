@@ -1,6 +1,7 @@
 import React from 'react'
 import { Document, Packer } from 'docx'
 import { markdownToDocxParagraphs } from '../utils/negotiationUtils'
+import { Icon } from '@/components/ui/atoms'
 
 interface DownloadDocxButtonProps {
   content: string
@@ -30,11 +31,11 @@ export function DownloadDocxButton({ content, filename, label }: DownloadDocxBut
   return (
     <button
       type="button"
-      className="ml-2 flex items-center gap-1 rounded border border-purple-300 bg-purple-50 px-2 py-1 text-xs text-purple-700 transition-colors hover:bg-purple-100 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+      className="inline-flex items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-purple-700 shadow-sm ring-1 ring-purple-200 transition-all ring-inset hover:bg-purple-50 hover:ring-purple-300"
       onClick={handleDownload}
       aria-label={label}
     >
-      <span>⬇️</span>
+      <Icon name="download" className="text-lg text-purple-500" />
       {label}
     </button>
   )

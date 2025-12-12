@@ -226,6 +226,19 @@ export const TEXT = {
     noPointsYet: 'Ingen punkter lagt til ennå',
     yourPoints: 'Dine forhandlingspunkter',
     removePoint: 'Fjern punkt',
+    // SSB data notices for AI-generated content
+    ssbDataNotices: {
+      approximateMatch: 'Merk: Bruker nærmeste yrkeskategori ({occupation}) fra SSB',
+      noDataAvailable: 'Kunne ikke finne relevant SSB-data for dette yrket',
+      dataSourceCitation: 'Kilde: SSB Tabell 11418',
+      usingEstimate: 'Bruker estimert data for {year}',
+      occupationCodes: {
+        '2223': 'Sykepleiere',
+        '2512': 'Programvareutviklere',
+        '2330': 'Lærere',
+        '2146': 'Ingeniører (bygg og anlegg)',
+      },
+    },
   },
 
   onboarding: {

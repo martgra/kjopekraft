@@ -243,7 +243,7 @@ Client components use hooks for state:
 export function useSalaryData(inflationData, currentYear) {
   const [payPoints, setPayPoints] = useState<PayPoint[]>([])
 
-  // localStorage persistence
+  // localStorage persistence - load after mount
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) setPayPoints(JSON.parse(stored))
@@ -258,6 +258,32 @@ export function useSalaryData(inflationData, currentYear) {
   return { payPoints, statistics, addPoint, removePoint, ... }
 }
 ```
+
+### Client-Only Pages (No SSR)
+
+For pages that heavily depend on localStorage and client-side state (e.g., negotiation page), disable SSR entirely:
+
+```typescript
+// app/negotiation/page.tsx (Server Component)
+import dynamic from 'next/dynamic'
+
+// Disable SSR for this page to prevent hydration issues
+const NegotiationPageWrapper = dynamic(
+  () => import('@/features/negotiation/components/NegotiationPageWrapper'),
+  { ssr: false }
+)
+
+export default function Page() {
+  return <NegotiationPageWrapper />
+}
+```
+
+This approach:
+
+- Prevents hydration mismatches with localStorage
+- Keeps code simple without hydration workarounds
+- Client component fetches its own data
+- Use sparingly - only for truly client-only pages
 
 ### Context for Global State
 
@@ -385,7 +411,19 @@ POST /api/generate/email or /api/generate/playbook
     ↓
 buildEmailPrompt() or buildPlaybookPrompt()
     ↓
-Vercel AI SDK + OpenAI
+Vercel AI SDK + OpenAI (with SSB tools)
+    ↓
+AI agent analyzes prompt
+    ↓
+[OPTIONAL] AI calls SSB tools autonomously:
+    - findOccupationCode(jobTitle) → SSB code
+    - getMedianSalary(occupation, year) → median salary
+    - compareToMarket(occupation, salary, year) → market position
+    - getSalaryTrend(occupation, fromYear, toYear) → growth analysis
+    ↓
+Tool executes → queries SSB API → returns data
+    ↓
+AI synthesizes market data into response
     ↓
 Stream markdown response
     ↓
@@ -393,6 +431,76 @@ Display in CollapsibleSection
     ↓
 Copy/download actions available
 ```
+
+### AI Agent Tools Architecture
+
+**Overview**: The application uses Vercel AI SDK's `tool()` function to enable AI agents to autonomously query SSB (Statistics Norway) salary data during negotiation content generation.
+
+**Tool Infrastructure** (`/lib/ssb/`):
+
+1. **ssbQueryFunctions.ts** - Low-level SSB API wrappers
+   - `queryMedianSalary(occupationCode, year)`: Fetch median salary for occupation/year
+   - `querySalaryTrend(occupationCode, fromYear, toYear)`: Analyze salary development over time
+   - `calculateMarketGap(occupationCode, userSalary, year)`: Compare user salary to market median
+   - All functions call existing `/api/ssb/salary` route with median stat parameter
+
+2. **occupationMapper.ts** - Fuzzy occupation matching
+   - `mapJobTitleToOccupation(jobTitle)`: Map free-text job title to SSB code
+   - Keyword-based matching (Norwegian + English)
+   - Confidence scoring (1.0 = exact, 0.9 = word match, 0.7 = partial, 0.6 = fuzzy)
+   - Returns `{ code, label, confidence, isApproximate }` or `null`
+   - Supported occupations: Sykepleiere (2223), Programvareutviklere (2512), Lærere (2330), Ingeniører (2146)
+
+3. **ssbTools.ts** - Tool definitions for AI SDK
+   - `getMedianSalary`: Fetch market salary (accepts code or job title)
+   - `getSalaryTrend`: Analyze salary growth over time range
+   - `compareToMarket`: Calculate user's position vs. market (above/below/at market)
+   - `findOccupationCode`: Translate job title to SSB code
+   - Each tool uses Zod schemas for parameter validation
+   - Tools return structured JSON with error handling
+
+**Integration Flow**:
+
+```
+User fills negotiation form (job title: "Senior Developer")
+    ↓
+POST to /api/generate/playbook with tools=ssbToolset, maxSteps=5
+    ↓
+OpenAI model receives prompt + tool schemas
+    ↓
+Model decides to call: findOccupationCode({ jobTitle: "Senior Developer" })
+    ↓
+Tool executes: maps "Developer" → code "2512" (confidence: 0.9, approximate)
+    ↓
+Model calls: getMedianSalary({ occupation: "2512", year: 2024 })
+    ↓
+Tool queries SSB API → returns { yearly: 820000, confidence: "official" }
+    ↓
+Model synthesizes: "Basert på SSB-data for nærmeste kategori (Programvareutviklere),
+                    er medianlønnen 820,000 NOK i 2024..."
+    ↓
+Final playbook includes data-backed market analysis
+```
+
+**Tool Call Transparency**:
+
+- Tool execution logs **NOT** exposed to users (clean UX)
+- Approximate matches notified in content: "Basert på SSB-data for nærmeste kategori..."
+- Source citations included: "Kilde: SSB Tabell 11418"
+- AI prompts instruct model to inform users when using approximate occupations
+
+**Error Handling**:
+
+- Missing occupation match → AI proceeds without market data, uses user-provided info
+- SSB API failure → Tool returns `{ error: true, message: "..." }`
+- AI adapts response based on available data
+
+**Future Enhancements** (not yet implemented):
+
+- **Tool call caching**: Deduplicate redundant SSB queries within same generation session
+- **Expanded occupation registry**: Add more SSB codes beyond current 4 occupations
+- **Multi-occupation comparison**: Support comparing across different roles
+- **Streaming tool calls**: Show real-time tool execution to users for transparency
 
 ## State Management Strategy
 
@@ -418,6 +526,48 @@ Copy/download actions available
 - User data persistence
 - Settings persistence
 - Onboarding flags
+
+**Client-Only Pages with localStorage:**
+
+When a page heavily depends on localStorage (like the negotiation tool), disable SSR entirely to avoid hydration mismatches:
+
+```typescript
+// app/negotiation/page.tsx
+import dynamic from 'next/dynamic'
+
+const NegotiationPageClient = dynamic(
+  () => import('@/features/negotiation/components/NegotiationPageWrapper'),
+  {
+    ssr: false, // Completely disable SSR
+    loading: () => <LoadingSpinner />,
+  },
+)
+
+export default function Page() {
+  return <NegotiationPageClient />
+}
+```
+
+Benefits:
+
+- No hydration mismatches
+- localStorage available immediately in component
+- Simpler state management
+- Consistent behavior
+
+Trade-offs:
+
+- No SEO for that page (acceptable for authenticated/tool pages)
+- Slightly slower initial render
+- No server-side data prefetching
+
+Use this approach when:
+
+- Page relies on localStorage for core functionality
+- SEO is not critical (tools, dashboards, settings)
+- All data is user-specific
+
+For pages needing both SSR and localStorage, use progressive enhancement with careful state initialization.
 
 ### Server Cache
 

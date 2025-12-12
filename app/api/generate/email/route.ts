@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { openai } from '@ai-sdk/openai'
-import { generateText } from 'ai'
+import { generateText, stepCountIs } from 'ai'
 import { buildEmailPrompt, SYSTEM_PROMPT_EMAIL } from '@/lib/prompts'
 import { NegotiationPoint, NegotiationUserInfo } from '@/lib/models/types'
+import { ssbToolset } from '@/lib/ssb/ssbTools'
 
 export const maxDuration = 30 // Allow responses up to 30 seconds
 
@@ -16,9 +17,11 @@ export async function POST(req: Request) {
     const prompt = buildEmailPrompt(points, userInfo)
 
     const { text } = await generateText({
-      model: openai('gpt-4.1-mini'),
+      model: openai('gpt-4o-mini'),
       system: SYSTEM_PROMPT_EMAIL,
       prompt,
+      tools: ssbToolset,
+      stopWhen: stepCountIs(5),
     })
     return NextResponse.json({ result: text, prompt: prompt })
   } catch (error) {
