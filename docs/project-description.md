@@ -93,6 +93,36 @@ The core functionality includes:
   - `features/negotiation/components/NegotiationPage.tsx`: Added `pb-20` padding on mobile
 - **User Benefit**: Easy navigation between main sections on mobile without hamburger menu or back button confusion
 
+### 7. Mobile Metric Card Optimization - Expandable Summary View
+
+- **Changed**: Replaced full metric card grid with expandable compact summary bar on mobile to maximize chart space
+- **Mobile Layout** (`Dashboard.tsx`):
+  - Full `MetricGrid` hidden on mobile (`hidden md:block`)
+  - New expandable summary bar shown on mobile only (`md:hidden`)
+  - **Collapsed state** (default): Shows 2 key metrics (Annual Salary and vs Inflation %)
+  - **Expanded state**: Shows additional metrics (Real Annual Value, detailed Yearly Change)
+  - Expand/collapse toggle with chevron icon (`expand_more` / `expand_less`)
+  - State managed with `isMetricsExpanded` hook
+  - Takes ~60% less vertical space than previous card grid when collapsed
+  - Imports `calculateNetIncome` to support net mode in summary
+- **Chart Optimization** (`ChartSection.tsx`):
+  - Reduced padding from `p-6` to `p-4` on mobile for more chart area
+  - Reduced header margin from `mb-4` to `mb-3` on mobile
+  - Chart title reduced from `text-lg` to `text-base` on mobile
+  - Chart subtitle hidden on mobile (`hidden md:block`)
+  - Gap reduced from `gap-4` to `gap-3` on mobile
+- **Card Styling for Desktop** (`MetricCard.tsx`):
+  - Optimized for 2-column grid on small screens, 3-column on large
+  - Reduced padding and font sizes at small breakpoints
+  - Full detail view remains on tablet/desktop (md+)
+- **User Benefit**:
+  - Chart gets maximum screen space on mobile (primary focus)
+  - Essential metrics visible by default, more detail on demand
+  - User controls information density via expand/collapse
+  - ~70% more vertical space for chart compared to previous full-card layout
+  - Desktop users still see full detailed metric cards
+  - Better mobile-first approach prioritizing data visualization
+
 ## Previous Fixes
 
 - Fixed time range toggle (1Y, 3Y, ALL) in ChartSection to properly filter both payPoints and inflationData

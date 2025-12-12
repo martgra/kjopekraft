@@ -9,6 +9,7 @@ import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
 import { DEMO_PAY_POINTS } from '@/features/onboarding/demoData'
+import { calculateNetIncome } from '@/features/tax/taxCalculator'
 import type { InflationDataPoint } from '@/lib/models/inflation'
 import type { PayPoint } from '@/lib/models/types'
 import { TEXT } from '@/lib/constants/text'
@@ -23,6 +24,7 @@ export default function Dashboard({ inflationData }: DashboardProps) {
 
   const { isNetMode, toggleMode } = useDisplayMode()
   const [isDemoMode, setIsDemoMode] = useState(false)
+  const [isMetricsExpanded, setIsMetricsExpanded] = useState(false)
 
   // Form state
   const [newYear, setNewYear] = useState('')
@@ -161,7 +163,100 @@ export default function Dashboard({ inflationData }: DashboardProps) {
                 </div>
               </div>
             )}
-            <MetricGrid statistics={statistics} isNetMode={isNetMode} />
+            {/* Compact mobile summary */}
+            <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] md:hidden">
+              <button
+                onClick={() => setIsMetricsExpanded(!isMetricsExpanded)}
+                className="flex w-full items-center justify-between px-4 py-3"
+              >
+                <div className="flex flex-1 items-center justify-between">
+                  <div className="flex-1">
+                    <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                      {isNetMode
+                        ? TEXT.metrics.totalAnnualNetSalary
+                        : TEXT.metrics.totalAnnualSalary}
+                    </p>
+                    <p className="text-lg font-bold text-[var(--text-main)]">
+                      {Math.round(
+                        isNetMode
+                          ? calculateNetIncome(statistics.latestYear, statistics.latestPay)
+                          : statistics.latestPay,
+                      ).toLocaleString('nb-NO')}
+                    </p>
+                  </div>
+                  <div className="flex-1 border-l border-[var(--border-light)] pl-4">
+                    <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                      {TEXT.metrics.vsInflation}
+                    </p>
+                    <p
+                      className={`text-lg font-bold ${statistics.gapPercent >= 0 ? 'text-[#078838]' : 'text-red-600'}`}
+                    >
+                      {statistics.gapPercent >= 0 ? '+' : ''}
+                      {statistics.gapPercent.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined ml-2 text-[20px] text-[var(--text-muted)]">
+                  {isMetricsExpanded ? 'expand_less' : 'expand_more'}
+                </span>
+              </button>
+
+              {isMetricsExpanded && (
+                <div className="border-t border-[var(--border-light)] px-4 py-3">
+                  <div className="flex flex-col gap-3">
+                    {/* Real Annual Value */}
+                    <div>
+                      <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                        {TEXT.metrics.realAnnualValue}
+                      </p>
+                      <p className="text-base font-bold text-[var(--text-main)]">
+                        {Math.round(
+                          isNetMode
+                            ? calculateNetIncome(
+                                statistics.latestYear,
+                                statistics.inflationAdjustedPay,
+                              )
+                            : statistics.inflationAdjustedPay,
+                        ).toLocaleString('nb-NO')}{' '}
+                        {TEXT.common.pts}
+                      </p>
+                    </div>
+
+                    {/* Yearly Change */}
+                    <div>
+                      <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                        {TEXT.metrics.yearlyChange}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <p
+                          className={`text-base font-bold ${statistics.gapPercent >= 0 ? 'text-[#078838]' : 'text-red-600'}`}
+                        >
+                          {statistics.gapPercent >= 0 ? '+' : ''}
+                          {statistics.gapPercent.toFixed(1)}%
+                        </p>
+                        <span className="text-xs text-[var(--text-muted)]">
+                          ({statistics.gapPercent >= 0 ? '+' : ''}
+                          {Math.round(
+                            isNetMode
+                              ? calculateNetIncome(statistics.latestYear, statistics.latestPay) -
+                                  calculateNetIncome(
+                                    statistics.latestYear,
+                                    statistics.inflationAdjustedPay,
+                                  )
+                              : statistics.latestPay - statistics.inflationAdjustedPay,
+                          ).toLocaleString('nb-NO')}{' '}
+                          {TEXT.common.pts})
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Full metrics grid - desktop only */}
+            <div className="hidden md:block">
+              <MetricGrid statistics={statistics} isNetMode={isNetMode} />
+            </div>
           </>
         ) : (
           <div className="rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-6 text-center">
