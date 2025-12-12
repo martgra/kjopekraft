@@ -15,9 +15,21 @@ Kjøpekraft is built using a feature-based architecture with Next.js 15 App Rout
 ### Styling & UI
 
 - **Tailwind CSS 4**: Utility-first styling with CSS variables for theming
-- **CSS Modules**: Component-scoped styles where needed
-- **Material Icons**: Icon library for UI elements
-- **CSS Variables**: Design system tokens (colors, spacing, etc.)
+- **CSS Variables**: Figma-aligned design system with consistent light mode
+  - Primary: `#3b82f6` (Blue-500)
+  - Semantic colors: emerald (#10b981), orange (#f97316), indigo (#6366f1), blue (#3b82f6)
+  - Surface and text color variables for consistent theming
+  - No dark mode - consistent light theme throughout
+- **Material Symbols Outlined**: Consistent icon system (`material-symbols-outlined`)
+- **Atomic Design Pattern**: Components organized by complexity
+  - Atoms: Badge (with ring-inset variants), Button, Card, Icon, Input, Select, Spinner
+  - Molecules: FormField, MetricCard (with colored icon pills), PointItem
+  - Organisms: ArgumentBuilder, GeneratedContent
+- **Component Features**:
+  - MetricCard: Icon pills in top-right with colored backgrounds, hover border transitions
+  - Badge: Ring-inset design, multiple color variants (info, warning, success, error, primary)
+  - Select: Dropdown with left/right icon support, work icon for occupation selector
+  - Charts: Integrated legend, controls menu with occupation selector and toggles
 
 ### Data Visualization
 
@@ -66,12 +78,12 @@ Kjøpekraft is built using a feature-based architecture with Next.js 15 App Rout
 ├── components/                   # Reusable UI components
 │   ├── dashboard/               # Dashboard-specific components
 │   │   ├── Dashboard.tsx        # Main dashboard orchestrator
-│   │   ├── ChartSection.tsx     # Chart with controls
+│   │   ├── ChartSection.tsx     # Chart with controls menu below
 │   │   ├── MetricGrid.tsx       # Statistics display
-│   │   ├── MetricCard.tsx       # Individual metric card
+│   │   ├── MetricCard.tsx       # Individual metric card (colored icon pills)
 │   │   ├── RightPanel.tsx       # Data entry panel
 │   │   ├── SalaryPointForm.tsx  # Salary input form
-│   │   └── ActivityTimeline.tsx # Recent activity list
+│   │   └── ActivityTimeline.tsx # Recent activity with timeline line
 │   │
 │   ├── layout/                  # Layout components
 │   │   ├── DashboardLayout.tsx  # Main layout wrapper
@@ -80,11 +92,12 @@ Kjøpekraft is built using a feature-based architecture with Next.js 15 App Rout
 │   │
 │   └── ui/                      # Atomic design system
 │       ├── atoms/               # Basic UI elements
-│       │   ├── Badge/
+│       │   ├── Badge/           # Status badges with ring-inset variants
 │       │   ├── Button/
 │       │   ├── Card/
 │       │   ├── Icon/
 │       │   ├── Input/
+│       │   ├── Select/          # Dropdown with icon support
 │       │   └── Spinner/
 │       ├── molecules/           # Composite UI elements
 │       │   ├── FormField/

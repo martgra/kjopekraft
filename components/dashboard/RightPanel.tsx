@@ -92,7 +92,12 @@ export default function RightPanel({
           onPayChange={onPayChange}
           onAdd={onAdd}
         />
-        <ActivityTimeline payPoints={payPoints} onEdit={onEdit} onRemove={onRemove} />
+        <ActivityTimeline
+          payPoints={payPoints}
+          onEdit={onEdit}
+          onRemove={onRemove}
+          currentYear={currentYear}
+        />
       </div>
     </div>
   )

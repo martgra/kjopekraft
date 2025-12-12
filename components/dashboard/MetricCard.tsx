@@ -8,48 +8,57 @@ interface MetricCardProps {
     isPositive: boolean
   }
   icon: string
+  iconColor?: 'blue' | 'indigo' | 'orange' | 'emerald'
 }
 
-export default function MetricCard({ title, value, suffix, trend, icon }: MetricCardProps) {
+const iconColorClasses = {
+  blue: 'text-[var(--color-blue-500)] bg-blue-50',
+  indigo: 'text-[var(--color-indigo-500)] bg-indigo-50',
+  orange: 'text-[var(--color-orange-500)] bg-orange-50',
+  emerald: 'text-[var(--color-emerald-500)] bg-emerald-50',
+}
+
+export default function MetricCard({
+  title,
+  value,
+  suffix,
+  trend,
+  icon,
+  iconColor = 'blue',
+}: MetricCardProps) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-3 shadow-sm transition-shadow hover:shadow-md sm:gap-3 sm:p-5 md:p-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <p className="text-[10px] leading-tight font-medium text-[var(--text-muted)] sm:text-sm">
-          {title}
-        </p>
-        <span className="material-symbols-outlined shrink-0 text-[18px] text-[var(--primary)] sm:text-[22px] md:text-[24px]">
+    <div className="group relative flex flex-col gap-2 rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-4 shadow-sm transition-all hover:border-[var(--primary)]/50 sm:gap-4 sm:p-6">
+      {/* Header with Icon */}
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-xs font-medium text-[var(--text-muted)] sm:text-sm">{title}</p>
+        <span
+          className={`material-symbols-outlined shrink-0 rounded-md p-1.5 text-lg ${iconColorClasses[iconColor]}`}
+        >
           {icon}
         </span>
       </div>
 
       {/* Value */}
-      <div>
-        <p className="text-xl font-bold tracking-tight break-words text-[var(--text-main)] sm:text-3xl md:text-3xl">
-          {typeof value === 'number' ? value.toLocaleString('nb-NO') : value}
-          {suffix && (
-            <span className="ml-1 text-sm font-medium text-[var(--text-muted)] sm:text-lg">
-              {suffix}
-            </span>
-          )}
-        </p>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-baseline gap-1">
+          <p className="text-2xl font-bold text-[var(--text-main)] sm:text-3xl">
+            {typeof value === 'number' ? value.toLocaleString('nb-NO') : value}
+          </p>
+          {suffix && <span className="text-sm font-medium text-[var(--text-muted)]">{suffix}</span>}
+        </div>
 
         {/* Trend */}
         {trend && (
-          <div className="mt-1 flex flex-wrap items-center gap-1">
+          <div className="flex items-center gap-1 text-sm">
             <span
-              className={`material-symbols-outlined text-[14px] sm:text-[18px] ${trend.isPositive ? 'text-[#078838]' : 'text-red-600'}`}
+              className={`flex items-center font-medium ${trend.isPositive ? 'text-emerald-500' : 'text-red-500'}`}
             >
-              {trend.isPositive ? 'trending_up' : 'trending_down'}
-            </span>
-            <p
-              className={`text-[10px] font-bold sm:text-sm ${trend.isPositive ? 'text-[#078838]' : 'text-red-600'}`}
-            >
-              {trend.value}{' '}
-              <span className="ml-1 text-[9px] font-medium text-[var(--text-muted)] sm:text-xs">
-                {trend.label}
+              <span className="material-symbols-outlined text-sm">
+                {trend.isPositive ? 'trending_up' : 'trending_down'}
               </span>
-            </p>
+              {trend.value}
+            </span>
+            <span className="ml-1 text-[var(--text-muted)]">{trend.label}</span>
           </div>
         )}
       </div>

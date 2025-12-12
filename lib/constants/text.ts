@@ -65,10 +65,15 @@ export const TEXT = {
     chartTitle: 'Årlig lønnsvekst vs. Inflasjon',
     chartSubtitle: 'Følg dine årlige lønnspunkter mot reell kjøpekraft.',
     // Mode toggle
-    modeBadgeGross: 'Brutto',
-    modeBadgeNet: 'Netto',
+    modeBadgeGross: 'BRUTTO',
+    modeBadgeNet: 'NETTO',
     modeToggleLabel: 'Vis nettolønn (etter skatt)',
     controlsLabel: 'Visningsalternativer',
+    // Reference occupation
+    compareWithOccupation: 'Sammenlign med yrke:',
+    legendGross: 'Bruttolønn',
+    legendInflationAdjusted: 'Inflasjons-justert',
+    legendReference: 'Referanse',
   },
 
   stats: {
@@ -127,7 +132,7 @@ export const TEXT = {
     salaryAdded: 'Lønn lagt til',
     thisYear: 'I år',
     lastYear: 'I fjor',
-    yearsAgo: '{count} år siden',
+    yearsAgo: (years: number) => `${years} år siden`,
   },
 
   inflation: {

@@ -50,6 +50,7 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
         title={isNetMode ? TEXT.metrics.totalAnnualNetSalary : TEXT.metrics.totalAnnualSalary}
         value={Math.round(displayLatestPay)}
         icon="savings"
+        iconColor="blue"
         trend={{
           value: `+${yearlyChangePercent}%`,
           label: TEXT.metrics.vsStart,
@@ -72,7 +73,8 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
         }
         value={Math.round(displayInflationAdjustedPay)}
         suffix={TEXT.common.pts}
-        icon="price_check"
+        icon="payments"
+        iconColor="indigo"
         trend={{
           value: `${displayGapPercent >= 0 ? '+' : ''}${displayGapPercent.toFixed(1)}%`,
           label: TEXT.metrics.vsInflation,
@@ -94,7 +96,8 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
           </span>
         }
         value={`${displayGapPercent >= 0 ? '+' : ''}${displayGapPercent.toFixed(1)}%`}
-        icon="calendar_today"
+        icon="calendar_month"
+        iconColor="orange"
         trend={{
           value: `${yearlyChange >= 0 ? '+' : ''}${Math.round(yearlyChange).toLocaleString('nb-NO')} ${TEXT.common.pts}`,
           label: TEXT.metrics.thisYear,
