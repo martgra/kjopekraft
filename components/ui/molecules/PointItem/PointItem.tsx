@@ -9,6 +9,7 @@ export interface PointItemProps {
   type: string
   description: string
   onRemove: () => void
+  onEdit?: () => void
   className?: string
 }
 
@@ -29,7 +30,14 @@ const TYPE_LABELS: Record<string, string> = {
   Certification: TEXT.negotiation.typeCertification,
 }
 
-export function PointItem({ index, type, description, onRemove, className }: PointItemProps) {
+export function PointItem({
+  index,
+  type,
+  description,
+  onRemove,
+  onEdit,
+  className,
+}: PointItemProps) {
   const colors = TYPE_COLORS[type] || TYPE_COLORS.Achievement
   const typeLabel = TYPE_LABELS[type] || type
 
@@ -61,14 +69,27 @@ export function PointItem({ index, type, description, onRemove, className }: Poi
         <p className="text-sm leading-snug break-words text-[var(--text-main)]">{description}</p>
       </div>
 
-      {/* Remove Button */}
-      <button
-        onClick={onRemove}
-        className="flex-shrink-0 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500"
-        aria-label="Fjern punkt"
-      >
-        <Icon name="close" size="sm" />
-      </button>
+      {/* Action Buttons - Always visible on mobile, hover-reveal on desktop */}
+      <div className="flex flex-shrink-0 gap-2 md:opacity-0 md:transition-opacity md:group-hover:opacity-100">
+        {onEdit && (
+          <button
+            onClick={onEdit}
+            className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 md:p-1"
+            aria-label={TEXT.common.edit}
+            title={TEXT.common.edit}
+          >
+            <Icon name="edit" size="sm" />
+          </button>
+        )}
+        <button
+          onClick={onRemove}
+          className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 md:p-1"
+          aria-label="Fjern punkt"
+          title={TEXT.common.remove}
+        >
+          <Icon name="close" size="sm" />
+        </button>
+      </div>
     </div>
   )
 }

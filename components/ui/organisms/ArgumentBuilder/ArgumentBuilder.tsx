@@ -14,6 +14,7 @@ export interface ArgumentBuilderProps {
   points: NegotiationPoint[]
   onAddPoint: (point: NegotiationPoint) => void
   onRemovePoint: (index: number) => void
+  onEditPoint?: (index: number) => void
   className?: string
 }
 
@@ -40,6 +41,7 @@ export function ArgumentBuilder({
   points,
   onAddPoint,
   onRemovePoint,
+  onEditPoint,
   className,
 }: ArgumentBuilderProps) {
   const [desc, setDesc] = useState('')
@@ -49,6 +51,21 @@ export function ArgumentBuilder({
     if (!desc.trim()) return
     onAddPoint({ description: desc.trim(), type })
     setDesc('')
+  }
+
+  const handleEdit = (index: number) => {
+    // Pre-fill the form with the selected point's data
+    const point = points[index]
+    setDesc(point.description)
+    setType(point.type)
+
+    // Remove the point so user can edit and re-add it
+    onRemovePoint(index)
+
+    // Call the optional edit callback if provided
+    if (onEditPoint) {
+      onEditPoint(index)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -109,6 +126,7 @@ export function ArgumentBuilder({
                 type={p.type}
                 description={p.description}
                 onRemove={() => onRemovePoint(i)}
+                onEdit={() => handleEdit(i)}
               />
             ))}
           </div>
