@@ -72,7 +72,7 @@ export function ArgumentBuilder({
       <div className="flex-shrink-0 space-y-2 bg-white p-3">
         <div className="flex gap-2">
           <select
-            className="w-[35%] rounded-md border border-[var(--border-light)] bg-gray-50 py-2 text-xs text-[var(--text-main)] focus:ring-1 focus:ring-[var(--primary)]"
+            className="w-[35%] rounded-md border border-[var(--border-light)] bg-gray-50 py-2 text-base text-[var(--text-main)] focus:ring-1 focus:ring-[var(--primary)]"
             value={type}
             onChange={e => setType(e.target.value)}
           >
