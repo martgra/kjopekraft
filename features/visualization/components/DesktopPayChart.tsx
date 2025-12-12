@@ -105,8 +105,8 @@ export default function DesktopPayChart({
         },
         plugins: {
           tooltip: {
-            mode: 'index',
-            intersect: false,
+            mode: 'point',
+            intersect: true,
             backgroundColor: 'rgba(17, 24, 39, 0.95)',
             titleColor: '#fff',
             bodyColor: '#fff',
