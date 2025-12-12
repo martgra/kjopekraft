@@ -56,9 +56,12 @@ export default function Sidebar() {
 
             if (item.disabled) {
               return (
-                <div key={item.href} className={baseClassName}>
+                <div key={item.href} className={baseClassName} title={TEXT.sidebar.comingSoon}>
                   <span className="material-symbols-outlined">{item.icon}</span>
                   <p className="text-sm font-medium">{label}</p>
+                  <span className="ml-auto rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
+                    {TEXT.sidebar.comingSoon}
+                  </span>
                 </div>
               )
             }

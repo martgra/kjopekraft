@@ -97,13 +97,13 @@ export default function NegotiationPage({
       })
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate email')
+        throw new Error(data.error || TEXT.negotiation.emailErrorTitle)
       }
       setEmail(data.result)
       setEmailPrompt(data.prompt)
     } catch (err) {
       console.error('Email generation error:', err)
-      setEmailError(err instanceof Error ? err.message : 'An unknown error occurred')
+      setEmailError(TEXT.negotiation.emailErrorTitle)
     } finally {
       setIsGeneratingEmail(false)
     }
@@ -124,13 +124,13 @@ export default function NegotiationPage({
       })
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate playbook')
+        throw new Error(data.error || TEXT.negotiation.playbookErrorTitle)
       }
       setPlaybook(data.result)
       setPlaybookPrompt(data.prompt)
     } catch (err) {
       console.error('Playbook generation error:', err)
-      setPlaybookError(err instanceof Error ? err.message : 'An unknown error occurred')
+      setPlaybookError(TEXT.negotiation.playbookErrorTitle)
     } finally {
       setIsGeneratingPlaybook(false)
     }
