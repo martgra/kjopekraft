@@ -16,3 +16,9 @@ export type { IconProps } from './Icon'
 
 export { Spinner } from './Spinner'
 export type { SpinnerProps } from './Spinner'
+
+export { Select } from './Select'
+export type { SelectProps } from './Select'
+
+export { Toggle } from './Toggle'
+export type { ToggleProps } from './Toggle'

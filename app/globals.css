@@ -7,16 +7,27 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* New Design System Colors */
-  --primary: #137fec;
-  --background-light: #f6f7f8;
-  --background-dark: #101922;
+  /* New Design System Colors - Updated to match Figma */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --background-light: #f3f4f6;
+  --background-dark: #111827;
   --surface-light: #ffffff;
-  --surface-dark: #1a2632;
-  --text-main: #111418;
-  --text-muted: #617589;
-  --border-light: #dbe0e6;
+  --surface-dark: #1f2937;
+  --surface-subtle: #f9fafb;
+  --text-main: #111827;
+  --text-main-dark: #f9fafb;
+  --text-muted: #6b7280;
+  --text-muted-dark: #9ca3af;
+  --border-light: #e5e7eb;
   --border-dark: #374151;
+
+  /* Semantic colors */
+  --color-emerald-500: #10b981;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-indigo-500: #6366f1;
+  --color-blue-500: #3b82f6;
 }
 
 body {

@@ -33,7 +33,36 @@ This document describes Kjøpekraft's features, user workflows, and business log
 
 ### 1. Salary Dashboard
 
-The main view showing your salary development over time.
+The main view showing your salary development over time with modern, polished UI based on professional design standards.
+
+#### Visual Design Features
+
+- **Metric Cards**: Three key metrics displayed with colored icon pills (blue, indigo, orange)
+  - Total Annual Salary with trend indicator
+  - Real Annual Value (inflation-adjusted) with help tooltip
+  - Yearly Change percentage with absolute value
+  - Hover effects on cards for interactive feedback (border color transition)
+
+- **Chart Section**: Interactive visualization with:
+  - Professional badge styling in header (BRUTTO/NETTO, REFERANSE AKTIV)
+  - Clean chart area with legend integrated in the visualization
+  - Controls menu below chart with:
+    - Reference salary comparison dropdown (e.g., "Sykepleiere")
+    - Toggle for gross/net view
+    - Toggle for reference comparison
+
+- **Activity Timeline**: Recent salary additions with:
+  - Vertical timeline line connecting entries
+  - Relative time labels ("I år", "I fjor", "2 år siden")
+  - Hover-revealed edit/delete actions
+  - Green badges for salary amounts with ring-inset design
+
+- **Year Selector**: Header widget showing current fiscal year with calendar icon
+
+- **Color Palette**: Figma-aligned design system
+  - Primary: #3b82f6 (Blue-500)
+  - Semantic colors: emerald (#10b981), orange (#f97316), indigo (#6366f1)
+  - Consistent light mode throughout
 
 #### User Workflow
 
