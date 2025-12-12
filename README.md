@@ -1,60 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kjøpekraft - Salary & Inflation Tracker
 
-## Getting Started
+A Next.js web application that helps users track their salary development over time and compare it against inflation data. Built specifically for the Norwegian market with accurate tax calculations and SSB (Statistics Norway) integration.
 
-First, run the development server:
+## What Does It Do?
+
+Kjøpekraft allows you to:
+
+- **Track Salary Development**: Add salary data points across multiple years and visualize your income progression
+- **Compare Against Inflation**: See how your purchasing power has changed over time using official Norwegian inflation data
+- **Net vs Gross Mode**: Toggle between gross salary and net income (after Norwegian tax calculations)
+- **Reference Benchmarks**: Compare your salary against industry standards (currently supports nurses with SSB data)
+- **Negotiation Preparation**: Generate professional negotiation emails and playbooks based on your salary data and arguments
+- **Mobile Optimized**: Fully responsive design with mobile-first approach
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+# Install dependencies
+bun install
+
+# Run development server
 bun dev
+
+# Open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will load with an onboarding screen. You can try the demo data or add your own salary information.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework**: Next.js 15 with App Router and Server Components
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with CSS Modules
+- **Charts**: Chart.js
+- **Data Fetching**: SWR
+- **AI Generation**: Vercel AI SDK with OpenAI
+- **Package Manager**: Bun
+
+## Documentation
+
+- **[Getting Started](docs/GETTING_STARTED.md)** - Installation, configuration, and development workflow
+- **[Architecture](docs/ARCHITECTURE.md)** - Technical architecture, folder structure, and design patterns
+- **[Functional Description](docs/FUNCTIONAL_DESCRIPTION.md)** - Features, user workflows, and business logic
+- **[CI/CD Pipeline](docs/ci-cd-pipeline.md)** - Quality checks and deployment process
+- **[Reference Salary Implementation](docs/reference-salary-implementation.md)** - SSB integration guide
 
 ## Project Structure
 
-The project follows a feature-based architecture aligned with Next.js App Router patterns:
+```
+/app                 # Next.js App Router pages and API routes
+/components          # Reusable UI components (atoms, molecules, organisms)
+/features            # Feature modules (salary, tax, inflation, visualization, negotiation)
+/contexts            # React context providers (display mode, reference mode)
+/lib                 # Utilities, constants, and shared models
+/docs                # Documentation
+```
 
-### Features
+## Features Overview
 
-The code is organized into feature modules:
+- ✅ Salary tracking with multi-year data entry
+- ✅ Norwegian inflation data integration (SSB)
+- ✅ Accurate Norwegian tax calculations (2024 rates)
+- ✅ Net/Gross salary mode toggle
+- ✅ Reference salary comparison (nurses)
+- ✅ Interactive charts (desktop & mobile optimized)
+- ✅ AI-powered negotiation email & playbook generation
+- ✅ Data persistence in localStorage
+- ✅ Onboarding with demo data
+- ✅ Mobile-first responsive design
 
-- **Salary Feature** (`/features/salary/`): Components and hooks for salary calculations and display
-- **Tax Feature** (`/features/tax/`): Components and utils for tax calculations
-- **Inflation Feature** (`/features/inflation/`): Functionality for inflation data and calculations
-- **Visualization Feature** (`/features/visualization/`): Chart components and data visualization
-- **Onboarding Feature** (`/features/onboarding/`): User onboarding components and guides
+## Development
 
-### Shared Components
+```bash
+# Development server with Turbopack
+bun dev
 
-- **Common UI** (`/components/ui/common/`): Reusable UI components like Footer, LoadingSpinner, etc.
+# Build for production
+bun build
 
-### Contexts
+# Start production server
+bun start
 
-- **Display Mode Context** (`/contexts/displayMode/`): Context for toggling between net and gross salary display
+# Run linting
+bun run lint
 
-For more detailed information, see the [project-description.md](./project-description.md) file.
+# Format code
+bun run format
 
-## Learn More
+# Type check
+bun run typecheck
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All code must pass CI checks before merging:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Secret detection (Gitleaks)
+- Linting (ESLint)
+- Formatting (Prettier)
+- Type checking (TypeScript)
+- Build verification
 
-## Deploy on Vercel
+Pre-commit hooks automatically run linting and formatting on staged files.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[Add your license here]
+
+---
+
+For detailed technical documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
