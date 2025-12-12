@@ -159,8 +159,8 @@ export default function Dashboard({
             </p>
           </div>
 
-          {/* Metrics Grid */}
-          {hasData ? (
+          {/* Metrics Grid - only show when we have data */}
+          {hasData && (
             <>
               {isDemoMode && (
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
@@ -267,10 +267,6 @@ export default function Dashboard({
                 <MetricGrid statistics={statistics} isNetMode={isNetMode} />
               </div>
             </>
-          ) : (
-            <div className="rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-6 text-center">
-              <p className="text-[var(--text-muted)]">{TEXT.dashboard.addDataPrompt}</p>
-            </div>
           )}
 
           {/* Chart Section */}
