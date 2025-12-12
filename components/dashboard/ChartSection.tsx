@@ -4,7 +4,7 @@ import { memo, useState } from 'react'
 import PaypointChart from '@/features/visualization/components/PaypointChart'
 import type { PayPoint } from '@/lib/models/types'
 import type { InflationDataPoint } from '@/lib/models/inflation'
-import { Select } from '@/components/ui/atoms'
+import { Select, Toggle } from '@/components/ui/atoms'
 import { useReferenceMode } from '@/contexts/referenceMode/ReferenceModeContext'
 import { TEXT } from '@/lib/constants/text'
 import { OCCUPATIONS, DEFAULT_OCCUPATION } from '@/features/referenceSalary/occupations'
@@ -38,18 +38,12 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
           <div className="flex-1">
             <h2 className="flex flex-wrap items-center gap-2 text-base font-semibold text-[var(--text-main)] md:gap-3 md:text-lg">
               <span className="whitespace-nowrap">{TEXT.charts.chartTitle}</span>
-              <button
-                onClick={onToggleMode}
-                className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium tracking-tight text-blue-700 ring-1 ring-inset ring-blue-700/10 transition-colors hover:bg-blue-100 active:bg-blue-200"
-                aria-label="Toggle mellem brutto og netto"
-              >
-                {isNetMode ? TEXT.charts.modeBadgeNet : TEXT.charts.modeBadgeGross}
-              </button>
-              {isReferenceEnabled && (
-                <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium tracking-tight text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
-                  {TEXT.referenceSalary.enabledBadge}
-                </span>
-              )}
+              <Toggle
+                checked={isNetMode}
+                onChange={onToggleMode}
+                label={isNetMode ? TEXT.charts.modeBadgeNet : TEXT.charts.modeBadgeGross}
+                className="scale-90 md:scale-100"
+              />
             </h2>
             <p className="mt-1 hidden text-sm text-[var(--text-muted)] md:block">
               {TEXT.charts.chartSubtitle}
