@@ -164,11 +164,22 @@ export default function Dashboard({
             <>
               {isDemoMode && (
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-[24px] text-blue-600">
-                      info
-                    </span>
-                    <p className="text-sm text-blue-900">{TEXT.onboarding.demoDataInfo}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-[24px] text-blue-600">
+                        info
+                      </span>
+                      <p className="text-sm text-blue-900">{TEXT.onboarding.demoDataInfo}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('salary-calculator-points')
+                        window.location.reload()
+                      }}
+                      className="shrink-0 rounded-md border border-blue-300 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100"
+                    >
+                      {TEXT.onboarding.clearDemoData}
+                    </button>
                   </div>
                 </div>
               )}

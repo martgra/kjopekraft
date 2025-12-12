@@ -38,6 +38,7 @@ export const TEXT = {
     navHistory: 'Historikk',
     navReports: 'Rapporter',
     navSettings: 'Innstillinger',
+    comingSoon: 'Kommer snart',
   },
 
   dashboard: {
@@ -261,6 +262,7 @@ export const TEXT = {
       'Kjøpekraft viser hva lønnen din faktisk er verdt. Selv om lønnen din øker med 10%, kan inflasjonen spise opp mye av veksten. Vi viser deg forskjellen mellom nominell lønn (tall på kontoutskriften) og reell verdi (hva du faktisk kan kjøpe).',
     demoDataInfo:
       'Dette er eksempeldata. Legg til ditt første reelle lønnspunkt for å erstatte dem.',
+    clearDemoData: 'Fjern eksempeldata',
   },
 
   help: {

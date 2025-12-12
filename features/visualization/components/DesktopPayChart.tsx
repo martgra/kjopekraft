@@ -95,6 +95,7 @@ export default function DesktopPayChart({
               font: { size: 12 },
               maxRotation: 0,
               autoSkipPadding: 10,
+              callback: value => String(value),
             },
             title: {
               display: true,

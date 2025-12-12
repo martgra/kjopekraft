@@ -95,6 +95,7 @@ export default function MobilePayChart({
               font: { size: 10 },
               maxRotation: 0,
               autoSkipPadding: 15,
+              callback: value => String(value),
             },
             title: {
               display: false,
