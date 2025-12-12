@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MetricGrid from './MetricGrid'
 import ChartSection from './ChartSection'
 import RightPanel from './RightPanel'
+import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
+import { DEMO_PAY_POINTS } from '@/features/onboarding/demoData'
 import type { InflationDataPoint } from '@/lib/models/inflation'
 import type { PayPoint } from '@/lib/models/types'
 import { TEXT } from '@/lib/constants/text'
@@ -20,6 +22,7 @@ export default function Dashboard({ inflationData }: DashboardProps) {
     useSalaryData(inflationData)
 
   const { isNetMode, toggleMode } = useDisplayMode()
+  const [isDemoMode, setIsDemoMode] = useState(false)
 
   // Form state
   const [newYear, setNewYear] = useState('')
@@ -28,6 +31,22 @@ export default function Dashboard({ inflationData }: DashboardProps) {
 
   const currentYear = new Date().getFullYear()
   const minYear = 1900
+
+  // Track if we have real user data
+  useEffect(() => {
+    // If user has data and we're in demo mode, exit demo mode
+    if (hasData && isDemoMode) {
+      setIsDemoMode(false)
+    }
+  }, [hasData, isDemoMode])
+
+  const handleLoadDemo = () => {
+    // Clear any existing data first
+    localStorage.removeItem('salary-calculator-points')
+    // Load demo data
+    DEMO_PAY_POINTS.forEach(point => addPoint(point))
+    setIsDemoMode(true)
+  }
 
   const handleAddPoint = () => {
     const point: PayPoint = {
@@ -38,6 +57,15 @@ export default function Dashboard({ inflationData }: DashboardProps) {
     const validation = validatePoint(point)
     if (!validation.isValid) {
       setValidationError(validation.errorMessage || TEXT.forms.validation.invalidInput)
+      return
+    }
+
+    // If adding real data while in demo mode, clear demo data first
+    if (isDemoMode) {
+      localStorage.removeItem('salary-calculator-points')
+      setIsDemoMode(false)
+      // Force a page reload to clear demo state
+      window.location.reload()
       return
     }
 
@@ -91,6 +119,7 @@ export default function Dashboard({ inflationData }: DashboardProps) {
           validationError={validationError}
           isNetMode={isNetMode}
           payPoints={payPoints}
+          inflationData={inflationData}
           onYearChange={setNewYear}
           onPayChange={setNewPay}
           onAdd={handleAddPoint}
@@ -123,7 +152,17 @@ export default function Dashboard({ inflationData }: DashboardProps) {
 
         {/* Metrics Grid */}
         {hasData ? (
-          <MetricGrid statistics={statistics} isNetMode={isNetMode} />
+          <>
+            {isDemoMode && (
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                <div className="flex items-start gap-3">
+                  <span className="material-symbols-outlined text-[24px] text-blue-600">info</span>
+                  <p className="text-sm text-blue-900">{TEXT.onboarding.demoDataInfo}</p>
+                </div>
+              </div>
+            )}
+            <MetricGrid statistics={statistics} isNetMode={isNetMode} />
+          </>
         ) : (
           <div className="rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-6 text-center">
             <p className="text-[var(--text-muted)]">{TEXT.dashboard.addDataPrompt}</p>
@@ -137,34 +176,12 @@ export default function Dashboard({ inflationData }: DashboardProps) {
               payPoints={payPoints}
               inflationData={inflationData}
               isNetMode={isNetMode}
+              onToggleMode={toggleMode}
             />
           </div>
         ) : (
-          <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-6">
-            <span className="material-symbols-outlined mb-4 text-[64px] text-[var(--text-muted)]">
-              insert_chart
-            </span>
-            <p className="text-lg font-medium text-[var(--text-muted)]">
-              {TEXT.dashboard.noDataTitle}
-            </p>
-            <p className="mt-2 text-sm text-[var(--text-muted)]">{TEXT.dashboard.noDataSubtitle}</p>
-          </div>
+          <OnboardingEmptyState onLoadDemo={handleLoadDemo} />
         )}
-
-        {/* Display Mode Toggle */}
-        <div className="flex items-center justify-center gap-3">
-          <label className="flex cursor-pointer items-center gap-2">
-            <input
-              type="checkbox"
-              checked={isNetMode}
-              onChange={toggleMode}
-              className="h-4 w-4 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]"
-            />
-            <span className="text-sm font-medium text-[var(--text-main)]">
-              {TEXT.dashboard.showNetSalary}
-            </span>
-          </label>
-        </div>
       </div>
     </DashboardLayout>
   )

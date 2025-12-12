@@ -16,12 +16,12 @@ export default function DashboardLayout({ children, rightPanel }: DashboardLayou
         <Sidebar />
       </div>
 
-      {/* Main Content - Scrollable */}
-      <div className="flex-1 overflow-y-auto p-6 lg:p-10">{children}</div>
+      {/* Main Content - Scrollable with mobile bottom padding for nav */}
+      <div className="flex-1 overflow-y-auto p-6 pb-20 lg:p-10 lg:pb-10">{children}</div>
 
       {/* Right Panel - Stacked on mobile, sidebar on desktop */}
       {rightPanel && (
-        <aside className="w-full shrink-0 border-t border-[var(--border-light)] bg-[var(--surface-light)] lg:w-80 lg:overflow-y-auto lg:border-t-0 lg:border-l">
+        <aside className="w-full shrink-0 border-t border-[var(--border-light)] bg-[var(--surface-light)] pb-20 lg:w-80 lg:overflow-y-auto lg:border-t-0 lg:border-l lg:pb-0">
           {rightPanel}
         </aside>
       )}

@@ -8,19 +8,92 @@ The core functionality includes:
 
 - Salary calculations based on pay points
 - Tax calculations according to Norwegian tax rules
-- Inflation impact visualization
-- Interactive charts for data representation
+- Inflation impact visualization with honest data representation
+- Interactive charts for data representation (no interpolation - only actual user data)
 - Responsive design for both desktop and mobile experiences
+- Onboarding experience with demo data for new users
+- Mobile-optimized navigation
 
 ## Technical Stack
 
 - **Framework**: Next.js 15 with TypeScript and App Router
-- **Styling**: CSS Modules (based on folder structure)
+- **Styling**: CSS Modules and Tailwind CSS
 - **Data Visualization**: Chart.js (configured in lib/chartjs.ts)
 - **State Management**: React Context and custom hooks
 - **API**: Server-side API routes for data fetching
+- **Package Manager**: Bun
 
-## Recent Fixes
+## Recent Major UX Improvements (December 2025)
+
+### 1. Removed Chart Interpolation for Data Honesty
+
+- **Changed**: Removed `interpolateYearly` function from `usePaypointChartData.ts`
+- **Why**: Users should only see their actual entered data points, not computer-generated estimates
+- **Impact**: Charts now display only real user data, with lines connecting between points
+- **Files**: `features/salary/hooks/usePaypointChartData.ts`
+- Chart x-axis still shows all years in range (via Chart.js `stepSize: 1` and `type: 'linear'`)
+- Lines connect sparse data points directly (`showLine: true`, `spanGaps: true`)
+
+### 2. Net/Gross Mode Toggle Visibility
+
+- **Changed**: Moved toggle from bottom of dashboard to chart header with visual badge
+- **Why**: Mode selection is critical for understanding - users need to see it clearly
+- **Components Updated**:
+  - `components/dashboard/ChartSection.tsx`: Added toggle and badge to header
+  - `components/dashboard/Dashboard.tsx`: Removed bottom toggle section
+  - `lib/constants/text.ts`: Added `modeBadgeGross`, `modeBadgeNet`, `modeToggleLabel`
+- **Badge Display**: Shows "Brutto" or "Netto" next to chart title using `Badge` component
+- **User Benefit**: Immediately clear which mode is active; no confusion about what numbers represent
+
+### 3. Onboarding with Ephemeral Demo Data
+
+- **New Feature**: Created `features/onboarding/` module
+- **Files Created**:
+  - `features/onboarding/OnboardingEmptyState.tsx`: Welcome screen with explanation
+  - `features/onboarding/demoData.ts`: Sample salary progression (2020-2024, 550k-680k)
+- **Behavior**:
+  - Demo data loads on user request ("Prøv med eksempeldata" button)
+  - Blue info banner shows when in demo mode
+  - Demo data automatically clears when user adds first real salary point (via page reload)
+  - "Legg til min egen lønn" button scrolls to form
+- **Educational Value**: Users immediately see what the app does before entering personal data
+- **Text Constants**: Added `onboarding` section with `welcomeTitle`, `welcomeMessage`, `kjopekraftExplanation`, etc.
+
+### 4. Help Tooltips for Key Concepts
+
+- **Added**: Info icons with native browser tooltips on metric cards
+- **Updated Components**:
+  - `components/dashboard/MetricCard.tsx`: Changed `title` prop to accept `React.ReactNode`
+  - `components/dashboard/MetricGrid.tsx`: Added info icons to "Reell årsverdi" and "Årlig endring"
+- **Text Constants**: Added `help` section with `realAnnualValue`, `inflationAdjusted`, `yearlyChange`
+- **User Benefit**: Inline explanations of complex concepts like "inflasjonsjustert lønn" and "reell verdi"
+
+### 5. Strengthened Form Validation
+
+- **Enhanced**: Year validation now checks against actual inflation data range
+- **Updated Components**:
+  - `components/dashboard/SalaryPointForm.tsx`: Added `inflationData` prop, validates against min inflation year
+  - `components/dashboard/RightPanel.tsx`: Passes `inflationData` to form
+  - `components/dashboard/Dashboard.tsx`: Passes `inflationData` to `RightPanel`
+- **New Error Message**: "Inflasjonsdata er kun tilgjengelig fra {minYear}. Vennligst velg et senere år."
+- **Text Constants**: Added `inflationDataUnavailable` to `forms.validation`
+- **User Benefit**: Clear feedback when trying to enter years outside available inflation data (instead of silent failure)
+
+### 6. Mobile Bottom Navigation
+
+- **New Component**: `components/layout/MobileBottomNav.tsx`
+- **Features**:
+  - Fixed bottom navigation bar on mobile (<768px)
+  - Two tabs: "Oversikt" (Dashboard) and "Forhandling" (Negotiation)
+  - Active state highlighting with icons and labels
+  - Hidden on desktop (lg breakpoint)
+- **Layout Updates**:
+  - `app/layout.tsx`: Added `MobileBottomNav` component
+  - `components/layout/DashboardLayout.tsx`: Added `pb-20` padding on mobile to prevent content overlap
+  - `features/negotiation/components/NegotiationPage.tsx`: Added `pb-20` padding on mobile
+- **User Benefit**: Easy navigation between main sections on mobile without hamburger menu or back button confusion
+
+## Previous Fixes
 
 - Fixed time range toggle (1Y, 3Y, ALL) in ChartSection to properly filter both payPoints and inflationData
 - Fixed chart container sizing by removing flex-1 and min-h-[400px], now uses fixed h-[300px] to prevent overflow
@@ -50,7 +123,6 @@ The core functionality includes:
   - Fixed tooltip to only display when hovering directly over data points
   - Changed tooltip mode from 'index' to 'point' and intersect from false to true in both MobilePayChart and DesktopPayChart
   - This prevents tooltips from appearing persistently or when hovering near the chart
-- **Package Manager**: Bun
 
 ## Project Structure
 
@@ -70,9 +142,16 @@ The codebase is organized around feature modules, each with its own components, 
 
 - **Hooks**
   - `useSalaryData.ts`: Unified hook for managing salary data, calculations, and chart preparation with proper memoization and caching
-  - `usePaypointChartData.ts`: Prepares chart data from pay points
+  - `usePaypointChartData.ts`: Prepares chart data from pay points (NO INTERPOLATION - returns only actual user data)
   - `useSalaryCalculations.ts`: Performs salary calculations
   - `useSalaryPoints.ts`: Manages salary point data
+
+#### Onboarding Feature (`/features/onboarding/`)
+
+- **Components**
+  - `OnboardingEmptyState.tsx`: Welcome screen with demo data option and educational content
+- **Data**
+  - `demoData.ts`: Sample PayPoint array for demo mode (ephemeral, clears on first user input)
 
 #### Tax Feature (`/features/tax/`)
 

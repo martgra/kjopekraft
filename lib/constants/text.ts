@@ -64,6 +64,10 @@ export const TEXT = {
     // ChartSection header
     chartTitle: 'Årlig lønnsvekst vs. Inflasjon',
     chartSubtitle: 'Følg dine årlige lønnspunkter mot reell kjøpekraft.',
+    // Mode toggle
+    modeBadgeGross: 'Brutto',
+    modeBadgeNet: 'Netto',
+    modeToggleLabel: 'Vis nettolønn (etter skatt)',
   },
 
   stats: {
@@ -104,6 +108,8 @@ export const TEXT = {
       required: 'Fyll ut alle felter',
       yearExists: 'Dette året er allerede lagt til',
       invalidInput: 'Ugyldig input',
+      inflationDataUnavailable:
+        'Inflasjonsdata er kun tilgjengelig fra {minYear}. Vennligst velg et senere år.',
     },
     // SalaryPointForm specific
     logSalaryPoint: 'Logg lønnspunkt',
@@ -169,6 +175,8 @@ export const TEXT = {
   negotiation: {
     sectionTitle: 'Forhandling',
     argumentBuilderTitle: 'Argumentbygger',
+    showArguments: 'Vis argumenter',
+    hideArguments: 'Skjul argumenter',
     guide:
       'Legg inn dine viktigste argumenter for lønnsforhandling. Skriv fritt og bruk flere punkter – dette hjelper deg å forberede en god forhandlingsstrategi! Du kan også generere en e-post eller et forhandlings-playbook basert på punktene dine.',
     descriptionPlaceholder: 'Beskriv et argument, prestasjon eller markedssituasjon',
@@ -212,5 +220,27 @@ export const TEXT = {
     noPointsYet: 'Ingen punkter lagt til ennå',
     yourPoints: 'Dine forhandlingspunkter',
     removePoint: 'Fjern punkt',
+  },
+
+  onboarding: {
+    welcomeTitle: 'Velkommen til Kjøpekraft',
+    welcomeMessage:
+      'Få innsikt i om lønnen din faktisk har blitt bedre, eller bare høyere. Sammenlign din lønnsutvikling mot inflasjonen for å forstå din reelle kjøpekraft.',
+    loadDemoButton: 'Prøv med eksempeldata',
+    addOwnDataButton: 'Legg til min egen lønn',
+    whatIsKjopekraft: 'Hva er kjøpekraft?',
+    kjopekraftExplanation:
+      'Kjøpekraft viser hva lønnen din faktisk er verdt. Selv om lønnen din øker med 10%, kan inflasjonen spise opp mye av veksten. Vi viser deg forskjellen mellom nominell lønn (tall på kontoutskriften) og reell verdi (hva du faktisk kan kjøpe).',
+    demoDataInfo:
+      'Dette er eksempeldata. Legg til ditt første reelle lønnspunkt for å erstatte dem.',
+  },
+
+  help: {
+    realAnnualValue:
+      'Dette viser hva din startlønn ville vært verdt i dag, justert for inflasjon. Sammenligner kjøpekraften din nå mot da.',
+    inflationAdjusted:
+      'Viser hvordan lønnen din ville utviklet seg hvis den hadde fulgt inflasjonen fra starttidspunktet. Hjelper deg se om du har fått reell lønnsvekst.',
+    yearlyChange:
+      'Den prosentvise endringen i lønnen din fra start til nå, korrigert for inflasjon. Viser om kjøpekraften din har økt eller sunket.',
   },
 }

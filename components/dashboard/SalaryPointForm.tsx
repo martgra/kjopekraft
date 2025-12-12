@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import type { InflationDataPoint } from '@/lib/models/inflation'
 import { TEXT } from '@/lib/constants/text'
 
 interface SalaryPointFormProps {
@@ -10,6 +11,7 @@ interface SalaryPointFormProps {
   minYear: number
   validationError?: string
   isNetMode?: boolean
+  inflationData?: InflationDataPoint[]
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
   onAdd: () => void
@@ -25,6 +27,7 @@ export default function SalaryPointForm({
   onPayChange,
   onAdd,
   isNetMode,
+  inflationData,
 }: SalaryPointFormProps) {
   const [internalValidationError, setInternalValidationError] = useState<string>('')
   const validationError = externalValidationError || internalValidationError
@@ -32,23 +35,52 @@ export default function SalaryPointForm({
   const yearNum = Number(newYear)
   const payNum = Number(newPay.replace(/\s/g, ''))
 
+  // Determine inflation data range
+  const inflationMinYear =
+    inflationData && inflationData.length > 0
+      ? Math.min(...inflationData.map(d => d.year))
+      : minYear
+
   const isYearValid = !isNaN(yearNum) && yearNum >= minYear && yearNum <= currentYear
+  const isYearInInflationRange = !isNaN(yearNum) && yearNum >= inflationMinYear
   const isPayValid = !isNaN(payNum) && payNum > 0
-  const disabled = !newYear || !newPay || !isYearValid || !isPayValid
+  const disabled = !newYear || !newPay || !isYearValid || !isPayValid || !isYearInInflationRange
 
   useEffect(() => {
-    if (newYear && !isNaN(yearNum) && !isYearValid) {
-      setInternalValidationError(
-        TEXT.forms.validation.yearRange
-          .replace('{min}', String(minYear))
-          .replace('{max}', String(currentYear)),
-      )
+    if (newYear && !isNaN(yearNum)) {
+      if (!isYearValid) {
+        setInternalValidationError(
+          TEXT.forms.validation.yearRange
+            .replace('{min}', String(minYear))
+            .replace('{max}', String(currentYear)),
+        )
+      } else if (!isYearInInflationRange) {
+        setInternalValidationError(
+          TEXT.forms.validation.inflationDataUnavailable.replace(
+            '{minYear}',
+            String(inflationMinYear),
+          ),
+        )
+      } else {
+        setInternalValidationError('')
+      }
     } else if (newPay && !isNaN(payNum) && !isPayValid) {
       setInternalValidationError(TEXT.forms.validation.payPositive)
     } else {
       setInternalValidationError('')
     }
-  }, [newYear, newPay, yearNum, payNum, isYearValid, isPayValid, minYear, currentYear])
+  }, [
+    newYear,
+    newPay,
+    yearNum,
+    payNum,
+    isYearValid,
+    isYearInInflationRange,
+    isPayValid,
+    minYear,
+    currentYear,
+    inflationMinYear,
+  ])
 
   return (
     <div className="border-b border-[var(--border-light)] p-6">

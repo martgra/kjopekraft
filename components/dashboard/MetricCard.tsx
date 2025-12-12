@@ -1,5 +1,5 @@
 interface MetricCardProps {
-  title: string
+  title: string | React.ReactNode
   value: string | number
   suffix?: string
   trend?: {
