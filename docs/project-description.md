@@ -46,6 +46,10 @@ The core functionality includes:
     - Desktop chart features: full grid, detailed tooltips, complete labels, larger touch targets
     - Added `inflationLabel` text constant for simpler legend label
     - Better separation of concerns following React best practices
+- **Chart Tooltip Behavior**:
+  - Fixed tooltip to only display when hovering directly over data points
+  - Changed tooltip mode from 'index' to 'point' and intersect from false to true in both MobilePayChart and DesktopPayChart
+  - This prevents tooltips from appearing persistently or when hovering near the chart
 - **Package Manager**: Bun
 
 ## Project Structure
