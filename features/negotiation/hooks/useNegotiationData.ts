@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NegotiationPoint } from '../../../lib/models/types'
 
-const MAX_GENERATIONS = 2
+const MAX_GENERATIONS = process.env.NODE_ENV === 'development' ? Infinity : 2
 const STORAGE_KEY = 'negotiation_data'
 
 // Helper functions to safely interact with localStorage
@@ -42,6 +42,7 @@ function saveToStorage<T>(key: string, value: T): void {
 
 /**
  * Hook for managing negotiation data with persistent storage
+ * Note: This hook must be used in client-only components (no SSR)
  */
 export function useNegotiationData() {
   // Load initial values from localStorage

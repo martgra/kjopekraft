@@ -181,7 +181,7 @@ export default function NegotiationPage({ inflationData, currentYear }: Negotiat
             ? TEXT.negotiation.showArguments
             : TEXT.negotiation.hideArguments}
         </span>
-        {points.length > 0 && (
+        {isMounted && points.length > 0 && (
           <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
             {points.length}
           </span>

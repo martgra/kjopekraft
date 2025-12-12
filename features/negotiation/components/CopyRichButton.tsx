@@ -1,4 +1,5 @@
 import React, { useState, RefObject } from 'react'
+import { Icon } from '@/components/ui/atoms'
 
 interface CopyRichButtonProps {
   containerRef: RefObject<HTMLDivElement>
@@ -30,11 +31,11 @@ export function CopyRichButton({ containerRef, label }: CopyRichButtonProps) {
   return (
     <button
       type="button"
-      className="ml-2 flex items-center gap-1 rounded border border-blue-300 bg-blue-50 px-2 py-1 text-xs text-blue-700 transition-colors hover:bg-blue-100 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+      className="text-primary inline-flex items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-blue-200 transition-all ring-inset hover:bg-blue-50 hover:ring-blue-300"
       onClick={handleCopy}
       aria-label={label}
     >
-      <span>📝</span>
+      <Icon name="edit_note" className="text-primary text-lg" />
       {copied === true ? label + ' ✓' : copied === false ? label + ' ✗' : label}
     </button>
   )

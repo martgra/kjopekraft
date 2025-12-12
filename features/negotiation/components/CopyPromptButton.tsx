@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Icon } from '@/components/ui/atoms'
 
 interface CopyPromptButtonProps {
   content: string
@@ -20,11 +21,11 @@ export function CopyPromptButton({ content, label }: CopyPromptButtonProps) {
   return (
     <button
       type="button"
-      className="ml-auto flex items-center gap-1 rounded border border-blue-300 bg-blue-50 px-2 py-1 text-xs text-blue-700 transition-colors hover:bg-blue-100 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+      className="inline-flex items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-300 transition-all ring-inset hover:bg-gray-50"
       onClick={handleCopy}
       aria-label={label}
     >
-      <span>📋</span>
+      <Icon name="content_copy" className="text-lg text-gray-500" />
       {copied === true ? label + ' ✓' : copied === false ? label + ' ✗' : label}
     </button>
   )

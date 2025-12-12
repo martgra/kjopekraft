@@ -30,66 +30,76 @@ export function GeneratedContent({
   if (!emailContent && !playbookContent) return null
 
   return (
-    <div className="max-h-[40vh] flex-shrink-0 overflow-y-auto border-t border-[var(--border-light)] bg-white">
-      <div className="space-y-4 p-4">
-        {/* Email Content */}
-        {emailContent && emailPrompt && (
-          <CollapsibleSection
-            title={TEXT.negotiation.emailSectionTitle}
-            collapseLabel={TEXT.negotiation.collapseEmail}
-            defaultCollapsed={false}
-          >
-            <Card variant="outlined" padding="md">
-              <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
-                <CopyPromptButton content={emailPrompt} label={TEXT.negotiation.copyPrompt} />
-                <CopyRichButton
-                  containerRef={emailHtmlRef as React.RefObject<HTMLDivElement>}
-                  label={TEXT.negotiation.copyRich}
-                />
-                <DownloadDocxButton
-                  content={emailContent}
-                  filename="forhandling-epost.docx"
-                  label={TEXT.negotiation.downloadDocx}
-                />
-              </div>
-              <div className="markdown-body" ref={emailHtmlRef}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                  {emailContent}
-                </ReactMarkdown>
-              </div>
-            </Card>
-          </CollapsibleSection>
-        )}
+    <div className="space-y-4">
+      {/* Email Content */}
+      {emailContent && emailPrompt && (
+        <CollapsibleSection
+          title={TEXT.negotiation.emailSectionTitle}
+          collapseLabel={TEXT.negotiation.collapseEmail}
+          defaultCollapsed={false}
+          icon="mail_outline"
+          actions={
+            <>
+              <CopyPromptButton content={emailPrompt} label={TEXT.negotiation.copyPrompt} />
+              <CopyRichButton
+                containerRef={emailHtmlRef as React.RefObject<HTMLDivElement>}
+                label={TEXT.negotiation.copyRich}
+              />
+              <DownloadDocxButton
+                content={emailContent}
+                filename="forhandling-epost.docx"
+                label={TEXT.negotiation.downloadDocx}
+              />
+            </>
+          }
+        >
+          <Card variant="outlined" padding="none">
+            <div
+              className="email-content rounded-lg border border-[var(--border-light)] bg-white p-8 text-base leading-relaxed text-gray-800 shadow-inner"
+              ref={emailHtmlRef}
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {emailContent}
+              </ReactMarkdown>
+            </div>
+          </Card>
+        </CollapsibleSection>
+      )}
 
-        {/* Playbook Content */}
-        {playbookContent && playbookPrompt && (
-          <CollapsibleSection
-            title={TEXT.negotiation.playbookSectionTitle}
-            collapseLabel={TEXT.negotiation.collapsePlaybook}
-            defaultCollapsed={false}
-          >
-            <Card variant="outlined" padding="md">
-              <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
-                <CopyPromptButton content={playbookPrompt} label={TEXT.negotiation.copyPrompt} />
-                <CopyRichButton
-                  containerRef={playbookHtmlRef as React.RefObject<HTMLDivElement>}
-                  label={TEXT.negotiation.copyRich}
-                />
-                <DownloadDocxButton
-                  content={playbookContent}
-                  filename="forhandling-spillbok.docx"
-                  label={TEXT.negotiation.downloadDocx}
-                />
-              </div>
-              <div className="markdown-body" ref={playbookHtmlRef}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                  {playbookContent}
-                </ReactMarkdown>
-              </div>
-            </Card>
-          </CollapsibleSection>
-        )}
-      </div>
+      {/* Playbook Content */}
+      {playbookContent && playbookPrompt && (
+        <CollapsibleSection
+          title={TEXT.negotiation.playbookSectionTitle}
+          collapseLabel={TEXT.negotiation.collapsePlaybook}
+          defaultCollapsed={false}
+          icon="menu_book"
+          actions={
+            <>
+              <CopyPromptButton content={playbookPrompt} label={TEXT.negotiation.copyPrompt} />
+              <CopyRichButton
+                containerRef={playbookHtmlRef as React.RefObject<HTMLDivElement>}
+                label={TEXT.negotiation.copyRich}
+              />
+              <DownloadDocxButton
+                content={playbookContent}
+                filename="forhandling-spillbok.docx"
+                label={TEXT.negotiation.downloadDocx}
+              />
+            </>
+          }
+        >
+          <Card variant="outlined" padding="none">
+            <div
+              className="playbook-content rounded-lg border border-[var(--border-light)] bg-white p-8 text-base leading-relaxed text-gray-800 shadow-inner"
+              ref={playbookHtmlRef}
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {playbookContent}
+              </ReactMarkdown>
+            </div>
+          </Card>
+        </CollapsibleSection>
+      )}
     </div>
   )
 }
