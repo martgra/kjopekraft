@@ -105,7 +105,7 @@ export default function SalaryPointForm({
               value={newPay}
               onChange={e => onPayChange(e.target.value.replace(/[^\d\s]/g, ''))}
               placeholder="0"
-              className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] py-2.5 pr-3 pl-10 text-sm text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
+              className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] py-2.5 pr-3 pl-10 text-base text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
             />
           </div>
         </div>
@@ -124,7 +124,7 @@ export default function SalaryPointForm({
             value={newYear}
             onChange={e => onYearChange(e.target.value)}
             placeholder={String(currentYear)}
-            className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-sm text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
+            className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-base text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
           />
         </div>
 
