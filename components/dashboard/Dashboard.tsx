@@ -150,22 +150,13 @@ export default function Dashboard({
         {/* Main Dashboard Content */}
         <div className="flex min-h-full flex-col gap-6">
           {/* Header */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-2xl font-bold text-[var(--text-main)] md:text-3xl">
-                {TEXT.dashboard.annualOverview}
-              </h1>
-              <p className="text-sm text-[var(--text-muted)] md:mt-1">
-                {TEXT.dashboard.annualOverviewSubtitle}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 shadow-sm">
-              <span className="material-symbols-outlined text-sm text-gray-400">
-                calendar_today
-              </span>
-              <span className="text-sm font-medium text-[var(--text-main)]">{currentYear}</span>
-              <span className="material-symbols-outlined text-sm text-gray-400">expand_more</span>
-            </div>
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-bold text-[var(--text-main)] md:text-3xl">
+              {TEXT.dashboard.annualOverview}
+            </h1>
+            <p className="text-sm text-[var(--text-muted)] md:mt-1">
+              {TEXT.dashboard.annualOverviewSubtitle}
+            </p>
           </div>
 
           {/* Metrics Grid */}
