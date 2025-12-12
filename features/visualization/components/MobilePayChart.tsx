@@ -82,7 +82,7 @@ export default function MobilePayChart({
         responsive: true,
         maintainAspectRatio: false,
         layout: {
-          padding: { top: 10, bottom: 5, left: 5, right: 5 },
+          padding: { top: 5, bottom: 0, left: 0, right: 0 },
         },
         scales: {
           x: {
@@ -150,10 +150,10 @@ export default function MobilePayChart({
             labels: {
               usePointStyle: true,
               pointStyle: 'circle',
-              padding: 8,
-              font: { size: 11 },
-              boxWidth: 6,
-              boxHeight: 6,
+              padding: 6,
+              font: { size: 10 },
+              boxWidth: 5,
+              boxHeight: 5,
             },
           },
           title: {
