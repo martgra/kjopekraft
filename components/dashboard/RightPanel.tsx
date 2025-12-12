@@ -1,6 +1,10 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import SalaryPointForm from './SalaryPointForm'
 import ActivityTimeline from './ActivityTimeline'
 import type { PayPoint } from '@/lib/models/types'
+import { TEXT } from '@/lib/constants/text'
 
 interface RightPanelProps {
   newYear: string
@@ -31,20 +35,61 @@ export default function RightPanel({
   onEdit,
   onRemove,
 }: RightPanelProps) {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
+  // Collapse on mobile by default, expand on desktop
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsCollapsed(window.innerWidth < 1024)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   return (
-    <>
-      <SalaryPointForm
-        newYear={newYear}
-        newPay={newPay}
-        currentYear={currentYear}
-        minYear={minYear}
-        validationError={validationError}
-        isNetMode={isNetMode}
-        onYearChange={onYearChange}
-        onPayChange={onPayChange}
-        onAdd={onAdd}
-      />
-      <ActivityTimeline payPoints={payPoints} onEdit={onEdit} onRemove={onRemove} />
-    </>
+    <div className="flex h-full flex-col">
+      {/* Collapsible toggle button - only visible on mobile */}
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="flex w-full items-center justify-between border-b border-[var(--border-light)] bg-[var(--surface-light)] p-4 text-sm font-semibold text-[var(--text-main)] transition-colors hover:bg-gray-50 lg:hidden"
+        aria-expanded={!isCollapsed}
+        aria-controls="right-panel-content"
+      >
+        <span className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-[var(--primary)]">
+            {isCollapsed ? 'expand_more' : 'expand_less'}
+          </span>
+          {isCollapsed ? TEXT.dashboard.showDataEntry : TEXT.dashboard.hideDataEntry}
+        </span>
+        {payPoints.length > 0 && (
+          <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
+            {payPoints.length}
+          </span>
+        )}
+      </button>
+
+      {/* Collapsible content */}
+      <div
+        id="right-panel-content"
+        className={`transition-all duration-300 ease-in-out lg:block ${
+          isCollapsed ? 'hidden' : 'block'
+        }`}
+      >
+        <SalaryPointForm
+          newYear={newYear}
+          newPay={newPay}
+          currentYear={currentYear}
+          minYear={minYear}
+          validationError={validationError}
+          isNetMode={isNetMode}
+          onYearChange={onYearChange}
+          onPayChange={onPayChange}
+          onAdd={onAdd}
+        />
+        <ActivityTimeline payPoints={payPoints} onEdit={onEdit} onRemove={onRemove} />
+      </div>
+    </div>
   )
 }

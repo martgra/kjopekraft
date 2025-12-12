@@ -43,6 +43,8 @@ export const TEXT = {
     noDataTitle: 'Ingen data å vise ennå',
     noDataSubtitle: 'Legg til lønnspunkter ved hjelp av skjemaet for å se vekstgrafen din',
     showNetSalary: 'Vis nettolønn (etter skatt)',
+    showDataEntry: 'Legg til lønnspunkt',
+    hideDataEntry: 'Skjul datapanel',
   },
 
   charts: {
@@ -51,6 +53,7 @@ export const TEXT = {
     yAxisLabel: 'Lønn (NOK)',
     actualPayLabel: 'Faktisk lønn',
     inflationAdjustedLabel: 'Inflasjons-justert',
+    inflationLabel: 'Inflasjon',
     yearPrefix: 'År: ',
     notAvailable: '—',
     minPointsRequired: 'Legg til minst to lønnspunkter for å vise graf.',

@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useEffect, useRef, useMemo } from 'react'
-import Chart from '@/lib/chartjs'
-import type { ChartConfiguration, ScatterDataPoint } from 'chart.js'
+import React, { useMemo } from 'react'
 import LoadingSpinner from '@/components/ui/common/LoadingSpinner'
 import { calculateNetIncome } from '@/features/tax/taxCalculator'
 import { usePaypointChartData } from '@/features/salary/hooks/usePaypointChartData'
 import type { PayPoint } from '@/lib/models/types'
 import type { InflationDataPoint } from '@/lib/models/inflation'
+import type { ScatterDataPoint } from 'chart.js'
 import { TEXT } from '@/lib/constants/text'
+import ResponsiveChartWrapper from './ResponsiveChartWrapper'
 
 interface PaypointChartProps {
   payPoints: PayPoint[]
@@ -23,9 +23,6 @@ export default function PaypointChart({
   displayNet,
   className = '',
 }: PaypointChartProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const chartRef = useRef<Chart<'line', ScatterDataPoint[], unknown> | null>(null)
-
   // Grab the raw (gross) series from your hook
   const {
     isLoading,
@@ -55,86 +52,6 @@ export default function PaypointChart({
     }))
   }, [rawSeries, rawInflSeries, actualSeries])
 
-  useEffect(() => {
-    if (isLoading || payPoints.length < 2 || !canvasRef.current) return
-    const ctx = canvasRef.current.getContext('2d')
-    if (!ctx) return
-
-    const config: ChartConfiguration<'line', ScatterDataPoint[], unknown> = {
-      type: 'line',
-      data: {
-        datasets: [
-          {
-            label: displayNet ? TEXT.charts.showNet : TEXT.charts.showGross,
-            data: actualSeries,
-            tension: 0.4,
-            fill: true,
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            borderColor: '#3b82f6',
-            spanGaps: true,
-          },
-          {
-            label: TEXT.charts.inflationAdjustedLabel,
-            data: inflSeries,
-            tension: 0.4,
-            fill: true,
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            borderColor: '#10b981',
-            spanGaps: true,
-            borderDash: [5, 5],
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: 'linear',
-            min: yearRange.minYear,
-            max: yearRange.maxYear,
-            ticks: { stepSize: 1, precision: 0 },
-            title: { display: true, text: TEXT.charts.xAxisLabel },
-          },
-          y: {
-            beginAtZero: false,
-            ticks: {
-              callback: v => (typeof v === 'number' ? v.toLocaleString('nb-NO') : ''),
-            },
-            title: { display: true, text: TEXT.charts.yAxisLabel },
-          },
-        },
-        plugins: {
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-            callbacks: {
-              title: items => TEXT.charts.yearPrefix + items[0].parsed.x,
-              label: ctx =>
-                `${ctx.dataset.label}: ${ctx.parsed.y?.toLocaleString(
-                  'nb-NO',
-                )} ${TEXT.common.currency}`,
-            },
-          },
-          legend: { position: 'top', align: 'center' },
-          title: {
-            display: true,
-            text: TEXT.charts.payDevelopmentTitle,
-            font: { size: 16, weight: 'bold' },
-            padding: { top: 0, bottom: 8 },
-          },
-        },
-      },
-    }
-
-    const instance = new Chart(ctx, config)
-    chartRef.current = instance
-    return () => {
-      instance.destroy()
-      chartRef.current = null
-    }
-  }, [isLoading, actualSeries, inflSeries, yearRange, payPoints.length, displayNet])
-
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
@@ -151,5 +68,13 @@ export default function PaypointChart({
     )
   }
 
-  return <canvas ref={canvasRef} className={className} />
+  return (
+    <ResponsiveChartWrapper
+      actualSeries={actualSeries}
+      inflSeries={inflSeries}
+      yearRange={yearRange}
+      displayNet={displayNet}
+      className={className}
+    />
+  )
 }
