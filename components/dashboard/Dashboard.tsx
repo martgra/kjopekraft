@@ -76,9 +76,8 @@ export default function Dashboard({
     if (isDemoMode) {
       localStorage.removeItem('salary-calculator-points')
       setIsDemoMode(false)
-      // Force a page reload to clear demo state
-      window.location.reload()
-      return
+      // Note: The useSalaryData hook will automatically reload from localStorage
+      // on the next render cycle, picking up the cleared state
     }
 
     addPoint(point)
@@ -100,6 +99,13 @@ export default function Dashboard({
 
   const handleRemovePoint = (year: number, pay: number) => {
     removePoint(year, pay)
+  }
+
+  const handleClearDemo = () => {
+    localStorage.removeItem('salary-calculator-points')
+    setIsDemoMode(false)
+    // Clear all points - the useSalaryData hook will sync with localStorage
+    payPoints.forEach(p => removePoint(p.year, p.pay))
   }
 
   if (isLoading) {
@@ -172,10 +178,7 @@ export default function Dashboard({
                       <p className="text-sm text-blue-900">{TEXT.onboarding.demoDataInfo}</p>
                     </div>
                     <button
-                      onClick={() => {
-                        localStorage.removeItem('salary-calculator-points')
-                        window.location.reload()
-                      }}
+                      onClick={handleClearDemo}
                       className="shrink-0 rounded-md border border-blue-300 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100"
                     >
                       {TEXT.onboarding.clearDemoData}
