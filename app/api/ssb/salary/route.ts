@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cacheLife, cacheTag } from 'next/cache'
 import { cache } from 'react'
-import { JsonStat2Schema, SsbSalaryResponseSchema } from '@/lib/schemas'
+import { SsbSalaryResponseSchema } from '@/lib/schemas'
 
 type SalarySeriesPoint = {
   year: number

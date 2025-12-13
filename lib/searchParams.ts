@@ -9,12 +9,18 @@ import { parseAsStringLiteral, parseAsBoolean, createSearchParamsCache } from 'n
 export const displayModes = ['net', 'gross'] as const
 export type DisplayMode = (typeof displayModes)[number]
 
+// Dashboard view mode: chart/table/analysis
+export const viewModes = ['graph', 'table', 'analysis'] as const
+export type ViewMode = (typeof viewModes)[number]
+
 // Search params parsers
 export const searchParamsParsers = {
   // Display mode for salary (net/gross)
   display: parseAsStringLiteral(displayModes).withDefault('net'),
   // Reference salary overlay toggle
   reference: parseAsBoolean.withDefault(false),
+  // Selected dashboard view
+  view: parseAsStringLiteral(viewModes).withDefault('graph'),
 }
 
 // Server-side cache for search params

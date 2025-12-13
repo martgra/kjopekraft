@@ -41,10 +41,11 @@ test.describe('Reference salary (Stortinget)', () => {
 
     // Open occupation selector and choose Stortingsrepresentant
     await page.getByRole('button', { name: /referanse|ingen referanse/i }).click()
+    const referenceResponse = page.waitForResponse(
+      resp => resp.url().includes('/api/reference/storting') && resp.ok(),
+    )
     await page.getByRole('button', { name: /stortingsrepresentant/i }).click()
-
-    // Wait for the API call to complete
-    await page.waitForResponse(resp => resp.url().includes('/api/reference/storting') && resp.ok())
+    await referenceResponse
 
     // Selector button should now show the chosen occupation
     await expect(page.getByRole('button', { name: /stortingsrepresentant/i })).toBeVisible()

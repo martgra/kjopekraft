@@ -3,9 +3,7 @@
 import React, { useMemo } from 'react'
 import LoadingSpinner from '@/components/ui/common/LoadingSpinner'
 import { calculateNetIncome } from '@/features/tax/taxCalculator'
-import { usePaypointChartData } from '@/features/salary/hooks/usePaypointChartData'
-import type { PayPoint } from '@/domain/salary'
-import type { InflationDataPoint } from '@/domain/inflation'
+import type { PayPoint, YearRange } from '@/domain/salary'
 import type { ScatterDataPoint } from 'chart.js'
 import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import { TEXT } from '@/lib/constants/text'
@@ -13,40 +11,29 @@ import ResponsiveChartWrapper from './ResponsiveChartWrapper'
 
 interface PaypointChartProps {
   payPoints: PayPoint[]
-  inflationData: InflationDataPoint[]
   displayNet: boolean
-  occupation?: OccupationKey
+  grossActualSeries: ScatterDataPoint[]
+  grossInflationSeries: ScatterDataPoint[]
+  referenceSeries: ScatterDataPoint[]
+  yearRange: YearRange
   className?: string
-  onApiError?: (error: Error | null) => void
+  isLoading?: boolean
+  occupation?: OccupationKey
 }
 
 export default function PaypointChart({
   payPoints,
-  inflationData,
   displayNet,
-  occupation,
+  grossActualSeries,
+  grossInflationSeries,
+  referenceSeries: rawReferenceSeries,
+  yearRange,
   className = '',
-  onApiError,
+  isLoading = false,
+  occupation,
 }: PaypointChartProps) {
-  // Grab the raw (gross) series from your hook
-  const {
-    isLoading,
-    actualSeries: rawSeries,
-    inflSeries: rawInflSeries,
-    referenceSeries: rawReferenceSeries,
-    yearRange,
-    referenceError,
-  } = usePaypointChartData(payPoints, inflationData, occupation)
-
-  // Notify parent of API errors
-  React.useEffect(() => {
-    if (onApiError && referenceError) {
-      onApiError(referenceError)
-    }
-  }, [referenceError, onApiError])
-
   // 1) Build the displayed actual series (gross or net):
-  const actualSeries: ScatterDataPoint[] = rawSeries.map(pt => ({
+  const actualSeries: ScatterDataPoint[] = grossActualSeries.map(pt => ({
     x: pt.x,
     y: displayNet ? calculateNetIncome(pt.x as number, pt.y as number) : (pt.y as number),
   }))
@@ -55,22 +42,19 @@ export default function PaypointChart({
   //    multiplier = rawInflAtYear / rawActualAtBaseYear
   //    then inflAtYear = multiplier * displayBasePay
   const inflSeries: ScatterDataPoint[] = useMemo(() => {
-    if (rawSeries.length === 0 || rawInflSeries.length === 0) {
+    if (grossActualSeries.length === 0 || grossInflationSeries.length === 0) {
       return []
     }
-    const firstRaw = rawSeries[0]
+    const firstRaw = grossActualSeries[0]
     const firstActual = actualSeries[0]
     if (!firstRaw || !firstActual) return []
     const baseGross = firstRaw.y as number
     const baseDisplay = firstActual.y as number
-    return rawInflSeries.map(pt => ({
+    return grossInflationSeries.map(pt => ({
       x: pt.x,
       y: ((pt.y as number) / baseGross) * baseDisplay,
     }))
-  }, [rawSeries, rawInflSeries, actualSeries])
-
-  // Reference series is already net/gross adjusted in the hook
-  const referenceSeries: ScatterDataPoint[] = rawReferenceSeries
+  }, [grossActualSeries, grossInflationSeries, actualSeries])
 
   if (isLoading) {
     return (
@@ -92,7 +76,7 @@ export default function PaypointChart({
     <ResponsiveChartWrapper
       actualSeries={actualSeries}
       inflSeries={inflSeries}
-      referenceSeries={referenceSeries}
+      referenceSeries={rawReferenceSeries}
       yearRange={yearRange}
       displayNet={displayNet}
       occupation={occupation}
