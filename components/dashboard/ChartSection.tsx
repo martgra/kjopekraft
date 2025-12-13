@@ -4,7 +4,7 @@ import { memo, useState, useEffect } from 'react'
 import PaypointChart from '@/features/visualization/components/PaypointChart'
 import type { PayPoint } from '@/lib/models/types'
 import type { InflationDataPoint } from '@/lib/models/inflation'
-import { Select, Toggle } from '@/components/ui/atoms'
+import { Select, SelectOption, Toggle } from '@/components/ui/atoms'
 import { useReferenceMode } from '@/contexts/referenceMode/ReferenceModeContext'
 import { TEXT } from '@/lib/constants/text'
 import {
@@ -81,11 +81,11 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
               className="text-xs md:text-sm"
             >
               {Object.entries(OCCUPATIONS).map(([key, occupation]) => (
-                <option key={key} value={key}>
-                  {occupation.label} (Gj.snitt)
-                </option>
+                <SelectOption key={key} value={key}>
+                  {occupation.label} ({TEXT.charts.averageLabel})
+                </SelectOption>
               ))}
-              <option value="none">Ingen referanse</option>
+              <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
             </Select>
           </div>
         </div>

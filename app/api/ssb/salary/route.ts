@@ -103,7 +103,11 @@ function buildSsbUrl(params: {
   qs.append('valueCodes[ContentsCode]', params.contents)
   qs.append('valueCodes[Tid]', `from(${params.fromYear})`)
 
-  return `${base}?${qs.toString()}`
+  // URLSearchParams encodes '+' as '+' (which becomes space in URLs)
+  // We need to replace '+' with '%2B' for SSB API to understand it correctly
+  const queryString = qs.toString().replace(/\+/g, '%2B')
+
+  return `${base}?${queryString}`
 }
 
 async function fetchSsbSalaryData(params: {

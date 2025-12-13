@@ -119,13 +119,20 @@ bun run secrets
 
 ### Pre-commit Hooks
 
-The project uses Husky for pre-commit hooks. These run automatically on `git commit`:
+The project uses Husky for Git hooks to ensure code quality:
+
+**Pre-commit** (runs on `git commit`):
 
 1. **Secret detection** - Scans for accidentally committed secrets
 2. **Linting** - Auto-fixes ESLint issues
 3. **Formatting** - Auto-formats with Prettier
 
-If any check fails, the commit will be blocked.
+**Pre-push** (runs on `git push`):
+
+1. **TypeScript type check** - Ensures no type errors before pushing
+2. **Production build** - Verifies the app builds successfully
+
+If any check fails, the commit/push will be blocked.
 
 ### Manual Hook Setup
 
@@ -135,8 +142,9 @@ If hooks don't run automatically:
 # Initialize Husky
 bun run prepare
 
-# Make hook executable (macOS/Linux)
+# Make hooks executable (macOS/Linux)
 chmod +x .husky/pre-commit
+chmod +x .husky/pre-push
 ```
 
 ## Project Structure
