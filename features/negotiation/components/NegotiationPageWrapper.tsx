@@ -5,7 +5,7 @@ import NegotiationPage from './NegotiationPage'
 import { Spinner } from '@/components/ui/atoms'
 import { useDrawer } from '@/contexts/drawer/DrawerContext'
 import { useNegotiationData } from '../hooks/useNegotiationData'
-import type { InflationDataPoint } from '@/lib/models/inflation'
+import type { InflationDataPoint } from '@/domain/inflation'
 
 /**
  * Client-side wrapper that fetches inflation data and passes it to NegotiationPage

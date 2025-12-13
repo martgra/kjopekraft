@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { InflationDataPoint } from '@/lib/models/inflation'
+import type { InflationDataPoint } from '@/domain/inflation'
 import { TEXT } from '@/lib/constants/text'
 
 interface SalaryPointFormProps {

@@ -1,7 +1,8 @@
-// features/inflation/inflationParser.ts
-import type { InflationDataPoint } from '@/lib/models/inflation'
-import type { SsbRawResponse } from '@/lib/models/inflation'
+import type { InflationDataPoint, SsbRawResponse } from './inflationTypes'
 
+/**
+ * Parse SSB inflation data from JSON-stat format
+ */
 export function parseJsonInflation(ds: SsbRawResponse['dataset']): InflationDataPoint[] {
   // 1) pull out timeCount & metricCount from dimension.size
   const [, timeCount, metricCount] = ds.dimension.size
@@ -12,7 +13,7 @@ export function parseJsonInflation(ds: SsbRawResponse['dataset']): InflationData
     throw new Error(`parseJsonInflation: no numeric array at ds.value.`)
   }
 
-  // 3) pick the “all-groups” and “12-month change” indices
+  // 3) pick the "all-groups" and "12-month change" indices
   const grpIdx = ds.dimension.Konsumgrp.category.index.TOTAL
   const metricIdx = ds.dimension.ContentsCode.category.index.Tolvmanedersendring
   const timeIdxMap = ds.dimension.Tid.category.index

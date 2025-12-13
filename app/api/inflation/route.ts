@@ -1,6 +1,6 @@
 // app/api/inflation/route.ts
 import { NextResponse } from 'next/server'
-import { getInflationData } from '@/lib/models/getInflationData'
+import { getInflationData } from '@/services/inflation'
 
 export async function GET() {
   try {

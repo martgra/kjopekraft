@@ -2,8 +2,8 @@
 
 import { memo, useState, useEffect } from 'react'
 import PaypointChart from '@/features/visualization/components/PaypointChart'
-import type { PayPoint } from '@/lib/models/types'
-import type { InflationDataPoint } from '@/lib/models/inflation'
+import type { PayPoint } from '@/domain/salary'
+import type { InflationDataPoint } from '@/domain/inflation'
 import { Select, SelectOption, Toggle } from '@/components/ui/atoms'
 import { useReferenceMode } from '@/contexts/referenceMode/ReferenceModeContext'
 import { TEXT } from '@/lib/constants/text'

@@ -68,12 +68,34 @@ Kjøpekraft is built using a feature-based architecture with Next.js 15 App Rout
 │   ├── page.tsx                 # Homepage (salary dashboard)
 │   ├── globals.css              # Global styles and CSS variables
 │   ├── negotiation/             # Negotiation page
-│   └── api/                     # API routes
-│       ├── inflation/           # SSB inflation data
-│       ├── ssb/salary/          # SSB salary reference data
+│   └── api/                     # API routes (client-side fetching only)
+│       ├── ssb/salary/          # SSB salary reference data (for client)
 │       └── generate/            # AI generation endpoints
 │           ├── email/
 │           └── playbook/
+│
+├── services/                     # Server-side data fetching
+│   ├── inflation/
+│   │   └── inflationService.ts  # SSB inflation data fetching
+│   └── ssb/
+│       └── ssbTypes.ts          # SSB service types
+│
+├── domain/                       # Pure business logic (no React, no I/O)
+│   ├── salary/
+│   │   ├── salaryCalculator.ts  # Salary calculations
+│   │   ├── salaryValidator.ts   # Validation logic
+│   │   └── salaryTypes.ts       # Salary types
+│   ├── inflation/
+│   │   ├── inflationCalculator.ts # Inflation calculations
+│   │   ├── inflationParser.ts   # SSB data parser
+│   │   └── inflationTypes.ts    # Inflation types
+│   ├── tax/
+│   │   ├── taxCalculator.ts     # Norwegian tax calculations
+│   │   ├── taxConfig.ts         # Tax configuration data
+│   │   └── taxTypes.ts          # Tax types
+│   └── reference/
+│       ├── referenceCalculator.ts # Reference salary calculations
+│       └── referenceTypes.ts    # Reference types
 │
 ├── components/                   # Reusable UI components
 │   ├── dashboard/               # Dashboard-specific components
@@ -193,6 +215,121 @@ Kjøpekraft is built using a feature-based architecture with Next.js 15 App Rout
 ```
 
 ## Design Patterns
+
+### Layered Architecture
+
+The application follows a strict layered architecture to ensure separation of concerns and maintainability:
+
+#### 1. Domain Layer (`domain/`)
+
+Pure business logic with **no dependencies** on React, Next.js, or external I/O.
+
+- **Purpose**: Core business rules, calculations, and validations
+- **Characteristics**:
+  - Pure functions only
+  - No side effects (no API calls, no localStorage, no Date.now())
+  - Highly testable
+  - Framework-agnostic
+- **Examples**:
+  - `domain/salary/salaryCalculator.ts` - Salary growth calculations
+  - `domain/tax/taxCalculator.ts` - Norwegian tax calculations
+  - `domain/inflation/inflationCalculator.ts` - Inflation adjustments
+
+```typescript
+// Example: Pure domain function
+export function calculateSalaryGrowth(
+  points: PayPoint[],
+  inflationData: InflationDataPoint[],
+): SalaryStatistics {
+  // Pure calculation logic - no side effects
+  const adjusted = adjustForInflation(points, inflationData)
+  return computeStatistics(adjusted)
+}
+```
+
+#### 2. Services Layer (`services/`)
+
+Server-side data fetching for use in Server Components and API Routes.
+
+- **Purpose**: External data access with caching
+- **Characteristics**:
+  - Uses Next.js cache directives (`'use cache'`, `cacheLife()`)
+  - Server-side only
+  - Returns domain types
+- **Examples**:
+  - `services/inflation/inflationService.ts` - Fetch SSB inflation data
+  - `services/ssb/*` - SSB API integration
+
+```typescript
+// Example: Service function
+export async function getInflationData(): Promise<InflationDataPoint[]> {
+  'use cache'
+  cacheLife('hours')
+  const res = await fetch('https://data.ssb.no/...')
+  return parseJsonInflation(await res.json())
+}
+```
+
+#### 3. Feature Layer (`features/`)
+
+React-specific logic, hooks, and feature components.
+
+- **Purpose**: State management and UI composition
+- **Characteristics**:
+  - React hooks for state
+  - Delegates calculations to domain layer
+  - Feature-specific UI components
+- **Examples**:
+  - `features/salary/hooks/useSalaryData.ts` - Salary state management
+  - `features/negotiation/components/*` - Negotiation UI
+
+```typescript
+// Example: Feature hook
+export function useSalaryData(inflationData: InflationDataPoint[]) {
+  const [payPoints, setPayPoints] = useState<PayPoint[]>([])
+
+  // Delegate calculation to domain layer
+  const statistics = useMemo(
+    () => calculateSalaryStatistics(payPoints, inflationData),
+    [payPoints, inflationData],
+  )
+
+  return { payPoints, statistics, addPoint, removePoint }
+}
+```
+
+#### 4. Component Layer (`components/`)
+
+Reusable UI components following atomic design.
+
+#### 5. API Routes (`app/api/`)
+
+**Only for client-side data fetching**. Server Components should use services directly.
+
+- **When to use**: Client components need dynamic data
+- **When NOT to use**: Server Components (use services instead)
+
+#### Dependency Direction
+
+```
+┌─────────────────────────────────────┐
+│  Presentation (Components/Pages)    │
+│         ↓                            │
+│  Features (Hooks + Feature UI)      │
+│         ↓                            │
+│  Services (Server) | API (Client)   │
+│         ↓                            │
+│  Domain (Pure Business Logic)       │
+└─────────────────────────────────────┘
+```
+
+**Rules**:
+
+- Domain depends on NOTHING
+- Services depend only on domain
+- Features depend on domain (not other features)
+- Components depend on features and domain
+- Everything can import from domain
 
 ### Feature-Based Organization
 

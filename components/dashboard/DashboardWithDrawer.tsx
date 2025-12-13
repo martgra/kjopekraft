@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Dashboard from './Dashboard'
 import { useDrawer } from '@/contexts/drawer/DrawerContext'
-import type { InflationDataPoint } from '@/lib/models/inflation'
+import type { InflationDataPoint } from '@/domain/inflation'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 
 interface DashboardWithDrawerProps {

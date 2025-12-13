@@ -1,12 +1,7 @@
-/**
- * Business logic for processing and transforming reference salary data
- */
-
-import type { ReferenceDataPoint } from './types'
+import type { ReferenceDataPoint } from './referenceTypes'
 
 /**
  * Filter reference data to match a specific year range
- * Pre-calculates all years needed for chart display
  */
 export function filterReferenceByYearRange(
   referenceData: ReferenceDataPoint[],
@@ -18,7 +13,6 @@ export function filterReferenceByYearRange(
 
 /**
  * Convert monthly NOK values to yearly NOK
- * Handles null values gracefully
  */
 export function convertMonthlyToYearly(monthlyData: ReferenceDataPoint[]): ReferenceDataPoint[] {
   return monthlyData.map(point => ({
@@ -29,7 +23,6 @@ export function convertMonthlyToYearly(monthlyData: ReferenceDataPoint[]): Refer
 
 /**
  * Get the earliest non-null value from reference data
- * Useful for baseline calculations
  */
 export function getEarliestValue(data: ReferenceDataPoint[]): number | null {
   const sorted = [...data].sort((a, b) => a.year - b.year)
@@ -53,4 +46,20 @@ export function hasValidCoverage(
   const coverage = validPoints / filtered.length
 
   return coverage >= 0.5
+}
+
+/**
+ * Calculate growth rate between two years in reference data
+ */
+export function calculateReferenceGrowth(
+  data: ReferenceDataPoint[],
+  fromYear: number,
+  toYear: number,
+): number | null {
+  const start = data.find(p => p.year === fromYear)
+  const end = data.find(p => p.year === toYear)
+
+  if (!start?.value || !end?.value) return null
+
+  return ((end.value - start.value) / start.value) * 100
 }

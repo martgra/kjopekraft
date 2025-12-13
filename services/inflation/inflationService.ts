@@ -1,10 +1,10 @@
 import { cacheLife, cacheTag } from 'next/cache'
-import { parseJsonInflation } from '@/features/inflation/inflationParser'
-import type { InflationDataPoint, SsbRawResponse } from '@/lib/models/inflation'
+import { parseJsonInflation } from '@/domain/inflation'
+import type { InflationDataPoint, SsbRawResponse } from '@/domain/inflation'
 
 /**
- * Fetch and cache inflation data from SSB with 24h server-side cache
- * Next.js 16: Uses 'use cache' directive for automatic caching
+ * Fetch and cache inflation data from SSB
+ * Server-side only - uses Next.js cache directives
  */
 export async function getInflationData(): Promise<InflationDataPoint[]> {
   'use cache'

@@ -9,7 +9,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import { Badge } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
-import type { InflationDataPoint } from '@/lib/models/inflation'
+import type { InflationDataPoint } from '@/domain/inflation'
 
 interface NegotiationPageProps {
   inflationData: InflationDataPoint[]

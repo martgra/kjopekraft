@@ -1,8 +1,12 @@
+/**
+ * Inflation domain types
+ */
+
 export interface InflationDataPoint {
   year: number
   inflation: number
 }
-// features/inflation/api/ssbClient.types.ts
+
 export type SsbRawResponse = {
   dataset: {
     // All the data values, laid out in row-major order
