@@ -3,6 +3,8 @@
 import React, { useEffect, useRef } from 'react'
 import Chart from '@/lib/chartjs'
 import type { ChartConfiguration, ScatterDataPoint } from 'chart.js'
+import type { OccupationKey } from '@/features/referenceSalary/occupations'
+import { OCCUPATIONS } from '@/features/referenceSalary/occupations'
 import { TEXT } from '@/lib/constants/text'
 
 interface DesktopPayChartProps {
@@ -11,6 +13,7 @@ interface DesktopPayChartProps {
   referenceSeries: ScatterDataPoint[]
   yearRange: { minYear: number; maxYear: number }
   displayNet: boolean
+  occupation?: OccupationKey
   className?: string
 }
 
@@ -20,10 +23,14 @@ export default function DesktopPayChart({
   referenceSeries,
   yearRange,
   displayNet,
+  occupation,
   className = '',
 }: DesktopPayChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const chartRef = useRef<Chart<'line', ScatterDataPoint[], unknown> | null>(null)
+
+  // Generate dynamic reference label
+  const referenceLabel = occupation ? `Referanse (${OCCUPATIONS[occupation].label})` : 'Referanse'
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -62,7 +69,7 @@ export default function DesktopPayChart({
           ...(referenceSeries.length > 0
             ? [
                 {
-                  label: TEXT.referenceSalary?.chartLabel ?? 'Referanse',
+                  label: referenceLabel,
                   data: referenceSeries,
                   tension: 0.4,
                   fill: false,

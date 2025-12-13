@@ -9,8 +9,13 @@ import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
 import { filterReferenceByYearRange } from '@/features/referenceSalary/referenceCalculator'
 import { calculateNetIncome } from '@/features/tax/taxCalculator'
 import type { ScatterDataPoint } from 'chart.js'
+import type { OccupationKey } from '@/features/referenceSalary/occupations'
 
-export function usePaypointChartData(payPoints: PayPoint[], inflationData: InflationDataPoint[]) {
+export function usePaypointChartData(
+  payPoints: PayPoint[],
+  inflationData: InflationDataPoint[],
+  occupation?: OccupationKey,
+) {
   const {
     salaryData: adjustedPayData,
     yearRange,
@@ -20,15 +25,15 @@ export function usePaypointChartData(payPoints: PayPoint[], inflationData: Infla
   const { isReferenceEnabled } = useReferenceMode()
   const { isNetMode } = useDisplayMode()
 
-  // Fetch reference salary data (only when enabled)
+  // Fetch reference salary data (only when enabled and occupation is selected)
   const {
     data: referenceData,
     isLoading: isReferenceLoading,
     error: referenceError,
   } = useReferenceSalary({
-    occupation: 'nurses',
+    occupation,
     fromYear: 2015,
-    enabled: isReferenceEnabled,
+    enabled: isReferenceEnabled && !!occupation,
   })
 
   // Build series from actual data points only (no interpolation)

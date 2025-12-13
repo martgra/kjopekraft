@@ -7,7 +7,11 @@ import type { InflationDataPoint } from '@/lib/models/inflation'
 import { Select, Toggle } from '@/components/ui/atoms'
 import { useReferenceMode } from '@/contexts/referenceMode/ReferenceModeContext'
 import { TEXT } from '@/lib/constants/text'
-import { OCCUPATIONS, DEFAULT_OCCUPATION } from '@/features/referenceSalary/occupations'
+import {
+  OCCUPATIONS,
+  DEFAULT_OCCUPATION,
+  type OccupationKey,
+} from '@/features/referenceSalary/occupations'
 
 interface ChartSectionProps {
   payPoints: PayPoint[]
@@ -18,10 +22,12 @@ interface ChartSectionProps {
 
 function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: ChartSectionProps) {
   const { isReferenceEnabled, toggleReference } = useReferenceMode()
-  const [selectedOccupation, setSelectedOccupation] = useState('none')
+  const [selectedOccupation, setSelectedOccupation] = useState<OccupationKey | 'none'>(
+    DEFAULT_OCCUPATION,
+  )
 
   const handleOccupationChange = (value: string) => {
-    setSelectedOccupation(value)
+    setSelectedOccupation(value as OccupationKey | 'none')
     // Toggle reference based on selection
     if (value === 'none' && isReferenceEnabled) {
       toggleReference()
@@ -29,6 +35,10 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
       toggleReference()
     }
   }
+
+  // Get the occupation key to pass to the chart (null if 'none')
+  const occupationKey: OccupationKey | undefined =
+    selectedOccupation === 'none' ? undefined : selectedOccupation
 
   return (
     <div className="flex w-full flex-1 flex-col rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm">
@@ -57,9 +67,11 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
               onChange={handleOccupationChange}
               className="text-xs md:text-sm"
             >
-              <option value={DEFAULT_OCCUPATION}>
-                {OCCUPATIONS[DEFAULT_OCCUPATION].label} (Gj.snitt)
-              </option>
+              {Object.entries(OCCUPATIONS).map(([key, occupation]) => (
+                <option key={key} value={key}>
+                  {occupation.label} (Gj.snitt)
+                </option>
+              ))}
               <option value="none">Ingen referanse</option>
             </Select>
           </div>
@@ -68,7 +80,12 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
 
       {/* Chart */}
       <div className="relative min-h-0 w-full flex-1 p-2 md:p-6">
-        <PaypointChart payPoints={payPoints} inflationData={inflationData} displayNet={isNetMode} />
+        <PaypointChart
+          payPoints={payPoints}
+          inflationData={inflationData}
+          displayNet={isNetMode}
+          occupation={occupationKey}
+        />
       </div>
     </div>
   )

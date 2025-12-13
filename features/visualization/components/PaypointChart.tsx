@@ -7,6 +7,7 @@ import { usePaypointChartData } from '@/features/salary/hooks/usePaypointChartDa
 import type { PayPoint } from '@/lib/models/types'
 import type { InflationDataPoint } from '@/lib/models/inflation'
 import type { ScatterDataPoint } from 'chart.js'
+import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import { TEXT } from '@/lib/constants/text'
 import ResponsiveChartWrapper from './ResponsiveChartWrapper'
 
@@ -14,6 +15,7 @@ interface PaypointChartProps {
   payPoints: PayPoint[]
   inflationData: InflationDataPoint[]
   displayNet: boolean
+  occupation?: OccupationKey
   className?: string
 }
 
@@ -21,6 +23,7 @@ export default function PaypointChart({
   payPoints,
   inflationData,
   displayNet,
+  occupation,
   className = '',
 }: PaypointChartProps) {
   // Grab the raw (gross) series from your hook
@@ -30,7 +33,7 @@ export default function PaypointChart({
     inflSeries: rawInflSeries,
     referenceSeries: rawReferenceSeries,
     yearRange,
-  } = usePaypointChartData(payPoints, inflationData)
+  } = usePaypointChartData(payPoints, inflationData, occupation)
 
   // 1) Build the displayed actual series (gross or net):
   const actualSeries: ScatterDataPoint[] = rawSeries.map(pt => ({
@@ -79,6 +82,7 @@ export default function PaypointChart({
       referenceSeries={referenceSeries}
       yearRange={yearRange}
       displayNet={displayNet}
+      occupation={occupation}
       className={className}
     />
   )
