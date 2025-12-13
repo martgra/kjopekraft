@@ -80,11 +80,16 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
               onChange={handleOccupationChange}
               className="text-xs md:text-sm"
             >
-              {Object.entries(OCCUPATIONS).map(([key, occupation]) => (
-                <SelectOption key={key} value={key}>
-                  {occupation.label} ({TEXT.charts.averageLabel})
-                </SelectOption>
-              ))}
+              {Object.entries(OCCUPATIONS).map(([key, occupation]) => {
+                const isStortinget =
+                  (occupation as unknown as { provider?: string }).provider === 'stortinget'
+                return (
+                  <SelectOption key={key} value={key}>
+                    {occupation.label}
+                    {isStortinget ? '' : ` (${TEXT.charts.averageLabel})`}
+                  </SelectOption>
+                )
+              })}
               <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
             </Select>
           </div>

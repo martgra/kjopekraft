@@ -15,4 +15,6 @@ export type {
   ReferenceDataPoint,
   ReferenceSalaryResponse,
   OccupationDefinition,
+  ReferenceFilters,
+  ReferenceSource,
 } from './referenceTypes'

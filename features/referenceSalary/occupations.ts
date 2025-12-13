@@ -6,6 +6,13 @@
 import type { OccupationDefinition } from './types'
 
 export const OCCUPATIONS = {
+  stortingsrepresentant: {
+    code: 'stortingsrepresentant',
+    label: 'Stortingsrepresentant',
+    labelEn: 'Member of Parliament',
+    provider: 'stortinget',
+    availableFromYear: 2001,
+  },
   nurses: {
     code: '2223',
     label: 'Sykepleiere',
