@@ -1,4 +1,4 @@
-import { test, expect, STORAGE_KEYS, TEST_SALARY_POINTS } from '../../fixtures/test-fixtures'
+import { test, expect } from '../../fixtures/test-fixtures'
 
 test.describe('Data Persistence', () => {
   test('salary data persists across page reload', async ({ page, isMobile }) => {

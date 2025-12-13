@@ -9,7 +9,7 @@ export interface SelectOptionProps {
   children: React.ReactNode
 }
 
-export function SelectOption({ value, children }: SelectOptionProps) {
+export function SelectOption(_: SelectOptionProps) {
   // This is just a placeholder component for type safety
   // It won't actually render - the parent Select extracts its props
   return null

@@ -1,4 +1,4 @@
-import { test, expect, STORAGE_KEYS } from '../../fixtures/test-fixtures'
+import { test, expect } from '../../fixtures/test-fixtures'
 
 test.describe('Onboarding Experience', () => {
   test.beforeEach(async ({ page }) => {

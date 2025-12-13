@@ -99,11 +99,33 @@ export class DashboardPage {
   }
 
   get grossBadge() {
-    return this.page.locator('text=BRUTTO')
+    return this.chartSection.getByText('BRUTTO', { exact: true }).first()
   }
 
   get netBadge() {
-    return this.page.locator('text=NETTO')
+    return this.chartSection.getByText('NETTO', { exact: true }).first()
+  }
+
+  // View switcher
+  get graphViewButton() {
+    return this.page.getByRole('button', { name: /graf/i })
+  }
+
+  get tableViewButton() {
+    return this.page.getByRole('button', { name: /tabell/i })
+  }
+
+  get analysisViewButton() {
+    return this.page.getByRole('button', { name: /analyse/i })
+  }
+
+  // View content
+  get tableViewContent() {
+    return this.page.getByTestId('salary-table-view')
+  }
+
+  get analysisViewContent() {
+    return this.page.getByTestId('salary-analysis-view')
   }
 
   // Demo mode indicator
@@ -127,7 +149,25 @@ export class DashboardPage {
     await this.addButton.click()
   }
 
+  async loadDemoData() {
+    await this.tryDemoButton.click()
+  }
+
+  async switchView(mode: 'graph' | 'table' | 'analysis') {
+    const map: Record<'graph' | 'table' | 'analysis', () => Promise<void>> = {
+      graph: () => this.graphViewButton.click(),
+      table: () => this.tableViewButton.click(),
+      analysis: () => this.analysisViewButton.click(),
+    }
+    await map[mode]()
+  }
+
   async clearLocalStorage() {
+    // Ensure we're on an origin before touching localStorage (about:blank blocks access)
+    if (this.page.url() === 'about:blank') {
+      await this.goto()
+    }
+
     await this.page.evaluate(() => {
       localStorage.clear()
     })

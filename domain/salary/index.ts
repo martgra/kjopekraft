@@ -10,6 +10,7 @@ export {
   calculateYearRange,
   interpolateSalary,
 } from './salaryCalculator'
+export { buildSalaryTableRows, buildSalaryInsights } from './salaryInsights'
 export { validatePayPoint } from './salaryValidator'
 export type {
   PayPoint,
@@ -17,4 +18,6 @@ export type {
   SalaryStatistics,
   ValidationResult,
   YearRange,
+  SalaryTableRow,
+  SalaryInsight,
 } from './salaryTypes'

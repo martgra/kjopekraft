@@ -1,4 +1,4 @@
-import { test, expect, STORAGE_KEYS, TEST_SALARY_POINTS } from '../../fixtures/test-fixtures'
+import { test, expect } from '../../fixtures/test-fixtures'
 
 test.describe('Salary Management', () => {
   test.beforeEach(async ({ page }) => {

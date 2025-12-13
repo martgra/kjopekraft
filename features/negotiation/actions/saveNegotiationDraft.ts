@@ -20,8 +20,6 @@ const DraftInputSchema = z.object({
   userInfo: NegotiationUserInfoSchema.default(NegotiationUserInfoSchema.parse({})),
 })
 
-type DraftInput = z.infer<typeof DraftInputSchema>
-
 type SaveState =
   | { status: 'idle' }
   | { status: 'saving' }

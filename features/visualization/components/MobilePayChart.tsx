@@ -177,7 +177,7 @@ export default function MobilePayChart({
       instance.destroy()
       chartRef.current = null
     }
-  }, [actualSeries, inflSeries, referenceSeries, yearRange, displayNet])
+  }, [actualSeries, inflSeries, referenceSeries, yearRange, displayNet, referenceLabel])
 
   return <canvas ref={canvasRef} className={className} />
 }

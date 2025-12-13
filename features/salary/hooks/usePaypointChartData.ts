@@ -68,6 +68,8 @@ export function usePaypointChartData(
     actualSeries,
     inflSeries,
     referenceSeries,
+    salaryData: adjustedPayData,
+    referenceData,
     yearRange,
     referenceError,
   }

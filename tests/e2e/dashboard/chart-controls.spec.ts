@@ -1,37 +1,40 @@
 import { test, expect } from '../../fixtures/test-fixtures'
 
 test.describe('Chart Controls', () => {
-  test.beforeEach(async ({ page }) => {
-    // Clear cookies + localStorage before each test
-    await page.context().clearCookies()
-    await page.addInitScript(() => {
-      localStorage.clear()
-    })
+  test.beforeEach(async ({ dashboardPage }) => {
+    await dashboardPage.clearAppState()
+    await dashboardPage.goto()
   })
 
-  test('net/gross toggle updates chart badge', async ({ page }) => {
-    await page.goto('/')
+  test('net/gross toggle updates chart badge', async ({ dashboardPage }) => {
+    await dashboardPage.loadDemoData()
 
-    // Load demo data to have chart visible
-    await page.getByRole('button', { name: /prøv med eksempeldata/i }).click()
+    await expect(dashboardPage.chart).toBeVisible()
+    await expect(dashboardPage.netBadge).toBeVisible()
 
-    // Chart should be visible
-    await expect(page.locator('canvas')).toBeVisible()
+    await dashboardPage.netGrossToggle.click()
+    await expect(dashboardPage.grossBadge).toBeVisible()
 
-    // By default should show NETTO badge (exact match)
-    await expect(page.getByText('NETTO', { exact: true })).toBeVisible()
+    await dashboardPage.netGrossToggle.click()
+    await expect(dashboardPage.netBadge).toBeVisible()
+  })
 
-    // Find and click the toggle switch
-    const toggle = page.getByRole('switch')
-    await toggle.click()
+  test('view switcher shows graph, table, and analysis content', async ({ dashboardPage }) => {
+    await dashboardPage.loadDemoData()
 
-    // Should now show BRUTTO badge
-    await expect(page.getByText('BRUTTO', { exact: true })).toBeVisible()
+    // Graph by default
+    await expect(dashboardPage.chart).toBeVisible()
 
-    // Toggle back
-    await toggle.click()
+    // Table view (desktop = table, mobile = cards)
+    await dashboardPage.switchView('table')
+    await expect(dashboardPage.tableViewContent).toBeVisible()
 
-    // Should show NETTO again
-    await expect(page.getByText('NETTO', { exact: true })).toBeVisible()
+    // Analysis view
+    await dashboardPage.switchView('analysis')
+    await expect(dashboardPage.analysisViewContent).toBeVisible()
+
+    // Back to graph
+    await dashboardPage.switchView('graph')
+    await expect(dashboardPage.chart).toBeVisible()
   })
 })
