@@ -2,35 +2,29 @@ import { Suspense } from 'react'
 import DashboardWithDrawer from '@/components/dashboard/DashboardWithDrawer'
 import { getInflationData } from '@/services/inflation'
 import { connection } from 'next/server'
-import { Spinner } from '@/components/ui/atoms'
+import { DashboardSkeleton } from '@/components/ui/skeletons'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
+import { logger } from '@/lib/logger'
 
-function LoadingFallback() {
-  return (
-    <div className="flex h-screen items-center justify-center bg-[var(--background-light)]">
-      <div className="text-center">
-        <Spinner size="lg" />
-        <p className="mt-4 text-[var(--text-muted)]">Laster...</p>
-      </div>
-    </div>
-  )
-}
-
+/**
+ * Async server component that fetches inflation data
+ * Uses 'use cache' via the service layer for caching
+ * Wrapped in Suspense for streaming/progressive loading
+ */
 async function DashboardWithData() {
+  // Access connection first to opt into dynamic rendering
+  // This is required before using Date or logger with timestamps
+  await connection()
+
+  const currentYear = new Date().getFullYear()
   let inflationData: Awaited<ReturnType<typeof getInflationData>> = []
 
   try {
     inflationData = await getInflationData()
   } catch (error) {
-    console.error('Failed to fetch inflation data:', error)
+    logger.error('Failed to fetch inflation data', error, { component: 'DashboardWithData' })
     // Component will handle empty data gracefully
   }
-
-  // Access connection to opt into dynamic rendering (required for Date access)
-  await connection()
-
-  // Pass current year from server to avoid runtime date access in client
-  const currentYear = new Date().getFullYear()
 
   return <DashboardWithDrawer inflationData={inflationData} currentYear={currentYear} />
 }
@@ -38,7 +32,7 @@ async function DashboardWithData() {
 export default function Page() {
   return (
     <ErrorBoundary>
-      <Suspense fallback={<LoadingFallback />}>
+      <Suspense fallback={<DashboardSkeleton />}>
         <DashboardWithData />
       </Suspense>
     </ErrorBoundary>

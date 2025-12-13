@@ -5,13 +5,20 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useMe
 interface ReferenceModeContextValue {
   isReferenceEnabled: boolean
   toggleReference: () => void
+  setReferenceEnabled: (enabled: boolean) => void
 }
 
 const ReferenceModeContext = createContext<ReferenceModeContextValue | undefined>(undefined)
 
+/**
+ * Reference mode provider with localStorage persistence
+ *
+ * Note: For shareable URLs, nuqs can be integrated later.
+ * See IMPROVEMENT_PLAN.md for migration path.
+ */
 export function ReferenceModeProvider({ children }: { children: ReactNode }) {
   // Initialize from localStorage with a lazy initializer - default false
-  const [isReferenceEnabled, setIsReferenceEnabled] = useState<boolean>(() => {
+  const [isReferenceEnabled, setIsReferenceEnabledState] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('salaryReferenceEnabled')
       return saved === 'true'
@@ -21,9 +28,10 @@ export function ReferenceModeProvider({ children }: { children: ReactNode }) {
 
   // Memoize the context value to prevent unnecessary renders
   const contextValue = useMemo(() => {
-    const toggleReference = () => setIsReferenceEnabled(prev => !prev)
+    const toggleReference = () => setIsReferenceEnabledState(prev => !prev)
+    const setReferenceEnabled = (enabled: boolean) => setIsReferenceEnabledState(enabled)
 
-    return { isReferenceEnabled, toggleReference }
+    return { isReferenceEnabled, toggleReference, setReferenceEnabled }
   }, [isReferenceEnabled])
 
   // Persist to localStorage when the mode changes

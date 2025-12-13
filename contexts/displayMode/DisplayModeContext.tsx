@@ -6,14 +6,22 @@ type DisplayMode = 'net' | 'gross'
 
 interface DisplayModeContextValue {
   isNetMode: boolean
+  displayMode: DisplayMode
   toggleMode: () => void
+  setDisplayMode: (mode: DisplayMode) => void
 }
 
 const DisplayModeContext = createContext<DisplayModeContextValue | undefined>(undefined)
 
+/**
+ * Display mode provider with localStorage persistence
+ *
+ * Note: For shareable URLs, nuqs can be integrated later.
+ * See IMPROVEMENT_PLAN.md for migration path.
+ */
 export function DisplayModeProvider({ children }: { children: ReactNode }) {
   // Initialize from localStorage with a lazy initializer
-  const [displayMode, setDisplayMode] = useState<DisplayMode>(() => {
+  const [displayMode, setDisplayModeState] = useState<DisplayMode>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('salaryDisplayMode')
       return saved === 'gross' ? 'gross' : 'net'
@@ -24,9 +32,10 @@ export function DisplayModeProvider({ children }: { children: ReactNode }) {
   // Memoize the context value to prevent unnecessary renders
   const contextValue = useMemo(() => {
     const isNetMode = displayMode === 'net'
-    const toggleMode = () => setDisplayMode(prev => (prev === 'net' ? 'gross' : 'net'))
+    const toggleMode = () => setDisplayModeState(prev => (prev === 'net' ? 'gross' : 'net'))
+    const setDisplayMode = (mode: DisplayMode) => setDisplayModeState(mode)
 
-    return { isNetMode, toggleMode }
+    return { isNetMode, displayMode, toggleMode, setDisplayMode }
   }, [displayMode])
 
   // Persist to localStorage when the mode changes
