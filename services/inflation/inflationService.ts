@@ -8,7 +8,7 @@ import type { InflationDataPoint, SsbRawResponse } from '@/domain/inflation'
  */
 export async function getInflationData(): Promise<InflationDataPoint[]> {
   'use cache'
-  cacheLife('hours') // 1 hour cache
+  cacheLife('inflation') // Uses custom profile from next.config.ts
   cacheTag('inflation')
 
   const res = await fetch('https://data.ssb.no/api/v0/dataset/1086.json?lang=no')

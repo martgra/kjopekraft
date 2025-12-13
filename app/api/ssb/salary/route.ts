@@ -185,9 +185,18 @@ async function fetchWageIndexGrowth(
     const json = (await res.json()) as JsonStat2
     const values = json.value
 
-    if (values.length !== 2 || values[0] === null || values[1] === null) return null
+    const value0 = values[0]
+    const value1 = values[1]
+    if (
+      values.length !== 2 ||
+      value0 === null ||
+      value0 === undefined ||
+      value1 === null ||
+      value1 === undefined
+    )
+      return null
 
-    return values[1] / values[0] // growth factor
+    return value1 / value0 // growth factor
   } catch {
     return null
   }
@@ -232,7 +241,7 @@ async function getCachedSalaryData(
   fromYear: string,
 ): Promise<SalarySeriesResponse> {
   'use cache'
-  cacheLife('days') // 1 day cache - catches SSB updates within 24h
+  cacheLife('ssb') // Uses custom profile from next.config.ts
   cacheTag('ssb-salary')
 
   const baseData = await fetchSsbSalaryData({

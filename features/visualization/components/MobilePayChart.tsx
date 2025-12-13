@@ -142,7 +142,7 @@ export default function MobilePayChart({
             titleFont: { size: 12, weight: 'bold' },
             displayColors: true,
             callbacks: {
-              title: items => `År: ${items[0].parsed.x}`,
+              title: items => `År: ${items[0]?.parsed.x ?? ''}`,
               label: ctx => {
                 const label = ctx.dataset.label?.split(' ')[0]
                 return `${label}: ${ctx.parsed.y?.toLocaleString('nb-NO', {
