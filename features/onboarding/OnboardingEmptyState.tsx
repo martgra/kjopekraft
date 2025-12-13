@@ -37,12 +37,12 @@ export default function OnboardingEmptyState({ onLoadDemo, onOpenDrawer }: Onboa
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-[var(--border-light)] bg-gradient-to-b from-[var(--surface-light)] to-blue-50/30 p-6 sm:p-8">
-      {/* Icon with decorative background */}
+    <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-[var(--border-light)] bg-gradient-to-b from-[var(--surface-light)] to-[var(--color-green-100)]/30 p-6 sm:p-8">
+      {/* Logo with decorative background */}
       <div className="relative mb-6">
-        <div className="absolute -inset-4 rounded-full bg-blue-100/50" />
-        <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-blue-600">
-          <span className="material-symbols-outlined text-[40px] text-white">insights</span>
+        <div className="absolute -inset-4 rounded-full bg-[var(--color-green-100)]/50" />
+        <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)]">
+          <span className="text-[48px]" role="img" aria-label="Money with wings">💸</span>
         </div>
       </div>
 
@@ -71,7 +71,7 @@ export default function OnboardingEmptyState({ onLoadDemo, onOpenDrawer }: Onboa
             key={index}
             className="flex flex-row items-center gap-3 rounded-lg border border-[var(--border-light)] bg-white p-3 sm:flex-col sm:items-start sm:p-4"
           >
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 sm:mb-2">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-green-100)] sm:mb-2">
               <span className="material-symbols-outlined text-[24px] text-[var(--primary)]">
                 {feature.icon}
               </span>
@@ -85,7 +85,7 @@ export default function OnboardingEmptyState({ onLoadDemo, onOpenDrawer }: Onboa
       </div>
 
       {/* Info box - hidden on mobile */}
-      <div className="hidden w-full max-w-lg rounded-lg border border-blue-100 bg-blue-50/50 p-4 md:block">
+      <div className="hidden w-full max-w-lg rounded-lg border border-[var(--color-green-100)] bg-[var(--color-green-100)]/50 p-4 md:block">
         <div className="flex items-start gap-3">
           <span className="material-symbols-outlined flex-shrink-0 text-[24px] text-[var(--primary)]">
             lightbulb

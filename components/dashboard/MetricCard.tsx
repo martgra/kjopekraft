@@ -8,11 +8,12 @@ interface MetricCardProps {
     isPositive: boolean
   }
   icon: string
-  iconColor?: 'blue' | 'indigo' | 'orange' | 'emerald'
+  iconColor?: 'green' | 'blue' | 'indigo' | 'orange' | 'emerald'
 }
 
 const iconColorClasses = {
-  blue: 'text-[var(--color-blue-500)] bg-blue-50',
+  green: 'text-[var(--primary)] bg-[var(--color-green-100)]',
+  blue: 'text-[var(--secondary)] bg-[var(--color-blue-100)]',
   indigo: 'text-[var(--color-indigo-500)] bg-indigo-50',
   orange: 'text-[var(--color-orange-500)] bg-orange-50',
   emerald: 'text-[var(--color-emerald-500)] bg-emerald-50',
@@ -24,7 +25,7 @@ export default function MetricCard({
   suffix,
   trend,
   icon,
-  iconColor = 'blue',
+  iconColor = 'green',
 }: MetricCardProps) {
   return (
     <div className="group relative flex flex-col gap-2 rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] p-4 shadow-sm transition-all hover:border-[var(--primary)]/50 sm:gap-4 sm:p-6">
