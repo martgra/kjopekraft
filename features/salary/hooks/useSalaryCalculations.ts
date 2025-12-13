@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { adjustSalaries, computeStatistics } from '@/features/inflation/inflationCalc'
-import type { PayPoint } from '@/lib/models/types'
-import type { InflationDataPoint } from '@/lib/models/inflation'
+import { adjustSalaries, computeStatistics } from '@/domain/salary'
+import type { PayPoint } from '@/domain/salary'
+import type { InflationDataPoint } from '@/domain/inflation'
 
 /**
  * Hook to derive a per-year salary series + summary stats

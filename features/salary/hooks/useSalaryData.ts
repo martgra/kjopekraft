@@ -1,16 +1,16 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { adjustSalaries, computeStatistics } from '@/features/inflation/inflationCalc'
-import { calculateNetIncome } from '@/features/tax/taxCalculator'
-import type {
-  PayPoint,
-  SalaryDataPoint,
-  SalaryStatistics,
-  ChartPoint,
-  ValidationResult,
-} from '@/lib/models/types'
-import type { InflationDataPoint } from '@/lib/models/inflation'
+import {
+  adjustSalaries,
+  computeStatistics,
+  calculateYearRange,
+  validatePayPoint,
+} from '@/domain/salary'
+import { calculateNetIncome } from '@/domain/tax'
+import type { PayPoint, SalaryDataPoint, SalaryStatistics, ValidationResult } from '@/domain/salary'
+import type { InflationDataPoint } from '@/domain/inflation'
+import type { ChartPoint } from '@/lib/models/types'
 
 const STORAGE_KEY = 'salary-calculator-points'
 
@@ -87,38 +87,9 @@ export function useSalaryData(inflationData: InflationDataPoint[], currentYear: 
     setPayPoints(prev => prev.filter(p => !(p.year === year && p.pay === pay)))
   }
 
-  // Validation function
+  // Validation function - delegates to domain layer
   const validatePoint = (point: PayPoint): ValidationResult => {
-    if (!point.year || !point.pay) {
-      return { isValid: false, errorMessage: 'Year and pay are required' }
-    }
-
-    if (point.pay <= 0) {
-      return { isValid: false, errorMessage: 'Pay must be positive' }
-    }
-
-    if (inflationData.length) {
-      const minYear = Math.min(...inflationData.map(d => d.year))
-      const maxYear = Math.max(...inflationData.map(d => d.year))
-
-      if (point.year < minYear || point.year > maxYear) {
-        return {
-          isValid: false,
-          errorMessage: `Year must be between ${minYear} and ${maxYear}`,
-        }
-      }
-    }
-
-    // Check for duplicate year
-    const existingWithSameYear = payPoints.find(p => p.year === point.year && p.id !== point.id)
-    if (existingWithSameYear) {
-      return {
-        isValid: false,
-        errorMessage: `You already have a payment for ${point.year}`,
-      }
-    }
-
-    return { isValid: true }
+    return validatePayPoint(point, payPoints, inflationData)
   }
 
   // Memoized calculations
@@ -129,14 +100,10 @@ export function useSalaryData(inflationData: InflationDataPoint[], currentYear: 
 
   const statistics = useMemo<SalaryStatistics>(() => computeStatistics(salaryData), [salaryData])
 
-  const yearRange = useMemo(() => {
-    if (!salaryData.length) {
-      // Use currentYear passed from server to avoid runtime Date access
-      return { minYear: currentYear - 5, maxYear: currentYear }
-    }
-    const years = salaryData.map(p => p.year)
-    return { minYear: Math.min(...years), maxYear: Math.max(...years) }
-  }, [salaryData, currentYear])
+  const yearRange = useMemo(
+    () => calculateYearRange(salaryData, currentYear),
+    [salaryData, currentYear],
+  )
 
   // Chart data preparation with memoization
   const chartData = useMemo(() => {
@@ -165,12 +132,12 @@ export function useSalaryData(inflationData: InflationDataPoint[], currentYear: 
     // Create net pay versions (memoizing these saves recalculation when toggling gross/net)
     const netActualPoints = actualPoints.map<ChartPoint>(p => ({
       x: p.x,
-      y: p.y !== null ? calculateNetIncome(p.x, p.y) : null,
+      y: p.y !== null ? calculateNetIncome(p.y, p.x) : null,
     }))
 
     const netInflPoints = inflPoints.map<ChartPoint>(p => ({
       x: p.x,
-      y: p.y !== null ? calculateNetIncome(p.x, p.y) : null,
+      y: p.y !== null ? calculateNetIncome(p.y, p.x) : null,
     }))
 
     return {

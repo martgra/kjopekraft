@@ -1,13 +1,13 @@
 // features/salary/hooks/usePaypointChartData.ts
 
-import { PayPoint } from '@/lib/models/types'
-import { InflationDataPoint } from '@/lib/models/inflation'
+import type { PayPoint } from '@/domain/salary'
+import type { InflationDataPoint } from '@/domain/inflation'
 import { useSalaryCalculations } from '@/features/salary/hooks/useSalaryCalculations'
 import { useReferenceSalary } from '@/features/referenceSalary/hooks/useReferenceSalary'
 import { useReferenceMode } from '@/contexts/referenceMode/ReferenceModeContext'
 import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
-import { filterReferenceByYearRange } from '@/features/referenceSalary/referenceCalculator'
-import { calculateNetIncome } from '@/features/tax/taxCalculator'
+import { filterReferenceByYearRange } from '@/domain/reference'
+import { calculateNetIncome } from '@/domain/tax'
 import type { ScatterDataPoint } from 'chart.js'
 import type { OccupationKey } from '@/features/referenceSalary/occupations'
 

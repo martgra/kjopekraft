@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import DashboardWithDrawer from '@/components/dashboard/DashboardWithDrawer'
-import { getInflationData } from '@/lib/models/getInflationData'
+import { getInflationData } from '@/services/inflation'
 import { connection } from 'next/server'
 import { Spinner } from '@/components/ui/atoms'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'

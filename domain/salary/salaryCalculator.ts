@@ -1,10 +1,9 @@
-import { PayPoint } from '@/lib/models/types'
-import { InflationDataPoint } from '@/lib/models/inflation'
-import type { SalaryDataPoint } from '@/lib/models/types'
+import type { PayPoint, SalaryDataPoint, SalaryStatistics, YearRange } from './salaryTypes'
+import type { InflationDataPoint } from '@/domain/inflation'
 
 /**
  * Build a per-year salary series (actual vs. inflation) starting from the earliest pay point,
- * scaling the *initial* salary forward by CPI alone.
+ * scaling the initial salary forward by CPI alone.
  */
 export function adjustSalaries(
   payPoints: PayPoint[],
@@ -60,16 +59,9 @@ export function adjustSalaries(
 }
 
 /**
- * Compute key summary statistics from a per-year salary series.
+ * Compute key summary statistics from a per-year salary series
  */
-export function computeStatistics(series: SalaryDataPoint[]): {
-  startingPay: number
-  latestPay: number
-  inflationAdjustedPay: number
-  gapPercent: number
-  startingYear: number
-  latestYear: number
-} {
+export function computeStatistics(series: SalaryDataPoint[]): SalaryStatistics {
   if (!series.length) {
     return {
       startingPay: NaN,
@@ -92,4 +84,30 @@ export function computeStatistics(series: SalaryDataPoint[]): {
     startingYear: series[0].year,
     latestYear: series[series.length - 1].year,
   }
+}
+
+/**
+ * Calculate year range from salary data
+ */
+export function calculateYearRange(salaryData: SalaryDataPoint[], currentYear: number): YearRange {
+  if (!salaryData.length) {
+    return { minYear: currentYear - 5, maxYear: currentYear }
+  }
+  const years = salaryData.map(p => p.year)
+  return { minYear: Math.min(...years), maxYear: Math.max(...years) }
+}
+
+/**
+ * Interpolate salary between two years
+ */
+export function interpolateSalary(
+  year: number,
+  year0: number,
+  pay0: number,
+  year1: number,
+  pay1: number,
+): number {
+  if (year0 === year1) return pay0
+  const t = (year - year0) / (year1 - year0)
+  return pay0 + t * (pay1 - pay0)
 }

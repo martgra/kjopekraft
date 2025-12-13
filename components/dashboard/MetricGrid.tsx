@@ -1,6 +1,6 @@
 import MetricCard from './MetricCard'
-import type { SalaryStatistics } from '@/lib/models/types'
-import { calculateNetIncome } from '@/features/tax/taxCalculator'
+import type { SalaryStatistics } from '@/domain/salary'
+import { calculateNetIncome } from '@/domain/tax'
 import { TEXT } from '@/lib/constants/text'
 
 interface MetricGridProps {

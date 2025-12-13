@@ -1,6 +1,6 @@
 // features/onboarding/demoData.ts
 
-import type { PayPoint } from '@/lib/models/types'
+import type { PayPoint } from '@/domain/salary'
 
 export const DEMO_PAY_POINTS: PayPoint[] = [
   { year: 2020, pay: 550000 },

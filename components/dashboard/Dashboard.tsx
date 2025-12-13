@@ -10,9 +10,9 @@ import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
 import { DEMO_PAY_POINTS } from '@/features/onboarding/demoData'
-import { calculateNetIncome } from '@/features/tax/taxCalculator'
-import type { InflationDataPoint } from '@/lib/models/inflation'
-import type { PayPoint } from '@/lib/models/types'
+import { calculateNetIncome } from '@/domain/tax'
+import type { InflationDataPoint } from '@/domain/inflation'
+import type { PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 
 interface DashboardProps {

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import SalaryPointForm from './SalaryPointForm'
 import ActivityTimeline from './ActivityTimeline'
-import type { PayPoint } from '@/lib/models/types'
-import type { InflationDataPoint } from '@/lib/models/inflation'
+import type { PayPoint } from '@/domain/salary'
+import type { InflationDataPoint } from '@/domain/inflation'
 import { TEXT } from '@/lib/constants/text'
 
 interface RightPanelProps {
