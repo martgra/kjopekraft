@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useState } from 'react'
+import { memo, useState, useEffect } from 'react'
 import PaypointChart from '@/features/visualization/components/PaypointChart'
 import type { PayPoint } from '@/lib/models/types'
 import type { InflationDataPoint } from '@/lib/models/inflation'
@@ -22,17 +22,30 @@ interface ChartSectionProps {
 
 function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: ChartSectionProps) {
   const { isReferenceEnabled, toggleReference } = useReferenceMode()
-  const [selectedOccupation, setSelectedOccupation] = useState<OccupationKey | 'none'>(
-    DEFAULT_OCCUPATION,
-  )
+  const [selectedOccupation, setSelectedOccupation] = useState<OccupationKey | 'none'>('none')
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const handleOccupationChange = (value: string) => {
     setSelectedOccupation(value as OccupationKey | 'none')
+    // Clear error when changing occupation
+    setApiError(null)
     // Toggle reference based on selection
     if (value === 'none' && isReferenceEnabled) {
       toggleReference()
     } else if (value !== 'none' && !isReferenceEnabled) {
       toggleReference()
+    }
+  }
+
+  // Callback to handle API errors from the chart
+  const handleApiError = (error: Error | null) => {
+    if (error) {
+      setApiError('Kunne ikke laste referansedata. Referansesammenligningen er deaktivert.')
+      // Auto-disable reference when API fails
+      setSelectedOccupation('none')
+      if (isReferenceEnabled) {
+        toggleReference()
+      }
     }
   }
 
@@ -76,6 +89,15 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
             </Select>
           </div>
         </div>
+        {/* API Error Warning */}
+        {apiError && (
+          <div className="mt-3 rounded-md border border-yellow-300 bg-yellow-50 p-3">
+            <div className="flex items-start gap-2">
+              <span className="material-symbols-outlined text-[20px] text-yellow-700">warning</span>
+              <p className="text-xs text-yellow-800 md:text-sm">{apiError}</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Chart */}
@@ -85,6 +107,7 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
           inflationData={inflationData}
           displayNet={isNetMode}
           occupation={occupationKey}
+          onApiError={handleApiError}
         />
       </div>
     </div>
