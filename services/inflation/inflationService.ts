@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { cacheLife, cacheTag } from 'next/cache'
 import { parseJsonInflation } from '@/domain/inflation'
 import type { InflationDataPoint } from '@/domain/inflation'
@@ -9,7 +10,7 @@ import { logger } from '@/lib/logger'
  * Server-side only - uses Next.js cache directives
  * Includes Zod runtime validation of API response
  */
-export async function getInflationData(): Promise<InflationDataPoint[]> {
+const fetchInflation = async (): Promise<InflationDataPoint[]> => {
   'use cache'
   cacheLife('inflation') // Uses custom profile from next.config.ts
   cacheTag('inflation')
@@ -30,3 +31,6 @@ export async function getInflationData(): Promise<InflationDataPoint[]> {
 
   return parseJsonInflation(parseResult.data.dataset)
 }
+
+// Memoize per-request to avoid duplicate fetch/parse in the same render pass
+export const getInflationData = cache(fetchInflation)

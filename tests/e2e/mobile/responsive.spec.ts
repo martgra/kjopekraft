@@ -3,6 +3,7 @@ import { test, expect } from '../../fixtures/test-fixtures'
 // Only run on mobile viewport
 test.describe('Mobile Experience', () => {
   test.beforeEach(async ({ page }) => {
+    await page.context().clearCookies()
     await page.addInitScript(() => {
       localStorage.clear()
     })

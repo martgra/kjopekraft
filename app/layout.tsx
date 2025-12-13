@@ -1,5 +1,6 @@
 // app/layout.tsx
 
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
 import { AppProviders } from '@/contexts/AppProviders'
@@ -113,9 +114,11 @@ export default function RootLayout({
       <body className="h-full bg-[var(--background-light)] font-sans text-base antialiased">
         <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <MobileMetaScript />
-        <AppProviders>
-          <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
-        </AppProviders>
+        <Suspense fallback={null}>
+          <AppProviders>
+            <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
+          </AppProviders>
+        </Suspense>
       </body>
     </html>
   )

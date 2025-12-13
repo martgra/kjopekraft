@@ -1,6 +1,7 @@
 'use client'
 
 import { ReactNode } from 'react'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeContext'
 
@@ -14,19 +15,20 @@ interface AppProvidersProps {
  * the provider hierarchy for better maintainability.
  *
  * Includes:
- * - DisplayModeProvider: Net/gross salary display toggle (localStorage)
- * - ReferenceModeProvider: Reference salary overlay toggle (localStorage)
+ * - NuqsAdapter: enables URL-based state via nuqs (shareable, hydration-safe)
+ * - DisplayModeProvider: Net/gross salary display toggle (nuqs)
+ * - ReferenceModeProvider: Reference salary overlay toggle (nuqs)
  *
  * Note: DrawerProvider is not included here as it requires pathname
  * and is handled separately in ClientLayoutWrapper.
  *
- * Note: nuqs is installed for future URL-based state migration.
- * See lib/searchParams.ts for prepared configuration.
  */
 export function AppProviders({ children }: AppProvidersProps) {
   return (
-    <DisplayModeProvider>
-      <ReferenceModeProvider>{children}</ReferenceModeProvider>
-    </DisplayModeProvider>
+    <NuqsAdapter>
+      <DisplayModeProvider>
+        <ReferenceModeProvider>{children}</ReferenceModeProvider>
+      </DisplayModeProvider>
+    </NuqsAdapter>
   )
 }

@@ -2,7 +2,8 @@ import { test, expect, STORAGE_KEYS } from '../../fixtures/test-fixtures'
 
 test.describe('Onboarding Experience', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear localStorage before each test to simulate first visit
+    // Clear cookies + localStorage before each test to simulate first visit
+    await page.context().clearCookies()
     await page.addInitScript(() => {
       localStorage.clear()
     })

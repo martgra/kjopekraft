@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import MetricGrid from './MetricGrid'
@@ -14,6 +14,7 @@ import { calculateNetIncome } from '@/domain/tax'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
+import { MetricGridSkeleton, ChartSkeleton } from '@/components/ui/skeletons'
 
 interface DashboardProps {
   inflationData: InflationDataPoint[]
@@ -278,7 +279,9 @@ export default function Dashboard({
               </div>
               {/* Full metrics grid - desktop only */}
               <div className="hidden md:block">
-                <MetricGrid statistics={statistics} isNetMode={isNetMode} />
+                <Suspense fallback={<MetricGridSkeleton />}>
+                  <MetricGrid statistics={statistics} isNetMode={isNetMode} />
+                </Suspense>
               </div>
             </>
           )}
@@ -286,12 +289,16 @@ export default function Dashboard({
           {/* Chart Section */}
           {hasData ? (
             <div className="flex min-h-[350px] flex-1">
-              <ChartSection
-                payPoints={payPoints}
-                inflationData={inflationData}
-                isNetMode={isNetMode}
-                onToggleMode={toggleMode}
-              />
+              <Suspense
+                fallback={<ChartSkeleton className="w-full rounded-xl bg-white shadow-sm" />}
+              >
+                <ChartSection
+                  payPoints={payPoints}
+                  inflationData={inflationData}
+                  isNetMode={isNetMode}
+                  onToggleMode={toggleMode}
+                />
+              </Suspense>
             </div>
           ) : (
             <OnboardingEmptyState onLoadDemo={handleLoadDemo} onOpenDrawer={onDrawerOpen} />

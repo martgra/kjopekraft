@@ -1,6 +1,7 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react'
+import React, { createContext, useContext, useMemo, useTransition, type ReactNode } from 'react'
+import { parseAsBoolean, useQueryState } from 'nuqs'
 
 interface ReferenceModeContextValue {
   isReferenceEnabled: boolean
@@ -11,35 +12,28 @@ interface ReferenceModeContextValue {
 const ReferenceModeContext = createContext<ReferenceModeContextValue | undefined>(undefined)
 
 /**
- * Reference mode provider with localStorage persistence
- *
- * Note: For shareable URLs, nuqs can be integrated later.
- * See IMPROVEMENT_PLAN.md for migration path.
+ * Reference mode provider with URL-based state (nuqs)
  */
 export function ReferenceModeProvider({ children }: { children: ReactNode }) {
-  // Initialize from localStorage with a lazy initializer - default false
-  const [isReferenceEnabled, setIsReferenceEnabledState] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('salaryReferenceEnabled')
-      return saved === 'true'
-    }
-    return false
-  })
+  const [isReferenceEnabled, setIsReferenceEnabled] = useQueryState(
+    'reference',
+    parseAsBoolean.withDefault(false),
+  )
+  const [, startTransition] = useTransition()
 
   // Memoize the context value to prevent unnecessary renders
   const contextValue = useMemo(() => {
-    const toggleReference = () => setIsReferenceEnabledState(prev => !prev)
-    const setReferenceEnabled = (enabled: boolean) => setIsReferenceEnabledState(enabled)
+    const toggleReference = () =>
+      startTransition(() => {
+        void setIsReferenceEnabled(prev => !prev)
+      })
+    const setReferenceEnabled = (enabled: boolean) =>
+      startTransition(() => {
+        void setIsReferenceEnabled(enabled)
+      })
 
     return { isReferenceEnabled, toggleReference, setReferenceEnabled }
-  }, [isReferenceEnabled])
-
-  // Persist to localStorage when the mode changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('salaryReferenceEnabled', String(isReferenceEnabled))
-    }
-  }, [isReferenceEnabled])
+  }, [isReferenceEnabled, setIsReferenceEnabled, startTransition])
 
   return (
     <ReferenceModeContext.Provider value={contextValue}>{children}</ReferenceModeContext.Provider>
