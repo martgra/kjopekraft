@@ -1,0 +1,18 @@
+#!/bin/sh
+# Husky pre-push hook
+
+echo "🔍 Running TypeScript type checking..."
+if ! bunx tsc --noEmit; then
+  echo "❌ TypeScript type check failed!"
+  echo "Please fix type errors before pushing."
+  exit 1
+fi
+echo "✅ TypeScript type check passed"
+
+echo "🏗️  Running production build check..."
+if ! bun run build; then
+  echo "❌ Production build failed!"
+  echo "Please fix build errors before pushing."
+  exit 1
+fi
+echo "✅ Production build passed"

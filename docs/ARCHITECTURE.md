@@ -661,6 +661,12 @@ SSB (Statistics Norway) integration:
 - **Table 11654**: Wage index (quarterly)
 - **PxWebApi v2**: JSON-stat2 format
 - **Parameter ordering**: Critical for SSB API (see reference-salary-implementation.md)
+- **Sector Codes**: Valid sector codes from SSB Table 11418:
+  - `ALLE`: Sum alle sektorer (all sectors)
+  - `A+B+D+E`: Privat sektor og offentlige eide foretak (private sector)
+  - `6500`: Kommuneforvaltningen (municipal administration)
+  - `6100`: Statsforvaltningen (state administration)
+  - Note: These codes are defined by SSB and must match exactly. Incorrect codes will result in 400 errors.
 
 ## Type System
 

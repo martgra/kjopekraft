@@ -84,6 +84,9 @@ export const TEXT = {
     legendGross: 'Bruttolønn',
     legendInflationAdjusted: 'Inflasjons-justert',
     legendReference: 'Referanse',
+    // Reference salary dropdown
+    averageLabel: 'Gj.snitt',
+    noReference: 'Ingen referanse',
   },
 
   stats: {

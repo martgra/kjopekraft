@@ -20,19 +20,19 @@ export const OCCUPATIONS = {
     code: '1120',
     label: 'Ledere i offentlig sektor (stat)',
     labelEn: 'Managers in Public Sector (State)',
-    sector: 'STAT',
+    sector: '6100', // SSB code for Statsforvaltningen (State)
   },
   managersMunicipal: {
     code: '1120',
     label: 'Ledere i offentlig sektor (kommune)',
     labelEn: 'Managers in Public Sector (Municipal)',
-    sector: 'KOMM',
+    sector: '6500', // SSB code for Kommuneforvaltningen (Municipal)
   },
   managersPrivate: {
     code: '1120',
     label: 'Ledere i privat sektor',
     labelEn: 'Managers in Private Sector',
-    sector: 'PRIVAT',
+    sector: 'A+B+D+E', // SSB code for private sector and publicly owned enterprises
   },
   // Future occupations can be added here with different configurations
   // e.g., specialistNurses, earlyChildhoodTeachers, engineers, etc.
