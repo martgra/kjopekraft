@@ -17,6 +17,7 @@ interface PaypointChartProps {
   displayNet: boolean
   occupation?: OccupationKey
   className?: string
+  onApiError?: (error: Error | null) => void
 }
 
 export default function PaypointChart({
@@ -25,6 +26,7 @@ export default function PaypointChart({
   displayNet,
   occupation,
   className = '',
+  onApiError,
 }: PaypointChartProps) {
   // Grab the raw (gross) series from your hook
   const {
@@ -33,7 +35,15 @@ export default function PaypointChart({
     inflSeries: rawInflSeries,
     referenceSeries: rawReferenceSeries,
     yearRange,
+    referenceError,
   } = usePaypointChartData(payPoints, inflationData, occupation)
+
+  // Notify parent of API errors
+  React.useEffect(() => {
+    if (onApiError && referenceError) {
+      onApiError(referenceError)
+    }
+  }, [referenceError, onApiError])
 
   // 1) Build the displayed actual series (gross or net):
   const actualSeries: ScatterDataPoint[] = rawSeries.map(pt => ({
