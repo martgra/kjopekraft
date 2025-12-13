@@ -5,8 +5,28 @@ ARG USERNAME=vscode
 
 USER root
 
-RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends iputils-ping \
+# Install Node.js and Playwright dependencies in a single layer
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends \
+    nodejs \
+    iputils-ping \
+    libnss3 \
+    libnspr4 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdrm2 \
+    libdbus-1-3 \
+    libxkbcommon0 \
+    libatspi2.0-0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
 USER ${USERNAME}

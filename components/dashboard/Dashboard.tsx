@@ -202,7 +202,7 @@ export default function Dashboard({
                       <p className="text-lg font-bold text-[var(--text-main)]">
                         {Math.round(
                           isNetMode
-                            ? calculateNetIncome(statistics.latestYear, statistics.latestPay)
+                            ? calculateNetIncome(statistics.latestPay, statistics.latestYear)
                             : statistics.latestPay,
                         ).toLocaleString('nb-NO')}
                       </p>
@@ -261,10 +261,10 @@ export default function Dashboard({
                             ({statistics.gapPercent >= 0 ? '+' : ''}
                             {Math.round(
                               isNetMode
-                                ? calculateNetIncome(statistics.latestYear, statistics.latestPay) -
+                                ? calculateNetIncome(statistics.latestPay, statistics.latestYear) -
                                     calculateNetIncome(
-                                      statistics.latestYear,
                                       statistics.inflationAdjustedPay,
+                                      statistics.latestYear,
                                     )
                                 : statistics.latestPay - statistics.inflationAdjustedPay,
                             ).toLocaleString('nb-NO')}{' '}

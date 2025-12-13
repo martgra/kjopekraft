@@ -18,7 +18,7 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
       return grossPay
     }
     try {
-      return calculateNetIncome(year, grossPay)
+      return calculateNetIncome(grossPay, year)
     } catch {
       return grossPay
     }
