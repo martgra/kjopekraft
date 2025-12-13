@@ -18,19 +18,22 @@ export type UseReferenceSalaryOptions = {
 export function useReferenceSalary(options: UseReferenceSalaryOptions = {}) {
   const { occupation = DEFAULT_OCCUPATION, fromYear = 2015, enabled = true } = options
 
-  // Map occupation key to SSB code
-  const occupationCode = OCCUPATIONS[occupation].code
+  // Map occupation key to SSB code and sector
+  const occupationDef = OCCUPATIONS[occupation]
+  const occupationCode = occupationDef.code
+  const sector = 'sector' in occupationDef ? occupationDef.sector : undefined // Optional sector filter
 
-  const { data, error, isLoading } = useSWR<ReferenceSalaryResponse>(
-    enabled ? `/api/ssb/salary?occupation=${occupationCode}&fromYear=${fromYear}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      refreshInterval: 0,
-      // Cache for 24h on client side (API route has its own cache)
-      dedupingInterval: 86400000,
-    },
-  )
+  // Build API URL with sector parameter if specified
+  const apiUrl = enabled
+    ? `/api/ssb/salary?occupation=${occupationCode}&fromYear=${fromYear}${sector ? `&sector=${sector}` : ''}`
+    : null
+
+  const { data, error, isLoading } = useSWR<ReferenceSalaryResponse>(apiUrl, fetcher, {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    // Cache for 24h on client side (API route has its own cache)
+    dedupingInterval: 86400000,
+  })
 
   // Extract yearly series (pre-calculated by API)
   const yearlyData: ReferenceDataPoint[] = data?.derived?.yearlyNok ?? []

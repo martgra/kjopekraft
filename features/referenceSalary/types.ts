@@ -34,4 +34,5 @@ export type OccupationDefinition = {
   code: string
   label: string
   labelEn?: string
+  sector?: string // SSB sector code: 'ALLE' (all), 'STAT' (state), 'KOMM' (municipal), 'PRIVAT' (private)
 }
