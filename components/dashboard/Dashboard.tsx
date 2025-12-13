@@ -236,8 +236,8 @@ export default function Dashboard({
                           {Math.round(
                             isNetMode
                               ? calculateNetIncome(
-                                  statistics.latestYear,
                                   statistics.inflationAdjustedPay,
+                                  statistics.latestYear,
                                 )
                               : statistics.inflationAdjustedPay,
                           ).toLocaleString('nb-NO')}{' '}

@@ -57,7 +57,7 @@ export function usePaypointChartData(
               point.value === null
                 ? null
                 : isNetMode
-                  ? calculateNetIncome(point.year, point.value)
+                  ? calculateNetIncome(point.value, point.year)
                   : point.value,
           }),
         )
