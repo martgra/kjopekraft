@@ -40,7 +40,6 @@
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.39.1",
     "@next/eslint-plugin-next": "^16.0.9",
-    "@playwright/test": "^1.57.0",
     "@secretlint/secretlint-rule-aws": "^11.2.5",
     "@secretlint/secretlint-rule-gcp": "^11.2.5",
     "@secretlint/secretlint-rule-preset-recommend": "^11.2.5",
