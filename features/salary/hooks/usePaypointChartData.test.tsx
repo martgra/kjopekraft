@@ -1,7 +1,4 @@
-/// <reference types="vitest" />
-
-'use client'
-
+import { vi } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { usePaypointChartData } from './usePaypointChartData'
 import { useReferenceMode } from '@/contexts/referenceMode/ReferenceModeContext'
@@ -30,8 +27,8 @@ vi.mock('@/contexts/displayMode/DisplayModeContext', () => ({
 }))
 
 const payPoints: PayPoint[] = [
-  { year: 2020, pay: 400_000 },
-  { year: 2021, pay: 450_000 },
+  { year: 2020, pay: 400_000, reason: 'adjustment' },
+  { year: 2021, pay: 450_000, reason: 'promotion' },
 ]
 
 const inflation: InflationDataPoint[] = [

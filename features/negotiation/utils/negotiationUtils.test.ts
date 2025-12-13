@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import { Paragraph, TextRun } from 'docx'
+import { Paragraph } from 'docx'
 import { markdownToDocxParagraphs } from './negotiationUtils'
 
 describe('markdownToDocxParagraphs', () => {

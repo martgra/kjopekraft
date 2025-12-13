@@ -178,6 +178,14 @@ export const TEXT = {
     netAmount: 'Nettobeløp',
     yearRange: 'År ({min}-{max})',
     saveLog: 'Lagre logg',
+    reasonLabel: 'Hvorfor økte lønnen?',
+    reasonPlaceholder: 'Velg årsak',
+    reasonHelp: 'Brukes til å analysere lønnslinjer etter type endring.',
+    reasonOptions: {
+      adjustment: 'Ordinær justering',
+      promotion: 'Forfremmelse',
+      newJob: 'Ny jobb',
+    },
   },
 
   // Activity timeline
@@ -188,6 +196,11 @@ export const TEXT = {
     thisYear: 'I år',
     lastYear: 'I fjor',
     yearsAgo: (years: number) => `${years} år siden`,
+    reasons: {
+      adjustment: 'Justering',
+      promotion: 'Forfremmelse',
+      newJob: 'Ny jobb',
+    },
   },
 
   inflation: {

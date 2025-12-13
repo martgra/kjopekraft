@@ -8,11 +8,18 @@ import {
   validatePayPoint,
 } from '@/domain/salary'
 import { calculateNetIncome } from '@/domain/tax'
-import type { PayPoint, SalaryDataPoint, SalaryStatistics, ValidationResult } from '@/domain/salary'
+import type {
+  PayChangeReason,
+  PayPoint,
+  SalaryDataPoint,
+  SalaryStatistics,
+  ValidationResult,
+} from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { ChartPoint } from '@/lib/models/types'
 
 const STORAGE_KEY = 'salary-calculator-points'
+const DEFAULT_REASON: PayChangeReason = 'adjustment'
 
 /**
  * A unified hook for managing salary data, calculations, and chart preparation
@@ -34,7 +41,11 @@ export function useSalaryData(inflationData: InflationDataPoint[], currentYear: 
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        initial = JSON.parse(stored) as PayPoint[]
+        const parsed = JSON.parse(stored) as PayPoint[]
+        initial = parsed.map(p => ({
+          ...p,
+          reason: (p as PayPoint).reason ?? DEFAULT_REASON,
+        }))
       }
     } catch (err) {
       console.error('Error loading salary points:', err)

@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import type { InflationDataPoint } from '@/domain/inflation'
+import type { PayChangeReason } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 
 interface SalaryPointFormProps {
   newYear: string
   newPay: string
+  newReason: PayChangeReason | ''
   currentYear: number
   minYear: number
   validationError?: string
@@ -14,17 +16,20 @@ interface SalaryPointFormProps {
   inflationData?: InflationDataPoint[]
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
+  onReasonChange: (reason: PayChangeReason | '') => void
   onAdd: () => void
 }
 
 export default function SalaryPointForm({
   newYear,
   newPay,
+  newReason,
   currentYear,
   minYear,
   validationError: externalValidationError,
   onYearChange,
   onPayChange,
+  onReasonChange,
   onAdd,
   isNetMode,
   inflationData,
@@ -44,7 +49,9 @@ export default function SalaryPointForm({
   const isYearValid = !isNaN(yearNum) && yearNum >= minYear && yearNum <= currentYear
   const isYearInInflationRange = !isNaN(yearNum) && yearNum >= inflationMinYear
   const isPayValid = !isNaN(payNum) && payNum > 0
-  const disabled = !newYear || !newPay || !isYearValid || !isPayValid || !isYearInInflationRange
+  const isReasonValid = Boolean(newReason)
+  const disabled =
+    !newYear || !newPay || !newReason || !isYearValid || !isPayValid || !isYearInInflationRange
 
   useEffect(() => {
     if (newYear && !isNaN(yearNum)) {
@@ -66,17 +73,21 @@ export default function SalaryPointForm({
       }
     } else if (newPay && !isNaN(payNum) && !isPayValid) {
       setInternalValidationError(TEXT.forms.validation.payPositive)
+    } else if (newReason && !isReasonValid) {
+      setInternalValidationError(TEXT.forms.validation.required)
     } else {
       setInternalValidationError('')
     }
   }, [
     newYear,
     newPay,
+    newReason,
     yearNum,
     payNum,
     isYearValid,
     isYearInInflationRange,
     isPayValid,
+    isReasonValid,
     minYear,
     currentYear,
     inflationMinYear,
@@ -126,6 +137,24 @@ export default function SalaryPointForm({
             placeholder={String(currentYear)}
             className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-base text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
           />
+        </div>
+
+        {/* Reason Field */}
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold tracking-wide text-[var(--text-muted)] uppercase">
+            {TEXT.forms.reasonLabel}
+          </label>
+          <select
+            value={newReason}
+            onChange={e => onReasonChange(e.target.value as PayChangeReason | '')}
+            className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-base text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
+          >
+            <option value="">{TEXT.forms.reasonPlaceholder}</option>
+            <option value="adjustment">{TEXT.forms.reasonOptions.adjustment}</option>
+            <option value="promotion">{TEXT.forms.reasonOptions.promotion}</option>
+            <option value="newJob">{TEXT.forms.reasonOptions.newJob}</option>
+          </select>
+          <p className="mt-1 text-xs text-[var(--text-muted)]">{TEXT.forms.reasonHelp}</p>
         </div>
 
         {/* Validation Error */}

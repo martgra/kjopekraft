@@ -32,6 +32,12 @@ export default function ActivityTimeline({
   // Sort by year descending and take the last 5
   const recentPoints = [...payPoints].sort((a, b) => b.year - a.year).slice(0, 5)
 
+  const reasonLabels: Record<PayPoint['reason'], string> = {
+    adjustment: TEXT.activity.reasons.adjustment,
+    promotion: TEXT.activity.reasons.promotion,
+    newJob: TEXT.activity.reasons.newJob,
+  }
+
   if (recentPoints.length === 0) {
     return (
       <div className="p-6">
@@ -50,7 +56,10 @@ export default function ActivityTimeline({
         <div className="absolute top-2 bottom-2 left-1.5 w-0.5 bg-gray-200"></div>
 
         {recentPoints.map(point => (
-          <div key={point.id || `${point.year}-${point.pay}`} className="group relative pl-6">
+          <div
+            key={point.id || `${point.year}-${point.pay}-${point.reason}`}
+            className="group relative pl-6"
+          >
             {/* Timeline Dot */}
             <div className="absolute top-1.5 left-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-[var(--primary)]"></div>
 
@@ -66,6 +75,10 @@ export default function ActivityTimeline({
                 <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
                   + {point.pay.toLocaleString('nb-NO')} {TEXT.common.pts}
                 </span>
+                <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-[11px] font-semibold tracking-wide text-blue-700 uppercase ring-1 ring-blue-200">
+                  <span className="material-symbols-outlined text-[14px]">info</span>
+                  {reasonLabels[point.reason] || TEXT.activity.reasons.adjustment}
+                </div>
               </div>
 
               {/* Action Buttons - Always visible on mobile, hover-reveal on desktop */}

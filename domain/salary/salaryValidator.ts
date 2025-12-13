@@ -1,5 +1,7 @@
-import type { PayPoint, ValidationResult } from './salaryTypes'
+import type { PayChangeReason, PayPoint, ValidationResult } from './salaryTypes'
 import type { InflationDataPoint } from '@/domain/inflation'
+
+const VALID_REASONS: PayChangeReason[] = ['adjustment', 'promotion', 'newJob']
 
 /**
  * Validate a pay point against business rules
@@ -9,12 +11,16 @@ export function validatePayPoint(
   existingPoints: PayPoint[],
   inflationData: InflationDataPoint[],
 ): ValidationResult {
-  if (!point.year || !point.pay) {
-    return { isValid: false, errorMessage: 'Year and pay are required' }
+  if (!point.year || !point.pay || !point.reason) {
+    return { isValid: false, errorMessage: 'Year, pay, and reason are required' }
   }
 
   if (point.pay <= 0) {
     return { isValid: false, errorMessage: 'Pay must be positive' }
+  }
+
+  if (!VALID_REASONS.includes(point.reason)) {
+    return { isValid: false, errorMessage: 'Reason must be valid' }
   }
 
   // Validate year range based on available inflation data

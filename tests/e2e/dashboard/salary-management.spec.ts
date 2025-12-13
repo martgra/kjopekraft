@@ -29,6 +29,7 @@ test.describe('Salary Management', () => {
 
     await salaryInput.fill('600000')
     await yearInput.fill('2024')
+    await formContainer.getByLabel(/hvorfor økte lønnen/i).selectOption('promotion')
 
     // Submit the form
     await formContainer.getByRole('button', { name: /lagre logg/i }).click()

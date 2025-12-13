@@ -22,6 +22,7 @@ test.describe('Data Persistence', () => {
 
     await formContainer.locator('input[placeholder="0"]').fill('550000')
     await formContainer.locator('input[type="number"]').fill('2023')
+    await formContainer.getByLabel(/hvorfor økte lønnen/i).selectOption('adjustment')
     await formContainer.getByRole('button', { name: /lagre logg/i }).click()
 
     // Verify data is shown

@@ -15,20 +15,20 @@ export const STORAGE_KEYS = {
  * Test data: standard salary points for testing
  */
 export const TEST_SALARY_POINTS = [
-  { year: 2020, pay: 500000 },
-  { year: 2022, pay: 550000 },
-  { year: 2024, pay: 600000 },
+  { year: 2020, pay: 500000, reason: 'newJob' },
+  { year: 2022, pay: 550000, reason: 'adjustment' },
+  { year: 2024, pay: 600000, reason: 'promotion' },
 ]
 
 /**
  * Demo data matching the application's demo mode
  */
 export const DEMO_SALARY_POINTS = [
-  { year: 2020, pay: 550000 },
-  { year: 2021, pay: 580000 },
-  { year: 2022, pay: 600000 },
-  { year: 2023, pay: 650000 },
-  { year: 2024, pay: 680000 },
+  { year: 2020, pay: 550000, reason: 'newJob' },
+  { year: 2021, pay: 580000, reason: 'adjustment' },
+  { year: 2022, pay: 600000, reason: 'promotion' },
+  { year: 2023, pay: 650000, reason: 'adjustment' },
+  { year: 2024, pay: 680000, reason: 'promotion' },
 ]
 
 /**
@@ -77,6 +77,10 @@ export class DashboardPage {
 
   get addButton() {
     return this.page.getByRole('button', { name: /lagre logg|legg til/i })
+  }
+
+  get reasonSelect() {
+    return this.page.getByLabel(/hvorfor økte lønnen/i)
   }
 
   // Metrics
@@ -143,9 +147,14 @@ export class DashboardPage {
   }
 
   // Actions
-  async addSalaryPoint(year: number, salary: number) {
+  async addSalaryPoint(
+    year: number,
+    salary: number,
+    reason: 'adjustment' | 'promotion' | 'newJob' = 'adjustment',
+  ) {
     await this.yearInput.fill(String(year))
     await this.salaryInput.fill(String(salary))
+    await this.reasonSelect.selectOption(reason)
     await this.addButton.click()
   }
 

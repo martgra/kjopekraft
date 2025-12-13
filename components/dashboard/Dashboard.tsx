@@ -12,7 +12,7 @@ import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
 import { DEMO_PAY_POINTS } from '@/features/onboarding/demoData'
 import { calculateNetIncome } from '@/domain/tax'
 import type { InflationDataPoint } from '@/domain/inflation'
-import type { PayPoint } from '@/domain/salary'
+import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 import { MetricGridSkeleton, ChartSkeleton } from '@/components/ui/skeletons'
 
@@ -41,6 +41,7 @@ export default function Dashboard({
   // Form state
   const [newYear, setNewYear] = useState('')
   const [newPay, setNewPay] = useState('')
+  const [newReason, setNewReason] = useState<PayChangeReason | ''>('')
   const [validationError, setValidationError] = useState('')
 
   const minYear = 1900
@@ -62,9 +63,15 @@ export default function Dashboard({
   }
 
   const handleAddPoint = () => {
+    if (!newReason) {
+      setValidationError(TEXT.forms.validation.required)
+      return
+    }
+
     const point: PayPoint = {
       year: Number(newYear),
       pay: Number(newPay.replace(/\s/g, '')),
+      reason: newReason,
     }
 
     const validation = validatePoint(point)
@@ -85,6 +92,7 @@ export default function Dashboard({
     // Clear form on successful addition
     setNewYear('')
     setNewPay('')
+    setNewReason('')
     setValidationError('')
   }
 
@@ -92,6 +100,7 @@ export default function Dashboard({
     // Pre-fill the form with the selected point's data
     setNewYear(String(point.year))
     setNewPay(String(point.pay))
+    setNewReason(point.reason)
     setValidationError('')
 
     // Remove the point so user can edit and re-add it
@@ -135,9 +144,11 @@ export default function Dashboard({
       validationError={validationError}
       isNetMode={isNetMode}
       payPoints={payPoints}
+      newReason={newReason}
       inflationData={inflationData}
       onYearChange={setNewYear}
       onPayChange={setNewPay}
+      onReasonChange={value => setNewReason(value)}
       onAdd={handleAddPoint}
       onEdit={handleEditPoint}
       onRemove={handleRemovePoint}

@@ -34,8 +34,8 @@ describe('useSalaryData', () => {
     localStorage.setItem(
       'salary-calculator-points',
       JSON.stringify([
-        { year: 2024, pay: 600_000 },
-        { year: 2023, pay: 500_000 },
+        { year: 2024, pay: 600_000, reason: 'adjustment' },
+        { year: 2023, pay: 500_000, reason: 'promotion' },
       ]),
     )
 
@@ -52,7 +52,7 @@ describe('useSalaryData', () => {
 
     // add point
     act(() => {
-      result.current.addPoint({ year: 2023, pay: 500_000 })
+      result.current.addPoint({ year: 2023, pay: 500_000, reason: 'adjustment' })
     })
     await waitFor(() => expect(result.current.payPoints).toHaveLength(1))
     expect(result.current.chartData.actualSeries[0]).toEqual({ x: 2023, y: 500_000 })

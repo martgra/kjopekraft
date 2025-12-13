@@ -10,17 +10,23 @@ const inflationRange: InflationDataPoint[] = [
 ]
 
 const existing: PayPoint[] = [
-  { id: 'a', year: 2020, pay: 400_000 },
-  { id: 'b', year: 2021, pay: 420_000 },
+  { id: 'a', year: 2020, pay: 400_000, reason: 'adjustment' },
+  { id: 'b', year: 2021, pay: 420_000, reason: 'promotion' },
 ]
 
 describe('validatePayPoint', () => {
   it('rejects missing fields and non-positive pay', () => {
     expect(validatePayPoint({ year: 0, pay: 0 } as PayPoint, [], inflationRange)).toEqual({
       isValid: false,
-      errorMessage: 'Year and pay are required',
+      errorMessage: 'Year, pay, and reason are required',
     })
-    expect(validatePayPoint({ year: 2020, pay: -1 } as PayPoint, [], inflationRange)).toEqual({
+    expect(
+      validatePayPoint(
+        { year: 2020, pay: -1, reason: 'adjustment' } as PayPoint,
+        [],
+        inflationRange,
+      ),
+    ).toEqual({
       isValid: false,
       errorMessage: 'Pay must be positive',
     })
@@ -28,7 +34,11 @@ describe('validatePayPoint', () => {
 
   it('rejects years outside available inflation window', () => {
     expect(
-      validatePayPoint({ year: 2010, pay: 300_000 } as PayPoint, existing, inflationRange),
+      validatePayPoint(
+        { year: 2010, pay: 300_000, reason: 'adjustment' } as PayPoint,
+        existing,
+        inflationRange,
+      ),
     ).toEqual({
       isValid: false,
       errorMessage: 'Year must be between 2020 and 2021',
@@ -36,12 +46,20 @@ describe('validatePayPoint', () => {
   })
 
   it('rejects duplicate year when different id', () => {
-    const result = validatePayPoint({ id: 'c', year: 2020, pay: 450_000 }, existing, inflationRange)
+    const result = validatePayPoint(
+      { id: 'c', year: 2020, pay: 450_000, reason: 'adjustment' },
+      existing,
+      inflationRange,
+    )
     expect(result).toEqual({ isValid: false, errorMessage: 'You already have a payment for 2020' })
   })
 
   it('allows update of same id in same year', () => {
-    const result = validatePayPoint({ id: 'a', year: 2020, pay: 450_000 }, existing, inflationRange)
+    const result = validatePayPoint(
+      { id: 'a', year: 2020, pay: 450_000, reason: 'adjustment' },
+      existing,
+      inflationRange,
+    )
     expect(result).toEqual({ isValid: true })
   })
 })
