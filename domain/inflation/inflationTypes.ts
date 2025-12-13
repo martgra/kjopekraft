@@ -21,8 +21,8 @@ export type SsbRawResponse = {
       size: number[]
       // Names of each dimension, e.g. ["Konsumgrp","Tid","ContentsCode"]
       id: string[]
-      // Roles for each dimension, e.g. { "Konsumgrp": "metric", "Tid": "time", ... }
-      role: Record<string, string>
+      // Roles for each dimension, e.g. { "time": ["Tid"], "metric": ["ContentsCode"], ... }
+      role: Record<string, string[]>
       // Then the per-dimension category→index maps:
       Konsumgrp: { category: { index: Record<string, number> } }
       Tid: { category: { index: Record<string, number> } }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cacheLife, cacheTag } from 'next/cache'
+import { cache } from 'react'
+import { JsonStat2Schema, SsbSalaryResponseSchema } from '@/lib/schemas'
 
 type SalarySeriesPoint = {
   year: number
@@ -110,88 +112,98 @@ function buildSsbUrl(params: {
   return `${base}?${queryString}`
 }
 
-async function fetchSsbSalaryData(params: {
-  occupation: string
-  contents: string
-  stat: string
-  sector: string
-  sex: string
-  hours: string
-  fromYear: string
-}): Promise<SalarySeriesResponse> {
-  const url = buildSsbUrl({ ...params, lang: 'en' })
+const fetchSsbSalaryData = cache(
+  async (params: {
+    occupation: string
+    contents: string
+    stat: string
+    sector: string
+    sex: string
+    hours: string
+    fromYear: string
+  }): Promise<SalarySeriesResponse> => {
+    const url = buildSsbUrl({ ...params, lang: 'en' })
 
-  console.log('SSB API URL:', url)
+    console.log('SSB API URL:', url)
 
-  const res = await fetch(url, {
-    headers: { Accept: 'application/json' },
-  })
+    const res = await fetch(url, {
+      headers: { Accept: 'application/json' },
+    })
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    console.error('SSB API Error:', { status: res.status, url, response: text })
-    throw new Error(`SSB request failed (${res.status}): ${text}`)
-  }
+    if (!res.ok) {
+      const text = await res.text().catch(() => '')
+      console.error('SSB API Error:', { status: res.status, url, response: text })
+      throw new Error(`SSB request failed (${res.status}): ${text}`)
+    }
 
-  const json = (await res.json()) as JsonStat2
-  const series = parseSingleTimeSeries(json, 'Tid')
+    const json = (await res.json()) as JsonStat2
+    const series = parseSingleTimeSeries(json, 'Tid')
 
-  const response: SalarySeriesResponse = {
-    source: { provider: 'SSB', table: '11418' },
-    occupation: { code: params.occupation },
-    filters: {
-      contents: params.contents,
-      stat: params.stat,
-      sector: params.sector,
-      sex: params.sex,
-      hours: params.hours,
-    },
-    unit: 'NOK/month',
-    reference: { month: 'November' },
-    series,
-    derived: {
-      yearlyNok: series.map(p => ({ ...p, value: p.value == null ? null : p.value * 12 })),
-    },
-  }
+    const response: SalarySeriesResponse = {
+      source: { provider: 'SSB', table: '11418' },
+      occupation: { code: params.occupation },
+      filters: {
+        contents: params.contents,
+        stat: params.stat,
+        sector: params.sector,
+        sex: params.sex,
+        hours: params.hours,
+      },
+      unit: 'NOK/month',
+      reference: { month: 'November' },
+      series,
+      derived: {
+        yearlyNok: series.map(p => ({ ...p, value: p.value == null ? null : p.value * 12 })),
+      },
+    }
 
-  return response
-}
+    return response
+  },
+)
 
 /**
  * Fetch wage index growth from SSB table 11654 to estimate future years
  * Returns growth factor (e.g., 1.044 for 4.4% growth)
  */
-async function fetchWageIndexGrowth(
-  fromQuarter: string,
-  toQuarter: string,
-): Promise<number | null> {
-  const url = new URL('https://data.ssb.no/api/pxwebapi/v2/tables/11654/data')
-  const qs = new URLSearchParams()
-  qs.append('lang', 'en')
-  qs.append('valueCodes[NACE2007]', '86-88') // Health sector
-  qs.append('valueCodes[Region]', 'Ialt') // Total
-  qs.append('valueCodes[ContentsCode]', 'GjMdTotalIndeks') // Index of average monthly earnings
-  qs.append('valueCodes[Tid]', `${fromQuarter},${toQuarter}`)
+const fetchWageIndexGrowth = cache(
+  async (fromQuarter: string, toQuarter: string): Promise<number | null> => {
+    const url = new URL('https://data.ssb.no/api/pxwebapi/v2/tables/11654/data')
+    const qs = new URLSearchParams()
+    qs.append('lang', 'en')
+    qs.append('valueCodes[NACE2007]', '86-88') // Health sector
+    qs.append('valueCodes[Region]', 'Ialt') // Total
+    qs.append('valueCodes[ContentsCode]', 'GjMdTotalIndeks') // Index of average monthly earnings
+    qs.append('valueCodes[Tid]', `${fromQuarter},${toQuarter}`)
 
-  url.search = qs.toString()
+    url.search = qs.toString()
 
-  try {
-    const res = await fetch(url.toString(), {
-      headers: { Accept: 'application/json' },
-    })
+    try {
+      const res = await fetch(url.toString(), {
+        headers: { Accept: 'application/json' },
+      })
 
-    if (!res.ok) return null
+      if (!res.ok) return null
 
-    const json = (await res.json()) as JsonStat2
-    const values = json.value
+      const json = (await res.json()) as JsonStat2
+      const values = json.value
 
-    if (values.length !== 2 || values[0] === null || values[1] === null) return null
+      const value0 = values[0]
+      const value1 = values[1]
+      if (
+        values.length !== 2 ||
+        value0 === null ||
+        value0 === undefined ||
+        value1 === null ||
+        value1 === undefined
+      )
+        return null
 
-    return values[1] / values[0] // growth factor
-  } catch {
-    return null
-  }
-}
+      return value1 / value0 // growth factor
+    } catch {
+      return null
+    }
+  },
+)
 
 /**
  * Estimate 2025 salary using 2024 base and wage index growth
@@ -232,7 +244,7 @@ async function getCachedSalaryData(
   fromYear: string,
 ): Promise<SalarySeriesResponse> {
   'use cache'
-  cacheLife('days') // 1 day cache - catches SSB updates within 24h
+  cacheLife('ssb') // Uses custom profile from next.config.ts
   cacheTag('ssb-salary')
 
   const baseData = await fetchSsbSalaryData({
@@ -244,6 +256,13 @@ async function getCachedSalaryData(
     hours,
     fromYear,
   })
+
+  // Validate the assembled payload before returning
+  const parsed = SsbSalaryResponseSchema.safeParse(baseData)
+  if (!parsed.success) {
+    console.error('Invalid SSB salary response shape', parsed.error)
+    throw new Error('Invalid SSB salary response shape')
+  }
 
   // Try to add 2025 estimate if not already present
   const has2025 = baseData.series.some(p => p.year === 2025)

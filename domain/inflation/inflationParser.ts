@@ -5,7 +5,12 @@ import type { InflationDataPoint, SsbRawResponse } from './inflationTypes'
  */
 export function parseJsonInflation(ds: SsbRawResponse['dataset']): InflationDataPoint[] {
   // 1) pull out timeCount & metricCount from dimension.size
-  const [, timeCount, metricCount] = ds.dimension.size
+  const timeCount = ds.dimension.size[1]
+  const metricCount = ds.dimension.size[2]
+
+  if (timeCount === undefined || metricCount === undefined) {
+    throw new Error('parseJsonInflation: missing dimension sizes')
+  }
 
   // 2) raw values array
   const values = ds.value
@@ -14,9 +19,13 @@ export function parseJsonInflation(ds: SsbRawResponse['dataset']): InflationData
   }
 
   // 3) pick the "all-groups" and "12-month change" indices
-  const grpIdx = ds.dimension.Konsumgrp.category.index.TOTAL
-  const metricIdx = ds.dimension.ContentsCode.category.index.Tolvmanedersendring
+  const grpIdx = ds.dimension.Konsumgrp.category.index['TOTAL']
+  const metricIdx = ds.dimension.ContentsCode.category.index['Tolvmanedersendring']
   const timeIdxMap = ds.dimension.Tid.category.index
+
+  if (grpIdx === undefined || metricIdx === undefined) {
+    throw new Error('parseJsonInflation: missing required indices')
+  }
 
   // 4) sort timestamps by their numeric index
   const times = Object.entries(timeIdxMap).sort(([, a], [, b]) => a - b)

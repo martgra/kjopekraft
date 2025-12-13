@@ -1,37 +1,39 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react'
+import React, { createContext, useContext, useMemo, useTransition, type ReactNode } from 'react'
+import { parseAsBoolean, useQueryState } from 'nuqs'
 
 interface ReferenceModeContextValue {
   isReferenceEnabled: boolean
   toggleReference: () => void
+  setReferenceEnabled: (enabled: boolean) => void
 }
 
 const ReferenceModeContext = createContext<ReferenceModeContextValue | undefined>(undefined)
 
+/**
+ * Reference mode provider with URL-based state (nuqs)
+ */
 export function ReferenceModeProvider({ children }: { children: ReactNode }) {
-  // Initialize from localStorage with a lazy initializer - default false
-  const [isReferenceEnabled, setIsReferenceEnabled] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('salaryReferenceEnabled')
-      return saved === 'true'
-    }
-    return false
-  })
+  const [isReferenceEnabled, setIsReferenceEnabled] = useQueryState(
+    'reference',
+    parseAsBoolean.withDefault(false),
+  )
+  const [, startTransition] = useTransition()
 
   // Memoize the context value to prevent unnecessary renders
   const contextValue = useMemo(() => {
-    const toggleReference = () => setIsReferenceEnabled(prev => !prev)
+    const toggleReference = () =>
+      startTransition(() => {
+        void setIsReferenceEnabled(prev => !prev)
+      })
+    const setReferenceEnabled = (enabled: boolean) =>
+      startTransition(() => {
+        void setIsReferenceEnabled(enabled)
+      })
 
-    return { isReferenceEnabled, toggleReference }
-  }, [isReferenceEnabled])
-
-  // Persist to localStorage when the mode changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('salaryReferenceEnabled', String(isReferenceEnabled))
-    }
-  }, [isReferenceEnabled])
+    return { isReferenceEnabled, toggleReference, setReferenceEnabled }
+  }, [isReferenceEnabled, setIsReferenceEnabled, startTransition])
 
   return (
     <ReferenceModeContext.Provider value={contextValue}>{children}</ReferenceModeContext.Provider>

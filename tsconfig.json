@@ -13,6 +13,12 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+
+    // Stricter type safety options
+    // Note: noUncheckedIndexedAccess catches real bugs with array access
+    // Existing code needs gradual fixes - see IMPROVEMENT_PLAN.md Phase 2
+    "noUncheckedIndexedAccess": true,
+
     "plugins": [
       {
         "name": "next"

@@ -13,8 +13,10 @@ export interface PointItemProps {
   className?: string
 }
 
+const DEFAULT_COLORS = { bg: 'bg-green-100', text: 'text-green-600' } as const
+
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  Achievement: { bg: 'bg-green-100', text: 'text-green-600' },
+  Achievement: DEFAULT_COLORS,
   Experience: { bg: 'bg-blue-100', text: 'text-blue-600' },
   'Market Data': { bg: 'bg-purple-100', text: 'text-purple-600' },
   Responsibility: { bg: 'bg-orange-100', text: 'text-orange-600' },
@@ -38,7 +40,7 @@ export function PointItem({
   onEdit,
   className,
 }: PointItemProps) {
-  const colors = TYPE_COLORS[type] || TYPE_COLORS.Achievement
+  const colors = TYPE_COLORS[type] ?? DEFAULT_COLORS
   const typeLabel = TYPE_LABELS[type] || type
 
   return (

@@ -56,6 +56,7 @@ export function ArgumentBuilder({
   const handleEdit = (index: number) => {
     // Pre-fill the form with the selected point's data
     const point = points[index]
+    if (!point) return
     setDesc(point.description)
     setType(point.type)
 

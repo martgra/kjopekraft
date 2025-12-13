@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNegotiationData } from '../hooks/useNegotiationData'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 import { DetailsForm, ContextForm, GenerateButtons, type UserInfo } from './forms'
@@ -37,6 +37,12 @@ export default function NegotiationPage({
     MAX_GENERATIONS,
     emailGenerationCount,
     playbookGenerationCount,
+    userInfo,
+    updateUserInfo: persistUserInfo,
+    emailPrompt,
+    playbookPrompt,
+    setEmailPrompt,
+    setPlaybookPrompt,
   } = useNegotiationData()
 
   // Generation states
@@ -49,37 +55,16 @@ export default function NegotiationPage({
   const { statistics } = useSalaryData(inflationData, currentYear)
   const derivedCurrentSalary = statistics?.latestPay ? String(statistics.latestPay) : ''
 
-  // User info state
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    jobTitle: '',
-    industry: '',
-    isNewJob: false,
-    currentSalary: derivedCurrentSalary,
-    desiredSalary: '',
-    marketData: '',
-    otherBenefits: '',
-  })
-
   // Update current salary when derived value changes
   useEffect(() => {
     if (derivedCurrentSalary && !userInfo.currentSalary) {
-      setUserInfo(prev => ({ ...prev, currentSalary: derivedCurrentSalary }))
+      persistUserInfo({ currentSalary: derivedCurrentSalary })
     }
-  }, [derivedCurrentSalary, userInfo.currentSalary])
-
-  const [emailPrompt, setEmailPrompt] = useState<string | null>(null)
-  const [playbookPrompt, setPlaybookPrompt] = useState<string | null>(null)
-
-  // Track if component is mounted to avoid hydration mismatch
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
+  }, [derivedCurrentSalary, persistUserInfo, userInfo.currentSalary])
 
   // Handler for updating user info
   const updateUserInfo = (updates: Partial<UserInfo>) => {
-    setUserInfo(prev => ({ ...prev, ...updates }))
+    persistUserInfo(updates)
   }
 
   // Email generation handler
@@ -137,28 +122,8 @@ export default function NegotiationPage({
   }
 
   // Hydrate prompts from localStorage on mount (content is handled by the hook)
-  useEffect(() => {
-    const storedEmailPrompt = localStorage.getItem('negotiation_emailPrompt')
-    const storedPlaybookPrompt = localStorage.getItem('negotiation_playbookPrompt')
-    if (storedEmailPrompt !== null) setEmailPrompt(storedEmailPrompt)
-    if (storedPlaybookPrompt !== null) setPlaybookPrompt(storedPlaybookPrompt)
-  }, [])
-
-  // Persist prompts to localStorage when they change (content is handled by the hook)
-  useEffect(() => {
-    if (emailPrompt !== null) {
-      localStorage.setItem('negotiation_emailPrompt', emailPrompt)
-    }
-  }, [emailPrompt])
-  useEffect(() => {
-    if (playbookPrompt !== null) {
-      localStorage.setItem('negotiation_playbookPrompt', playbookPrompt)
-    }
-  }, [playbookPrompt])
-
-  // Use default values during SSR to avoid hydration mismatch
-  const emailRemaining = isMounted ? MAX_GENERATIONS - emailGenerationCount : MAX_GENERATIONS
-  const playbookRemaining = isMounted ? MAX_GENERATIONS - playbookGenerationCount : MAX_GENERATIONS
+  const emailRemaining = MAX_GENERATIONS - emailGenerationCount
+  const playbookRemaining = MAX_GENERATIONS - playbookGenerationCount
 
   // Argument builder content (shared between desktop sidebar and mobile drawer)
   const argumentBuilderContent = (

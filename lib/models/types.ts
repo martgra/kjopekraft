@@ -43,7 +43,7 @@ export type NegotiationPoint = {
 export interface NegotiationUserInfo {
   jobTitle: string
   industry: string
-  isNewJob: boolean | null
+  isNewJob: boolean
   currentSalary: string
   desiredSalary: string
   achievements: string

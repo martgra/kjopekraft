@@ -133,6 +133,11 @@ export class DashboardPage {
     })
   }
 
+  async clearAppState() {
+    await this.page.context().clearCookies()
+    await this.clearLocalStorage()
+  }
+
   async setLocalStorage(key: string, value: unknown) {
     await this.page.evaluate(
       ([k, v]: [string, unknown]) => {

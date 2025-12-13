@@ -2,7 +2,8 @@ import { test, expect, STORAGE_KEYS, TEST_SALARY_POINTS } from '../../fixtures/t
 
 test.describe('Salary Management', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear localStorage before each test
+    // Clear cookies + localStorage before each test
+    await page.context().clearCookies()
     await page.addInitScript(() => {
       localStorage.clear()
     })

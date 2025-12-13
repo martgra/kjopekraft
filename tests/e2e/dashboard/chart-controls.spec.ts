@@ -2,7 +2,8 @@ import { test, expect } from '../../fixtures/test-fixtures'
 
 test.describe('Chart Controls', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear localStorage before each test
+    // Clear cookies + localStorage before each test
+    await page.context().clearCookies()
     await page.addInitScript(() => {
       localStorage.clear()
     })

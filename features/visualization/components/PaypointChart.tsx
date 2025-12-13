@@ -58,8 +58,11 @@ export default function PaypointChart({
     if (rawSeries.length === 0 || rawInflSeries.length === 0) {
       return []
     }
-    const baseGross = rawSeries[0].y as number
-    const baseDisplay = actualSeries[0].y as number
+    const firstRaw = rawSeries[0]
+    const firstActual = actualSeries[0]
+    if (!firstRaw || !firstActual) return []
+    const baseGross = firstRaw.y as number
+    const baseDisplay = firstActual.y as number
     return rawInflSeries.map(pt => ({
       x: pt.x,
       y: ((pt.y as number) / baseGross) * baseDisplay,

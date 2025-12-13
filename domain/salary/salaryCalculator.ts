@@ -16,15 +16,20 @@ export function adjustSalaries(
   const cpi = [...inflation].sort((a, b) => a.year - b.year)
 
   // Determine base salary (earliest point) and base year
-  const baseYear = pts[0].year
-  const baseSalary = pts[0].pay
+  const firstPt = pts[0]
+  const lastPt = pts[pts.length - 1]
+  if (!firstPt || !lastPt) return []
+
+  const baseYear = firstPt.year
+  const baseSalary = firstPt.pay
+  const endYear = lastPt.year
 
   // Build a map of year → CPI cumulative index relative to baseYear
   const rateMap = new Map<number, number>(cpi.map(d => [d.year, d.inflation / 100]))
   const indexMap = new Map<number, number>()
   let idx = 1
   indexMap.set(baseYear, idx)
-  for (let y = baseYear + 1; y <= pts[pts.length - 1].year; y++) {
+  for (let y = baseYear + 1; y <= endYear; y++) {
     const r = rateMap.get(y) ?? 0
     idx *= 1 + r
     indexMap.set(y, idx)
@@ -33,8 +38,11 @@ export function adjustSalaries(
   // Interpolate actual salary per year between payPoints
   const salaryMap = new Map<number, number>()
   for (let i = 0; i < pts.length - 1; i++) {
-    const { year: y0, pay: p0 } = pts[i]
-    const { year: y1, pay: p1 } = pts[i + 1]
+    const pt0 = pts[i]
+    const pt1 = pts[i + 1]
+    if (!pt0 || !pt1) continue
+    const { year: y0, pay: p0 } = pt0
+    const { year: y1, pay: p1 } = pt1
     for (let y = y0; y <= y1; y++) {
       const t = (y - y0) / (y1 - y0)
       salaryMap.set(y, p0 + t * (p1 - p0))
@@ -43,7 +51,7 @@ export function adjustSalaries(
 
   // Build output series: actual (interpolated) vs. inflation growth of baseSalary
   const result: SalaryDataPoint[] = []
-  for (let y = baseYear; y <= pts[pts.length - 1].year; y++) {
+  for (let y = baseYear; y <= endYear; y++) {
     const actual = salaryMap.get(y) ?? baseSalary
     const factor = indexMap.get(y) ?? 1
     result.push({
@@ -62,7 +70,10 @@ export function adjustSalaries(
  * Compute key summary statistics from a per-year salary series
  */
 export function computeStatistics(series: SalaryDataPoint[]): SalaryStatistics {
-  if (!series.length) {
+  const first = series[0]
+  const last = series[series.length - 1]
+
+  if (!first || !last) {
     return {
       startingPay: NaN,
       latestPay: NaN,
@@ -72,17 +83,18 @@ export function computeStatistics(series: SalaryDataPoint[]): SalaryStatistics {
       latestYear: NaN,
     }
   }
-  const start = series[0].actualPay
-  const end = series[series.length - 1].actualPay
-  const adj = series[series.length - 1].inflationAdjustedPay
+
+  const start = first.actualPay
+  const end = last.actualPay
+  const adj = last.inflationAdjustedPay
   const gap = ((end - adj) / adj) * 100
   return {
     startingPay: start,
     latestPay: end,
     inflationAdjustedPay: adj,
     gapPercent: Math.round(gap * 10) / 10,
-    startingYear: series[0].year,
-    latestYear: series[series.length - 1].year,
+    startingYear: first.year,
+    latestYear: last.year,
   }
 }
 

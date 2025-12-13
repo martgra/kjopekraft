@@ -144,7 +144,7 @@ export default function DesktopPayChart({
             titleFont: { size: 14, weight: 'bold' },
             displayColors: false,
             callbacks: {
-              title: items => TEXT.charts.yearPrefix + items[0].parsed.x,
+              title: items => TEXT.charts.yearPrefix + (items[0]?.parsed.x ?? ''),
               label: ctx => {
                 return `${ctx.dataset.label}: ${ctx.parsed.y?.toLocaleString('nb-NO', {
                   maximumFractionDigits: 0,

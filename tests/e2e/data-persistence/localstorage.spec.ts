@@ -2,18 +2,13 @@ import { test, expect, STORAGE_KEYS, TEST_SALARY_POINTS } from '../../fixtures/t
 
 test.describe('Data Persistence', () => {
   test('salary data persists across page reload', async ({ page, isMobile }) => {
-    // Navigate first, then clear storage (addInitScript runs on every navigation)
+    // Clear cookies, then navigate and clear localStorage in-origin
+    await page.context().clearCookies()
     await page.goto('/')
-
-    // Clear localStorage manually after first load
-    await page.evaluate(() => {
-      localStorage.clear()
-    })
-
-    // Reload to get clean state
+    await page.evaluate(() => localStorage.clear())
     await page.reload()
 
-    // Verify onboarding is visible (clean state)
+    // Ensure clean state
     await expect(page.getByText('Velkommen til Kjøpekraft')).toBeVisible()
 
     // On mobile, open drawer

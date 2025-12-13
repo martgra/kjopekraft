@@ -1,9 +1,9 @@
 // app/layout.tsx
 
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import MobileMetaScript from '@/components/ui/common/MobileMetaScript'
-import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
-import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeContext'
+import { AppProviders } from '@/contexts/AppProviders'
 import ClientLayoutWrapper from '@/components/layout/ClientLayoutWrapper'
 import './globals.css'
 
@@ -114,11 +114,11 @@ export default function RootLayout({
       <body className="h-full bg-[var(--background-light)] font-sans text-base antialiased">
         <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <MobileMetaScript />
-        <DisplayModeProvider>
-          <ReferenceModeProvider>
+        <Suspense fallback={null}>
+          <AppProviders>
             <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
-          </ReferenceModeProvider>
-        </DisplayModeProvider>
+          </AppProviders>
+        </Suspense>
       </body>
     </html>
   )

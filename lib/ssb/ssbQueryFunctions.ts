@@ -109,17 +109,20 @@ export async function querySalaryTrend(
     .filter(p => p.year >= fromYear && p.year <= toYear && p.value !== null)
     .map(p => ({ year: p.year, value: p.value as number }))
 
-  if (filteredSeries.length === 0) {
+  const firstEntry = filteredSeries[0]
+  const lastEntry = filteredSeries[filteredSeries.length - 1]
+
+  if (!firstEntry || !lastEntry) {
     throw new Error(
       `No salary data available for occupation ${occupationCode} in ${fromYear}-${toYear}`,
     )
   }
 
   // Calculate growth
-  const firstValue = filteredSeries[0].value
-  const lastValue = filteredSeries[filteredSeries.length - 1].value
+  const firstValue = firstEntry.value
+  const lastValue = lastEntry.value
   const totalGrowth = ((lastValue - firstValue) / firstValue) * 100
-  const years = filteredSeries[filteredSeries.length - 1].year - filteredSeries[0].year
+  const years = lastEntry.year - firstEntry.year
   const annualGrowth = years > 0 ? totalGrowth / years : 0
 
   return {
