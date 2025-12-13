@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import type { ScatterDataPoint } from 'chart.js'
+import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import MobilePayChart from './MobilePayChart'
 import DesktopPayChart from './DesktopPayChart'
 
@@ -11,6 +12,7 @@ interface ResponsiveChartWrapperProps {
   referenceSeries: ScatterDataPoint[]
   yearRange: { minYear: number; maxYear: number }
   displayNet: boolean
+  occupation?: OccupationKey
   className?: string
 }
 
@@ -20,6 +22,7 @@ export default function ResponsiveChartWrapper({
   referenceSeries,
   yearRange,
   displayNet,
+  occupation,
   className = '',
 }: ResponsiveChartWrapperProps) {
   const [isMobile, setIsMobile] = useState(false)
@@ -39,6 +42,7 @@ export default function ResponsiveChartWrapper({
         referenceSeries={referenceSeries}
         yearRange={yearRange}
         displayNet={displayNet}
+        occupation={occupation}
         className={className}
       />
     )
@@ -51,6 +55,7 @@ export default function ResponsiveChartWrapper({
       referenceSeries={referenceSeries}
       yearRange={yearRange}
       displayNet={displayNet}
+      occupation={occupation}
       className={className}
     />
   )

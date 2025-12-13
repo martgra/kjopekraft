@@ -11,8 +11,13 @@ export const OCCUPATIONS = {
     label: 'Sykepleiere',
     labelEn: 'Nurses',
   },
+  teachers: {
+    code: '2341',
+    label: 'Grunnskolelærere',
+    labelEn: 'Primary School Teachers',
+  },
   // Future occupations can be added here with different configurations
-  // e.g., specialistNurses, teachers, engineers, etc.
+  // e.g., specialistNurses, earlyChildhoodTeachers, engineers, etc.
 } as const satisfies Record<string, OccupationDefinition>
 
 export type OccupationKey = keyof typeof OCCUPATIONS
