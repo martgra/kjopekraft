@@ -51,23 +51,30 @@ describe('buildSalaryTableRows', () => {
     })
 
     expect(rows).toHaveLength(4)
+    const row0 = rows[0]!
+    const row1 = rows[1]!
+    const row2 = rows[2]!
+    const row3 = rows[3]!
     // Year-over-year change
-    const yoyChange = rows[1].salary - rows[0].salary
-    const yoyPercent = Math.round((yoyChange / rows[0].salary) * 100 * 10) / 10
-    expect(rows[1]).toMatchObject({
+    const yoyChange = row1.salary - row0.salary
+    const yoyPercent = Math.round((yoyChange / row0.salary) * 100 * 10) / 10
+    expect(row1).toMatchObject({
       year: 2021,
       yoyAbsoluteChange: yoyChange,
       yoyPercentChange: yoyPercent,
     })
     // Purchasing power deltas
-    expect(rows[3].purchasingPowerDelta).toBeLessThan(0)
-    expect(rows[0].purchasingPowerDelta).toBeGreaterThan(0)
+    expect(row3.purchasingPowerDelta).toBeLessThan(0)
+    expect(row0.purchasingPowerDelta).toBeGreaterThan(0)
     // Reference gap and percent
-    expect(rows[2].reference?.gap).toBeCloseTo(rows[2].salary - (reference[2].value! / 1000 + 2022))
-    expect(rows[0].reference?.gapPercent).toBeCloseTo(
-      ((rows[0].salary - (reference[0].value! / 1000 + 2020)) /
-        (reference[0].value! / 1000 + 2020)) *
-        100,
+    const ref2 = row2.reference
+    const ref0 = row0.reference
+    if (!ref2 || !ref0) throw new Error('reference data missing')
+    const refEntry2 = reference[2]!
+    const refEntry0 = reference[0]!
+    expect(ref2.gap).toBeCloseTo(row2.salary - (refEntry2.value! / 1000 + 2022))
+    expect(ref0.gapPercent).toBeCloseTo(
+      ((row0.salary - (refEntry0.value! / 1000 + 2020)) / (refEntry0.value! / 1000 + 2020)) * 100,
       1,
     )
   })

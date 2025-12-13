@@ -41,12 +41,25 @@ const inflation: InflationDataPoint[] = [
 
 describe('usePaypointChartData', () => {
   beforeEach(() => {
-    vi.mocked(useReferenceMode).mockReturnValue({ isReferenceEnabled: true })
-    vi.mocked(useDisplayMode).mockReturnValue({ isNetMode: false })
+    vi.mocked(useReferenceMode).mockReturnValue({
+      isReferenceEnabled: true,
+      toggleReference: vi.fn(),
+      setReferenceEnabled: vi.fn(),
+    })
+    vi.mocked(useDisplayMode).mockReturnValue({
+      isNetMode: false,
+      displayMode: 'gross',
+      toggleMode: vi.fn(),
+      setDisplayMode: vi.fn(),
+    })
   })
 
   it('builds series with reference disabled', () => {
-    vi.mocked(useReferenceMode).mockReturnValue({ isReferenceEnabled: false })
+    vi.mocked(useReferenceMode).mockReturnValue({
+      isReferenceEnabled: false,
+      toggleReference: vi.fn(),
+      setReferenceEnabled: vi.fn(),
+    })
     const { result } = renderHook(() => usePaypointChartData(payPoints, inflation, 'nurses'))
     expect(result.current.referenceSeries).toEqual([])
     expect(result.current.actualSeries).toHaveLength(2)
@@ -54,7 +67,12 @@ describe('usePaypointChartData', () => {
   })
 
   it('builds reference series and propagates net mode', () => {
-    vi.mocked(useDisplayMode).mockReturnValue({ isNetMode: true })
+    vi.mocked(useDisplayMode).mockReturnValue({
+      isNetMode: true,
+      displayMode: 'net',
+      toggleMode: vi.fn(),
+      setDisplayMode: vi.fn(),
+    })
     const { result } = renderHook(() => usePaypointChartData(payPoints, inflation, 'nurses'))
     expect(result.current.referenceSeries).toHaveLength(2)
     expect(result.current.referenceSeries[0]?.y).toBeLessThanOrEqual(400_000) // net income

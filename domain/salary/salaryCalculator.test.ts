@@ -61,7 +61,18 @@ describe('computeStatistics', () => {
 describe('calculateYearRange', () => {
   it('derives min/max from data', () => {
     expect(
-      calculateYearRange([{ year: 2018, actualPay: 1, inflationAdjustedPay: 1 }], 2024),
+      calculateYearRange(
+        [
+          {
+            year: 2018,
+            actualPay: 1,
+            inflationAdjustedPay: 1,
+            inflationRate: 0,
+            isInterpolated: false,
+          },
+        ],
+        2024,
+      ),
     ).toEqual({ minYear: 2018, maxYear: 2018 })
   })
 

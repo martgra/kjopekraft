@@ -47,7 +47,7 @@ describe('useReferenceSalary', () => {
     )
 
     expect(useSWRMock).toHaveBeenCalledTimes(1)
-    const [apiUrl] = useSWRMock.mock.calls[0]
+    const [apiUrl] = useSWRMock.mock.calls[0] as [string, unknown, unknown]
     expect(apiUrl).toBe('/api/ssb/salary?occupation=1120&fromYear=2010&sector=6500')
     expect(result.current.data).toEqual(response.derived?.yearlyNok)
     expect(result.current.metadata).toEqual({
@@ -71,7 +71,7 @@ describe('useReferenceSalary', () => {
 
     renderHook(() => useReferenceSalary({ occupation: 'stortingsrepresentant', fromYear: 1990 }))
 
-    const [apiUrl] = useSWRMock.mock.calls[0]
+    const [apiUrl] = useSWRMock.mock.calls[0] as [string, unknown, unknown]
     expect(apiUrl).toBe('/api/reference/storting?fromYear=2001')
   })
 })
