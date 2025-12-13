@@ -29,7 +29,9 @@ export default function Sidebar() {
         {/* Brand Section */}
         <div className="flex items-center gap-3 p-6">
           <div className="flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)]">
-            <span className="text-2xl" role="img" aria-label="Money with wings">💸</span>
+            <span className="text-2xl" role="img" aria-label="Money with wings">
+              💸
+            </span>
           </div>
           <div className="flex flex-col">
             <h1 className="text-lg leading-tight font-bold">{TEXT.sidebar.brandName}</h1>

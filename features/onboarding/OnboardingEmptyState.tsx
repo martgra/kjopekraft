@@ -26,7 +26,10 @@ const FEATURES = [
   },
 ]
 
-export default function OnboardingEmptyState({ onLoadDemo, onOpenDrawer }: OnboardingEmptyStateProps) {
+export default function OnboardingEmptyState({
+  onLoadDemo,
+  onOpenDrawer,
+}: OnboardingEmptyStateProps) {
   const handleAddOwnData = () => {
     // On mobile, open the drawer. On desktop, scroll to the form in the sidebar
     if (window.innerWidth < 768) {
@@ -42,7 +45,9 @@ export default function OnboardingEmptyState({ onLoadDemo, onOpenDrawer }: Onboa
       <div className="relative mb-6">
         <div className="absolute -inset-4 rounded-full bg-[var(--color-green-100)]/50" />
         <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)]">
-          <span className="text-[48px]" role="img" aria-label="Money with wings">💸</span>
+          <span className="text-[48px]" role="img" aria-label="Money with wings">
+            💸
+          </span>
         </div>
       </div>
 
