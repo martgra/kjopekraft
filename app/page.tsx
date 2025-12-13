@@ -3,6 +3,7 @@ import DashboardWithDrawer from '@/components/dashboard/DashboardWithDrawer'
 import { getInflationData } from '@/lib/models/getInflationData'
 import { connection } from 'next/server'
 import { Spinner } from '@/components/ui/atoms'
+import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 
 function LoadingFallback() {
   return (
@@ -36,8 +37,10 @@ async function DashboardWithData() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <DashboardWithData />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<LoadingFallback />}>
+        <DashboardWithData />
+      </Suspense>
+    </ErrorBoundary>
   )
 }
