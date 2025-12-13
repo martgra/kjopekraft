@@ -32,7 +32,8 @@ export const SsbInflationResponseSchema = z.object({
     dimension: z.object({
       size: z.array(z.number()),
       id: z.array(z.string()),
-      role: z.record(z.string(), z.string()),
+      // JSON-stat role maps semantic roles to dimension ids (arrays)
+      role: z.record(z.string(), z.array(z.string())),
       Konsumgrp: SsbInflationDimensionSchema,
       Tid: SsbInflationDimensionSchema,
       ContentsCode: SsbInflationDimensionSchema,
