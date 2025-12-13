@@ -7,11 +7,10 @@ import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeCon
 import ClientLayoutWrapper from '@/components/layout/ClientLayoutWrapper'
 import './globals.css'
 
-// System font stacks (fallback when Google Fonts unavailable)
+// System font stacks with Inter as primary
 const fontVariables = `
-  --font-geist-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-geist-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
-  --font-manrope: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 `
 
 export const metadata: Metadata = {
@@ -88,6 +87,11 @@ export default function RootLayout({
     <html lang="nb" className="h-full">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+        {/* Inter Font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         {/* Material Symbols Icons */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"

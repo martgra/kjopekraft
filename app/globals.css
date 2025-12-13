@@ -3,19 +3,23 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #333333;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* New Design System Colors - Updated to match Figma */
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --background-light: #f3f4f6;
+  /* Kjøpekraft Design System Colors */
+  --primary: #4CAF50;
+  --primary-hover: #43A047;
+  --secondary: #2274A5;
+  --secondary-hover: #1B5D85;
+  --accent: #FFCF58;
+  --accent-hover: #F5C044;
+  --background-light: #F5F7FA;
   --background-dark: #111827;
   --surface-light: #ffffff;
   --surface-dark: #1f2937;
   --surface-subtle: #f9fafb;
-  --text-main: #111827;
+  --text-main: #333333;
   --text-main-dark: #f9fafb;
   --text-muted: #6b7280;
   --text-muted-dark: #9ca3af;
@@ -23,18 +27,23 @@
   --border-dark: #374151;
 
   /* Semantic colors */
-  --color-emerald-500: #10b981;
+  --color-green-500: #4CAF50;
+  --color-green-100: #E8F5E9;
+  --color-blue-500: #2274A5;
+  --color-blue-100: #E3F2FD;
+  --color-yellow-500: #FFCF58;
+  --color-yellow-100: #FFF8E1;
   --color-orange-400: #fb923c;
   --color-orange-500: #f97316;
+  --color-emerald-500: #10b981;
   --color-indigo-500: #6366f1;
-  --color-blue-500: #3b82f6;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(
-    --font-manrope,
+    --font-inter,
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
