@@ -2,6 +2,7 @@ version: '3.8'
 services:
   app:
     user: vscode
+    init: true # Use tini as init to properly reap zombie processes
     build:
       context: .
       dockerfile: Dockerfile
