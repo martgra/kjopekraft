@@ -89,6 +89,13 @@ bun run format
 
 # Type check
 bun run typecheck
+
+# Unit tests (Vitest)
+bun run test
+bun run test:watch
+
+# E2E tests (Playwright)
+bun run test:e2e
 ```
 
 ## Contributing
