@@ -1,19 +1,23 @@
-name: CI/CD → Azure Container
+name: Deploy to Azure
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ['CI Pipeline']
+    types: [completed]
+    branches: [main]
 
 jobs:
   deploy:
-    permissions: write-all
+    name: Build & Deploy
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions: write-all
     env:
       IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v5
 
       - name: Azure Login
         uses: azure/login@v2

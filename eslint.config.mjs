@@ -67,6 +67,15 @@ export default [
     },
   },
 
+  // Test files - disable React hooks rules (Playwright's `use` is not a React hook)
+  {
+    files: ['tests/**/*.ts', 'tests/**/*.tsx'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+    },
+  },
+
   // Ignore patterns
   {
     ignores: [
@@ -77,7 +86,6 @@ export default [
       '*.config.js',
       '*.config.mjs',
       '*.config.ts',
-      'tests/**'
     ],
   },
 ]
