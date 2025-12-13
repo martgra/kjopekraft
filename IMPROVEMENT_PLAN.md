@@ -11,6 +11,7 @@ This document analyzes the kjopekraft application against Next.js 16 best practi
 ## 1. Server-Side Rendering (SSR)
 
 ### Current State ✅
+
 - Uses App Router with hybrid Server/Client Components
 - Proper `Suspense` boundaries with loading states
 - `ErrorBoundary` for error handling
@@ -20,6 +21,7 @@ This document analyzes the kjopekraft application against Next.js 16 best practi
 ### Recommended Improvements
 
 #### 1.1 Implement Streaming with Multiple Suspense Boundaries
+
 **Priority: Medium** | **Effort: Low**
 
 Currently, the home page has a single Suspense boundary. Break it into granular boundaries for faster Time to First Byte (TTFB).
@@ -47,6 +49,7 @@ Currently, the home page has a single Suspense boundary. Break it into granular 
 **Files to modify**: `app/page.tsx`, create new skeleton components in `components/ui/skeletons/`
 
 #### 1.2 Add Loading UI Files
+
 **Priority: High** | **Effort: Low**
 
 Create `loading.tsx` files for automatic loading states per route.
@@ -61,6 +64,7 @@ app/
 **Benefit**: Instant navigation feedback without manual Suspense management.
 
 #### 1.3 Implement Partial Prerendering (PPR)
+
 **Priority: High** | **Effort: Medium**
 
 Next.js 16 supports PPR for combining static and dynamic content. Enable it for pages with mixed content.
@@ -80,11 +84,13 @@ export const experimental_ppr = true
 **Files to modify**: `next.config.ts`, `app/page.tsx`
 
 #### 1.4 Convert More Components to Server Components
+
 **Priority: Medium** | **Effort: Medium**
 
 Audit components that don't need interactivity and convert to Server Components.
 
 **Candidates identified**:
+
 - `SalaryChart` - Could fetch data server-side, pass to client for rendering
 - Static parts of `DashboardWithDrawer` - Header, footer sections
 - `InflationDisplay` components that only display data
@@ -94,6 +100,7 @@ Audit components that don't need interactivity and convert to Server Components.
 ## 2. Caching
 
 ### Current State ✅
+
 - Uses `'use cache'` directive with `cacheLife` and `cacheTag`
 - Inflation data cached for 1 hour
 - SSB salary data cached for 1 day
@@ -102,6 +109,7 @@ Audit components that don't need interactivity and convert to Server Components.
 ### Recommended Improvements
 
 #### 2.1 Define Custom Cache Profiles
+
 **Priority: High** | **Effort: Low**
 
 Next.js 16 allows defining custom cache profiles. Create application-specific profiles.
@@ -114,19 +122,19 @@ const nextConfig: NextConfig = {
   experimental: {
     cacheLife: {
       ssb: {
-        stale: 3600,      // 1 hour stale
+        stale: 3600, // 1 hour stale
         revalidate: 86400, // 24 hour revalidate
-        expire: 604800,    // 7 day expire
+        expire: 604800, // 7 day expire
       },
       inflation: {
-        stale: 1800,       // 30 min stale
-        revalidate: 3600,  // 1 hour revalidate
-        expire: 86400,     // 1 day expire
+        stale: 1800, // 30 min stale
+        revalidate: 3600, // 1 hour revalidate
+        expire: 86400, // 1 day expire
       },
       ai: {
-        stale: 0,          // Never stale (dynamic)
+        stale: 0, // Never stale (dynamic)
         revalidate: false, // No automatic revalidation
-        expire: 3600,      // 1 hour expire
+        expire: 3600, // 1 hour expire
       },
     },
   },
@@ -136,6 +144,7 @@ const nextConfig: NextConfig = {
 **Files to modify**: `next.config.ts`, then update services to use named profiles.
 
 #### 2.2 Implement On-Demand Revalidation API
+
 **Priority: Medium** | **Effort: Low**
 
 Create an admin endpoint for manual cache invalidation.
@@ -166,6 +175,7 @@ export async function POST(request: NextRequest) {
 **New file**: `app/api/revalidate/route.ts`
 
 #### 2.3 Add Cache Headers for Static Assets
+
 **Priority: Low** | **Effort: Low**
 
 Configure cache headers in next.config.ts for static files.
@@ -186,6 +196,7 @@ headers: async () => [
 ```
 
 #### 2.4 Implement Request Memoization
+
 **Priority: Medium** | **Effort: Low**
 
 Use React's `cache()` for request-level memoization in Server Components.
@@ -207,6 +218,7 @@ export const getInflationData = cache(async (): Promise<InflationDataPoint[]> =>
 ## 3. State Management
 
 ### Current State ✅
+
 - Three React Context providers (DisplayMode, ReferenceMode, Drawer)
 - Custom hooks for complex state (useSalaryData, useNegotiationData)
 - localStorage persistence with error handling
@@ -215,6 +227,7 @@ export const getInflationData = cache(async (): Promise<InflationDataPoint[]> =>
 ### Recommended Improvements
 
 #### 3.1 Migrate to `nuqs` for URL State
+
 **Priority: High** | **Effort: Medium**
 
 Replace localStorage for shareable state with URL search params using `nuqs`.
@@ -225,8 +238,8 @@ npm install nuqs
 
 ```tsx
 // Before: localStorage
-const [displayMode, setDisplayMode] = useState(() =>
-  localStorage.getItem('salaryDisplayMode') || 'net'
+const [displayMode, setDisplayMode] = useState(
+  () => localStorage.getItem('salaryDisplayMode') || 'net',
 )
 
 // After: URL state with nuqs
@@ -235,11 +248,12 @@ import { useQueryState, parseAsStringLiteral } from 'nuqs'
 const displayModes = ['net', 'gross'] as const
 const [displayMode, setDisplayMode] = useQueryState(
   'display',
-  parseAsStringLiteral(displayModes).withDefault('net')
+  parseAsStringLiteral(displayModes).withDefault('net'),
 )
 ```
 
 **Benefits**:
+
 - Shareable URLs (e.g., `?display=gross&reference=true`)
 - Back/forward navigation support
 - No hydration mismatches
@@ -248,6 +262,7 @@ const [displayMode, setDisplayMode] = useQueryState(
 **Files to modify**: `contexts/DisplayModeContext.tsx`, `contexts/ReferenceModeContext.tsx`
 
 #### 3.2 Use Server Actions for Form State
+
 **Priority: Medium** | **Effort: Medium**
 
 For the negotiation form, consider Server Actions with `useActionState`.
@@ -276,7 +291,7 @@ export async function saveNegotiationData(prevState: any, formData: FormData) {
 }
 
 // Component
-'use client'
+;('use client')
 import { useActionState } from 'react'
 
 function NegotiationForm() {
@@ -294,6 +309,7 @@ function NegotiationForm() {
 ```
 
 #### 3.3 Implement Optimistic Updates
+
 **Priority: Low** | **Effort: Medium**
 
 For better UX during form submissions, use `useOptimistic`.
@@ -302,10 +318,10 @@ For better UX during form submissions, use `useOptimistic`.
 import { useOptimistic } from 'react'
 
 function NegotiationPoints({ points }) {
-  const [optimisticPoints, addOptimisticPoint] = useOptimistic(
-    points,
-    (state, newPoint) => [...state, { ...newPoint, pending: true }]
-  )
+  const [optimisticPoints, addOptimisticPoint] = useOptimistic(points, (state, newPoint) => [
+    ...state,
+    { ...newPoint, pending: true },
+  ])
 
   async function addPoint(point) {
     addOptimisticPoint(point)
@@ -325,6 +341,7 @@ function NegotiationPoints({ points }) {
 ```
 
 #### 3.4 Create Compound Context Provider
+
 **Priority: Low** | **Effort: Low**
 
 Reduce provider nesting with a compound provider.
@@ -335,18 +352,14 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <DisplayModeProvider>
       <ReferenceModeProvider>
-        <DrawerProvider>
-          {children}
-        </DrawerProvider>
+        <DrawerProvider>{children}</DrawerProvider>
       </ReferenceModeProvider>
     </DisplayModeProvider>
   )
 }
 
 // app/layout.tsx
-<AppProviders>
-  {children}
-</AppProviders>
+;<AppProviders>{children}</AppProviders>
 ```
 
 ---
@@ -354,6 +367,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 ## 4. Type Safety
 
 ### Current State ✅
+
 - TypeScript strict mode enabled
 - Domain types defined (PayPoint, SalaryDataPoint, etc.)
 - Zod validation in AI tools
@@ -362,6 +376,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 ### Recommended Improvements
 
 #### 4.1 Add Runtime Validation at API Boundaries
+
 **Priority: High** | **Effort: Medium**
 
 Validate all external API responses with Zod.
@@ -405,6 +420,7 @@ export async function fetchSSBSalary(params: SSBSalaryParams) {
 **New file**: `lib/schemas/ssb.ts`, `lib/schemas/inflation.ts`
 
 #### 4.2 Type API Route Handlers
+
 **Priority: Medium** | **Effort: Low**
 
 Add explicit return types to API routes.
@@ -414,24 +430,20 @@ Add explicit return types to API routes.
 import { NextResponse } from 'next/server'
 import type { InflationDataPoint } from '@/domain/inflation/inflationTypes'
 
-type InflationResponse =
-  | { data: InflationDataPoint[] }
-  | { error: string; message?: string }
+type InflationResponse = { data: InflationDataPoint[] } | { error: string; message?: string }
 
 export async function GET(): Promise<NextResponse<InflationResponse>> {
   try {
     const data = await getInflationData()
     return NextResponse.json({ data })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch', message: String(error) },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch', message: String(error) }, { status: 500 })
   }
 }
 ```
 
 #### 4.3 Enable Stricter TypeScript Options
+
 **Priority: Medium** | **Effort: Low**
 
 Add additional strict options to tsconfig.json.
@@ -450,6 +462,7 @@ Add additional strict options to tsconfig.json.
 **Note**: This may require fixing some existing code.
 
 #### 4.4 Create Discriminated Union Types for API States
+
 **Priority: Medium** | **Effort: Low**
 
 Better typing for loading/error/success states.
@@ -487,6 +500,7 @@ function SalaryDisplay({ state }: { state: ApiState<SalaryData> }) {
 ## 5. Logging
 
 ### Current State ⚠️
+
 - Only console.log/warn/error
 - No structured logging
 - No log aggregation
@@ -496,6 +510,7 @@ function SalaryDisplay({ state }: { state: ApiState<SalaryData> }) {
 ### Recommended Improvements
 
 #### 5.1 Implement Structured Logging
+
 **Priority: High** | **Effort: Medium**
 
 Create a logging utility with structured output.
@@ -575,6 +590,7 @@ export const logger = new Logger()
 **New file**: `lib/logger.ts`
 
 #### 5.2 Add Error Reporting Service
+
 **Priority: High** | **Effort: Medium**
 
 Integrate Sentry or similar for production error tracking.
@@ -592,9 +608,7 @@ Sentry.init({
   tracesSampleRate: 0.1,
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
-  integrations: [
-    Sentry.replayIntegration(),
-  ],
+  integrations: [Sentry.replayIntegration()],
 })
 
 // instrumentation.ts (Next.js 16)
@@ -608,6 +622,7 @@ export async function register() {
 **Files to create**: `sentry.client.config.ts`, `sentry.server.config.ts`, `instrumentation.ts`
 
 #### 5.3 Implement Request Logging Middleware
+
 **Priority: Medium** | **Effort: Low**
 
 Log all API requests for debugging and analytics.
@@ -644,6 +659,7 @@ export const config = {
 **New file**: `middleware.ts`
 
 #### 5.4 Add Performance Monitoring
+
 **Priority: Medium** | **Effort: Low**
 
 Track Core Web Vitals and custom metrics.
@@ -676,7 +692,7 @@ import { useReportWebVitals } from 'next/web-vitals'
 import { logger } from '@/lib/logger'
 
 export function WebVitals() {
-  useReportWebVitals((metric) => {
+  useReportWebVitals(metric => {
     logger.info('Web Vital', {
       name: metric.name,
       value: metric.value,
@@ -700,6 +716,7 @@ export function WebVitals() {
 **New file**: `components/WebVitals.tsx`
 
 #### 5.5 Create Logging Hooks for Client Components
+
 **Priority: Low** | **Effort: Low**
 
 ```tsx
@@ -710,7 +727,7 @@ import { logger } from '@/lib/logger'
 export function useLoggedEffect(
   effect: () => void | (() => void),
   deps: unknown[],
-  component: string
+  component: string,
 ) {
   useEffect(() => {
     logger.debug(`Effect triggered`, { component })
@@ -730,6 +747,7 @@ export function useLoggedEffect(
 ## Implementation Priority
 
 ### Phase 1: Quick Wins (1-2 days)
+
 1. ✅ Add loading.tsx files for routes
 2. ✅ Define custom cache profiles in next.config.ts
 3. ✅ Create structured logger utility
@@ -737,6 +755,7 @@ export function useLoggedEffect(
 5. ✅ Create AppProviders compound component
 
 ### Phase 2: Core Improvements (3-5 days)
+
 1. 🔲 Implement runtime validation with Zod schemas
 2. 🔲 Add on-demand revalidation API
 3. 🔲 Migrate to nuqs for URL state
@@ -744,6 +763,7 @@ export function useLoggedEffect(
 5. 🔲 Enable Partial Prerendering (PPR)
 
 ### Phase 3: Production Hardening (1 week)
+
 1. 🔲 Integrate Sentry for error reporting
 2. 🔲 Add request logging middleware
 3. 🔲 Implement Web Vitals monitoring
@@ -751,6 +771,7 @@ export function useLoggedEffect(
 5. 🔲 Add Server Actions for form handling
 
 ### Phase 4: Advanced Optimizations (Ongoing)
+
 1. 🔲 Implement optimistic updates
 2. 🔲 Add request memoization with React cache()
 3. 🔲 Create discriminated union types for API states
@@ -760,13 +781,13 @@ export function useLoggedEffect(
 
 ## Summary of Key Changes
 
-| Area | Current | Recommended |
-|------|---------|-------------|
-| **SSR** | Single Suspense | Multiple boundaries + PPR |
-| **Caching** | Basic use cache | Custom profiles + revalidation API |
-| **State** | localStorage + Context | nuqs for URL state + Server Actions |
-| **Types** | Good interfaces | + Zod runtime validation |
-| **Logging** | console.* only | Structured logging + Sentry |
+| Area        | Current                | Recommended                         |
+| ----------- | ---------------------- | ----------------------------------- |
+| **SSR**     | Single Suspense        | Multiple boundaries + PPR           |
+| **Caching** | Basic use cache        | Custom profiles + revalidation API  |
+| **State**   | localStorage + Context | nuqs for URL state + Server Actions |
+| **Types**   | Good interfaces        | + Zod runtime validation            |
+| **Logging** | console.\* only        | Structured logging + Sentry         |
 
 ---
 
