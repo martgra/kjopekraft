@@ -213,9 +213,9 @@ async function estimate2025Salary(
 }
 
 /**
- * Cacheable function to fetch SSB salary data with 1-week server-side cache
+ * Cacheable function to fetch SSB salary data with 1-day server-side cache
  * Next.js 16: Uses 'use cache' directive for automatic caching
- * SSB salary data updates annually (November), so 1-week cache is safe
+ * SSB salary data updates annually (November), daily cache ensures we catch updates within 24h
  * See AZURE_CACHE_SETUP.md for production caching strategies
  */
 async function getCachedSalaryData(
@@ -228,7 +228,7 @@ async function getCachedSalaryData(
   fromYear: string,
 ): Promise<SalarySeriesResponse> {
   'use cache'
-  cacheLife('weeks') // 1 week cache (SSB data updates annually in November)
+  cacheLife('days') // 1 day cache - catches SSB updates within 24h
   cacheTag('ssb-salary')
 
   const baseData = await fetchSsbSalaryData({
