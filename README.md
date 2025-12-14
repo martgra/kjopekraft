@@ -52,7 +52,7 @@ The app loads with onboarding; try demo data or add your own.
 - Dev server: `bun dev` (Turbopack)
 - Build/start: `bun run build` / `bun start`
 - Quality: `bun run lint` · `bun run format:check` · `bun run typecheck`
-- Tests: `bun run test` (Vitest) · `bun run test:e2e` (Playwright)
+- Tests: `bun run test` (Vitest for logic + component behavior) · `bun run test:e2e` (Playwright user journeys only)
 
 ## Development
 

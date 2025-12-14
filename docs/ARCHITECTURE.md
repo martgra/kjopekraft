@@ -84,6 +84,6 @@ docs/                    # Documentation set
 
 ## Testing pointers
 
-- Unit tests target domain/services/logic-heavy hooks (`bun run test`).
-- E2E tests live in `tests/e2e` (Playwright, `bun run test:e2e`).
+- Unit/component tests target domain/services/logic-heavy hooks/components (`bun run test`) and cover fine-grained UI behavior.
+- E2E tests live in `tests/e2e` (Playwright, `bun run test:e2e`) and focus on user journeys only.
 - See `docs/TESTING.md` for scope and commands.
