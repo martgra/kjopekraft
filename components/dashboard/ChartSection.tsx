@@ -112,6 +112,7 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
       return (
         <SalaryTableView
           salaryData={salaryData}
+          payPoints={payPoints}
           referenceData={isReferenceEnabled ? filteredReferenceData : []}
           isNetMode={isNetMode}
           isLoading={isLoading}
