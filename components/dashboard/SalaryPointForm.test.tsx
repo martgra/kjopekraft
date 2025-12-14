@@ -123,12 +123,12 @@ describe('SalaryPointForm', () => {
   it('shows gross amount label when not in net mode', () => {
     render(<SalaryPointForm {...defaultProps} isNetMode={false} />)
 
-    expect(screen.getByText(/bruttobeløp/i)).toBeInTheDocument()
+    expect(screen.getByText(/beløp før skatt/i)).toBeInTheDocument()
   })
 
   it('shows net amount label when in net mode', () => {
     render(<SalaryPointForm {...defaultProps} isNetMode={true} />)
 
-    expect(screen.getByText(/nettobeløp/i)).toBeInTheDocument()
+    expect(screen.getByText(/beløp etter skatt/i)).toBeInTheDocument()
   })
 })

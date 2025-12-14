@@ -151,7 +151,10 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
     viewOptions.find(option => option.value === viewMode)?.description ?? TEXT.charts.chartSubtitle
 
   return (
-    <div className="flex w-full flex-1 flex-col rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm">
+    <div
+      className="flex w-full flex-1 flex-col rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
+      data-testid="chart-section"
+    >
       {/* Header */}
       <div className="border-b border-[var(--border-light)] px-3 py-2.5 md:px-6 md:py-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -196,25 +199,41 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
             </div>
 
             {/* Reference selector */}
-            <div className="w-full md:w-auto md:min-w-[200px]">
-              <Select
-                id="reference-occupation"
-                value={selectedOccupation}
-                onChange={handleOccupationChange}
-                className="text-xs md:text-sm"
-              >
-                {Object.entries(OCCUPATIONS).map(([key, occupation]) => {
-                  const isStortinget =
-                    (occupation as unknown as { provider?: string }).provider === 'stortinget'
-                  return (
-                    <SelectOption key={key} value={key}>
-                      {occupation.label}
-                      {isStortinget ? '' : ` (${TEXT.charts.averageLabel})`}
-                    </SelectOption>
-                  )
-                })}
-                <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
-              </Select>
+            <div className="w-full md:w-auto md:min-w-[220px]">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1 text-[11px] font-medium text-[var(--text-muted)]">
+                  <span>{TEXT.charts.compareWithOccupation}</span>
+                  <span
+                    className="material-symbols-outlined text-[16px] text-[var(--text-muted)]"
+                    aria-label={TEXT.charts.referenceHelp}
+                    title={TEXT.charts.referenceHelp}
+                  >
+                    info
+                  </span>
+                </div>
+                <Select
+                  id="reference-occupation"
+                  aria-label={TEXT.charts.compareWithOccupation}
+                  value={selectedOccupation}
+                  onChange={handleOccupationChange}
+                  className="text-xs md:text-sm"
+                >
+                  {Object.entries(OCCUPATIONS).map(([key, occupation]) => {
+                    const isStortinget =
+                      (occupation as unknown as { provider?: string }).provider === 'stortinget'
+                    return (
+                      <SelectOption key={key} value={key}>
+                        {occupation.label}
+                        {isStortinget ? '' : ` (${TEXT.charts.averageLabel})`}
+                      </SelectOption>
+                    )
+                  })}
+                  <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
+                </Select>
+                <p className="text-[11px] leading-snug text-[var(--text-muted)] md:text-xs">
+                  {TEXT.charts.referenceHelp}
+                </p>
+              </div>
             </div>
           </div>
         </div>

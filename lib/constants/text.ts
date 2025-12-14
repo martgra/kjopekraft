@@ -47,49 +47,53 @@ export const TEXT = {
     addPointsTitle: '➕ Legg til lønnspunkter',
     // New dashboard header text
     annualOverview: 'Lønnsoversikt',
-    annualOverviewSubtitle: 'Følg din lønnsutvikling over tid sammenlignet med inflasjon',
+    annualOverviewSubtitle: 'Følg lønnen din mot prisstigningen og se hva den faktisk er verdt',
+    purchasingPowerDefinition:
+      'Kjøpekraft viser hva lønnen din er verdt når vi tar høyde for prisstigningen.',
     fiscalYear: '{year}',
     addDataPrompt: 'Legg til lønnsdata for å se metrikker og grafer',
     noDataTitle: 'Ingen data å vise ennå',
     noDataSubtitle: 'Legg til lønnspunkter ved hjelp av skjemaet for å se vekstgrafen din',
-    showNetSalary: 'Vis nettolønn (etter skatt)',
+    showNetSalary: 'Vis lønn etter skatt',
     showDataEntry: 'Legg til lønnspunkt',
     hideDataEntry: 'Skjul datapanel',
   },
 
   charts: {
-    payDevelopmentTitle: '📊 Lønnsutvikling vs. Inflasjon',
+    payDevelopmentTitle: '📊 Lønnsutvikling og prisstigning',
     xAxisLabel: 'År',
     yAxisLabel: 'Lønn (NOK)',
     actualPayLabel: 'Faktisk lønn',
-    inflationAdjustedLabel: 'Inflasjons-justert',
+    inflationAdjustedLabel: 'Lønn justert for prisstigning',
     inflationLabel: 'Inflasjon',
     yearPrefix: 'År: ',
     notAvailable: '—',
     minPointsRequired: 'Legg til minst to lønnspunkter for å vise graf.',
-    showGross: 'Bruttolønn',
-    showNet: 'Nettolønn',
+    showGross: 'Lønn før skatt',
+    showNet: 'Lønn etter skatt',
     tabGuide:
-      'Se hvordan lønnen din har utviklet seg sammenlignet med inflasjonen. Bruk denne grafen for å forstå din kjøpekraft over tid og forberede deg til lønnsforhandlinger.',
+      'Se hvordan lønnen din har utviklet seg sammenlignet med prisstigningen. Bruk denne grafen for å forstå kjøpekraften din over tid og forberede deg til lønnsforhandlinger.',
     // ChartSection header
-    chartTitle: 'Årlig lønnsvekst vs. Inflasjon',
-    chartSubtitle: 'Følg dine årlige lønnspunkter mot reell kjøpekraft.',
+    chartTitle: 'Årlig lønnsvekst og prisstigning',
+    chartSubtitle: 'Følg lønnen din mot prisstigningen og se reell kjøpekraft.',
     // Mode toggle
-    modeBadgeGross: 'BRUTTO',
-    modeBadgeNet: 'NETTO',
-    modeToggleLabel: 'Vis nettolønn (etter skatt)',
+    modeBadgeGross: 'FØR SKATT',
+    modeBadgeNet: 'ETTER SKATT',
+    modeToggleLabel: 'Vis lønn etter skatt',
     controlsLabel: 'Visningsalternativer',
     // Reference occupation
-    compareWithOccupation: 'Sammenlign med yrke:',
-    legendGross: 'Bruttolønn',
-    legendInflationAdjusted: 'Inflasjons-justert',
+    compareWithOccupation: 'Sammenlign med et yrke',
+    legendGross: 'Lønn før skatt',
+    legendInflationAdjusted: 'Lønn justert for prisstigning',
     legendReference: 'Referanse',
     // Reference salary dropdown
-    averageLabel: 'Gj.snitt',
+    averageLabel: 'Gjennomsnitt',
+    referenceHelp:
+      'Referanselønn er snittet for valgt yrke. Bruk den for å se hvordan lønnen din ligger an.',
     noReference: 'Ingen referanse',
     // Event baselines toggle
     showEventBaselines: 'Vis hendelseslinjer',
-    eventBaselinesHelp: 'Vis inflasjonslinjer fra forfremmelser og jobbskift',
+    eventBaselinesHelp: 'Vis linjer som markerer prisstigning fra forfremmelser og jobbskift',
   },
 
   views: {
@@ -97,7 +101,7 @@ export const TEXT = {
     graphLabel: 'Graf',
     tableLabel: 'Tabell',
     analysisLabel: 'Analyse',
-    graphDescription: 'Visualiser lønnen din mot inflasjon.',
+    graphDescription: 'Visualiser lønnen din mot prisstigningen.',
     tableDescription: 'Se tallene med årlige endringer og referansegap.',
     analysisDescription: 'Høydepunkter fra lønnshistorikken din.',
     table: {
@@ -105,17 +109,17 @@ export const TEXT = {
         year: 'År',
         date: 'Dato',
         event: 'Hendelse',
-        salary: 'Lønn (brutto)',
-        netSalary: 'Lønn (netto)',
-        inflationAdjusted: 'Inflasjons-justert',
-        yoyChange: 'Endring vs forrige',
-        powerDelta: 'Kjøpekraft vs inflasjon',
-        referenceGap: 'Gap vs referanse',
+        salary: 'Lønn før skatt',
+        netSalary: 'Lønn etter skatt',
+        inflationAdjusted: 'Lønn justert for prisstigning',
+        yoyChange: 'Endring mot forrige år',
+        powerDelta: 'Kjøpekraft mot prisstigning',
+        referenceGap: 'Avstand til referanse',
       },
-      inflationVsPrev: 'Mot inflasjon (forrige år)',
+      inflationVsPrev: 'Mot prisstigning (forrige år)',
       interpolated: 'Estimert',
-      badgeGain: 'Over inflasjon',
-      badgeLoss: 'Under inflasjon',
+      badgeGain: 'Over prisstigning',
+      badgeLoss: 'Under prisstigning',
       noReference: 'Ingen referanse tilgjengelig for dette året',
       referenceOfficial: 'Offisiell',
       referenceEstimated: 'Estimert',
@@ -129,17 +133,17 @@ export const TEXT = {
     analysis: {
       empty: 'Legg til flere lønnspunkter for å generere analyse.',
       largestRaiseTitle: 'Største lønnshopp',
-      powerGainTitle: 'Beste kjøpekraft',
+      powerGainTitle: 'Høyeste kjøpekraft',
       powerLossTitle: 'Største fall i kjøpekraft',
       referenceWinsTitle: 'År over referanse',
       referenceLossesTitle: 'År under referanse',
-      streakTitle: 'Streak over inflasjon',
+      streakTitle: 'Sammenhengende år med lønn høyere enn prisstigningen',
       badgeRaise: 'Hopp',
       badgePower: 'Kraft',
-      badgeHeadwind: 'Motvind',
+      badgeHeadwind: 'Laveste kjøpekraft',
       badgeAhead: 'Over',
       badgeBehind: 'Under',
-      badgeStreak: 'Streak',
+      badgeStreak: 'Rekke',
       yearsWon: 'år over referanse',
       yearsBehind: 'år under referanse',
       years: 'år',
@@ -149,17 +153,17 @@ export const TEXT = {
   stats: {
     startingPay: 'Startlønn',
     latestPay: 'Nåværende lønn',
-    inflationAdjustedPay: 'Inflasjons-justert',
+    inflationAdjustedPay: 'Lønn justert for prisstigning',
     gapPercent: 'Gap (%)',
   },
 
   // Metrics grid
   metrics: {
-    totalAnnualSalary: 'Total årslønn',
-    totalAnnualNetSalary: 'Total årslønn (netto)',
-    vsStart: 'vs start',
-    realAnnualValue: 'Reell årsverdi (just.)',
-    vsInflation: 'vs Inflasjon',
+    totalAnnualSalary: 'Årslønn før skatt',
+    totalAnnualNetSalary: 'Årslønn etter skatt',
+    vsStart: 'mot start',
+    realAnnualValue: 'Lønn justert for prisstigning',
+    vsInflation: 'mot prisstigning',
     yearlyChange: 'Årlig endring',
     thisYear: 'i år',
   },
@@ -189,8 +193,8 @@ export const TEXT = {
     },
     // SalaryPointForm specific
     logSalaryPoint: 'Logg lønnspunkt',
-    grossAmount: 'Bruttobeløp',
-    netAmount: 'Nettobeløp',
+    grossAmount: 'Beløp før skatt',
+    netAmount: 'Beløp etter skatt',
     yearRange: 'År ({min}-{max})',
     saveLog: 'Lagre logg',
     reasonLabel: 'Hvorfor økte lønnen?',
@@ -219,10 +223,11 @@ export const TEXT = {
   },
 
   inflation: {
-    title: '📈 Inflasjonsdata fra SSB',
-    noDataTitle: 'Ingen inflasjonsdata',
-    noDataMessage: 'Kunne ikke laste inflasjonsdata fra SSB API. Bruker forhåndsdefinerte verdier.',
-    latestData: 'Siste år: {year} med inflasjon på {inflation}% 🔥',
+    title: '📈 Prisstigningsdata fra SSB',
+    noDataTitle: 'Ingen prisstigningsdata',
+    noDataMessage:
+      'Kunne ikke laste prisstigningsdata fra SSB API. Bruker forhåndsdefinerte verdier.',
+    latestData: 'Siste år: {year} med prisstigning på {inflation}% 🔥',
     showAllYears: 'Vis alle år ({count})',
     yearHeader: 'År',
     inflationHeader: 'Inflasjon (%)',
@@ -327,12 +332,26 @@ export const TEXT = {
   onboarding: {
     welcomeTitle: 'Velkommen til Kjøpekraft',
     welcomeMessage:
-      'Få innsikt i om lønnen din faktisk har blitt bedre, eller bare høyere. Sammenlign din lønnsutvikling mot inflasjonen for å forstå din reelle kjøpekraft.',
+      'Få oversikt over hva lønnen din er verdt etter prisstigningen. Sammenlign lønnsutviklingen din med prisstigningen for å se den reelle kjøpekraften.',
     loadDemoButton: 'Prøv med eksempeldata',
     addOwnDataButton: 'Legg til min egen lønn',
     whatIsKjopekraft: 'Hva er kjøpekraft?',
     kjopekraftExplanation:
-      'Kjøpekraft viser hva lønnen din faktisk er verdt. Selv om lønnen din øker med 10%, kan inflasjonen spise opp mye av veksten. Vi viser deg forskjellen mellom nominell lønn (tall på kontoutskriften) og reell verdi (hva du faktisk kan kjøpe).',
+      'Kjøpekraft viser hva lønnen din er verdt når prisene øker. Selv om lønnen din øker med 10 %, kan prisstigningen spise opp mye av veksten. Vi viser forskjellen mellom lønn på papiret og hva du faktisk kan kjøpe.',
+    features: {
+      trackSalary: {
+        title: 'Spor lønnsutvikling',
+        description: 'Se hvordan lønnen din endrer seg over tid.',
+      },
+      compareInflation: {
+        title: 'Sammenlign med prisstigning',
+        description: 'Forstå kjøpekraften din, ikke bare tallene.',
+      },
+      negotiate: {
+        title: 'Forhandle smartere',
+        description: 'Få innsikt som støtter lønnsforhandlinger.',
+      },
+    },
     demoDataInfo:
       'Dette er eksempeldata. Legg til ditt første reelle lønnspunkt for å erstatte dem.',
     clearDemoData: 'Fjern eksempeldata',
@@ -340,11 +359,11 @@ export const TEXT = {
 
   help: {
     realAnnualValue:
-      'Dette viser hva din startlønn ville vært verdt i dag, justert for inflasjon. Sammenligner kjøpekraften din nå mot da.',
+      'Dette viser hva startlønnen din ville vært verdt i dag, justert for prisstigning. Sammenligner kjøpekraften din nå mot da.',
     inflationAdjusted:
-      'Viser hvordan lønnen din ville utviklet seg hvis den hadde fulgt inflasjonen fra starttidspunktet. Hjelper deg se om du har fått reell lønnsvekst.',
+      'Viser hvordan lønnen din ville utviklet seg hvis den hadde fulgt prisstigningen fra starttidspunktet. Hjelper deg se om du har fått reell lønnsvekst.',
     yearlyChange:
-      'Den prosentvise endringen i lønnen din fra start til nå, korrigert for inflasjon. Viser om kjøpekraften din har økt eller sunket.',
+      'Den prosentvise endringen i lønnen din fra start til nå, korrigert for prisstigning. Viser om kjøpekraften din har økt eller sunket.',
   },
 
   referenceSalary: {

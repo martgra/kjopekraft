@@ -110,11 +110,11 @@ export class DashboardPage {
   }
 
   get grossBadge() {
-    return this.chartSection.getByText('BRUTTO', { exact: true }).first()
+    return this.chartSection.getByText('FØR SKATT', { exact: true }).first()
   }
 
   get netBadge() {
-    return this.chartSection.getByText('NETTO', { exact: true }).first()
+    return this.chartSection.getByText('ETTER SKATT', { exact: true }).first()
   }
 
   // View switcher
