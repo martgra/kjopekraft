@@ -7,15 +7,25 @@ export interface ToggleProps {
   onChange: () => void
   label?: string
   className?: string
+  labelClassName?: string
+  ariaLabel?: string
 }
 
-export function Toggle({ checked, onChange, label, className }: ToggleProps) {
+export function Toggle({
+  checked,
+  onChange,
+  label,
+  className,
+  labelClassName,
+  ariaLabel,
+}: ToggleProps) {
   return (
     <label className={cn('flex cursor-pointer items-center gap-3', className)}>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={ariaLabel || label}
         onClick={onChange}
         className={cn(
           'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out',
@@ -31,7 +41,11 @@ export function Toggle({ checked, onChange, label, className }: ToggleProps) {
         />
       </button>
       {label && (
-        <span className="text-xs font-medium text-[var(--text-main)] md:text-sm">{label}</span>
+        <span
+          className={cn('text-xs font-medium text-[var(--text-main)] md:text-sm', labelClassName)}
+        >
+          {label}
+        </span>
       )}
     </label>
   )

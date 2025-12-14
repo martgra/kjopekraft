@@ -19,6 +19,7 @@ export const TEXT = {
     lastTabPersistence: 'Du vil bli returnert til siste fanen du brukte ved neste besøk.',
     pts: 'kr',
     close: 'Lukk',
+    legend: 'Forklaring',
   },
 
   // Mobile drawer

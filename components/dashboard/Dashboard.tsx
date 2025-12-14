@@ -221,9 +221,6 @@ export default function Dashboard({
             <p className="text-sm text-[var(--text-muted)] md:mt-1">
               {TEXT.dashboard.annualOverviewSubtitle}
             </p>
-            <p className="text-xs text-[var(--text-muted)] md:text-sm">
-              {TEXT.dashboard.purchasingPowerDefinition}
-            </p>
           </div>
 
           {/* Metrics Grid - only show when we have data */}
