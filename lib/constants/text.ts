@@ -87,6 +87,9 @@ export const TEXT = {
     // Reference salary dropdown
     averageLabel: 'Gj.snitt',
     noReference: 'Ingen referanse',
+    // Event baselines toggle
+    showEventBaselines: 'Vis hendelseslinjer',
+    eventBaselinesHelp: 'Vis inflasjonslinjer fra forfremmelser og jobbskift',
   },
 
   views: {

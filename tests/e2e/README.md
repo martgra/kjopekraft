@@ -58,6 +58,12 @@ test.describe('Feature Name', () => {
 })
 ```
 
+## Dashboard form interactions (desktop + mobile)
+
+- The salary form is rendered twice (desktop sidebar + mobile drawer). Always scope to the visible container to avoid Playwright strict-mode errors.
+- Prefer the shared `DashboardPage.addSalaryPoint` helper from `tests/fixtures/test-fixtures.ts` instead of raw selectors. It opens the drawer when needed and uses `data-testid` selectors (`salary-form-*`).
+- When asserting chart/timeline on mobile, close the drawer first (`dashboardPage.closeDrawerIfOpen()`) so the backdrop does not intercept clicks.
+
 ## DevContainer Setup
 
 The devcontainer automatically:

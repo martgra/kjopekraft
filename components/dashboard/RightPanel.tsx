@@ -85,6 +85,7 @@ export default function RightPanel({
           onEdit={onEdit}
           onRemove={onRemove}
           currentYear={currentYear}
+          variant={isMobileDrawer ? 'drawer' : 'sidebar'}
         />
       </div>
     )
@@ -138,6 +139,7 @@ export default function RightPanel({
           onEdit={onEdit}
           onRemove={onRemove}
           currentYear={currentYear}
+          variant={isMobileDrawer ? 'drawer' : 'sidebar'}
         />
       </div>
     </div>

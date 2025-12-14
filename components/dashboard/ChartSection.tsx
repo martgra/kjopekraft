@@ -27,10 +27,23 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
   const { isReferenceEnabled, toggleReference } = useReferenceMode()
   const [selectedOccupation, setSelectedOccupation] = useState<OccupationKey | 'none'>('none')
   const [apiError, setApiError] = useState<string | null>(null)
+  const [showEventBaselines, setShowEventBaselines] = useState(() => {
+    // Load from localStorage, default to false
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('salary-show-event-baselines')
+      return stored === 'true'
+    }
+    return false
+  })
   const [viewMode, setViewMode] = useQueryState<ViewMode>(
     'view',
     parseAsStringLiteral(viewModes).withDefault('graph'),
   )
+
+  // Persist event baselines toggle to localStorage
+  useEffect(() => {
+    localStorage.setItem('salary-show-event-baselines', String(showEventBaselines))
+  }, [showEventBaselines])
 
   const {
     isLoading,
@@ -127,6 +140,8 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
         yearRange={yearRange}
         occupation={occupationKey}
         isLoading={isLoading}
+        inflationData={inflationData}
+        showEventBaselines={showEventBaselines}
       />
     )
   }
@@ -202,6 +217,35 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
             </div>
           </div>
         </div>
+
+        {/* Event Baselines Toggle */}
+        {viewMode === 'graph' && (
+          <div
+            className="mt-3 flex items-center gap-2 border-t border-[var(--border-light)] pt-3"
+            data-testid="chart-event-baselines-section"
+          >
+            <label
+              className="flex cursor-pointer items-center gap-2"
+              htmlFor="chart-event-baselines-toggle"
+            >
+              <input
+                id="chart-event-baselines-toggle"
+                data-testid="chart-event-baselines-toggle"
+                type="checkbox"
+                checked={showEventBaselines}
+                onChange={e => setShowEventBaselines(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]"
+              />
+              <span className="text-sm font-medium text-[var(--text-main)]">
+                {TEXT.charts.showEventBaselines}
+              </span>
+            </label>
+            <span className="text-xs text-[var(--text-muted)]">
+              {TEXT.charts.eventBaselinesHelp}
+            </span>
+          </div>
+        )}
+
         {/* API Error Warning */}
         {apiError && (
           <div className="mt-3 rounded-md border border-yellow-300 bg-yellow-50 p-3">

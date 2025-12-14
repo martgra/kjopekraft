@@ -91,11 +91,20 @@ bun run format
 bun run typecheck
 
 # Unit tests (Vitest)
-bun run test
-bun run test:watch
+bun run test              # Run all unit tests
+bun run test:watch        # Run tests in watch mode
+bun run test:coverage     # Run tests with coverage report
+bun run test:ui           # Run tests with Vitest UI
 
 # E2E tests (Playwright)
-bun run test:e2e
+bun run test:e2e          # Run E2E tests (headless)
+bun run test:e2e:headed   # Run E2E tests (headed browser)
+bun run test:e2e:ui       # Run E2E tests with Playwright UI
+bun run test:e2e:debug    # Run E2E tests in debug mode
+
+# IMPORTANT: Use "bun run test", NOT "bun test"
+# "bun test" uses Bun's native test runner (not configured for this project)
+# "bun run test" uses Vitest (properly configured with browser mocking)
 ```
 
 ## Contributing

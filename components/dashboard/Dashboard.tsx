@@ -41,7 +41,7 @@ export default function Dashboard({
   // Form state
   const [newYear, setNewYear] = useState('')
   const [newPay, setNewPay] = useState('')
-  const [newReason, setNewReason] = useState<PayChangeReason | ''>('')
+  const [newReason, setNewReason] = useState<PayChangeReason | ''>('adjustment')
   const [validationError, setValidationError] = useState('')
 
   const minYear = 1900
@@ -92,7 +92,7 @@ export default function Dashboard({
     // Clear form on successful addition
     setNewYear('')
     setNewPay('')
-    setNewReason('')
+    setNewReason('adjustment')
     setValidationError('')
   }
 

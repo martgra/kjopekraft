@@ -6,6 +6,7 @@ interface ActivityTimelineProps {
   onEdit?: (point: PayPoint) => void
   onRemove?: (year: number, pay: number) => void
   currentYear: number
+  variant?: 'sidebar' | 'drawer'
 }
 
 function formatRelativeTime(year: number, currentYear: number): string {
@@ -28,7 +29,10 @@ export default function ActivityTimeline({
   onEdit,
   onRemove,
   currentYear,
+  variant = 'sidebar',
 }: ActivityTimelineProps) {
+  const testId = variant === 'drawer' ? 'activity-timeline-drawer' : 'activity-timeline'
+
   // Sort by year descending and take the last 5
   const recentPoints = [...payPoints].sort((a, b) => b.year - a.year).slice(0, 5)
 
@@ -40,7 +44,7 @@ export default function ActivityTimeline({
 
   if (recentPoints.length === 0) {
     return (
-      <div className="p-6">
+      <div className="p-6" data-testid={testId}>
         <h3 className="mb-4 font-bold text-[var(--text-main)]">{TEXT.activity.recentActivity}</h3>
         <p className="text-sm text-[var(--text-muted)]">{TEXT.activity.noActivityYet}</p>
       </div>
@@ -48,7 +52,7 @@ export default function ActivityTimeline({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-6">
+    <div className="flex-1 overflow-y-auto p-6" data-testid={testId}>
       <h3 className="mb-4 font-bold text-[var(--text-main)]">{TEXT.activity.recentActivity}</h3>
 
       <div className="relative space-y-6">
@@ -59,6 +63,7 @@ export default function ActivityTimeline({
           <div
             key={point.id || `${point.year}-${point.pay}-${point.reason}`}
             className="group relative pl-6"
+            data-testid={`${testId}-entry`}
           >
             {/* Timeline Dot */}
             <div className="absolute top-1.5 left-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-[var(--primary)]"></div>
