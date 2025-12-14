@@ -150,6 +150,10 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
 
   const currentDescription =
     viewOptions.find(option => option.value === viewMode)?.description ?? TEXT.charts.chartSubtitle
+  const hasReferenceSeries = isReferenceEnabled && referenceSeries.length > 0
+  const hasEventReasons = payPoints.some(
+    point => point.reason === 'promotion' || point.reason === 'newJob',
+  )
 
   return (
     <div
@@ -158,108 +162,86 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
     >
       {/* Header */}
       <div className="border-b border-[var(--border-light)] px-3 py-2.5 md:px-6 md:py-4">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex-1">
-            <h2 className="flex flex-wrap items-center gap-2 text-base font-semibold text-[var(--text-main)] md:gap-3 md:text-lg">
-              <span className="whitespace-nowrap">{TEXT.charts.chartTitle}</span>
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex-1 space-y-3">
+            <h2 className="text-base leading-tight font-semibold text-[var(--text-main)] md:text-lg">
+              <span>{TEXT.charts.chartTitle}</span>
+            </h2>
+
+            {/* View switcher directly under title */}
+            <div className="grid grid-cols-3 gap-1 rounded-lg bg-[var(--color-gray-50)] p-1 shadow-inner md:inline-flex md:w-fit md:gap-0">
+              {viewOptions.map(option => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={cn(
+                    'w-full rounded-md px-2.5 py-2 text-xs font-semibold transition md:w-auto md:px-3 md:py-1.5',
+                    viewMode === option.value
+                      ? 'bg-white text-[var(--primary)] shadow-sm'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-main)]',
+                  )}
+                  aria-pressed={viewMode === option.value}
+                  onClick={() => setViewMode(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Toggles row */}
+            <div className="flex flex-nowrap items-center gap-3">
               <Toggle
                 checked={isNetMode}
                 onChange={onToggleMode}
                 label={isNetMode ? TEXT.charts.modeBadgeNet : TEXT.charts.modeBadgeGross}
                 className="scale-90 md:scale-100"
+                labelClassName="min-w-[110px] text-center whitespace-nowrap text-[11px] md:text-xs"
               />
-            </h2>
-            <p className="mt-1 hidden text-sm text-[var(--text-muted)] md:block">
-              {currentDescription}
-            </p>
+              {viewMode === 'graph' && (
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    data-testid="chart-event-baselines-toggle"
+                    checked={showEventBaselines}
+                    onChange={e => setShowEventBaselines(e.target.checked)}
+                    className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-gray-200 transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-white before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2"
+                    aria-label={TEXT.charts.showEventBaselines}
+                  />
+                  <span className="text-[11px] font-medium text-[var(--text-main)] md:text-xs">
+                    {TEXT.charts.showEventBaselines}
+                  </span>
+                </label>
+              )}
+            </div>
           </div>
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
-            {/* View switcher */}
-            <div className="flex flex-col gap-1">
-              <span className="text-[11px] font-medium tracking-wide text-[var(--text-muted)] uppercase">
-                {TEXT.views.switcherLabel}
-              </span>
-              <div className="inline-flex rounded-lg bg-[var(--color-gray-50)] p-1 shadow-inner">
-                {viewOptions.map(option => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={cn(
-                      'rounded-md px-3 py-1.5 text-xs font-semibold transition',
-                      viewMode === option.value
-                        ? 'bg-white text-[var(--primary)] shadow-sm'
-                        : 'text-[var(--text-muted)] hover:text-[var(--text-main)]',
-                    )}
-                    aria-pressed={viewMode === option.value}
-                    onClick={() => setViewMode(option.value)}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            {/* Reference selector */}
-            <div className="w-full md:w-auto md:min-w-[220px]">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-[var(--text-muted)]">
-                  <span>{TEXT.charts.compareWithOccupation}</span>
-                  <InfoTooltip label={TEXT.charts.referenceHelp} />
-                </div>
-                <Select
-                  id="reference-occupation"
-                  aria-label={TEXT.charts.compareWithOccupation}
-                  value={selectedOccupation}
-                  onChange={handleOccupationChange}
-                  className="text-xs md:text-sm"
-                >
-                  {Object.entries(OCCUPATIONS).map(([key, occupation]) => {
-                    const isStortinget =
-                      (occupation as unknown as { provider?: string }).provider === 'stortinget'
-                    return (
-                      <SelectOption key={key} value={key}>
-                        {occupation.label}
-                        {isStortinget ? '' : ` (${TEXT.charts.averageLabel})`}
-                      </SelectOption>
-                    )
-                  })}
-                  <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
-                </Select>
-                <p className="text-[11px] leading-snug text-[var(--text-muted)] md:text-xs">
-                  {TEXT.charts.referenceHelp}
-                </p>
-              </div>
+          {/* Reference selector */}
+          <div className="w-full min-w-[200px] md:w-auto md:min-w-[240px]">
+            <div className="flex items-center gap-1 text-[11px] font-medium text-[var(--text-muted)]">
+              <span>{TEXT.charts.compareWithOccupation}</span>
+              <InfoTooltip label={TEXT.charts.referenceHelp} />
             </div>
+            <Select
+              id="reference-occupation"
+              aria-label={TEXT.charts.compareWithOccupation}
+              value={selectedOccupation}
+              onChange={handleOccupationChange}
+              className="text-sm md:text-sm"
+            >
+              {Object.entries(OCCUPATIONS).map(([key, occupation]) => {
+                const isStortinget =
+                  (occupation as unknown as { provider?: string }).provider === 'stortinget'
+                return (
+                  <SelectOption key={key} value={key}>
+                    {occupation.label}
+                    {isStortinget ? '' : ` (${TEXT.charts.averageLabel})`}
+                  </SelectOption>
+                )
+              })}
+              <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
+            </Select>
           </div>
         </div>
-
-        {/* Event Baselines Toggle */}
-        {viewMode === 'graph' && (
-          <div
-            className="mt-3 flex items-center gap-2 border-t border-[var(--border-light)] pt-3"
-            data-testid="chart-event-baselines-section"
-          >
-            <label
-              className="flex cursor-pointer items-center gap-2"
-              htmlFor="chart-event-baselines-toggle"
-            >
-              <input
-                id="chart-event-baselines-toggle"
-                data-testid="chart-event-baselines-toggle"
-                type="checkbox"
-                checked={showEventBaselines}
-                onChange={e => setShowEventBaselines(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]"
-              />
-              <span className="text-sm font-medium text-[var(--text-main)]">
-                {TEXT.charts.showEventBaselines}
-              </span>
-            </label>
-            <span className="text-xs text-[var(--text-muted)]">
-              {TEXT.charts.eventBaselinesHelp}
-            </span>
-          </div>
-        )}
 
         {/* API Error Warning */}
         {apiError && (
