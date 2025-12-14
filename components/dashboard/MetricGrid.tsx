@@ -2,6 +2,7 @@ import MetricCard from './MetricCard'
 import type { SalaryStatistics } from '@/domain/salary'
 import { calculateNetIncome } from '@/domain/tax'
 import { TEXT } from '@/lib/constants/text'
+import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
 
 interface MetricGridProps {
   statistics: SalaryStatistics
@@ -63,12 +64,7 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
         title={
           <span className="flex items-center gap-1">
             {TEXT.metrics.realAnnualValue}
-            <span
-              className="material-symbols-outlined cursor-help text-[16px] text-[var(--text-muted)]"
-              title={TEXT.help.realAnnualValue}
-            >
-              info
-            </span>
+            <InfoTooltip label={TEXT.help.realAnnualValue} />
           </span>
         }
         value={Math.round(displayInflationAdjustedPay)}
@@ -87,12 +83,7 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
         title={
           <span className="flex items-center gap-1">
             {TEXT.metrics.yearlyChange}
-            <span
-              className="material-symbols-outlined cursor-help text-[16px] text-[var(--text-muted)]"
-              title={TEXT.help.yearlyChange}
-            >
-              info
-            </span>
+            <InfoTooltip label={TEXT.help.yearlyChange} />
           </span>
         }
         value={`${displayGapPercent >= 0 ? '+' : ''}${displayGapPercent.toFixed(1)}%`}

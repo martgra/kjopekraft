@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { TEXT } from '@/lib/constants/text'
+import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
 
 interface NavItem {
   href: string
@@ -58,13 +59,15 @@ export default function Sidebar() {
 
             if (item.disabled) {
               return (
-                <div key={item.href} className={baseClassName} title={TEXT.sidebar.comingSoon}>
-                  <span className="material-symbols-outlined">{item.icon}</span>
-                  <p className="text-sm font-medium">{label}</p>
-                  <span className="ml-auto rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
-                    {TEXT.sidebar.comingSoon}
-                  </span>
-                </div>
+                <InfoTooltip key={item.href} label={TEXT.sidebar.comingSoon} asChild>
+                  <div className={baseClassName}>
+                    <span className="material-symbols-outlined">{item.icon}</span>
+                    <p className="text-sm font-medium">{label}</p>
+                    <span className="ml-auto rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
+                      {TEXT.sidebar.comingSoon}
+                    </span>
+                  </div>
+                </InfoTooltip>
               )
             }
 
