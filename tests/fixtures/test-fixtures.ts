@@ -15,20 +15,20 @@ export const STORAGE_KEYS = {
  * Test data: standard salary points for testing
  */
 export const TEST_SALARY_POINTS = [
-  { year: 2020, pay: 500000 },
-  { year: 2022, pay: 550000 },
-  { year: 2024, pay: 600000 },
+  { year: 2020, pay: 500000, reason: 'newJob' },
+  { year: 2022, pay: 550000, reason: 'adjustment' },
+  { year: 2024, pay: 600000, reason: 'promotion' },
 ]
 
 /**
  * Demo data matching the application's demo mode
  */
 export const DEMO_SALARY_POINTS = [
-  { year: 2020, pay: 550000 },
-  { year: 2021, pay: 580000 },
-  { year: 2022, pay: 600000 },
-  { year: 2023, pay: 650000 },
-  { year: 2024, pay: 680000 },
+  { year: 2020, pay: 550000, reason: 'newJob' },
+  { year: 2021, pay: 580000, reason: 'adjustment' },
+  { year: 2022, pay: 600000, reason: 'promotion' },
+  { year: 2023, pay: 650000, reason: 'adjustment' },
+  { year: 2024, pay: 680000, reason: 'promotion' },
 ]
 
 /**
@@ -66,17 +66,25 @@ export class DashboardPage {
       .or(this.page.locator('text=Årlig lønnsvekst vs. Inflasjon').locator('..'))
   }
 
-  // Form elements
+  // Form elements - using data-testid for stability
   get yearInput() {
-    return this.page.getByLabel(/år/i).first()
+    return this.page.getByTestId('salary-form-year-input')
   }
 
   get salaryInput() {
-    return this.page.getByLabel(/lønn|beløp/i).first()
+    return this.page.getByTestId('salary-form-amount-input')
   }
 
   get addButton() {
-    return this.page.getByRole('button', { name: /lagre logg|legg til/i })
+    return this.page.getByTestId('salary-form-submit-button')
+  }
+
+  get reasonSelect() {
+    return this.page.getByTestId('salary-form-reason-select')
+  }
+
+  get eventBaselinesToggle() {
+    return this.page.getByTestId('chart-event-baselines-toggle')
   }
 
   // Metrics
@@ -86,11 +94,14 @@ export class DashboardPage {
 
   // Timeline
   get activityTimeline() {
-    return this.page.locator('text=Nylig aktivitet').locator('..')
+    return this.page
+      .getByTestId('activity-timeline')
+      .or(this.page.getByTestId('activity-timeline-drawer'))
+      .first()
   }
 
   getTimelineEntry(year: number) {
-    return this.page.locator(`text=${year}`).first()
+    return this.activityTimeline.getByText(String(year)).first()
   }
 
   // Controls
@@ -139,14 +150,76 @@ export class DashboardPage {
   }
 
   get mobileDrawerTrigger() {
-    return this.page.getByRole('button', { name: /legg til|åpne/i }).first()
+    return this.page.getByRole('button', { name: /åpne datapanel/i })
+  }
+
+  private get mobileDrawerCloseButton() {
+    return this.page.getByRole('button', { name: /lukk/i })
+  }
+
+  private async getFormContainer() {
+    const dialog = this.page.getByRole('dialog')
+    const dialogExists = (await dialog.count()) > 0
+    const isDialogOpen =
+      dialogExists &&
+      (await dialog.evaluate(el => {
+        return el.classList.contains('translate-y-0')
+      }))
+
+    // If drawer exists but isn't open, open it to ensure we target the visible form
+    if (dialogExists && !isDialogOpen && (await this.mobileDrawerTrigger.isVisible())) {
+      await this.mobileDrawerTrigger.click()
+      await expect(dialog).toHaveClass(/translate-y-0/)
+    }
+
+    if (
+      dialogExists &&
+      (await dialog.evaluate(el => {
+        return el.classList.contains('translate-y-0')
+      }))
+    ) {
+      return dialog
+    }
+
+    // Desktop sidebar
+    const sidebar = this.page
+      .getByRole('complementary')
+      .filter({ has: this.page.getByTestId('salary-form-container') })
+    if ((await sidebar.count()) > 0) {
+      return sidebar.first()
+    }
+
+    // Fallback: first visible form container
+    return this.page.getByTestId('salary-form-container').first()
+  }
+
+  async closeDrawerIfOpen() {
+    const dialog = this.page.getByRole('dialog')
+    const dialogExists = (await dialog.count()) > 0
+
+    if (
+      dialogExists &&
+      (await dialog.evaluate(el => {
+        return el.classList.contains('translate-y-0')
+      }))
+    ) {
+      await this.mobileDrawerCloseButton.click()
+      await expect(dialog).toHaveClass(/translate-y-full/)
+    }
   }
 
   // Actions
-  async addSalaryPoint(year: number, salary: number) {
-    await this.yearInput.fill(String(year))
-    await this.salaryInput.fill(String(salary))
-    await this.addButton.click()
+  async addSalaryPoint(
+    year: number,
+    salary: number,
+    reason: 'adjustment' | 'promotion' | 'newJob' = 'adjustment',
+  ) {
+    const formContainer = await this.getFormContainer()
+
+    await formContainer.getByTestId('salary-form-year-input').fill(String(year))
+    await formContainer.getByTestId('salary-form-amount-input').fill(String(salary))
+    await formContainer.getByTestId('salary-form-reason-select').selectOption(reason)
+    await formContainer.getByTestId('salary-form-submit-button').click()
   }
 
   async loadDemoData() {

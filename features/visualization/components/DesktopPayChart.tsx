@@ -4,8 +4,11 @@ import React, { useEffect, useRef } from 'react'
 import Chart from '@/lib/chartjs'
 import type { ChartConfiguration, ScatterDataPoint } from 'chart.js'
 import type { OccupationKey } from '@/features/referenceSalary/occupations'
+import type { PayPoint } from '@/domain/salary'
 import { OCCUPATIONS } from '@/features/referenceSalary/occupations'
 import { TEXT } from '@/lib/constants/text'
+import { createReasonMarkerPlugin } from '../utils/chartMarkers'
+import type { EventBaseline } from '../utils/eventBaselines'
 
 interface DesktopPayChartProps {
   actualSeries: ScatterDataPoint[]
@@ -15,6 +18,8 @@ interface DesktopPayChartProps {
   displayNet: boolean
   occupation?: OccupationKey
   className?: string
+  payPoints: PayPoint[]
+  eventBaselines: EventBaseline[]
 }
 
 export default function DesktopPayChart({
@@ -25,6 +30,8 @@ export default function DesktopPayChart({
   displayNet,
   occupation,
   className = '',
+  payPoints,
+  eventBaselines,
 }: DesktopPayChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const chartRef = useRef<Chart<'line', ScatterDataPoint[], unknown> | null>(null)
@@ -37,8 +44,15 @@ export default function DesktopPayChart({
     const ctx = canvasRef.current.getContext('2d')
     if (!ctx) return
 
+    // Create year → reason map for tooltips
+    const reasonMap = new Map(payPoints.map(p => [p.year, p.reason]))
+
+    // Create emoji marker plugin
+    const markerPlugin = createReasonMarkerPlugin(payPoints, 20)
+
     const config: ChartConfiguration<'line', ScatterDataPoint[], unknown> = {
       type: 'line',
+      plugins: [markerPlugin as any],
       data: {
         datasets: [
           {
@@ -83,6 +97,20 @@ export default function DesktopPayChart({
                 },
               ]
             : []),
+          // Event baselines for promotion/newJob events
+          ...eventBaselines.map(baseline => ({
+            label: baseline.label,
+            data: baseline.data,
+            tension: 0.3,
+            fill: false,
+            backgroundColor: 'transparent',
+            borderColor: baseline.reason === 'promotion' ? '#9333ea' : '#dc2626',
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            spanGaps: true,
+            borderDash: [8, 4],
+          })),
         ],
       },
       options: {
@@ -146,9 +174,12 @@ export default function DesktopPayChart({
             callbacks: {
               title: items => TEXT.charts.yearPrefix + (items[0]?.parsed.x ?? ''),
               label: ctx => {
+                const year = ctx.parsed.x ?? 0
+                const reason = reasonMap.get(year)
+                const reasonText = reason ? ` (${TEXT.activity.reasons[reason]})` : ''
                 return `${ctx.dataset.label}: ${ctx.parsed.y?.toLocaleString('nb-NO', {
                   maximumFractionDigits: 0,
-                })}`
+                })}${reasonText}`
               },
             },
           },
@@ -178,7 +209,16 @@ export default function DesktopPayChart({
       instance.destroy()
       chartRef.current = null
     }
-  }, [actualSeries, inflSeries, referenceSeries, yearRange, displayNet, referenceLabel])
+  }, [
+    actualSeries,
+    inflSeries,
+    referenceSeries,
+    yearRange,
+    displayNet,
+    referenceLabel,
+    payPoints,
+    eventBaselines,
+  ])
 
   return <canvas ref={canvasRef} className={className} />
 }

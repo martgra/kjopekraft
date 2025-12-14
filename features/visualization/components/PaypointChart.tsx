@@ -4,6 +4,7 @@ import React, { useMemo } from 'react'
 import LoadingSpinner from '@/components/ui/common/LoadingSpinner'
 import { calculateNetIncome } from '@/features/tax/taxCalculator'
 import type { PayPoint, YearRange } from '@/domain/salary'
+import type { InflationDataPoint } from '@/domain/inflation'
 import type { ScatterDataPoint } from 'chart.js'
 import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import { TEXT } from '@/lib/constants/text'
@@ -19,6 +20,8 @@ interface PaypointChartProps {
   className?: string
   isLoading?: boolean
   occupation?: OccupationKey
+  inflationData: InflationDataPoint[]
+  showEventBaselines?: boolean
 }
 
 export default function PaypointChart({
@@ -31,6 +34,8 @@ export default function PaypointChart({
   className = '',
   isLoading = false,
   occupation,
+  inflationData,
+  showEventBaselines = true,
 }: PaypointChartProps) {
   // 1) Build the displayed actual series (gross or net):
   const actualSeries: ScatterDataPoint[] = grossActualSeries.map(pt => ({
@@ -81,6 +86,9 @@ export default function PaypointChart({
       displayNet={displayNet}
       occupation={occupation}
       className={className}
+      payPoints={payPoints}
+      inflationData={inflationData}
+      showEventBaselines={showEventBaselines}
     />
   )
 }

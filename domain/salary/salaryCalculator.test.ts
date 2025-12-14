@@ -10,8 +10,8 @@ import type { PayPoint } from './salaryTypes'
 import type { InflationDataPoint } from '@/domain/inflation'
 
 const payPoints: PayPoint[] = [
-  { year: 2020, pay: 500_000 },
-  { year: 2022, pay: 600_000 },
+  { year: 2020, pay: 500_000, reason: 'newJob' },
+  { year: 2022, pay: 600_000, reason: 'promotion' },
 ]
 
 const inflation: InflationDataPoint[] = [

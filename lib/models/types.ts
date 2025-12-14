@@ -1,3 +1,5 @@
+import type { PayChangeReason } from '@/domain/salary'
+
 // Types related to salary and inflation calculations
 
 // Core data types
@@ -5,6 +7,7 @@ export interface PayPoint {
   id?: string
   year: number
   pay: number
+  reason: PayChangeReason
 }
 
 // Calculation results

@@ -13,6 +13,7 @@ export {
 export { buildSalaryTableRows, buildSalaryInsights } from './salaryInsights'
 export { validatePayPoint } from './salaryValidator'
 export type {
+  PayChangeReason,
   PayPoint,
   SalaryDataPoint,
   SalaryStatistics,

@@ -10,6 +10,7 @@ import { TEXT } from '@/lib/constants/text'
 interface RightPanelProps {
   newYear: string
   newPay: string
+  newReason: PayPoint['reason'] | ''
   currentYear: number
   minYear: number
   validationError?: string
@@ -18,6 +19,7 @@ interface RightPanelProps {
   inflationData?: InflationDataPoint[]
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
+  onReasonChange: (reason: PayPoint['reason'] | '') => void
   onAdd: () => void
   onEdit?: (point: PayPoint) => void
   onRemove?: (year: number, pay: number) => void
@@ -27,6 +29,7 @@ interface RightPanelProps {
 export default function RightPanel({
   newYear,
   newPay,
+  newReason,
   currentYear,
   minYear,
   validationError,
@@ -35,6 +38,7 @@ export default function RightPanel({
   inflationData,
   onYearChange,
   onPayChange,
+  onReasonChange,
   onAdd,
   onEdit,
   onRemove,
@@ -65,6 +69,7 @@ export default function RightPanel({
         <SalaryPointForm
           newYear={newYear}
           newPay={newPay}
+          newReason={newReason}
           currentYear={currentYear}
           minYear={minYear}
           validationError={validationError}
@@ -72,6 +77,7 @@ export default function RightPanel({
           inflationData={inflationData}
           onYearChange={onYearChange}
           onPayChange={onPayChange}
+          onReasonChange={onReasonChange}
           onAdd={onAdd}
         />
         <ActivityTimeline
@@ -79,6 +85,7 @@ export default function RightPanel({
           onEdit={onEdit}
           onRemove={onRemove}
           currentYear={currentYear}
+          variant={isMobileDrawer ? 'drawer' : 'sidebar'}
         />
       </div>
     )
@@ -116,6 +123,7 @@ export default function RightPanel({
         <SalaryPointForm
           newYear={newYear}
           newPay={newPay}
+          newReason={newReason}
           currentYear={currentYear}
           minYear={minYear}
           validationError={validationError}
@@ -123,6 +131,7 @@ export default function RightPanel({
           inflationData={inflationData}
           onYearChange={onYearChange}
           onPayChange={onPayChange}
+          onReasonChange={onReasonChange}
           onAdd={onAdd}
         />
         <ActivityTimeline
@@ -130,6 +139,7 @@ export default function RightPanel({
           onEdit={onEdit}
           onRemove={onRemove}
           currentYear={currentYear}
+          variant={isMobileDrawer ? 'drawer' : 'sidebar'}
         />
       </div>
     </div>

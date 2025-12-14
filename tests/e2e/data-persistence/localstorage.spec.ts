@@ -20,9 +20,10 @@ test.describe('Data Persistence', () => {
     // Add a salary point
     const formContainer = isMobile ? page.getByRole('dialog') : page.getByRole('complementary')
 
-    await formContainer.locator('input[placeholder="0"]').fill('550000')
-    await formContainer.locator('input[type="number"]').fill('2023')
-    await formContainer.getByRole('button', { name: /lagre logg/i }).click()
+    await formContainer.getByTestId('salary-form-amount-input').fill('550000')
+    await formContainer.getByTestId('salary-form-year-input').fill('2023')
+    await formContainer.getByTestId('salary-form-reason-select').selectOption('adjustment')
+    await formContainer.getByTestId('salary-form-submit-button').click()
 
     // Verify data is shown
     if (isMobile) {

@@ -1,10 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import type { ScatterDataPoint } from 'chart.js'
 import type { OccupationKey } from '@/features/referenceSalary/occupations'
+import type { PayPoint } from '@/domain/salary'
+import type { InflationDataPoint } from '@/domain/inflation'
 import MobilePayChart from './MobilePayChart'
 import DesktopPayChart from './DesktopPayChart'
+import { calculateEventBaselines } from '../utils/eventBaselines'
 
 interface ResponsiveChartWrapperProps {
   actualSeries: ScatterDataPoint[]
@@ -14,6 +17,9 @@ interface ResponsiveChartWrapperProps {
   displayNet: boolean
   occupation?: OccupationKey
   className?: string
+  payPoints: PayPoint[]
+  inflationData: InflationDataPoint[]
+  showEventBaselines?: boolean
 }
 
 export default function ResponsiveChartWrapper({
@@ -24,6 +30,9 @@ export default function ResponsiveChartWrapper({
   displayNet,
   occupation,
   className = '',
+  payPoints,
+  inflationData,
+  showEventBaselines = true,
 }: ResponsiveChartWrapperProps) {
   const [isMobile, setIsMobile] = useState(false)
 
@@ -33,6 +42,12 @@ export default function ResponsiveChartWrapper({
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // Calculate event baselines for promotion/newJob events (only if enabled)
+  const eventBaselines = useMemo(() => {
+    if (!showEventBaselines || !payPoints.length || !inflationData.length) return []
+    return calculateEventBaselines(payPoints, inflationData, yearRange.maxYear, displayNet)
+  }, [showEventBaselines, payPoints, inflationData, yearRange.maxYear, displayNet])
 
   if (isMobile) {
     return (
@@ -44,6 +59,8 @@ export default function ResponsiveChartWrapper({
         displayNet={displayNet}
         occupation={occupation}
         className={className}
+        payPoints={payPoints}
+        eventBaselines={eventBaselines}
       />
     )
   }
@@ -57,6 +74,8 @@ export default function ResponsiveChartWrapper({
       displayNet={displayNet}
       occupation={occupation}
       className={className}
+      payPoints={payPoints}
+      eventBaselines={eventBaselines}
     />
   )
 }

@@ -1,7 +1,7 @@
-/// <reference types="vitest" />
-
 import { renderHook } from '@testing-library/react'
-import useSWR from 'swr'
+import type { MockedFunction } from 'vitest'
+import useSWR, { type SWRResponse } from 'swr'
+import type { ReferenceSalaryResponse } from '../types'
 import { useReferenceSalary } from './useReferenceSalary'
 
 vi.mock('swr', () => ({
@@ -9,7 +9,19 @@ vi.mock('swr', () => ({
   default: vi.fn(),
 }))
 
-const useSWRMock = vi.mocked(useSWR)
+const useSWRMock = useSWR as unknown as MockedFunction<typeof useSWR>
+
+const createSWRMockResponse = (
+  overrides: Partial<SWRResponse<ReferenceSalaryResponse, Error>> = {},
+) =>
+  ({
+    data: overrides.data ?? undefined,
+    error: overrides.error ?? undefined,
+    mutate: vi.fn<ReturnType<typeof useSWR>['mutate']>(),
+    isValidating: false,
+    isLoading: false,
+    ...overrides,
+  }) as ReturnType<typeof useSWR>
 
 const baseResponse = {
   source: { provider: 'SSB', table: '11418' } as const,
@@ -23,7 +35,7 @@ describe('useReferenceSalary', () => {
   })
 
   it('returns empty data when disabled and does not request', () => {
-    useSWRMock.mockReturnValue({ data: undefined, error: undefined, isLoading: false } as any)
+    useSWRMock.mockReturnValue(createSWRMockResponse())
 
     const { result } = renderHook(() => useReferenceSalary({ enabled: false }))
 
@@ -34,13 +46,14 @@ describe('useReferenceSalary', () => {
   })
 
   it('builds SSB URL with sector and prefers derived yearly series for monthly data', () => {
-    const response = {
+    const response: ReferenceSalaryResponse = {
       ...baseResponse,
-      unit: 'NOK/month' as const,
-      series: [{ year: 2020, value: 10_000, type: 'official' as const }],
-      derived: { yearlyNok: [{ year: 2020, value: 120_000, type: 'official' as const }] },
+      unit: 'NOK/month',
+      reference: {},
+      series: [{ year: 2020, value: 10_000, type: 'official' }],
+      derived: { yearlyNok: [{ year: 2020, value: 120_000, type: 'official' }] },
     }
-    useSWRMock.mockReturnValue({ data: response, error: undefined, isLoading: false } as any)
+    useSWRMock.mockReturnValue(createSWRMockResponse({ data: response }))
 
     const { result } = renderHook(() =>
       useReferenceSalary({ occupation: 'managersMunicipal', fromYear: 2010 }),
@@ -59,15 +72,16 @@ describe('useReferenceSalary', () => {
   })
 
   it('uses provider-specific path and available-from year for Stortinget data', () => {
-    const response = {
+    const response: ReferenceSalaryResponse = {
       ...baseResponse,
-      source: { provider: 'Stortinget', table: 'Lonnsutvikling' } as const,
+      source: { provider: 'Stortinget', table: 'Lonnsutvikling' },
       occupation: { code: 'stortingsrepresentant', label: 'Stortingsrepresentant' },
-      unit: 'NOK/year' as const,
+      unit: 'NOK/year',
+      reference: {},
       filters: {},
-      series: [{ year: 2001, value: 500_000, type: 'official' as const }],
+      series: [{ year: 2001, value: 500_000, type: 'official' }],
     }
-    useSWRMock.mockReturnValue({ data: response, error: undefined, isLoading: false } as any)
+    useSWRMock.mockReturnValue(createSWRMockResponse({ data: response }))
 
     renderHook(() => useReferenceSalary({ occupation: 'stortingsrepresentant', fromYear: 1990 }))
 

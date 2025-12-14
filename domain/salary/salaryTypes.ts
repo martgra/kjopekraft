@@ -2,10 +2,13 @@
  * Salary domain types
  */
 
+export type PayChangeReason = 'adjustment' | 'promotion' | 'newJob'
+
 export interface PayPoint {
   id?: string
   year: number
   pay: number
+  reason: PayChangeReason
 }
 
 export interface SalaryDataPoint {
