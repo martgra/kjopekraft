@@ -12,15 +12,19 @@ export function validatePayPoint(
   inflationData: InflationDataPoint[],
 ): ValidationResult {
   if (!point.year || !point.pay || !point.reason) {
-    return { isValid: false, errorMessage: 'Year, pay, and reason are required' }
+    return {
+      isValid: false,
+      errorMessage: 'Year, pay, and reason are required',
+      errorCode: 'REQUIRED',
+    }
   }
 
   if (point.pay <= 0) {
-    return { isValid: false, errorMessage: 'Pay must be positive' }
+    return { isValid: false, errorMessage: 'Pay must be positive', errorCode: 'PAY_POSITIVE' }
   }
 
   if (!VALID_REASONS.includes(point.reason)) {
-    return { isValid: false, errorMessage: 'Reason must be valid' }
+    return { isValid: false, errorMessage: 'Reason must be valid', errorCode: 'INVALID_REASON' }
   }
 
   // Validate year range based on available inflation data
@@ -32,6 +36,8 @@ export function validatePayPoint(
       return {
         isValid: false,
         errorMessage: `Year must be between ${minYear} and ${maxYear}`,
+        errorCode: 'YEAR_RANGE',
+        details: { minYear, maxYear },
       }
     }
   }
@@ -42,6 +48,7 @@ export function validatePayPoint(
     return {
       isValid: false,
       errorMessage: `You already have a payment for ${point.year}`,
+      errorCode: 'DUPLICATE_YEAR',
     }
   }
 

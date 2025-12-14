@@ -31,6 +31,11 @@ export interface SalaryStatistics {
 export interface ValidationResult {
   isValid: boolean
   errorMessage?: string
+  errorCode?: 'REQUIRED' | 'PAY_POSITIVE' | 'INVALID_REASON' | 'YEAR_RANGE' | 'DUPLICATE_YEAR'
+  details?: {
+    minYear?: number
+    maxYear?: number
+  }
 }
 
 export interface YearRange {

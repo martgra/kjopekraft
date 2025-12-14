@@ -74,6 +74,7 @@ export default function RightPanel({
           minYear={minYear}
           validationError={validationError}
           isNetMode={isNetMode}
+          payPoints={payPoints}
           inflationData={inflationData}
           onYearChange={onYearChange}
           onPayChange={onPayChange}
@@ -128,6 +129,7 @@ export default function RightPanel({
           minYear={minYear}
           validationError={validationError}
           isNetMode={isNetMode}
+          payPoints={payPoints}
           inflationData={inflationData}
           onYearChange={onYearChange}
           onPayChange={onPayChange}

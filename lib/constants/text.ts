@@ -195,6 +195,8 @@ export const TEXT = {
     logSalaryPoint: 'Logg lønnspunkt',
     grossAmount: 'Beløp før skatt',
     netAmount: 'Beløp etter skatt',
+    grossAmountHelp: 'Oppgi årlig bruttolønn i kroner (NOK).',
+    netAmountHelp: 'Oppgi årlig nettolønn i kroner (NOK) etter skatt.',
     yearRange: 'År ({min}-{max})',
     saveLog: 'Lagre logg',
     reasonLabel: 'Hvorfor økte lønnen?',

@@ -2,14 +2,35 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import SalaryPointForm from './SalaryPointForm'
+import { useState } from 'react'
+
+const ControlledForm = () => {
+  const [newPay, setNewPay] = useState('')
+  const [newYear, setNewYear] = useState('')
+  return (
+    <SalaryPointForm
+      newYear={newYear}
+      newPay={newPay}
+      newReason="adjustment"
+      currentYear={2024}
+      minYear={2020}
+      payPoints={[]}
+      onYearChange={setNewYear}
+      onPayChange={setNewPay}
+      onReasonChange={vi.fn()}
+      onAdd={vi.fn()}
+    />
+  )
+}
 
 describe('SalaryPointForm', () => {
   const defaultProps = {
     newYear: '',
     newPay: '',
-    newReason: '' as const,
+    newReason: 'adjustment' as const,
     currentYear: 2024,
     minYear: 2020,
+    payPoints: [],
     onYearChange: vi.fn(),
     onPayChange: vi.fn(),
     onReasonChange: vi.fn(),
@@ -32,13 +53,6 @@ describe('SalaryPointForm', () => {
     expect(reasonSelect.value).toBe('adjustment')
   })
 
-  it('shows empty reason when no default provided', () => {
-    render(<SalaryPointForm {...defaultProps} />)
-
-    const reasonSelect = screen.getByTestId('salary-form-reason-select') as HTMLSelectElement
-    expect(reasonSelect.value).toBe('')
-  })
-
   it('has all three reason options', () => {
     render(<SalaryPointForm {...defaultProps} />)
 
@@ -57,6 +71,30 @@ describe('SalaryPointForm', () => {
     await userEvent.selectOptions(reasonSelect, 'promotion')
 
     expect(onReasonChange).toHaveBeenCalledWith('promotion')
+  })
+
+  it('shows amount help text for gross mode by default', () => {
+    render(<SalaryPointForm {...defaultProps} isNetMode={false} />)
+
+    expect(screen.getByText(/årlig bruttolønn/i)).toBeInTheDocument()
+  })
+
+  it('formats amount with spaces while typing', async () => {
+    render(<ControlledForm />)
+
+    const amountInput = screen.getByTestId('salary-form-amount-input')
+    await userEvent.type(amountInput, '500000')
+
+    expect((amountInput as HTMLInputElement).value).toBe('500 000')
+  })
+
+  it('shows numeric keypad for year input', () => {
+    render(<SalaryPointForm {...defaultProps} />)
+
+    const yearInput = screen.getByTestId('salary-form-year-input')
+    expect(yearInput).toHaveAttribute('inputmode', 'numeric')
+    expect(yearInput).toHaveAttribute('pattern', '[0-9]*')
+    expect(yearInput.getAttribute('type')).toBe('text')
   })
 
   it('calls onYearChange when year is changed', async () => {
@@ -130,5 +168,19 @@ describe('SalaryPointForm', () => {
     render(<SalaryPointForm {...defaultProps} isNetMode={true} />)
 
     expect(screen.getByText(/beløp etter skatt/i)).toBeInTheDocument()
+  })
+
+  it('shows duplicate year warning and disables submit', () => {
+    render(
+      <SalaryPointForm
+        {...defaultProps}
+        newYear="2023"
+        newPay="500000"
+        payPoints={[{ year: 2023, pay: 400000, reason: 'adjustment', id: '1' }]}
+      />,
+    )
+
+    expect(screen.getByText(/allerede lagt til/i)).toBeInTheDocument()
+    expect(screen.getByTestId('salary-form-submit-button')).toBeDisabled()
   })
 })

@@ -46,6 +46,23 @@ export default function Dashboard({
 
   const minYear = 1900
 
+  // Pre-fill the next logical year when user already has data and the field is empty
+  useEffect(() => {
+    if (!payPoints.length || newYear) return
+    const existingYears = payPoints.map(p => p.year)
+    const lastYear = Math.max(...existingYears)
+    let candidate = Math.min(currentYear, lastYear + 1)
+
+    const usedYears = new Set(existingYears)
+    while (usedYears.has(candidate) && candidate <= currentYear) {
+      candidate += 1
+    }
+
+    if (candidate <= currentYear && !usedYears.has(candidate)) {
+      setNewYear(String(candidate))
+    }
+  }, [payPoints, newYear, currentYear])
+
   // Track if we have real user data
   useEffect(() => {
     // If user has data and we're in demo mode, exit demo mode
@@ -76,7 +93,28 @@ export default function Dashboard({
 
     const validation = validatePoint(point)
     if (!validation.isValid) {
-      setValidationError(validation.errorMessage || TEXT.forms.validation.invalidInput)
+      const minAllowedYear = validation.details?.minYear ?? minYear
+      const maxAllowedYear = validation.details?.maxYear ?? currentYear
+      const message = (() => {
+        switch (validation.errorCode) {
+          case 'REQUIRED':
+            return TEXT.forms.validation.required
+          case 'PAY_POSITIVE':
+            return TEXT.forms.validation.payPositive
+          case 'INVALID_REASON':
+            return TEXT.forms.validation.required
+          case 'YEAR_RANGE':
+            return TEXT.forms.validation.yearRange
+              .replace('{min}', String(minAllowedYear))
+              .replace('{max}', String(maxAllowedYear))
+          case 'DUPLICATE_YEAR':
+            return TEXT.forms.validation.yearExists
+          default:
+            return validation.errorMessage || TEXT.forms.validation.invalidInput
+        }
+      })()
+
+      setValidationError(message)
       return
     }
 
@@ -89,9 +127,17 @@ export default function Dashboard({
     }
 
     addPoint(point)
-    // Clear form on successful addition
-    setNewYear('')
-    setNewPay('')
+    const existingYears = new Set(payPoints.map(p => p.year))
+    existingYears.add(point.year)
+    let nextYear = point.year + 1
+    while (existingYears.has(nextYear) && nextYear <= currentYear) {
+      nextYear += 1
+    }
+    const nextYearValue = nextYear <= currentYear ? String(nextYear) : ''
+
+    // Keep amount for quick consecutive entries; reset reason to default per guidance
+    setNewYear(nextYearValue)
+    setNewPay(newPay)
     setNewReason('adjustment')
     setValidationError('')
   }
