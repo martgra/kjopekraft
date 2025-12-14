@@ -19,6 +19,7 @@ describe('validatePayPoint', () => {
     expect(validatePayPoint({ year: 0, pay: 0 } as PayPoint, [], inflationRange)).toEqual({
       isValid: false,
       errorMessage: 'Year, pay, and reason are required',
+      errorCode: 'REQUIRED',
     })
     expect(
       validatePayPoint(
@@ -29,6 +30,7 @@ describe('validatePayPoint', () => {
     ).toEqual({
       isValid: false,
       errorMessage: 'Pay must be positive',
+      errorCode: 'PAY_POSITIVE',
     })
   })
 
@@ -42,6 +44,8 @@ describe('validatePayPoint', () => {
     ).toEqual({
       isValid: false,
       errorMessage: 'Year must be between 2020 and 2021',
+      errorCode: 'YEAR_RANGE',
+      details: { minYear: 2020, maxYear: 2021 },
     })
   })
 
@@ -51,7 +55,11 @@ describe('validatePayPoint', () => {
       existing,
       inflationRange,
     )
-    expect(result).toEqual({ isValid: false, errorMessage: 'You already have a payment for 2020' })
+    expect(result).toEqual({
+      isValid: false,
+      errorMessage: 'You already have a payment for 2020',
+      errorCode: 'DUPLICATE_YEAR',
+    })
   })
 
   it('allows update of same id in same year', () => {
