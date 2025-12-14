@@ -17,7 +17,7 @@
 
     // Stricter type safety options
     // Note: noUncheckedIndexedAccess catches real bugs with array access
-    // Existing code needs gradual fixes - see IMPROVEMENT_PLAN.md Phase 2
+    // Existing code needs gradual fixes; keep enabled as new code is added
     "noUncheckedIndexedAccess": true,
 
     "plugins": [

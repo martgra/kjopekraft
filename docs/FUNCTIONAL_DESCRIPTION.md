@@ -798,4 +798,4 @@ Kjøpekraft provides Norwegian salary earners with:
 The app follows Norwegian business culture and tax regulations, using official government data sources for accuracy.
 
 For technical implementation details, see [ARCHITECTURE.md](ARCHITECTURE.md).  
-For setup instructions, see [GETTING_STARTED.md](GETTING_STARTED.md).
+For setup instructions, see the quick start in `README.md`.

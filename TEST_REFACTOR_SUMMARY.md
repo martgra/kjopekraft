@@ -4,6 +4,8 @@
 
 Implemented industry best practices for test maintainability by adding `data-testid` attributes and separating E2E tests (user journeys) from component tests (fine-grained behavior).
 
+Playwright specs now cover user-facing journeys only; detailed component behavior (defaults, validation, toggles) lives in Vitest alongside the components.
+
 ## Changes Implemented
 
 ### Phase 1: Add data-testid Attributes

@@ -9,6 +9,8 @@ This document outlines the comprehensive test coverage for the new reason-based 
 - **E2E Tests**: 14 new tests + 2 updated tests
 - **Test Success Rate**: 100% (all passing)
 
+Playwright suites now stay at the user-journey level; fine-grained component behavior (field defaults, validation, toggle states) has been moved into Vitest alongside the components.
+
 ## Important Implementation Details
 
 ### 1. Avoiding Duplicate Baselines

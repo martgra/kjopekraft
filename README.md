@@ -1,73 +1,58 @@
-# Kjøpekraft - Salary & Inflation Tracker
+# Kjøpekraft – Salary & Inflation Tracker
 
-A Next.js web application that helps users track their salary development over time and compare it against inflation data. Built specifically for the Norwegian market with accurate tax calculations and SSB (Statistics Norway) integration.
+A Next.js 16 (App Router) web app that helps Norwegian users track salary development, compare against inflation, and prepare negotiation material with SSB-backed data.
 
-## What Does It Do?
+## What It Does
 
-Kjøpekraft allows you to:
-
-- **Track Salary Development**: Add salary data points across multiple years and visualize your income progression
-- **Compare Against Inflation**: See how your purchasing power has changed over time using official Norwegian inflation data
-- **Net vs Gross Mode**: Toggle between gross salary and net income (after Norwegian tax calculations)
-- **Reference Benchmarks**: Compare your salary against industry standards (currently supports nurses with SSB data)
-- **Negotiation Preparation**: Generate professional negotiation emails and playbooks based on your salary data and arguments
-- **Mobile Optimized**: Fully responsive design with mobile-first approach
+- Track salary points across years with net/gross toggle and inflation adjustment
+- Compare against SSB reference salary (nurses, extendable) and view real purchasing power
+- Generate negotiation emails/playbooks (OpenAI key optional)
+- Mobile-first dashboard with responsive charts and persistent localStorage data
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 bun install
-
-# Run development server
 bun dev
-
-# Open http://localhost:3000
+# open http://localhost:3000
 ```
 
-The app will load with an onboarding screen. You can try the demo data or add your own salary information.
+The app loads with onboarding; try demo data or add your own.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router and Server Components
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS with CSS Modules
-- **Charts**: Chart.js
-- **Data Fetching**: SWR
-- **AI Generation**: Vercel AI SDK with OpenAI
-- **Package Manager**: Bun
+- **Next.js** 16 (App Router, RSC) with React 19
+- **TypeScript** 5.9, **Bun** runtime/PM
+- **Tailwind CSS** 4 (CSS variables, light theme)
+- **Chart.js** 4.4, **SWR** 2 for client caching
+- **AI**: `ai` SDK + `@ai-sdk/openai`
 
 ## Documentation
 
-- **[Getting Started](docs/GETTING_STARTED.md)** - Installation, configuration, and development workflow
-- **[Architecture](docs/ARCHITECTURE.md)** - Technical architecture, folder structure, and design patterns
-- **[Functional Description](docs/FUNCTIONAL_DESCRIPTION.md)** - Features, user workflows, and business logic
-- **[CI/CD Pipeline](docs/ci-cd-pipeline.md)** - Quality checks and deployment process
-- **[Reference Salary Implementation](docs/reference-salary-implementation.md)** - SSB integration guide
+- **Architecture**: `docs/ARCHITECTURE.md`
+- **Functional description**: `docs/FUNCTIONAL_DESCRIPTION.md`
+- **Testing** (unit + E2E): `docs/TESTING.md`
+- **Reference salary details (WIP)**: `docs/wip/reference-salary-implementation.md`
 
 ## Project Structure
 
 ```
-/app                 # Next.js App Router pages and API routes
-/components          # Reusable UI components (atoms, molecules, organisms)
-/features            # Feature modules (salary, tax, inflation, visualization, negotiation)
-/contexts            # React context providers (display mode, reference mode)
-/lib                 # Utilities, constants, and shared models
-/docs                # Documentation
+/app          # Routes (App Router) + API handlers
+/components   # Reusable UI (dashboard, layout, ui atoms/molecules/organisms)
+/features     # Feature modules (salary, tax, reference salary, negotiation, onboarding, visualization)
+/contexts     # Global providers (display mode, reference mode, drawer)
+/domain       # Pure business logic (tax/salary/inflation/reference)
+/services     # Server-only data fetching (inflation, storting reference)
+/lib          # Shared utilities, constants, schemas, prompts, chart config
+/docs         # Documentation
 ```
 
-## Features Overview
+## Development Commands
 
-- ✅ Salary tracking with multi-year data entry
-- ✅ Norwegian inflation data integration (SSB)
-- ✅ Accurate Norwegian tax calculations (2024 rates)
-- ✅ Net/Gross salary mode toggle
-- ✅ Reference salary comparison (nurses)
-- ✅ Interactive charts (desktop & mobile optimized)
-- ✅ AI-powered negotiation email & playbook generation
-- ✅ Data persistence in localStorage
-- ✅ Onboarding with demo data
-- ✅ Mobile-first responsive design
+- Dev server: `bun dev` (Turbopack)
+- Build/start: `bun run build` / `bun start`
+- Quality: `bun run lint` · `bun run format:check` · `bun run typecheck`
+- Tests: `bun run test` (Vitest for logic + component behavior) · `bun run test:e2e` (Playwright user journeys only)
 
 ## Development
 
