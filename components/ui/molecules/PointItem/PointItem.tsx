@@ -3,6 +3,7 @@
 import { Icon, Badge } from '@/components/ui/atoms'
 import { cn } from '@/lib/utils/cn'
 import { TEXT } from '@/lib/constants/text'
+import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
 
 export interface PointItemProps {
   index: number
@@ -74,23 +75,25 @@ export function PointItem({
       {/* Action Buttons - Always visible on mobile, hover-reveal on desktop */}
       <div className="flex flex-shrink-0 gap-2 md:opacity-0 md:transition-opacity md:group-hover:opacity-100">
         {onEdit && (
-          <button
-            onClick={onEdit}
-            className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 md:p-1"
-            aria-label={TEXT.common.edit}
-            title={TEXT.common.edit}
-          >
-            <Icon name="edit" size="sm" />
-          </button>
+          <InfoTooltip label={TEXT.common.edit} asChild>
+            <button
+              onClick={onEdit}
+              className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 md:p-1"
+              aria-label={TEXT.common.edit}
+            >
+              <Icon name="edit" size="sm" />
+            </button>
+          </InfoTooltip>
         )}
-        <button
-          onClick={onRemove}
-          className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 md:p-1"
-          aria-label="Fjern punkt"
-          title={TEXT.common.remove}
-        >
-          <Icon name="close" size="sm" />
-        </button>
+        <InfoTooltip label={TEXT.common.remove} asChild>
+          <button
+            onClick={onRemove}
+            className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 md:p-1"
+            aria-label="Fjern punkt"
+          >
+            <Icon name="close" size="sm" />
+          </button>
+        </InfoTooltip>
       </div>
     </div>
   )

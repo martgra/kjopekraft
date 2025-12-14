@@ -1,5 +1,6 @@
 import type { PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
+import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
 
 interface ActivityTimelineProps {
   payPoints: PayPoint[]
@@ -90,24 +91,26 @@ export default function ActivityTimeline({
               {(onEdit || onRemove) && (
                 <div className="flex gap-2 md:opacity-0 md:transition-opacity md:group-hover:opacity-100">
                   {onEdit && (
-                    <button
-                      onClick={() => onEdit(point)}
-                      className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 md:p-1"
-                      title={TEXT.common.edit}
-                      aria-label={TEXT.common.edit}
-                    >
-                      <span className="material-symbols-outlined text-sm">edit</span>
-                    </button>
+                    <InfoTooltip label={TEXT.common.edit} asChild>
+                      <button
+                        onClick={() => onEdit(point)}
+                        className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 md:p-1"
+                        aria-label={TEXT.common.edit}
+                      >
+                        <span className="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                    </InfoTooltip>
                   )}
                   {onRemove && (
-                    <button
-                      onClick={() => onRemove(point.year, point.pay)}
-                      className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 md:p-1"
-                      title={TEXT.common.remove}
-                      aria-label={TEXT.common.remove}
-                    >
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
+                    <InfoTooltip label={TEXT.common.remove} asChild>
+                      <button
+                        onClick={() => onRemove(point.year, point.pay)}
+                        className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 md:p-1"
+                        aria-label={TEXT.common.remove}
+                      >
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </InfoTooltip>
                   )}
                 </div>
               )}

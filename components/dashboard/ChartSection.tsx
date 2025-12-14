@@ -15,6 +15,7 @@ import { viewModes, type ViewMode } from '@/lib/searchParams'
 import { OCCUPATIONS, type OccupationKey } from '@/features/referenceSalary/occupations'
 import { cn } from '@/lib/utils/cn'
 import { filterReferenceByYearRange } from '@/domain/reference'
+import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
 
 interface ChartSectionProps {
   payPoints: PayPoint[]
@@ -203,13 +204,7 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-1 text-[11px] font-medium text-[var(--text-muted)]">
                   <span>{TEXT.charts.compareWithOccupation}</span>
-                  <span
-                    className="material-symbols-outlined text-[16px] text-[var(--text-muted)]"
-                    aria-label={TEXT.charts.referenceHelp}
-                    title={TEXT.charts.referenceHelp}
-                  >
-                    info
-                  </span>
+                  <InfoTooltip label={TEXT.charts.referenceHelp} />
                 </div>
                 <Select
                   id="reference-occupation"
