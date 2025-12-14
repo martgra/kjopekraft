@@ -1,0 +1,14 @@
+# Bun configuration file
+# https://bun.sh/docs/runtime/bunfig
+
+# NOTE: This project uses Vitest for unit tests, not Bun's test runner
+#
+# To run tests correctly:
+# - Unit tests: bun run test (uses Vitest)
+# - E2E tests:  bun run test:e2e (uses Playwright)
+#
+# DO NOT USE: bun test (Bun's native test runner)
+# Use: bun run test instead
+
+[test]
+preload = ["./tests/setupTests.ts"]
