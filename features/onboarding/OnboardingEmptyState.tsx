@@ -11,18 +11,18 @@ interface OnboardingEmptyStateProps {
 const FEATURES = [
   {
     icon: 'trending_up',
-    title: 'Spor lønnsutvikling',
-    description: 'Se hvordan lønnen din har utviklet seg over tid',
+    title: TEXT.onboarding.features.trackSalary.title,
+    description: TEXT.onboarding.features.trackSalary.description,
   },
   {
     icon: 'analytics',
-    title: 'Sammenlign med inflasjon',
-    description: 'Forstå din reelle kjøpekraft',
+    title: TEXT.onboarding.features.compareInflation.title,
+    description: TEXT.onboarding.features.compareInflation.description,
   },
   {
     icon: 'handshake',
-    title: 'Forhandle smartere',
-    description: 'Få innsikt til lønnsforhandlinger',
+    title: TEXT.onboarding.features.negotiate.title,
+    description: TEXT.onboarding.features.negotiate.description,
   },
 ]
 

@@ -24,7 +24,7 @@ test.describe('Onboarding Experience', () => {
 
     // Should show feature cards
     await expect(page.getByText('Spor lønnsutvikling')).toBeVisible()
-    await expect(page.getByText('Sammenlign med inflasjon')).toBeVisible()
+    await expect(page.getByText('Sammenlign med prisstigning')).toBeVisible()
     await expect(page.getByText('Forhandle smartere')).toBeVisible()
   })
 
@@ -45,7 +45,7 @@ test.describe('Onboarding Experience', () => {
 
     // Chart section with title should be visible
     await expect(
-      page.getByRole('heading', { name: /Årlig lønnsvekst vs. Inflasjon/i }),
+      page.getByRole('heading', { name: /Årlig lønnsvekst og prisstigning/i }),
     ).toBeVisible()
 
     // Activity timeline - on mobile it's in the drawer, on desktop it's visible in sidebar

@@ -118,7 +118,7 @@ The main view showing your salary development over time with modern, polished UI
 
 ### 2. Net vs Gross Mode Toggle
 
-Users can switch between viewing gross salary (brutto) and net income after tax (netto).
+Users can switch between viewing salary before tax and salary after tax.
 
 #### User Workflow
 
