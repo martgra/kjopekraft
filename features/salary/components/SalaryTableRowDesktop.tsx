@@ -22,6 +22,8 @@ interface SalaryTableRowDesktopProps {
   isExpanded: boolean
   onToggle: () => void
   powerMode?: 'absolute' | 'percent'
+  positivePowerYears?: number
+  totalYears?: number
 }
 
 export function SalaryTableRowDesktop({
@@ -32,6 +34,8 @@ export function SalaryTableRowDesktop({
   isExpanded,
   onToggle,
   powerMode = 'percent',
+  positivePowerYears,
+  totalYears,
 }: SalaryTableRowDesktopProps) {
   const isPositiveYoY = (row.yoyAbsoluteChange ?? 0) >= 0
   return (
@@ -104,7 +108,13 @@ export function SalaryTableRowDesktop({
               {isExpanded ? TEXT.views.table.collapseDetails : TEXT.views.table.expandDetails}
             </button>
             {isExpanded && (
-              <SalaryRowExpansion row={row} payPoint={payPoint} baselineYear={baselineYear} />
+              <SalaryRowExpansion
+                row={row}
+                payPoint={payPoint}
+                baselineYear={baselineYear}
+                positivePowerYears={positivePowerYears}
+                totalYears={totalYears}
+              />
             )}
           </div>
         </div>

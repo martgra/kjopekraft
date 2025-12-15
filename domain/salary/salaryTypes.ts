@@ -9,6 +9,7 @@ export interface PayPoint {
   year: number
   pay: number
   reason: PayChangeReason
+  note?: string
 }
 
 export interface SalaryDataPoint {

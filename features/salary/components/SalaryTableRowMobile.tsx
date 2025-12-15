@@ -17,6 +17,8 @@ interface SalaryTableRowMobileProps {
   isExpanded: boolean
   onToggle: () => void
   powerMode?: 'absolute' | 'percent'
+  positivePowerYears?: number
+  totalYears?: number
 }
 
 export function SalaryTableRowMobile({
@@ -26,9 +28,22 @@ export function SalaryTableRowMobile({
   isExpanded,
   onToggle,
   powerMode = 'percent',
+  positivePowerYears,
+  totalYears,
 }: SalaryTableRowMobileProps) {
   return (
-    <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-4 shadow-sm">
+    <div className="relative rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-4 shadow-sm">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="absolute top-3 right-3 rounded-full p-1.5 text-[var(--text-muted)] transition hover:text-[var(--primary)]"
+        aria-expanded={isExpanded}
+        aria-label={isExpanded ? TEXT.views.table.collapseDetails : TEXT.views.table.expandDetails}
+      >
+        <span className="material-symbols-outlined text-[18px]">
+          {isExpanded ? 'expand_less' : 'expand_more'}
+        </span>
+      </button>
       <div className="flex items-start gap-3">
         <div className="w-12 pt-1 text-xs font-semibold text-[var(--text-muted)] uppercase">
           <span>{formatDate(row.year)}</span>
@@ -38,7 +53,7 @@ export function SalaryTableRowMobile({
             </Badge>
           )}
         </div>
-        <div className="flex-1 space-y-3">
+        <div className="flex-1 space-y-3 pr-8">
           <div className="flex items-start justify-between gap-2">
             <div className="space-y-1">
               <p className="text-xl leading-tight font-bold text-[var(--text-main)]">
@@ -61,19 +76,17 @@ export function SalaryTableRowMobile({
           </div>
         </div>
       </div>
-      <div className="mt-2">
-        <button
-          type="button"
-          onClick={onToggle}
-          className="text-[11px] font-semibold text-[var(--primary)] hover:underline"
-          aria-expanded={isExpanded}
-        >
-          {isExpanded ? TEXT.views.table.collapseDetails : TEXT.views.table.expandDetails}
-        </button>
-        {isExpanded && (
-          <SalaryRowExpansion row={row} payPoint={payPoint} baselineYear={baselineYear} />
-        )}
-      </div>
+      {isExpanded && (
+        <div className="mt-2">
+          <SalaryRowExpansion
+            row={row}
+            payPoint={payPoint}
+            baselineYear={baselineYear}
+            positivePowerYears={positivePowerYears}
+            totalYears={totalYears}
+          />
+        </div>
+      )}
     </div>
   )
 }

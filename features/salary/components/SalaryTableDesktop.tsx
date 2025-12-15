@@ -12,6 +12,8 @@ interface SalaryTableDesktopProps {
   baselineYear: number | null
   onToggleExpansion: (year: number) => void
   powerMode?: 'absolute' | 'percent'
+  positivePowerYears?: number
+  totalYears?: number
 }
 
 export function SalaryTableDesktop({
@@ -22,6 +24,8 @@ export function SalaryTableDesktop({
   baselineYear,
   onToggleExpansion,
   powerMode = 'percent',
+  positivePowerYears,
+  totalYears,
 }: SalaryTableDesktopProps) {
   const displayRows = useMemo(() => [...rows].sort((a, b) => b.year - a.year), [rows])
 
@@ -51,6 +55,8 @@ export function SalaryTableDesktop({
                 isExpanded={expandedYear === row.year}
                 onToggle={() => onToggleExpansion(row.year)}
                 powerMode={powerMode}
+                positivePowerYears={positivePowerYears}
+                totalYears={totalYears}
               />
             )
           })}

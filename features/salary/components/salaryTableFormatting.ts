@@ -37,7 +37,7 @@ export const purchasingPowerCopy = (delta: number) => {
   if (delta === 0) return TEXT.views.table.purchasingPowerFlat
   const baseText =
     delta > 0 ? TEXT.views.table.purchasingPowerGain : TEXT.views.table.purchasingPowerLoss
-  return `${baseText}`
+  return baseText
 }
 
 export const purchasingPowerSymbol = (delta: number) => {

@@ -48,6 +48,8 @@ export function SalaryTableView({
   // Sorted helpers
   const ascendingRows = useMemo(() => [...rows].sort((a, b) => a.year - b.year), [rows])
   const baselineYear = ascendingRows[0]?.year ?? null
+  const positivePowerYears = rows.filter(r => r.purchasingPowerDelta > 0).length
+  const totalYears = rows.length
 
   const payPointByYear = useMemo(
     () => new Map<number, PayPoint>(payPoints.map(point => [point.year, point])),
@@ -79,6 +81,8 @@ export function SalaryTableView({
         baselineYear={baselineYear}
         onToggleExpansion={toggleExpansion}
         powerMode={powerMode}
+        positivePowerYears={positivePowerYears}
+        totalYears={totalYears}
       />
       <SalaryTableMobile
         rows={rows}
@@ -87,6 +91,8 @@ export function SalaryTableView({
         baselineYear={baselineYear}
         onToggleExpansion={toggleExpansion}
         powerMode={powerMode}
+        positivePowerYears={positivePowerYears}
+        totalYears={totalYears}
       />
     </div>
   )

@@ -10,6 +10,8 @@ interface SalaryTableMobileProps {
   baselineYear: number | null
   onToggleExpansion: (year: number) => void
   powerMode?: 'absolute' | 'percent'
+  positivePowerYears?: number
+  totalYears?: number
 }
 
 export function SalaryTableMobile({
@@ -19,6 +21,8 @@ export function SalaryTableMobile({
   baselineYear,
   onToggleExpansion,
   powerMode = 'percent',
+  positivePowerYears,
+  totalYears,
 }: SalaryTableMobileProps) {
   const displayRows = useMemo(() => [...rows].sort((a, b) => b.year - a.year), [rows])
 
@@ -37,6 +41,8 @@ export function SalaryTableMobile({
             isExpanded={isExpanded}
             onToggle={() => onToggleExpansion(row.year)}
             powerMode={powerMode}
+            positivePowerYears={positivePowerYears}
+            totalYears={totalYears}
           />
         )
       })}
