@@ -7,8 +7,8 @@ export const TEXT = {
     noData: '— Ingen data tilgjengelig',
     save: '💾 Lagre',
     cancel: '❌ Avbryt',
-    edit: '✏️ Endre',
-    remove: '🗑️ Fjern',
+    edit: 'Endre',
+    remove: 'Fjern',
     add: '➕ Legg til',
     year: 'År',
     currency: 'NOK',
@@ -20,6 +20,7 @@ export const TEXT = {
     pts: 'kr',
     close: 'Lukk',
     legend: 'Forklaring',
+    settings: 'Innstillinger',
   },
 
   // Mobile drawer
@@ -94,6 +95,7 @@ export const TEXT = {
     noReference: 'Ingen referanse',
     // Event baselines toggle
     showEventBaselines: 'Vis hendelseslinjer',
+    referenceEnabled: 'Referanse aktiv',
     eventBaselinesHelp: 'Vis linjer som markerer prisstigning fra forfremmelser og jobbskift',
   },
 
@@ -226,6 +228,11 @@ export const TEXT = {
       promotion: 'Forfremmelse',
       newJob: 'Ny jobb',
     },
+    addNote: 'Legg til notat (valgfritt)',
+    hideNote: 'Skjul notat',
+    noteLabel: 'Notat',
+    notePlaceholder: 'Kort beskrivelse (f.eks. “Forfremmet til senior”)',
+    noteHelp: 'Notatet er kun for deg – vises sammen med detaljene for årslønnen.',
   },
 
   // Activity timeline

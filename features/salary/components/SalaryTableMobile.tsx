@@ -12,6 +12,8 @@ interface SalaryTableMobileProps {
   powerMode?: 'absolute' | 'percent'
   positivePowerYears?: number
   totalYears?: number
+  onEditPayPoint?: (point: PayPoint) => void
+  onRemovePayPoint?: (year: number, pay: number) => void
 }
 
 export function SalaryTableMobile({
@@ -23,6 +25,8 @@ export function SalaryTableMobile({
   powerMode = 'percent',
   positivePowerYears,
   totalYears,
+  onEditPayPoint,
+  onRemovePayPoint,
 }: SalaryTableMobileProps) {
   const displayRows = useMemo(() => [...rows].sort((a, b) => b.year - a.year), [rows])
 
@@ -43,6 +47,8 @@ export function SalaryTableMobile({
             powerMode={powerMode}
             positivePowerYears={positivePowerYears}
             totalYears={totalYears}
+            onEditPayPoint={onEditPayPoint}
+            onRemovePayPoint={onRemovePayPoint}
           />
         )
       })}

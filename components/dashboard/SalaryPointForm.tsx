@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
+import { Select, SelectOption } from '@/components/ui/atoms'
 
 interface SalaryPointFormProps {
   newYear: string
   newPay: string
   newReason: PayChangeReason | ''
+  newNote?: string
   currentYear: number
   minYear: number
   payPoints?: PayPoint[]
@@ -18,6 +20,7 @@ interface SalaryPointFormProps {
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
   onReasonChange: (reason: PayChangeReason | '') => void
+  onNoteChange?: (note: string) => void
   onAdd: () => void
 }
 
@@ -25,6 +28,7 @@ export default function SalaryPointForm({
   newYear,
   newPay,
   newReason,
+  newNote = '',
   currentYear,
   minYear,
   payPoints = [],
@@ -32,11 +36,13 @@ export default function SalaryPointForm({
   onYearChange,
   onPayChange,
   onReasonChange,
+  onNoteChange,
   onAdd,
   isNetMode,
   inflationData,
 }: SalaryPointFormProps) {
   const [internalValidationError, setInternalValidationError] = useState<string>('')
+  const [showNote, setShowNote] = useState(() => Boolean(newNote))
   const validationError = externalValidationError || internalValidationError
 
   const yearNum = Number(newYear)
@@ -68,6 +74,12 @@ export default function SalaryPointForm({
     !isPayValid ||
     !isYearInInflationRange ||
     isDuplicateYear
+
+  useEffect(() => {
+    if (newNote && !showNote) {
+      setShowNote(true)
+    }
+  }, [newNote, showNote])
 
   useEffect(() => {
     if (isDuplicateYear) {
@@ -183,12 +195,25 @@ export default function SalaryPointForm({
           >
             {TEXT.forms.reasonLabel}
           </label>
-          <select
+          <Select
             id="salary-reason"
+            value={newReason}
+            onChange={value => onReasonChange(value as PayChangeReason | '')}
+            leftIcon="category"
+            className="bg-[var(--background-light)] text-[var(--text-main)]"
+          >
+            <SelectOption value="">{TEXT.forms.reasonPlaceholder}</SelectOption>
+            <SelectOption value="adjustment">{TEXT.forms.reasonOptions.adjustment}</SelectOption>
+            <SelectOption value="promotion">{TEXT.forms.reasonOptions.promotion}</SelectOption>
+            <SelectOption value="newJob">{TEXT.forms.reasonOptions.newJob}</SelectOption>
+          </Select>
+          <select
+            aria-hidden="true"
+            tabIndex={-1}
+            className="sr-only"
             data-testid="salary-form-reason-select"
             value={newReason}
             onChange={e => onReasonChange(e.target.value as PayChangeReason | '')}
-            className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-base text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
           >
             <option value="">{TEXT.forms.reasonPlaceholder}</option>
             <option value="adjustment">{TEXT.forms.reasonOptions.adjustment}</option>
@@ -196,6 +221,45 @@ export default function SalaryPointForm({
             <option value="newJob">{TEXT.forms.reasonOptions.newJob}</option>
           </select>
           <p className="mt-1 text-xs text-[var(--text-muted)]">{TEXT.forms.reasonHelp}</p>
+        </div>
+
+        {/* Optional note */}
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={() => setShowNote(prev => !prev)}
+            className="flex w-full items-center justify-between rounded-md border border-[var(--border-light)] bg-white px-3 py-2 text-sm font-semibold text-[var(--text-main)] transition hover:bg-[var(--background-light)]"
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px] text-[var(--primary)]">
+                edit_note
+              </span>
+              {showNote ? TEXT.forms.hideNote : TEXT.forms.addNote}
+            </span>
+            <span className="material-symbols-outlined text-[18px] text-[var(--text-muted)]">
+              {showNote ? 'expand_less' : 'expand_more'}
+            </span>
+          </button>
+          {showNote && (
+            <div className="space-y-1">
+              <label
+                htmlFor="salary-note"
+                className="text-xs font-semibold tracking-wide text-[var(--text-muted)] uppercase"
+              >
+                {TEXT.forms.noteLabel}
+              </label>
+              <textarea
+                id="salary-note"
+                data-testid="salary-form-note-input"
+                value={newNote}
+                onChange={e => onNoteChange?.(e.target.value)}
+                placeholder={TEXT.forms.notePlaceholder}
+                rows={3}
+                className="w-full rounded-lg border border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-sm text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
+              />
+              <p className="text-xs text-[var(--text-muted)]">{TEXT.forms.noteHelp}</p>
+            </div>
+          )}
         </div>
 
         {/* Validation Error */}

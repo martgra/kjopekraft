@@ -17,6 +17,9 @@ interface SalaryTableViewProps {
   isNetMode: boolean
   isLoading?: boolean
   powerMode?: 'absolute' | 'percent'
+  onRequestAdd?: () => void
+  onEditPayPoint?: (point: PayPoint) => void
+  onRemovePayPoint?: (year: number, pay: number) => void
 }
 
 export function SalaryTableView({
@@ -26,6 +29,9 @@ export function SalaryTableView({
   isNetMode,
   isLoading = false,
   powerMode = 'percent',
+  onRequestAdd,
+  onEditPayPoint,
+  onRemovePayPoint,
 }: SalaryTableViewProps) {
   const [expandedYear, setExpandedYear] = useState<number | null>(null)
 
@@ -65,8 +71,17 @@ export function SalaryTableView({
 
   if (!rows.length) {
     return (
-      <div className="flex h-full items-center justify-center rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-6 text-sm text-[var(--text-muted)]">
-        {TEXT.dashboard.noDataSubtitle}
+      <div className="flex h-full flex-col items-center justify-center gap-3 rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-6 text-center">
+        <p className="text-sm text-[var(--text-muted)]">{TEXT.dashboard.noDataSubtitle}</p>
+        {onRequestAdd && (
+          <button
+            type="button"
+            onClick={onRequestAdd}
+            className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-600"
+          >
+            {TEXT.forms.logSalaryPoint}
+          </button>
+        )}
       </div>
     )
   }
@@ -83,6 +98,8 @@ export function SalaryTableView({
         powerMode={powerMode}
         positivePowerYears={positivePowerYears}
         totalYears={totalYears}
+        onEditPayPoint={onEditPayPoint}
+        onRemovePayPoint={onRemovePayPoint}
       />
       <SalaryTableMobile
         rows={rows}
@@ -93,6 +110,8 @@ export function SalaryTableView({
         powerMode={powerMode}
         positivePowerYears={positivePowerYears}
         totalYears={totalYears}
+        onEditPayPoint={onEditPayPoint}
+        onRemovePayPoint={onRemovePayPoint}
       />
     </div>
   )

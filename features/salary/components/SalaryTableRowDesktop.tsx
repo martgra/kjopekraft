@@ -24,6 +24,8 @@ interface SalaryTableRowDesktopProps {
   powerMode?: 'absolute' | 'percent'
   positivePowerYears?: number
   totalYears?: number
+  onEditPayPoint?: (point: PayPoint) => void
+  onRemovePayPoint?: (year: number, pay: number) => void
 }
 
 export function SalaryTableRowDesktop({
@@ -36,6 +38,8 @@ export function SalaryTableRowDesktop({
   powerMode = 'percent',
   positivePowerYears,
   totalYears,
+  onEditPayPoint,
+  onRemovePayPoint,
 }: SalaryTableRowDesktopProps) {
   const isPositiveYoY = (row.yoyAbsoluteChange ?? 0) >= 0
   return (
@@ -59,10 +63,36 @@ export function SalaryTableRowDesktop({
       </td>
       <td className="px-5 py-4 align-top">
         {payPoint?.reason ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge size="sm" variant={reasonVariant(payPoint.reason)}>
-              {reasonToLabel(payPoint.reason)}
-            </Badge>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge size="sm" variant={reasonVariant(payPoint.reason)}>
+                {reasonToLabel(payPoint.reason)}
+              </Badge>
+            </div>
+            {(onEditPayPoint || onRemovePayPoint) && (
+              <div className="flex flex-wrap gap-2 text-xs font-semibold text-[var(--text-muted)]">
+                {onEditPayPoint && (
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 rounded-full bg-[var(--color-gray-50)] px-2 py-1 text-[var(--primary)] transition hover:bg-white hover:shadow-sm"
+                    onClick={() => onEditPayPoint(payPoint)}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">edit</span>
+                    {TEXT.common.edit}
+                  </button>
+                )}
+                {onRemovePayPoint && (
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 rounded-full bg-[var(--color-gray-50)] px-2 py-1 text-red-600 transition hover:bg-white hover:shadow-sm"
+                    onClick={() => onRemovePayPoint(payPoint.year, payPoint.pay)}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                    {TEXT.common.remove}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <span className="text-xs text-[var(--text-muted)]">&nbsp;</span>

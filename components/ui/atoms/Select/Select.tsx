@@ -21,6 +21,7 @@ export interface SelectProps {
   leftIcon?: string
   rightIcon?: string
   id?: string
+  dataTestId?: string
   value?: string
   onChange?: (value: string) => void
 }
@@ -31,6 +32,7 @@ export function Select({
   leftIcon,
   rightIcon = 'expand_more',
   id,
+  dataTestId,
   value,
   onChange,
 }: SelectProps) {
@@ -88,6 +90,7 @@ export function Select({
         type="button"
         id={id}
         onClick={() => setIsOpen(!isOpen)}
+        data-testid={dataTestId}
         className={cn(
           'flex w-full items-center justify-between rounded-lg border border-[var(--border-light)] bg-white py-2.5 text-base font-medium text-gray-900',
           'shadow-sm transition-all',
