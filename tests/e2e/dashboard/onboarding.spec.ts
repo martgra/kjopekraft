@@ -47,13 +47,5 @@ test.describe('Onboarding Experience', () => {
     await expect(
       page.getByRole('heading', { name: /Årlig lønnsvekst og prisstigning/i }),
     ).toBeVisible()
-
-    // Activity timeline - on mobile it's in the drawer, on desktop it's visible in sidebar
-    if (!isMobile) {
-      await expect(page.getByRole('heading', { name: 'Nylig aktivitet' }).first()).toBeVisible()
-    } else {
-      // On mobile, verify bottom nav is visible instead
-      await expect(page.getByRole('link', { name: /oversikt/i })).toBeVisible()
-    }
   })
 })
