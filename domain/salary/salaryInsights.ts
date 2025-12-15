@@ -33,6 +33,8 @@ export function buildSalaryTableRows({
     isInterpolated: point.isInterpolated,
   }))
 
+  const baseSalary = displaySeries[0]?.salary ?? 0
+
   return displaySeries.map((point, index) => {
     const previous = index > 0 ? displaySeries[index - 1] : null
     const yoyAbsoluteChange = previous ? point.salary - previous.salary : null
@@ -40,6 +42,9 @@ export function buildSalaryTableRows({
       previous && previous.salary !== 0
         ? roundPercent((yoyAbsoluteChange! / previous.salary) * 100)
         : null
+    const cumulativeChange = point.salary - baseSalary
+    const cumulativePercent =
+      baseSalary !== 0 ? roundPercent((cumulativeChange / baseSalary) * 100) : null
 
     const purchasingPowerDelta = point.salary - point.inflationAdjusted
     const purchasingPowerPercent =
@@ -67,6 +72,8 @@ export function buildSalaryTableRows({
       yoyPercentChange,
       purchasingPowerDelta,
       purchasingPowerPercent,
+      cumulativeChange,
+      cumulativePercent,
       isInterpolated: point.isInterpolated,
       reference: referencePoint
         ? {

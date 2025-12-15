@@ -52,6 +52,8 @@ export interface SalaryTableRow {
   yoyPercentChange: number | null
   purchasingPowerDelta: number
   purchasingPowerPercent: number | null
+  cumulativeChange: number
+  cumulativePercent: number | null
   isInterpolated: boolean
   reference?: {
     value: number | null

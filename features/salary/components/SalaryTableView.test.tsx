@@ -1,4 +1,5 @@
-import { render, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SalaryTableView } from './SalaryTableView'
 import { TEXT } from '@/lib/constants/text'
 import type { SalaryDataPoint, PayPoint } from '@/domain/salary'
@@ -26,8 +27,8 @@ const samplePayPoints: PayPoint[] = [
 ]
 
 describe('SalaryTableView', () => {
-  it('shows inflation comparison vs previous year inside the change column', () => {
-    const { container } = render(
+  it('surfaces purchasing power change in plain language', () => {
+    render(
       <SalaryTableView
         salaryData={sampleSalaryData}
         payPoints={samplePayPoints}
@@ -36,18 +37,16 @@ describe('SalaryTableView', () => {
       />,
     )
 
-    const rows = container.querySelectorAll('tbody tr')
-    expect(rows.length).toBe(2)
-
-    const latestRow = rows[0]
-    expect(latestRow).toHaveTextContent(TEXT.views.table.inflationVsPrev)
-    // 2024 salary 500k vs 2023 inflation-adjusted 380k => +120k / +31.6%
-    expect(latestRow).toHaveTextContent(/\+120\s?000\s?kr/)
-    expect(latestRow).toHaveTextContent(/\+31\.6%/)
+    expect(
+      screen.getAllByText(text => text.includes(TEXT.views.table.purchasingPowerGain))[0],
+    ).toBeInTheDocument()
+    expect(screen.getAllByText(/\+19\.0%/).length).toBeGreaterThan(0)
   })
 
-  it('hides inflation comparison when there is no previous year', () => {
-    const { container } = render(
+  it('reveals cumulative growth on expand', async () => {
+    const user = userEvent.setup()
+
+    render(
       <SalaryTableView
         salaryData={sampleSalaryData}
         payPoints={samplePayPoints}
@@ -55,9 +54,10 @@ describe('SalaryTableView', () => {
       />,
     )
 
-    const rows = container.querySelectorAll('tbody tr')
-    expect(rows.length).toBeGreaterThan(1)
-    const earliestRow = rows[1] as HTMLElement
-    expect(within(earliestRow).queryByText(TEXT.views.table.inflationVsPrev)).toBeNull()
+    const toggle = screen.getAllByRole('button', { name: TEXT.views.table.expandDetails })[0]!
+    await user.click(toggle)
+
+    expect(screen.getAllByText(TEXT.views.table.longTermLabel).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Siden 2023/).length).toBeGreaterThan(0)
   })
 })
