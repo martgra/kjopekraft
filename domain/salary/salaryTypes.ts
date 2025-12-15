@@ -9,6 +9,7 @@ export interface PayPoint {
   year: number
   pay: number
   reason: PayChangeReason
+  note?: string
 }
 
 export interface SalaryDataPoint {
@@ -52,6 +53,8 @@ export interface SalaryTableRow {
   yoyPercentChange: number | null
   purchasingPowerDelta: number
   purchasingPowerPercent: number | null
+  cumulativeChange: number
+  cumulativePercent: number | null
   isInterpolated: boolean
   reference?: {
     value: number | null
