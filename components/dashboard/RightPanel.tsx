@@ -5,6 +5,7 @@ import SalaryPointForm from './SalaryPointForm'
 import type { PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { TEXT } from '@/lib/constants/text'
+import { createTestId } from '@/lib/testing/testIds'
 
 interface RightPanelProps {
   newYear: string
@@ -44,6 +45,7 @@ export default function RightPanel({
   isMobileDrawer = false,
 }: RightPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const testId = createTestId('dashboard-right-panel')
 
   // Collapse on mobile by default (only when NOT in drawer), expand on desktop
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function RightPanel({
   // If rendering in mobile drawer, skip the collapsible wrapper
   if (isMobileDrawer) {
     return (
-      <div className="flex h-full flex-col">
+      <div className="flex h-full flex-col" data-testid={testId('drawer')}>
         <SalaryPointForm
           newYear={newYear}
           newPay={newPay}
@@ -91,7 +93,7 @@ export default function RightPanel({
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col" data-testid={testId('desktop')}>
       {/* Collapsible toggle button - only visible on mobile */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}

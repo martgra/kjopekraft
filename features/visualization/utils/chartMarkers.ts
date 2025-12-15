@@ -1,5 +1,5 @@
 import type { PayPoint, PayChangeReason } from '@/domain/salary'
-import type { Chart } from 'chart.js'
+import type { Chart, Plugin } from 'chart.js'
 
 export const REASON_EMOJI: Record<PayChangeReason, string | null> = {
   promotion: '🎖️',
@@ -7,7 +7,10 @@ export const REASON_EMOJI: Record<PayChangeReason, string | null> = {
   adjustment: null,
 }
 
-export function createReasonMarkerPlugin(payPoints: PayPoint[], fontSize: number = 20) {
+export function createReasonMarkerPlugin(
+  payPoints: PayPoint[],
+  fontSize: number = 20,
+): Plugin<'line'> {
   const reasonMap = new Map(payPoints.map(p => [p.year, p.reason]))
 
   return {

@@ -5,6 +5,7 @@ import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 import { Select, SelectOption } from '@/components/ui/atoms'
+import { createTestId } from '@/lib/testing/testIds'
 
 interface SalaryPointFormProps {
   newYear: string
@@ -44,6 +45,7 @@ export default function SalaryPointForm({
   const [internalValidationError, setInternalValidationError] = useState<string>('')
   const [showNote, setShowNote] = useState(() => Boolean(newNote))
   const validationError = externalValidationError || internalValidationError
+  const testId = createTestId('salary-form')
 
   const yearNum = Number(newYear)
   const payNum = Number(newPay.replace(/\s/g, ''))
@@ -125,7 +127,7 @@ export default function SalaryPointForm({
   ])
 
   return (
-    <div className="border-b border-[var(--border-light)] p-6" data-testid="salary-form-container">
+    <div className="border-b border-[var(--border-light)] p-6" data-testid={testId('container')}>
       <div className="mb-4 flex items-center gap-2">
         <span className="material-symbols-outlined text-[var(--primary)]">add_circle</span>
         <h3 className="text-base font-bold text-[var(--text-main)]">{TEXT.forms.logSalaryPoint}</h3>
@@ -134,7 +136,7 @@ export default function SalaryPointForm({
       <form
         className="flex flex-col gap-4"
         onSubmit={e => e.preventDefault()}
-        data-testid="salary-form"
+        data-testid={testId()}
       >
         {/* Amount Field */}
         <div>
@@ -150,7 +152,7 @@ export default function SalaryPointForm({
             </div>
             <input
               id="salary-amount"
-              data-testid="salary-form-amount-input"
+              data-testid={testId('amount-input')}
               type="text"
               inputMode="numeric"
               value={newPay}
@@ -176,7 +178,7 @@ export default function SalaryPointForm({
           </label>
           <input
             id="salary-year"
-            data-testid="salary-form-year-input"
+            data-testid={testId('year-input')}
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
@@ -211,7 +213,7 @@ export default function SalaryPointForm({
             aria-hidden="true"
             tabIndex={-1}
             className="sr-only"
-            data-testid="salary-form-reason-select"
+            data-testid={testId('reason-select')}
             value={newReason}
             onChange={e => onReasonChange(e.target.value as PayChangeReason | '')}
           >
@@ -250,7 +252,7 @@ export default function SalaryPointForm({
               </label>
               <textarea
                 id="salary-note"
-                data-testid="salary-form-note-input"
+                data-testid={testId('note-input')}
                 value={newNote}
                 onChange={e => onNoteChange?.(e.target.value)}
                 placeholder={TEXT.forms.notePlaceholder}
@@ -272,7 +274,7 @@ export default function SalaryPointForm({
         {/* Submit Button */}
         <button
           type="button"
-          data-testid="salary-form-submit-button"
+          data-testid={testId('submit-button')}
           onClick={onAdd}
           disabled={disabled}
           className="mt-2 flex w-full justify-center rounded-lg border border-transparent bg-[var(--primary)] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:outline-none disabled:opacity-50"

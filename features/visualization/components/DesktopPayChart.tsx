@@ -52,7 +52,7 @@ export default function DesktopPayChart({
 
     const config: ChartConfiguration<'line', ScatterDataPoint[], unknown> = {
       type: 'line',
-      plugins: [markerPlugin as any],
+      plugins: [markerPlugin],
       data: {
         datasets: [
           {

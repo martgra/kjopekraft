@@ -9,6 +9,8 @@ import { defineConfig, devices } from '@playwright/test'
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+const PLAYWRIGHT_PORT = process.env.PLAYWRIGHT_PORT || '3000'
+
 export default defineConfig({
   testDir: './tests/e2e',
   /* Run tests in files in parallel */
@@ -47,8 +49,13 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: process.env.CI ? 'npm run dev' : 'bun run dev',
-    url: 'http://localhost:3000',
+    // Default to Node for stability; opt into Bun via PLAYWRIGHT_USE_BUN=true
+    command:
+      process.env.CI || process.env.PLAYWRIGHT_USE_BUN !== 'true' ? 'npm run dev' : 'bun run dev',
+    url: `http://localhost:${PLAYWRIGHT_PORT}`,
+    env: {
+      PORT: PLAYWRIGHT_PORT,
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 120000, // 2 minutes to start the server
     stdout: 'ignore',

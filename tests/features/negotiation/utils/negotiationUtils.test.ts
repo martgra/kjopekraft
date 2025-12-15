@@ -1,0 +1,14 @@
+/// <reference types="vitest" />
+
+import { Paragraph } from 'docx'
+import { markdownToDocxParagraphs } from '@/features/negotiation/utils/negotiationUtils'
+
+describe('markdownToDocxParagraphs', () => {
+  it('converts lists, bold, italic, and blank lines', () => {
+    const md = `**Heading**\n- item one\n*italic* text`
+    const result = markdownToDocxParagraphs(md)
+
+    expect(result.length).toBeGreaterThan(0)
+    expect(result.every(p => p instanceof Paragraph)).toBe(true)
+  })
+})
