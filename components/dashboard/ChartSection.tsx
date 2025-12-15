@@ -22,9 +22,20 @@ interface ChartSectionProps {
   inflationData: InflationDataPoint[]
   isNetMode: boolean
   onToggleMode: () => void
+  onRequestAdd?: () => void
+  onEditPayPoint?: (point: PayPoint) => void
+  onRemovePayPoint?: (year: number, pay: number) => void
 }
 
-function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: ChartSectionProps) {
+function ChartSection({
+  payPoints,
+  inflationData,
+  isNetMode,
+  onToggleMode,
+  onRequestAdd,
+  onEditPayPoint,
+  onRemovePayPoint,
+}: ChartSectionProps) {
   const { isReferenceEnabled, toggleReference } = useReferenceMode()
   const [selectedOccupation, setSelectedOccupation] = useState<OccupationKey | 'none'>('none')
   const [apiError, setApiError] = useState<string | null>(null)
@@ -36,6 +47,7 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
     }
     return false
   })
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [viewMode, setViewMode] = useQueryState<ViewMode>(
     'view',
     parseAsStringLiteral(viewModes).withDefault('graph'),
@@ -117,6 +129,9 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
           referenceData={isReferenceEnabled ? filteredReferenceData : []}
           isNetMode={isNetMode}
           isLoading={isLoading}
+          onRequestAdd={onRequestAdd}
+          onEditPayPoint={onEditPayPoint}
+          onRemovePayPoint={onRemovePayPoint}
         />
       )
     }
@@ -187,59 +202,70 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
                 </button>
               ))}
             </div>
+          </div>
+          <div className="flex items-start justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setIsSettingsOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 text-xs font-semibold text-[var(--text-main)] shadow-sm transition hover:bg-[var(--color-gray-50)]"
+            >
+              <span className="material-symbols-outlined text-[18px] text-[var(--text-muted)]">
+                tune
+              </span>
+              {TEXT.common.settings ?? 'Innstillinger'}
+            </button>
+          </div>
+        </div>
 
-            {/* Toggles row */}
-            <div className="flex flex-nowrap items-center gap-3">
-              <Toggle
-                checked={isNetMode}
-                onChange={onToggleMode}
-                label={isNetMode ? TEXT.charts.modeBadgeNet : TEXT.charts.modeBadgeGross}
-                className="scale-90 md:scale-100"
-                labelClassName="min-w-[110px] text-center whitespace-nowrap text-[11px] md:text-xs"
-              />
-              {viewMode === 'graph' && (
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    data-testid="chart-event-baselines-toggle"
-                    checked={showEventBaselines}
-                    onChange={e => setShowEventBaselines(e.target.checked)}
-                    className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-gray-200 transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-white before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2"
-                    aria-label={TEXT.charts.showEventBaselines}
-                  />
-                  <span className="text-[11px] font-medium text-[var(--text-main)] md:text-xs">
-                    {TEXT.charts.showEventBaselines}
-                  </span>
-                </label>
-              )}
-            </div>
+        {/* Quick controls row */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Toggle
+              checked={isNetMode}
+              onChange={onToggleMode}
+              label={isNetMode ? TEXT.charts.modeBadgeNet : TEXT.charts.modeBadgeGross}
+              className="scale-90 md:scale-100"
+              labelClassName="min-w-[110px] text-center whitespace-nowrap text-[11px] md:text-xs"
+            />
+            {viewMode === 'graph' && (
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  data-testid="chart-event-baselines-toggle"
+                  checked={showEventBaselines}
+                  onChange={e => setShowEventBaselines(e.target.checked)}
+                  className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-gray-200 transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-white before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2"
+                  aria-label={TEXT.charts.showEventBaselines}
+                />
+                <span className="text-[11px] font-medium text-[var(--text-main)] md:text-xs">
+                  {TEXT.charts.showEventBaselines}
+                </span>
+              </label>
+            )}
           </div>
 
-          {/* Reference selector */}
-          <div className="w-full min-w-[200px] md:w-auto md:min-w-[240px]">
-            <div className="flex items-center gap-1 text-[11px] font-medium text-[var(--text-muted)]">
-              <span>{TEXT.charts.compareWithOccupation}</span>
-              <InfoTooltip label={TEXT.charts.referenceHelp} />
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="w-full min-w-[180px] md:w-auto md:min-w-[220px]">
+              <Select
+                id="reference-occupation"
+                aria-label={TEXT.charts.compareWithOccupation}
+                value={selectedOccupation}
+                onChange={handleOccupationChange}
+                className="text-sm md:text-sm"
+              >
+                {Object.entries(OCCUPATIONS).map(([key, occupation]) => {
+                  const isStortinget =
+                    (occupation as unknown as { provider?: string }).provider === 'stortinget'
+                  return (
+                    <SelectOption key={key} value={key}>
+                      {occupation.label}
+                      {isStortinget ? '' : ` (${TEXT.charts.averageLabel})`}
+                    </SelectOption>
+                  )
+                })}
+                <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
+              </Select>
             </div>
-            <Select
-              id="reference-occupation"
-              aria-label={TEXT.charts.compareWithOccupation}
-              value={selectedOccupation}
-              onChange={handleOccupationChange}
-              className="text-sm md:text-sm"
-            >
-              {Object.entries(OCCUPATIONS).map(([key, occupation]) => {
-                const isStortinget =
-                  (occupation as unknown as { provider?: string }).provider === 'stortinget'
-                return (
-                  <SelectOption key={key} value={key}>
-                    {occupation.label}
-                    {isStortinget ? '' : ` (${TEXT.charts.averageLabel})`}
-                  </SelectOption>
-                )
-              })}
-              <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
-            </Select>
           </div>
         </div>
 
@@ -256,6 +282,110 @@ function ChartSection({ payPoints, inflationData, isNetMode, onToggleMode }: Cha
 
       {/* Content */}
       <div className="relative min-h-0 w-full flex-1 p-2 md:p-6">{renderContent()}</div>
+
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-4 shadow-2xl md:p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[var(--primary)]">tune</span>
+                <h3 className="text-base font-bold text-[var(--text-main)]">
+                  {TEXT.common.settings ?? 'Innstillinger'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSettingsOpen(false)}
+                className="rounded-full p-2 text-[var(--text-muted)] hover:bg-[var(--color-gray-50)]"
+                aria-label={TEXT.common.close}
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] px-3 py-2.5">
+                <div>
+                  <p className="text-sm font-semibold text-[var(--text-main)]">
+                    {TEXT.charts.modeBadgeGross} / {TEXT.charts.modeBadgeNet}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {TEXT.views.analysisDescription}
+                  </p>
+                </div>
+                <Toggle
+                  checked={isNetMode}
+                  onChange={onToggleMode}
+                  label={isNetMode ? TEXT.charts.modeBadgeNet : TEXT.charts.modeBadgeGross}
+                  className="scale-90 md:scale-100"
+                  labelClassName="min-w-[110px] text-center whitespace-nowrap text-[11px] md:text-xs"
+                />
+              </div>
+
+              <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] px-3 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--text-main)]">
+                      {TEXT.charts.showEventBaselines}
+                    </p>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      Gjelder grafvisning; markerer hendelser som forfremmelser.
+                    </p>
+                  </div>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      data-testid="chart-event-baselines-toggle"
+                      checked={showEventBaselines}
+                      onChange={e => setShowEventBaselines(e.target.checked)}
+                      className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-gray-200 transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-white before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2"
+                      aria-label={TEXT.charts.showEventBaselines}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="space-y-2 rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-[var(--text-main)]">
+                      {TEXT.charts.compareWithOccupation}
+                    </span>
+                    <InfoTooltip label={TEXT.charts.referenceHelp} />
+                  </div>
+                  {hasReferenceSeries && (
+                    <span className="rounded-full bg-[var(--primary)]/10 px-2 py-1 text-[11px] font-semibold text-[var(--primary)]">
+                      {TEXT.charts.referenceEnabled}
+                    </span>
+                  )}
+                </div>
+                <Select
+                  id="reference-occupation"
+                  aria-label={TEXT.charts.compareWithOccupation}
+                  value={selectedOccupation}
+                  onChange={handleOccupationChange}
+                  className="text-sm md:text-sm"
+                >
+                  {Object.entries(OCCUPATIONS).map(([key, occupation]) => {
+                    const isStortinget =
+                      (occupation as unknown as { provider?: string }).provider === 'stortinget'
+                    return (
+                      <SelectOption key={key} value={key}>
+                        {occupation.label}
+                        {isStortinget ? '' : ` (${TEXT.charts.averageLabel})`}
+                      </SelectOption>
+                    )
+                  })}
+                  <SelectOption value="none">{TEXT.charts.noReference}</SelectOption>
+                </Select>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Velg referanselønn uavhengig av visning – brukes i graf, tabell og analyse.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

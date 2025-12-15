@@ -92,18 +92,6 @@ export class DashboardPage {
     return this.page.locator('text=Total årslønn').locator('..')
   }
 
-  // Timeline
-  get activityTimeline() {
-    return this.page
-      .getByTestId('activity-timeline')
-      .or(this.page.getByTestId('activity-timeline-drawer'))
-      .first()
-  }
-
-  getTimelineEntry(year: number) {
-    return this.activityTimeline.getByText(String(year)).first()
-  }
-
   // Controls
   get netGrossToggle() {
     return this.page.getByRole('switch').or(this.page.locator('input[type="checkbox"]')).first()

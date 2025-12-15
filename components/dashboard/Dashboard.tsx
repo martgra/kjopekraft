@@ -6,11 +6,13 @@ import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import MetricGrid from './MetricGrid'
 import ChartSection from './ChartSection'
 import RightPanel from './RightPanel'
+import SalaryPointForm from './SalaryPointForm'
 import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
 import { DEMO_PAY_POINTS } from '@/features/onboarding/demoData'
 import { calculateNetIncome } from '@/domain/tax'
+import { validatePayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
@@ -31,17 +33,22 @@ export default function Dashboard({
   onDrawerOpen,
   onDrawerClose,
 }: DashboardProps) {
-  const { payPoints, statistics, hasData, addPoint, removePoint, validatePoint, isLoading, error } =
-    useSalaryData(inflationData, currentYear)
+  const { payPoints, statistics, hasData, addPoint, removePoint, isLoading, error } = useSalaryData(
+    inflationData,
+    currentYear,
+  )
 
   const { isNetMode, toggleMode } = useDisplayMode()
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [isMetricsExpanded, setIsMetricsExpanded] = useState(false)
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false)
+  const [editingPoint, setEditingPoint] = useState<PayPoint | null>(null)
 
   // Form state
   const [newYear, setNewYear] = useState('')
   const [newPay, setNewPay] = useState('')
   const [newReason, setNewReason] = useState<PayChangeReason | ''>('adjustment')
+  const [newNote, setNewNote] = useState('')
   const [validationError, setValidationError] = useState('')
 
   const minYear = 1900
@@ -71,6 +78,13 @@ export default function Dashboard({
     }
   }, [hasData, isDemoMode])
 
+  // Clear editing state when overlays are closed
+  useEffect(() => {
+    if (!isDrawerOpen && !isFormModalOpen) {
+      setEditingPoint(null)
+    }
+  }, [isDrawerOpen, isFormModalOpen])
+
   const handleLoadDemo = () => {
     // Clear any existing data first
     localStorage.removeItem('salary-calculator-points')
@@ -89,9 +103,13 @@ export default function Dashboard({
       year: Number(newYear),
       pay: Number(newPay.replace(/\s/g, '')),
       reason: newReason,
+      note: newNote.trim() || undefined,
     }
 
-    const validation = validatePoint(point)
+    const existingForValidation = editingPoint
+      ? payPoints.filter(p => !(p.year === editingPoint.year && p.pay === editingPoint.pay))
+      : payPoints
+    const validation = validatePayPoint(point, existingForValidation, inflationData)
     if (!validation.isValid) {
       const minAllowedYear = validation.details?.minYear ?? minYear
       const maxAllowedYear = validation.details?.maxYear ?? currentYear
@@ -126,6 +144,11 @@ export default function Dashboard({
       // on the next render cycle, picking up the cleared state
     }
 
+    // Replace original point if editing
+    if (editingPoint) {
+      removePoint(editingPoint.year, editingPoint.pay)
+    }
+
     addPoint(point)
     const existingYears = new Set(payPoints.map(p => p.year))
     existingYears.add(point.year)
@@ -139,7 +162,22 @@ export default function Dashboard({
     setNewYear(nextYearValue)
     setNewPay(newPay)
     setNewReason('adjustment')
+    setNewNote('')
     setValidationError('')
+    setEditingPoint(null)
+
+    if (isFormModalOpen) {
+      setIsFormModalOpen(false)
+    }
+  }
+
+  const openForm = () => {
+    // On mobile, reuse the drawer; on desktop, open the modal overlay
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      onDrawerOpen()
+    } else {
+      setIsFormModalOpen(true)
+    }
   }
 
   const handleEditPoint = (point: PayPoint) => {
@@ -147,10 +185,11 @@ export default function Dashboard({
     setNewYear(String(point.year))
     setNewPay(String(point.pay))
     setNewReason(point.reason)
+    setNewNote(point.note ?? '')
     setValidationError('')
+    setEditingPoint(point)
 
-    // Remove the point so user can edit and re-add it
-    removePoint(point.year, point.pay)
+    openForm()
   }
 
   const handleRemovePoint = (year: number, pay: number) => {
@@ -185,6 +224,7 @@ export default function Dashboard({
     <RightPanel
       newYear={newYear}
       newPay={newPay}
+      newNote={newNote}
       currentYear={currentYear}
       minYear={minYear}
       validationError={validationError}
@@ -195,9 +235,8 @@ export default function Dashboard({
       onYearChange={setNewYear}
       onPayChange={setNewPay}
       onReasonChange={value => setNewReason(value)}
+      onNoteChange={setNewNote}
       onAdd={handleAddPoint}
-      onEdit={handleEditPoint}
-      onRemove={handleRemovePoint}
       isMobileDrawer={isDrawerOpen}
     />
   )
@@ -354,6 +393,9 @@ export default function Dashboard({
                   inflationData={inflationData}
                   isNetMode={isNetMode}
                   onToggleMode={toggleMode}
+                  onRequestAdd={openForm}
+                  onEditPayPoint={handleEditPoint}
+                  onRemovePayPoint={handleRemovePoint}
                 />
               </Suspense>
             </div>
@@ -362,6 +404,47 @@ export default function Dashboard({
           )}
         </div>
       </DashboardLayout>
+
+      {isFormModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--border-light)] px-5 py-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[var(--primary)]">add_circle</span>
+                <h3 className="text-base font-bold text-[var(--text-main)]">
+                  {TEXT.forms.logSalaryPoint}
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsFormModalOpen(false)}
+                className="rounded-full p-2 text-[var(--text-muted)] hover:bg-gray-100"
+                aria-label={TEXT.common.close}
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+            <div className="max-h-[80vh] overflow-y-auto">
+              <SalaryPointForm
+                newYear={newYear}
+                newPay={newPay}
+                newReason={newReason}
+                newNote={newNote}
+                currentYear={currentYear}
+                minYear={minYear}
+                validationError={validationError}
+                isNetMode={isNetMode}
+                payPoints={payPoints}
+                inflationData={inflationData}
+                onYearChange={setNewYear}
+                onPayChange={setNewPay}
+                onReasonChange={value => setNewReason(value)}
+                onNoteChange={setNewNote}
+                onAdd={handleAddPoint}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

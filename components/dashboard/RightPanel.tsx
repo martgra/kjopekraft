@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import SalaryPointForm from './SalaryPointForm'
-import ActivityTimeline from './ActivityTimeline'
 import type { PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { TEXT } from '@/lib/constants/text'
@@ -11,6 +10,7 @@ interface RightPanelProps {
   newYear: string
   newPay: string
   newReason: PayPoint['reason'] | ''
+  newNote?: string
   currentYear: number
   minYear: number
   validationError?: string
@@ -20,9 +20,8 @@ interface RightPanelProps {
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
   onReasonChange: (reason: PayPoint['reason'] | '') => void
+  onNoteChange?: (note: string) => void
   onAdd: () => void
-  onEdit?: (point: PayPoint) => void
-  onRemove?: (year: number, pay: number) => void
   isMobileDrawer?: boolean
 }
 
@@ -30,6 +29,7 @@ export default function RightPanel({
   newYear,
   newPay,
   newReason,
+  newNote,
   currentYear,
   minYear,
   validationError,
@@ -39,9 +39,8 @@ export default function RightPanel({
   onYearChange,
   onPayChange,
   onReasonChange,
+  onNoteChange,
   onAdd,
-  onEdit,
-  onRemove,
   isMobileDrawer = false,
 }: RightPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -75,19 +74,18 @@ export default function RightPanel({
           validationError={validationError}
           isNetMode={isNetMode}
           payPoints={payPoints}
+          newNote={newNote}
           inflationData={inflationData}
           onYearChange={onYearChange}
           onPayChange={onPayChange}
           onReasonChange={onReasonChange}
+          onNoteChange={onNoteChange}
           onAdd={onAdd}
         />
-        <ActivityTimeline
-          payPoints={payPoints}
-          onEdit={onEdit}
-          onRemove={onRemove}
-          currentYear={currentYear}
-          variant={isMobileDrawer ? 'drawer' : 'sidebar'}
-        />
+        <div className="border-t border-[var(--border-light)] px-6 py-4">
+          <h3 className="mb-2 font-bold text-[var(--text-main)]">{TEXT.activity.recentActivity}</h3>
+          <p className="text-sm text-[var(--text-muted)]">{TEXT.activity.noActivityYet}</p>
+        </div>
       </div>
     )
   }
@@ -130,19 +128,18 @@ export default function RightPanel({
           validationError={validationError}
           isNetMode={isNetMode}
           payPoints={payPoints}
+          newNote={newNote}
           inflationData={inflationData}
           onYearChange={onYearChange}
           onPayChange={onPayChange}
           onReasonChange={onReasonChange}
+          onNoteChange={onNoteChange}
           onAdd={onAdd}
         />
-        <ActivityTimeline
-          payPoints={payPoints}
-          onEdit={onEdit}
-          onRemove={onRemove}
-          currentYear={currentYear}
-          variant={isMobileDrawer ? 'drawer' : 'sidebar'}
-        />
+        <div className="border-t border-[var(--border-light)] px-6 py-4">
+          <h3 className="mb-2 font-bold text-[var(--text-main)]">{TEXT.activity.recentActivity}</h3>
+          <p className="text-sm text-[var(--text-muted)]">{TEXT.activity.noActivityYet}</p>
+        </div>
       </div>
     </div>
   )
