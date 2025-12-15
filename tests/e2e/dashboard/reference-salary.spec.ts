@@ -39,16 +39,21 @@ test.describe('Reference salary (Stortinget)', () => {
     await page.getByRole('button', { name: /prøv med eksempeldata/i }).click()
     await expect(page.locator('canvas')).toBeVisible()
 
+    await page.getByTestId('chart-section-open-settings').click()
+    await expect(page.getByTestId('chart-settings-modal-container')).toBeVisible()
+
     // Open occupation selector and choose Stortingsrepresentant
-    await page.getByRole('button', { name: /referanse|ingen referanse/i }).click()
+    await page.getByTestId('chart-settings-modal-occupation-select').click()
     const referenceResponse = page.waitForResponse(
       resp => resp.url().includes('/api/reference/storting') && resp.ok(),
     )
-    await page.getByRole('button', { name: /stortingsrepresentant/i }).click()
+    await page.getByText(/stortingsrepresentant/i).click()
     await referenceResponse
 
     // Selector button should now show the chosen occupation
-    await expect(page.getByRole('button', { name: /stortingsrepresentant/i })).toBeVisible()
+    await expect(page.getByTestId('chart-settings-modal-occupation-select')).toHaveText(
+      /stortingsrepresentant/i,
+    )
     // URL should carry the reference flag
     await expect(page).toHaveURL(/reference=true/)
   })
@@ -66,15 +71,20 @@ test.describe('Reference salary (Stortinget)', () => {
     await page.getByRole('button', { name: /prøv med eksempeldata/i }).click()
     await expect(page.locator('canvas')).toBeVisible()
 
-    await page.getByRole('button', { name: /referanse|ingen referanse/i }).click()
-    await page.getByRole('button', { name: /stortingsrepresentant/i }).click()
+    await page.getByTestId('chart-section-open-settings').click()
+    await expect(page.getByTestId('chart-settings-modal-container')).toBeVisible()
+
+    await page.getByTestId('chart-settings-modal-occupation-select').click()
+    await page.getByText(/stortingsrepresentant/i).click()
 
     // Error banner should appear and reference comparison should be turned off
     await expect(
       page.getByText('Kunne ikke laste referansedata. Referansesammenligningen er deaktivert.'),
     ).toBeVisible()
     // Dropdown should reset to "Ingen referanse"
-    await expect(page.getByRole('button', { name: /ingen referanse/i })).toBeVisible()
+    await expect(page.getByTestId('chart-settings-modal-occupation-select')).toHaveText(
+      /ingen referanse/i,
+    )
     await expect(page).not.toHaveURL(/reference=true/)
   })
 })

@@ -9,6 +9,7 @@ export interface ToggleProps {
   className?: string
   labelClassName?: string
   ariaLabel?: string
+  dataTestId?: string
 }
 
 export function Toggle({
@@ -18,6 +19,7 @@ export function Toggle({
   className,
   labelClassName,
   ariaLabel,
+  dataTestId,
 }: ToggleProps) {
   return (
     <label className={cn('flex cursor-pointer items-center gap-3', className)}>
@@ -27,6 +29,7 @@ export function Toggle({
         aria-checked={checked}
         aria-label={ariaLabel || label}
         onClick={onChange}
+        data-testid={dataTestId}
         className={cn(
           'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out',
           'focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:outline-none',

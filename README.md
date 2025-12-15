@@ -86,6 +86,7 @@ bun run test:e2e          # Run E2E tests (headless)
 bun run test:e2e:headed   # Run E2E tests (headed browser)
 bun run test:e2e:ui       # Run E2E tests with Playwright UI
 bun run test:e2e:debug    # Run E2E tests in debug mode
+# Note: Playwright starts the dev server with Node for stability. Set PLAYWRIGHT_USE_BUN=true if you explicitly want Bun. If port 3000 is busy, set PLAYWRIGHT_PORT=3001 (or any free port).
 
 # IMPORTANT: Use "bun run test", NOT "bun test"
 # "bun test" uses Bun's native test runner (not configured for this project)

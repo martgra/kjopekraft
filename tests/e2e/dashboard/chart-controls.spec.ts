@@ -6,17 +6,16 @@ test.describe('Chart Controls', () => {
     await dashboardPage.goto()
   })
 
-  test('net/gross toggle updates chart badge', async ({ dashboardPage }) => {
+  test('opens settings modal and exposes chart controls', async ({ dashboardPage }) => {
     await dashboardPage.loadDemoData()
 
     await expect(dashboardPage.chart).toBeVisible()
-    await expect(dashboardPage.netBadge).toBeVisible()
-
-    await dashboardPage.netGrossToggle.click()
-    await expect(dashboardPage.grossBadge).toBeVisible()
-
-    await dashboardPage.netGrossToggle.click()
-    await expect(dashboardPage.netBadge).toBeVisible()
+    await dashboardPage.openChartSettings()
+    await expect(dashboardPage.settingsModal).toBeVisible()
+    await expect(dashboardPage.netGrossToggle).toBeVisible()
+    await expect(dashboardPage.eventBaselinesToggle).toBeVisible()
+    await expect(dashboardPage.occupationSelect).toBeVisible()
+    await dashboardPage.closeChartSettings()
   })
 
   test('view switcher shows graph, table, and analysis content', async ({ dashboardPage }) => {

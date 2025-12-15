@@ -27,7 +27,6 @@ export function SalaryRowPower({ row, className, mode = 'absolute' }: SalaryRowP
         : 'text-[var(--text-muted)]'
 
   const showAbsolute = mode === 'absolute'
-  const showPercent = mode === 'percent'
 
   return (
     <div

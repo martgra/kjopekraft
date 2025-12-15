@@ -83,18 +83,26 @@ export class DashboardPage {
     return this.page.getByTestId('salary-form-reason-select')
   }
 
-  get eventBaselinesToggle() {
-    return this.page.getByTestId('chart-event-baselines-toggle')
+  get settingsButton() {
+    return this.page.getByTestId('chart-section-open-settings')
   }
 
-  // Metrics
-  get metricsGrid() {
-    return this.page.locator('text=Total årslønn').locator('..')
+  get settingsModal() {
+    return this.page.getByTestId('chart-settings-modal-container')
   }
 
-  // Controls
+  get settingsCloseButton() {
+    return this.page.getByTestId('chart-settings-modal-close')
+  }
+
+  async openChartSettings() {
+    if (await this.settingsModal.isVisible().catch(() => false)) return
+    await this.settingsButton.click()
+    await expect(this.settingsModal).toBeVisible()
+  }
+
   get netGrossToggle() {
-    return this.page.getByRole('switch').or(this.page.locator('input[type="checkbox"]')).first()
+    return this.settingsModal.getByTestId('chart-settings-mode-toggle')
   }
 
   get grossBadge() {
@@ -105,17 +113,37 @@ export class DashboardPage {
     return this.chartSection.getByText('ETTER SKATT', { exact: true }).first()
   }
 
+  get occupationSelect() {
+    return this.settingsModal.getByTestId('chart-settings-modal-occupation-select')
+  }
+
+  get eventBaselinesToggle() {
+    return this.settingsModal.getByTestId('chart-event-baselines-toggle')
+  }
+
+  async closeChartSettings() {
+    if (await this.settingsModal.isVisible().catch(() => false)) {
+      await this.settingsCloseButton.click()
+      await expect(this.settingsModal).not.toBeVisible()
+    }
+  }
+
+  // Metrics
+  get metricsGrid() {
+    return this.page.locator('text=Total årslønn').locator('..')
+  }
+
   // View switcher
   get graphViewButton() {
-    return this.page.getByRole('button', { name: /graf/i })
+    return this.page.getByTestId('chart-view-switcher-option-graph')
   }
 
   get tableViewButton() {
-    return this.page.getByRole('button', { name: /tabell/i })
+    return this.page.getByTestId('chart-view-switcher-option-table')
   }
 
   get analysisViewButton() {
-    return this.page.getByRole('button', { name: /analyse/i })
+    return this.page.getByTestId('chart-view-switcher-option-analysis')
   }
 
   // View content

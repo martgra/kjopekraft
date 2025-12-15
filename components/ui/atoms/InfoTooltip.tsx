@@ -14,7 +14,7 @@ export interface InfoTooltipProps {
   align?: TooltipAlign
   maxWidth?: number
   asChild?: boolean
-  children?: React.ReactElement<any>
+  children?: React.ReactElement<React.HTMLAttributes<HTMLElement>>
 }
 
 function combineHandlers<T extends React.SyntheticEvent>(
@@ -80,8 +80,11 @@ export function InfoTooltip({
       throw new Error('InfoTooltip with asChild requires a single React element child.')
     }
 
-    const child = children as React.ReactElement<any>
-    const ariaDescribedBy = [child.props['aria-describedby'], triggerProps['aria-describedby']]
+    const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>
+    const ariaDescribedBy = [
+      child.props['aria-describedby' as keyof React.HTMLAttributes<HTMLElement>],
+      triggerProps['aria-describedby'],
+    ]
       .filter(Boolean)
       .join(' ')
 
