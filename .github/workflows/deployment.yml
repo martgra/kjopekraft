@@ -1,17 +1,10 @@
 name: Deploy to Azure
 
 on:
-  workflow_run:
-    workflows: ['CI Pipeline']
-    types: [completed]
-    branches: [main]
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: false
-        default: 'production'
-        type: string
 
 jobs:
   deploy:
