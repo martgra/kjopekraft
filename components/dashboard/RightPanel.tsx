@@ -84,10 +84,6 @@ export default function RightPanel({
           onNoteChange={onNoteChange}
           onAdd={onAdd}
         />
-        <div className="border-t border-[var(--border-light)] px-6 py-4">
-          <h3 className="mb-2 font-bold text-[var(--text-main)]">{TEXT.activity.recentActivity}</h3>
-          <p className="text-sm text-[var(--text-muted)]">{TEXT.activity.noActivityYet}</p>
-        </div>
       </div>
     )
   }
@@ -138,10 +134,6 @@ export default function RightPanel({
           onNoteChange={onNoteChange}
           onAdd={onAdd}
         />
-        <div className="border-t border-[var(--border-light)] px-6 py-4">
-          <h3 className="mb-2 font-bold text-[var(--text-main)]">{TEXT.activity.recentActivity}</h3>
-          <p className="text-sm text-[var(--text-muted)]">{TEXT.activity.noActivityYet}</p>
-        </div>
       </div>
     </div>
   )
