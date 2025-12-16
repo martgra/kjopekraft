@@ -74,7 +74,7 @@ export default function MobileBottomDrawer({
 
       {/* Drawer - only on mobile */}
       <div
-        className={`fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out lg:hidden ${
+        className={`fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         role="dialog"
@@ -83,11 +83,11 @@ export default function MobileBottomDrawer({
       >
         {/* Handle bar for swipe indication */}
         <div className="flex w-full items-center justify-center pt-3 pb-1">
-          <div className="h-1.5 w-12 rounded-full bg-gray-300" />
+          <div className="h-1.5 w-12 rounded-full bg-gray-300 dark:bg-gray-600" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 pb-4">
+        <div className="flex items-center justify-between border-b border-gray-100 px-6 pb-4 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <h2 id="drawer-title" className="text-xl font-bold text-[var(--text-main)]">
               {title}
@@ -100,7 +100,7 @@ export default function MobileBottomDrawer({
           </div>
           <button
             onClick={onClose}
-            className="-mr-2 rounded-full p-2 text-gray-400 transition-colors hover:text-gray-600"
+            className="-mr-2 rounded-full p-2 text-gray-400 transition-colors hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
             aria-label={TEXT.common.close}
           >
             <span className="material-symbols-outlined text-2xl">close</span>

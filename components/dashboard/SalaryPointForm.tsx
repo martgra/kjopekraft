@@ -148,7 +148,7 @@ export default function SalaryPointForm({
           </label>
           <div className="group relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-              <span className="text-lg font-medium text-gray-500">kr</span>
+              <span className="text-lg font-medium text-gray-500 dark:text-gray-400">kr</span>
             </div>
             <input
               id="salary-amount"
@@ -232,7 +232,7 @@ export default function SalaryPointForm({
           <button
             type="button"
             onClick={() => setShowNote(prev => !prev)}
-            className="group flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-left shadow-sm transition-all hover:border-[var(--primary)]/50"
+            className="group flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-left shadow-sm transition-all hover:border-[var(--primary)]/50 dark:border-gray-700 dark:bg-gray-800"
           >
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-[var(--primary)]">notes</span>
@@ -240,7 +240,7 @@ export default function SalaryPointForm({
                 {showNote ? TEXT.forms.hideNote : TEXT.forms.addNote}
               </span>
             </div>
-            <span className="material-symbols-outlined text-gray-400 transition-colors group-hover:text-[var(--primary)]">
+            <span className="material-symbols-outlined text-gray-400 transition-colors group-hover:text-[var(--primary)] dark:text-gray-500">
               {showNote ? 'expand_less' : 'expand_more'}
             </span>
           </button>
@@ -259,7 +259,7 @@ export default function SalaryPointForm({
                 onChange={e => onNoteChange?.(e.target.value)}
                 placeholder={TEXT.forms.notePlaceholder}
                 rows={3}
-                className="w-full rounded-lg border border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-sm text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
+                className="w-full rounded-lg border border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-sm text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)] dark:border-gray-600"
               />
               <p className="text-xs text-[var(--text-muted)]">{TEXT.forms.noteHelp}</p>
             </div>
@@ -268,7 +268,7 @@ export default function SalaryPointForm({
 
         {/* Validation Error */}
         {validationError && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-2 text-xs font-medium text-red-600">
+          <div className="rounded-md border border-red-200 bg-red-50 p-2 text-xs font-medium text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
             {validationError}
           </div>
         )}
