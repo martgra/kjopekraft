@@ -70,4 +70,60 @@ describe('validatePayPoint', () => {
     )
     expect(result).toEqual({ isValid: true })
   })
+
+  it('allows editing point with same ID to different pay amount', () => {
+    const result = validatePayPoint(
+      { id: 'a', year: 2020, pay: 500_000, reason: 'promotion' },
+      existing,
+      inflationRange,
+    )
+    expect(result).toEqual({ isValid: true })
+  })
+
+  it('rejects point without ID trying to use same year as existing point', () => {
+    const result = validatePayPoint(
+      { year: 2020, pay: 450_000, reason: 'adjustment' } as PayPoint,
+      existing,
+      inflationRange,
+    )
+    expect(result).toEqual({
+      isValid: false,
+      errorMessage: 'You already have a payment for 2020',
+      errorCode: 'DUPLICATE_YEAR',
+    })
+  })
+
+  it('allows point without ID in new year', () => {
+    const result = validatePayPoint(
+      { year: 2020, pay: 450_000, reason: 'adjustment' } as PayPoint,
+      [],
+      inflationRange,
+    )
+    expect(result).toEqual({ isValid: true })
+  })
+
+  it('rejects editing when changing to a year that exists with different ID', () => {
+    // Trying to change point 'a' (2020) to year 2021, but 'b' already exists in 2021
+    const result = validatePayPoint(
+      { id: 'a', year: 2021, pay: 450_000, reason: 'adjustment' },
+      existing,
+      inflationRange,
+    )
+    expect(result).toEqual({
+      isValid: false,
+      errorMessage: 'You already have a payment for 2021',
+      errorCode: 'DUPLICATE_YEAR',
+    })
+  })
+
+  it('allows new year when editing and no conflict exists', () => {
+    // Moving point 'a' from 2020 to a new year (2020 can be reused by a different point later)
+    const existingFiltered = existing.filter(p => p.id !== 'a')
+    const result = validatePayPoint(
+      { id: 'a', year: 2020, pay: 450_000, reason: 'adjustment' },
+      existingFiltered,
+      inflationRange,
+    )
+    expect(result).toEqual({ isValid: true })
+  })
 })
