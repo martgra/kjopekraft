@@ -39,6 +39,41 @@
   --color-indigo-500: #6366f1;
 }
 
+/* Dark Mode Theme */
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Dark mode adjustments */
+  --primary: #4ade80;
+  --primary-hover: #22c55e;
+  --secondary: #3b82f6;
+  --secondary-hover: #2563eb;
+  --accent: #fbbf24;
+  --accent-hover: #f59e0b;
+  --background-light: #1e293b;
+  --surface-light: #1e293b;
+  --surface-dark: #0f172a;
+  --surface-subtle: #1e293b;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-light: #334155;
+
+  /* Dark mode semantic colors */
+  --color-green-500: #4ade80;
+  --color-green-100: #1e3a23;
+  --color-blue-500: #3b82f6;
+  --color-blue-100: #1e3a5a;
+  --color-yellow-500: #fbbf24;
+  --color-yellow-100: #3d3420;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-emerald-500: #34d399;
+  --color-indigo-500: #818cf8;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -102,6 +137,19 @@ body {
   scrollbar-color: #dbe0e6 transparent;
 }
 
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark * {
+  scrollbar-color: #475569 transparent;
+}
+
 /* Chart Mobile Optimization */
 .chart-mobile canvas {
   touch-action: manipulation;
@@ -120,6 +168,13 @@ body {
   max-width: 150px;
   white-space: normal;
   border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode chart tooltips */
+.dark .chart-mobile .chartjs-tooltip {
+  background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Optimize mobile chart taps */
@@ -183,6 +238,15 @@ body {
 
 input {
   color: rgba(17, 24, 39, 1); /* Ensure input text is dark enough */
+}
+
+/* Dark mode input field readability */
+.dark ::placeholder {
+  color: rgba(148, 163, 184, 0.8) !important;
+}
+
+.dark input {
+  color: rgba(241, 245, 249, 1);
 }
 
 /* Additional contrast improvements for light backgrounds with text */
@@ -249,6 +313,29 @@ body {
   color: #24292f !important;
 }
 
+/* Dark mode markdown styles */
+.dark .markdown-body {
+  color-scheme: dark !important;
+  --color-canvas-default: #0f172a !important;
+  --color-canvas-subtle: #1e293b !important;
+  --color-border-default: #334155 !important;
+  --color-fg-default: #f1f5f9 !important;
+  --color-fg-muted: #94a3b8 !important;
+  --color-accent-fg: #3b82f6 !important;
+  --color-neutral-muted: rgba(71, 85, 105, 0.3) !important;
+}
+.dark .markdown-body,
+.dark .markdown-body * {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+.dark .markdown-body pre,
+.dark .markdown-body code {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
 /* Enhanced styling for email and playbook content */
 .email-content p,
 .playbook-content p {
@@ -300,6 +387,17 @@ body {
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
   color: #1f2937;
+}
+
+/* Dark mode email and playbook content */
+.dark .email-content h2,
+.dark .playbook-content h2 {
+  color: #f1f5f9;
+}
+
+.dark .email-content h3,
+.dark .playbook-content h3 {
+  color: #e2e8f0;
 }
 
 /* Style for subject line if it starts with "Emne:" */

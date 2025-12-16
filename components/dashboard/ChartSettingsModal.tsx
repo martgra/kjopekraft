@@ -4,6 +4,7 @@ import { createTestId } from '@/lib/testing/testIds'
 import { ChartSettingsModeToggle } from './ChartSettingsModeToggle'
 import { ChartSettingsBaselines } from './ChartSettingsBaselines'
 import { ChartSettingsReference } from './ChartSettingsReference'
+import { ThemeToggle } from './ThemeToggle'
 
 interface ChartSettingsModalProps {
   isOpen: boolean
@@ -41,18 +42,18 @@ export function ChartSettingsModal({
       <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center px-4">
         {/* Modal card */}
         <div
-          className="pointer-events-auto relative flex w-full max-w-[350px] animate-[fadeIn_0.2s_ease-out] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
+          className="pointer-events-auto relative flex w-full max-w-[350px] animate-[fadeIn_0.2s_ease-out] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-gray-900"
           data-testid={testId('container')}
         >
           {/* Modal header */}
-          <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
+          <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 dark:border-gray-700">
             <h2 className="text-lg font-bold text-[var(--text-main)]">{TEXT.common.settings}</h2>
 
             {/* Close button */}
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full p-1 text-[var(--text-muted)] transition-colors hover:bg-gray-100"
+              className="rounded-full p-1 text-[var(--text-muted)] transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
               aria-label={TEXT.common.close}
               data-testid={testId('close')}
             >
@@ -68,12 +69,13 @@ export function ChartSettingsModal({
                 {TEXT.settings.displaySection}
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+              <div className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
                 <ChartSettingsModeToggle isNetMode={isNetMode} onToggleMode={onToggleMode} />
                 <ChartSettingsBaselines
                   showEventBaselines={showEventBaselines}
                   onToggleEventBaselines={onToggleEventBaselines}
                 />
+                <ThemeToggle />
               </div>
             </div>
 
