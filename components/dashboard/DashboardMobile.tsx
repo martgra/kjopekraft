@@ -7,7 +7,6 @@ import ChartSection from './ChartSection'
 import SalaryPointForm from './SalaryPointForm'
 import DemoDataBanner from './DemoDataBanner'
 import StatusBanner from './StatusBanner'
-import MobileMetricsSummary from './MobileMetricsSummary'
 import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint, SalaryStatistics, PayChangeReason } from '@/domain/salary'
@@ -126,7 +125,6 @@ export default function DashboardMobile({
             <>
               {isDemoMode && <DemoDataBanner onClearDemo={onClearDemo} />}
               <StatusBanner statistics={statistics} />
-              <MobileMetricsSummary statistics={statistics} isNetMode={isNetMode} />
             </>
           )}
 
