@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { TouchEvent } from 'react'
 import { Badge } from '@/components/ui/atoms'
 import type { PayPoint, SalaryTableRow } from '@/domain/salary'
@@ -42,6 +42,8 @@ export function SalaryTableRowMobile({
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false)
   const touchStartX = useRef<number | null>(null)
   const longPressTimer = useRef<number | null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const rowRef = useRef<HTMLDivElement>(null)
 
   const hasActions = Boolean(payPoint && (onEditPayPoint || onRemovePayPoint))
 
@@ -96,8 +98,25 @@ export function SalaryTableRowMobile({
     }
   }
 
+  // Close menu when clicking outside of it (but not outside the row)
+  useEffect(() => {
+    if (!isActionMenuOpen) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node
+      // Close if clicking outside the menu, even if inside the row
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        closeActions()
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isActionMenuOpen])
+
   return (
     <div
+      ref={rowRef}
       className="relative rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-4 shadow-sm"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -132,7 +151,10 @@ export function SalaryTableRowMobile({
         </button>
       </div>
       {isActionMenuOpen && hasActions && (
-        <div className="absolute top-10 right-2 z-10 w-36 rounded-lg border border-[var(--border-light)] bg-white p-2 shadow-lg">
+        <div
+          ref={menuRef}
+          className="absolute top-10 right-2 z-10 w-36 rounded-lg border border-[var(--border-light)] bg-white p-2 shadow-lg dark:bg-gray-800"
+        >
           {onEditPayPoint && (
             <button
               type="button"
