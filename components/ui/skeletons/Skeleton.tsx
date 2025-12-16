@@ -12,7 +12,7 @@ interface SkeletonProps {
 export function Skeleton({ className, style }: SkeletonProps) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-gray-200', className)}
+      className={cn('animate-pulse rounded-md bg-gray-200 dark:bg-gray-700', className)}
       style={style}
       role="status"
       aria-label="Loading"
@@ -58,7 +58,7 @@ export function ChartSkeleton({ className }: SkeletonProps) {
  */
 export function MetricSkeleton({ className }: SkeletonProps) {
   return (
-    <div className={cn('rounded-xl bg-white p-4 shadow-sm', className)}>
+    <div className={cn('rounded-xl bg-[var(--surface-light)] p-4 shadow-sm', className)}>
       <Skeleton className="mb-2 h-4 w-1/2" />
       <Skeleton className="mb-1 h-8 w-3/4" />
       <Skeleton className="h-3 w-1/3" />
@@ -126,12 +126,12 @@ export function DashboardSkeleton() {
       <MetricGridSkeleton className="mb-6" />
 
       {/* Chart */}
-      <div className="mb-6 rounded-xl bg-white shadow-sm">
+      <div className="mb-6 rounded-xl bg-[var(--surface-light)] shadow-sm">
         <ChartSkeleton />
       </div>
 
       {/* Table */}
-      <div className="rounded-xl bg-white shadow-sm">
+      <div className="rounded-xl bg-[var(--surface-light)] shadow-sm">
         <TableSkeleton rows={4} />
       </div>
     </div>
