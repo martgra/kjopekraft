@@ -6,6 +6,7 @@ import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import ChartSection from './ChartSection'
 import SalaryPointForm from './SalaryPointForm'
 import DemoDataBanner from './DemoDataBanner'
+import StatusBanner from './StatusBanner'
 import MobileMetricsSummary from './MobileMetricsSummary'
 import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import type { InflationDataPoint } from '@/domain/inflation'
@@ -124,6 +125,7 @@ export default function DashboardMobile({
           {hasData && (
             <>
               {isDemoMode && <DemoDataBanner onClearDemo={onClearDemo} />}
+              <StatusBanner statistics={statistics} />
               <MobileMetricsSummary statistics={statistics} isNetMode={isNetMode} />
             </>
           )}
