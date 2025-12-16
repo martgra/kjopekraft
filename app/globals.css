@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import 'github-markdown-css/github-markdown.css';
 
+/* Use class-based dark mode so the ThemeContext toggle controls `dark:` styles */
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #333333;
