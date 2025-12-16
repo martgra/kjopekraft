@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import ChartSection from './ChartSection'
-import RightPanel from './RightPanel'
+import SalaryPointForm from './SalaryPointForm'
 import DemoDataBanner from './DemoDataBanner'
 import MobileMetricsSummary from './MobileMetricsSummary'
 import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
@@ -80,26 +80,27 @@ export default function DashboardMobile({
 }: DashboardMobileProps) {
   const dashboardTestId = createTestId('dashboard')
 
-  // Right panel content for mobile drawer
-  const rightPanelContent = (
-    <RightPanel
-      newYear={newYear}
-      newPay={newPay}
-      newNote={newNote}
-      currentYear={currentYear}
-      minYear={minYear}
-      validationError={validationError}
-      isNetMode={isNetMode}
-      payPoints={payPoints}
-      newReason={newReason}
-      inflationData={inflationData}
-      onYearChange={onYearChange}
-      onPayChange={onPayChange}
-      onReasonChange={onReasonChange}
-      onNoteChange={onNoteChange}
-      onAdd={onSubmitPoint}
-      isMobileDrawer={isDrawerOpen}
-    />
+  // Drawer content for mobile
+  const drawerContent = (
+    <div className="flex flex-col">
+      <SalaryPointForm
+        newYear={newYear}
+        newPay={newPay}
+        newReason={newReason}
+        newNote={newNote}
+        currentYear={currentYear}
+        minYear={minYear}
+        validationError={validationError}
+        isNetMode={isNetMode}
+        payPoints={payPoints}
+        inflationData={inflationData}
+        onYearChange={onYearChange}
+        onPayChange={onPayChange}
+        onReasonChange={onReasonChange}
+        onNoteChange={onNoteChange}
+        onAdd={onSubmitPoint}
+      />
+    </div>
   )
 
   return (
@@ -107,7 +108,7 @@ export default function DashboardMobile({
       <MobileBottomDrawer
         isOpen={isDrawerOpen}
         onClose={onDrawerClose}
-        dashboardContent={rightPanelContent}
+        dashboardContent={drawerContent}
         pointsCount={payPoints.length}
       />
       <DashboardLayout>

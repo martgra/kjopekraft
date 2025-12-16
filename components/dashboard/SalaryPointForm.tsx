@@ -274,7 +274,7 @@ export default function SalaryPointForm({
         )}
 
         {/* Submit Button */}
-        <div className="pt-4 pb-24">
+        <div className="pt-4 pb-20">
           <button
             type="button"
             data-testid={testId('submit-button')}

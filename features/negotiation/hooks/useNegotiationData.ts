@@ -1,4 +1,4 @@
-import { useActionState, useMemo, useOptimistic, useState } from 'react'
+import { useActionState, useMemo, useOptimistic, useState, startTransition } from 'react'
 import type { NegotiationPoint } from '@/lib/models/types'
 import {
   defaultNegotiationDraft,
@@ -31,8 +31,10 @@ export function useNegotiationData() {
   )
 
   const persistDraft = (nextDraft: NegotiationDraft) => {
-    setOptimisticDraft(nextDraft)
-    setDraft(nextDraft)
+    startTransition(() => {
+      setOptimisticDraft(nextDraft)
+      setDraft(nextDraft)
+    })
     const formData = new FormData()
     formData.append('draft', JSON.stringify(nextDraft))
     saveDraftAction(formData)
