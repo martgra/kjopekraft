@@ -119,8 +119,16 @@ export function usePayPointFormState({
       id: editingPoint?.id,
     }
 
+    // When editing, filter out the point being edited by ID (or by reference if ID is not available)
     const existingForValidation = editingPoint
-      ? payPoints.filter(p => !(p.year === editingPoint.year && p.pay === editingPoint.pay))
+      ? payPoints.filter(p => {
+          // If both have IDs, compare by ID
+          if (p.id && editingPoint.id) {
+            return p.id !== editingPoint.id
+          }
+          // Otherwise compare by reference or year+pay combination
+          return p !== editingPoint && !(p.year === editingPoint.year && p.pay === editingPoint.pay)
+        })
       : payPoints
     const validation = validatePayPoint(point, existingForValidation, inflationData)
     if (!validation.isValid) {
