@@ -19,7 +19,7 @@ export function ChartViewSwitcher({ viewMode, options, onChange }: ChartViewSwit
 
   return (
     <div
-      className="grid grid-cols-3 gap-1 rounded-lg bg-[var(--color-gray-50)] p-1 shadow-inner md:inline-flex md:w-fit md:gap-0"
+      className="grid grid-cols-3 gap-1 rounded-lg bg-gray-100 p-1 shadow-inner md:inline-flex md:w-fit md:gap-0 dark:bg-gray-800"
       data-testid={testId('container')}
     >
       {options.map(option => (
