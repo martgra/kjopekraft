@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { act, renderHook } from '@testing-library/react'
 import { usePayPointFormState } from '@/features/salary/hooks/usePayPointFormState'
 import type { PayPoint } from '@/domain/salary'
@@ -11,6 +11,11 @@ const payPoints: PayPoint[] = [
 describe('usePayPointFormState', () => {
   const addPoint = vi.fn()
   const removePoint = vi.fn()
+
+  beforeEach(() => {
+    addPoint.mockClear()
+    removePoint.mockClear()
+  })
 
   const setup = (overrides?: Partial<Parameters<typeof usePayPointFormState>[0]>) =>
     renderHook(() =>
