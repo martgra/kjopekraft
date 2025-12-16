@@ -225,6 +225,7 @@ export function usePayPointFormState({
     validationError,
     isDemoMode,
     isFormModalOpen,
+    editingPoint,
     openFormModal,
     closeFormModal,
     clearEditing,

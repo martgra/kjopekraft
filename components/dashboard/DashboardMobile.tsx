@@ -34,6 +34,7 @@ interface DashboardMobileProps {
   newNote: string
   minYear: number
   validationError: string
+  editingPoint: PayPoint | null
 
   // Handlers
   onDrawerOpen: () => void
@@ -65,6 +66,7 @@ export default function DashboardMobile({
   newNote,
   minYear,
   validationError,
+  editingPoint,
   onDrawerOpen,
   onDrawerClose,
   onToggleMode,
@@ -94,6 +96,7 @@ export default function DashboardMobile({
         isNetMode={isNetMode}
         payPoints={payPoints}
         inflationData={inflationData}
+        editingPoint={editingPoint}
         onYearChange={onYearChange}
         onPayChange={onPayChange}
         onReasonChange={onReasonChange}
