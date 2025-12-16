@@ -93,8 +93,9 @@ export function Select({
         data-testid={dataTestId}
         className={cn(
           'flex w-full items-center justify-between rounded-lg border border-[var(--border-light)] bg-white py-2.5 text-base font-medium text-gray-900',
+          'dark:border-gray-600 dark:bg-gray-700 dark:text-white',
           'shadow-sm transition-all',
-          'hover:border-gray-400 hover:shadow',
+          'hover:border-gray-400 hover:shadow dark:hover:border-gray-500',
           'focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 focus:outline-none',
           'active:scale-[0.99]',
           leftIcon ? 'pl-10' : 'pl-3',
@@ -103,14 +104,14 @@ export function Select({
         )}
       >
         {leftIcon && (
-          <span className="material-symbols-outlined absolute left-3 text-lg text-gray-500">
+          <span className="material-symbols-outlined absolute left-3 text-lg text-gray-500 dark:text-gray-400">
             {leftIcon}
           </span>
         )}
         <span className="flex-1 text-left">{selectedLabel}</span>
         <span
           className={cn(
-            'material-symbols-outlined text-xl text-gray-400 transition-transform',
+            'material-symbols-outlined text-xl text-gray-400 transition-transform dark:text-gray-300',
             isOpen && 'rotate-180',
           )}
         >
@@ -119,7 +120,7 @@ export function Select({
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full z-50 mb-1 w-full rounded-lg border border-[var(--border-light)] bg-white shadow-lg">
+        <div className="absolute bottom-full z-50 mb-1 w-full rounded-lg border border-[var(--border-light)] bg-white shadow-lg dark:border-gray-600 dark:bg-gray-700">
           <div className="max-h-60 overflow-auto py-1">
             {options.map((child, index) => {
               if (!isValidElement<SelectOptionProps>(child)) return null
@@ -137,7 +138,7 @@ export function Select({
                     'w-full px-3 py-2.5 text-left text-base transition-colors',
                     isSelected
                       ? 'bg-[var(--primary)]/10 font-medium text-[var(--primary)]'
-                      : 'text-gray-900 hover:bg-gray-50',
+                      : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-600',
                   )}
                 >
                   {optionLabel}

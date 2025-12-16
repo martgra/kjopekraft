@@ -18,7 +18,7 @@ export function ChartSettingsReference({
 
   return (
     <div
-      className="rounded-2xl border border-gray-100 bg-gray-50 p-4"
+      className="rounded-2xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
       data-testid={testId('container')}
     >
       <label className="mb-2 block text-sm font-semibold text-[var(--text-main)]">
