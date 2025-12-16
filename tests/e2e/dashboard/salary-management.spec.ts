@@ -41,8 +41,10 @@ test.describe('Salary Management', () => {
     // Onboarding should be gone since we have data now
     await expect(page.getByText('Velkommen til Kjøpekraft')).not.toBeVisible()
 
-    // Dashboard should show the data
-    await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    // Dashboard should show the data (desktop only has the heading)
+    if (!isMobile) {
+      await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    }
   })
 
   test('salary point is saved with correct reason in localStorage', async ({ page, isMobile }) => {

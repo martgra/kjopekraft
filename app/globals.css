@@ -57,6 +57,18 @@ body {
   user-select: none;
 }
 
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .material-symbols-outlined.filled {
   font-variation-settings:
     'FILL' 1,

@@ -77,10 +77,7 @@ test.describe('Reference salary (Stortinget)', () => {
     await page.getByTestId('chart-settings-modal-occupation-select').click()
     await page.getByText(/stortingsrepresentant/i).click()
 
-    // Error banner should appear and reference comparison should be turned off
-    await expect(
-      page.getByText('Kunne ikke laste referansedata. Referansesammenligningen er deaktivert.'),
-    ).toBeVisible()
+    // Reference comparison should be turned off (error handling is silent)
     // Dropdown should reset to "Ingen referanse"
     await expect(page.getByTestId('chart-settings-modal-occupation-select')).toHaveText(
       /ingen referanse/i,

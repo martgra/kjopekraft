@@ -40,8 +40,10 @@ test.describe('Onboarding Experience', () => {
     // Chart should be visible (canvas element)
     await expect(page.locator('canvas')).toBeVisible()
 
-    // Dashboard header should be visible
-    await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    // Dashboard header should be visible (desktop only)
+    if (!isMobile) {
+      await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    }
 
     // Chart section with title should be visible
     await expect(

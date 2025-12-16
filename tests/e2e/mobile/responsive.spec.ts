@@ -18,8 +18,8 @@ test.describe('Mobile Experience', () => {
     // Load demo data first
     await page.getByRole('button', { name: /prøv med eksempeldata/i }).click()
 
-    // Verify we're on the dashboard
-    await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    // Verify we're on the dashboard - chart should be visible
+    await expect(page.locator('canvas')).toBeVisible()
 
     // Wait for any auto-opening drawer to settle, then close it if open
     await page.waitForTimeout(500)
