@@ -4,7 +4,6 @@ import { Suspense } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MetricGrid from './MetricGrid'
 import ChartSection from './ChartSection'
-import RightPanel from './RightPanel'
 import SalaryPointForm from './SalaryPointForm'
 import DemoDataBanner from './DemoDataBanner'
 import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
@@ -82,24 +81,25 @@ export default function DashboardDesktop({
 
   // Right panel content for desktop sidebar
   const rightPanelContent = (
-    <RightPanel
-      newYear={newYear}
-      newPay={newPay}
-      newNote={newNote}
-      currentYear={currentYear}
-      minYear={minYear}
-      validationError={validationError}
-      isNetMode={isNetMode}
-      payPoints={payPoints}
-      newReason={newReason}
-      inflationData={inflationData}
-      onYearChange={onYearChange}
-      onPayChange={onPayChange}
-      onReasonChange={onReasonChange}
-      onNoteChange={onNoteChange}
-      onAdd={onSubmitPoint}
-      isMobileDrawer={false}
-    />
+    <div className="flex h-full flex-col" data-testid={dashboardTestId('right-panel')}>
+      <SalaryPointForm
+        newYear={newYear}
+        newPay={newPay}
+        newReason={newReason}
+        newNote={newNote}
+        currentYear={currentYear}
+        minYear={minYear}
+        validationError={validationError}
+        isNetMode={isNetMode}
+        payPoints={payPoints}
+        inflationData={inflationData}
+        onYearChange={onYearChange}
+        onPayChange={onPayChange}
+        onReasonChange={onReasonChange}
+        onNoteChange={onNoteChange}
+        onAdd={onSubmitPoint}
+      />
+    </div>
   )
 
   return (
