@@ -34,6 +34,7 @@ interface DashboardDesktopProps {
   newNote: string
   minYear: number
   validationError: string
+  editingPoint: PayPoint | null
 
   // Handlers
   onOpenFormModal: () => void
@@ -65,6 +66,7 @@ export default function DashboardDesktop({
   newNote,
   minYear,
   validationError,
+  editingPoint,
   onOpenFormModal,
   onCloseFormModal,
   onToggleMode,
@@ -94,6 +96,7 @@ export default function DashboardDesktop({
         isNetMode={isNetMode}
         payPoints={payPoints}
         inflationData={inflationData}
+        editingPoint={editingPoint}
         onYearChange={onYearChange}
         onPayChange={onPayChange}
         onReasonChange={onReasonChange}

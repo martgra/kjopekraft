@@ -18,6 +18,7 @@ interface SalaryPointFormProps {
   validationError?: string
   isNetMode?: boolean
   inflationData?: InflationDataPoint[]
+  editingPoint?: PayPoint | null
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
   onReasonChange: (reason: PayChangeReason | '') => void
@@ -34,6 +35,7 @@ export default function SalaryPointForm({
   minYear,
   payPoints = [],
   validationError: externalValidationError,
+  editingPoint = null,
   onYearChange,
   onPayChange,
   onReasonChange,
@@ -66,7 +68,27 @@ export default function SalaryPointForm({
   const isYearInInflationRange = !isNaN(yearNum) && yearNum >= inflationMinYear
   const isPayValid = !isNaN(payNum) && payNum > 0
   const isReasonValid = Boolean(newReason)
-  const isDuplicateYear = !isNaN(yearNum) && payPoints.some(point => point.year === yearNum)
+  const isDuplicateYear =
+    !isNaN(yearNum) &&
+    payPoints.some(point => {
+      // Skip if not the same year
+      if (point.year !== yearNum) return false
+
+      // If not editing, any matching year is a duplicate
+      if (!editingPoint) return true
+
+      // When editing, exclude the point being edited
+      // If both have IDs, compare by ID
+      if (point.id && editingPoint.id) {
+        return point.id !== editingPoint.id
+      }
+
+      // Otherwise compare by reference or year+pay combination
+      return (
+        point !== editingPoint &&
+        !(point.year === editingPoint.year && point.pay === editingPoint.pay)
+      )
+    })
 
   const disabled =
     !newYear ||
