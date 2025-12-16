@@ -4,6 +4,7 @@ import { ReactNode } from 'react'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeContext'
+import { ThemeProvider } from '@/contexts/theme/ThemeContext'
 
 interface AppProvidersProps {
   children: ReactNode
@@ -15,6 +16,7 @@ interface AppProvidersProps {
  * the provider hierarchy for better maintainability.
  *
  * Includes:
+ * - ThemeProvider: Dark/light mode theme toggle (localStorage)
  * - NuqsAdapter: enables URL-based state via nuqs (shareable, hydration-safe)
  * - DisplayModeProvider: Net/gross salary display toggle (nuqs)
  * - ReferenceModeProvider: Reference salary overlay toggle (nuqs)
@@ -25,10 +27,12 @@ interface AppProvidersProps {
  */
 export function AppProviders({ children }: AppProvidersProps) {
   return (
-    <NuqsAdapter>
-      <DisplayModeProvider>
-        <ReferenceModeProvider>{children}</ReferenceModeProvider>
-      </DisplayModeProvider>
-    </NuqsAdapter>
+    <ThemeProvider>
+      <NuqsAdapter>
+        <DisplayModeProvider>
+          <ReferenceModeProvider>{children}</ReferenceModeProvider>
+        </DisplayModeProvider>
+      </NuqsAdapter>
+    </ThemeProvider>
   )
 }

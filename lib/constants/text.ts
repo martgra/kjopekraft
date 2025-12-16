@@ -107,6 +107,8 @@ export const TEXT = {
     comparisonSection: 'Sammenligning',
     grossNetToggleTitle: 'Før / Etter skatt',
     grossNetToggleSubtitle: 'Vis nettolønn i grafer',
+    themeToggleTitle: 'Mørkt modus',
+    themeToggleSubtitle: 'Bytt mellom lyst og mørkt tema',
     eventBaselinesTitle: 'Vis hendelseslinjer',
     eventBaselinesSubtitle: 'Marker forfremmelser',
     occupationLabel: 'Yrke',
