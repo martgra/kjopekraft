@@ -99,7 +99,6 @@ interface StatusBannerProps {
 
 ```tsx
 import StatusBanner from '@/components/dashboard/StatusBanner'
-
 ;<StatusBanner
   statistics={statistics}
   onCtaClick={() => {
