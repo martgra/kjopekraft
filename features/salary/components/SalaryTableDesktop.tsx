@@ -46,7 +46,7 @@ export function SalaryTableDesktop({
             <th className="px-5 py-4">{TEXT.views.table.columns.yoyChange}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[var(--border-light)] bg-white">
+        <tbody className="divide-y divide-[var(--border-light)] bg-[var(--surface-light)]">
           {displayRows.map(row => {
             const payPoint = payPointByYear.get(row.year)
             return (

@@ -62,7 +62,7 @@ export function SalaryAnalysisView({
         return (
           <Card
             key={`largest-raise-${insight.year}`}
-            className="h-full border-[var(--border-light)] bg-white shadow-sm"
+            className="h-full border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -84,7 +84,7 @@ export function SalaryAnalysisView({
         return (
           <Card
             key={`power-gain-${insight.year}`}
-            className="h-full border-[var(--border-light)] bg-white shadow-sm"
+            className="h-full border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -106,7 +106,7 @@ export function SalaryAnalysisView({
         return (
           <Card
             key={`power-loss-${insight.year}`}
-            className="h-full border-[var(--border-light)] bg-white shadow-sm"
+            className="h-full border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -133,7 +133,7 @@ export function SalaryAnalysisView({
         return (
           <Card
             key="reference-wins"
-            className="h-full border-[var(--border-light)] bg-white shadow-sm"
+            className="h-full border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -158,7 +158,7 @@ export function SalaryAnalysisView({
         return (
           <Card
             key="reference-losses"
-            className="h-full border-[var(--border-light)] bg-white shadow-sm"
+            className="h-full border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -183,7 +183,7 @@ export function SalaryAnalysisView({
         return (
           <Card
             key="inflation-streak"
-            className="h-full border-[var(--border-light)] bg-white shadow-sm"
+            className="h-full border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
