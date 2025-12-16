@@ -47,8 +47,8 @@ export function PointItem({
   return (
     <div
       className={cn(
-        'group flex items-start gap-3 rounded-lg border border-gray-100 bg-white p-2.5',
-        'shadow-sm transition-colors hover:border-blue-300',
+        'group flex items-start gap-3 rounded-lg border border-gray-100 bg-[var(--surface-light)] p-2.5',
+        'shadow-sm transition-colors hover:border-blue-300 dark:border-gray-700',
         className,
       )}
     >
@@ -78,7 +78,7 @@ export function PointItem({
           <InfoTooltip label={TEXT.common.edit} asChild>
             <button
               onClick={onEdit}
-              className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 md:p-1"
+              className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 dark:active:bg-gray-700 md:p-1"
               aria-label={TEXT.common.edit}
             >
               <Icon name="edit" size="sm" />
@@ -88,7 +88,7 @@ export function PointItem({
         <InfoTooltip label={TEXT.common.remove} asChild>
           <button
             onClick={onRemove}
-            className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 md:p-1"
+            className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 dark:active:bg-gray-700 md:p-1"
             aria-label="Fjern punkt"
           >
             <Icon name="close" size="sm" />

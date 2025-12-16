@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { createTestId } from '@/lib/testing/testIds'
 import type { SalaryStatistics } from '@/domain/salary'
 
@@ -73,6 +74,7 @@ export default function StatusBanner({ statistics, onCtaClick }: StatusBannerPro
   const testId = createTestId('status-banner')
   const state = determineBannerState(statistics.gapPercent)
   const config = BANNER_CONFIG[state]
+  const [isExpanded, setIsExpanded] = useState(true)
 
   const handleCtaClick = () => {
     if (onCtaClick) {
@@ -89,7 +91,7 @@ export default function StatusBanner({ statistics, onCtaClick }: StatusBannerPro
       {/* Decorative blur element */}
       <div className="pointer-events-none absolute top-0 right-0 -mt-10 -mr-10 h-32 w-32 rounded-full bg-white/10 opacity-20 blur-3xl"></div>
 
-      {/* Header with icon, badge, and indicator */}
+      {/* Header with icon, badge, indicator, and expand/collapse button */}
       <div className="mb-3 flex items-start justify-between">
         <div className="flex items-center space-x-2">
           <span className={`material-symbols-outlined text-2xl ${config.iconColor}`}>
@@ -102,35 +104,55 @@ export default function StatusBanner({ statistics, onCtaClick }: StatusBannerPro
           </span>
         </div>
 
-        {/* Micro-indicator */}
-        <div
-          className={`${config.indicatorBg} flex items-center space-x-1 rounded-lg px-2 py-1 backdrop-blur-sm`}
-        >
-          <span className="text-xs font-medium opacity-90">Kjøpekraft:</span>
-          <span className="text-xs font-bold">
-            {statistics.gapPercent > 0 ? '+' : ''}
-            {statistics.gapPercent.toFixed(1)} %
-          </span>
+        <div className="flex items-center space-x-2">
+          {/* Micro-indicator */}
+          <div
+            className={`${config.indicatorBg} flex items-center space-x-1 rounded-lg px-2 py-1 backdrop-blur-sm`}
+          >
+            <span className="text-xs font-medium opacity-90">Kjøpekraft:</span>
+            <span className="text-xs font-bold">
+              {statistics.gapPercent > 0 ? '+' : ''}
+              {statistics.gapPercent.toFixed(1)} %
+            </span>
+          </div>
+
+          {/* Expand/Collapse button */}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="transition-transform hover:scale-110"
+            aria-expanded={isExpanded}
+            aria-label={isExpanded ? 'Skjul detaljer' : 'Vis detaljer'}
+            data-testid={testId('toggle')}
+          >
+            <span className={`material-symbols-outlined text-xl ${config.iconColor}`}>
+              {isExpanded ? 'expand_less' : 'expand_more'}
+            </span>
+          </button>
         </div>
       </div>
 
       {/* Headline */}
       <h2 className="mb-2 text-2xl leading-tight font-bold">{config.headline}</h2>
 
-      {/* Supporting text */}
-      <p className="mb-5 text-sm leading-relaxed opacity-90">{config.description}</p>
+      {/* Expandable content */}
+      {isExpanded && (
+        <>
+          {/* Supporting text */}
+          <p className="mb-5 text-sm leading-relaxed opacity-90">{config.description}</p>
 
-      {/* CTA */}
-      <button
-        onClick={handleCtaClick}
-        className="group flex items-center text-sm font-semibold transition-all hover:translate-x-1"
-        data-testid={testId('cta')}
-      >
-        {config.cta}
-        <span className="material-symbols-outlined ml-1 text-base transition-transform group-hover:translate-x-1">
-          arrow_forward
-        </span>
-      </button>
+          {/* CTA */}
+          <button
+            onClick={handleCtaClick}
+            className="group flex items-center text-sm font-semibold transition-all hover:translate-x-1"
+            data-testid={testId('cta')}
+          >
+            {config.cta}
+            <span className="material-symbols-outlined ml-1 text-base transition-transform group-hover:translate-x-1">
+              arrow_forward
+            </span>
+          </button>
+        </>
+      )}
     </div>
   )
 }

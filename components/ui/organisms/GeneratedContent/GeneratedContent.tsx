@@ -55,7 +55,7 @@ export function GeneratedContent({
         >
           <Card variant="outlined" padding="none">
             <div
-              className="email-content rounded-lg border border-[var(--border-light)] bg-white p-8 text-base leading-relaxed text-gray-800 shadow-inner"
+              className="email-content rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-8 text-base leading-relaxed text-[var(--text-main)] shadow-inner"
               ref={emailHtmlRef}
             >
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
@@ -90,7 +90,7 @@ export function GeneratedContent({
         >
           <Card variant="outlined" padding="none">
             <div
-              className="playbook-content rounded-lg border border-[var(--border-light)] bg-white p-8 text-base leading-relaxed text-gray-800 shadow-inner"
+              className="playbook-content rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-8 text-base leading-relaxed text-[var(--text-main)] shadow-inner"
               ref={playbookHtmlRef}
             >
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
