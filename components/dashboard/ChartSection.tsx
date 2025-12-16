@@ -155,7 +155,7 @@ function ChartSection({
             <button
               type="button"
               onClick={openSettings}
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-[var(--text-main)] transition hover:bg-[var(--color-gray-50)]"
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-[var(--text-main)] transition hover:bg-[var(--color-gray-50)] dark:bg-gray-800 dark:hover:bg-gray-700"
               data-testid={testId('open-settings')}
             >
               <span className="material-symbols-outlined text-[18px] text-[var(--text-muted)]">

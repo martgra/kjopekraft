@@ -29,7 +29,7 @@ export function ChartViewSwitcher({ viewMode, options, onChange }: ChartViewSwit
           className={cn(
             'w-full rounded-md px-2.5 py-2 text-xs font-semibold transition md:w-auto md:px-3 md:py-1.5',
             viewMode === option.value
-              ? 'bg-white text-[var(--primary)] shadow-sm'
+              ? 'bg-white text-[var(--primary)] shadow-sm dark:bg-gray-700 dark:text-[var(--primary)]'
               : 'text-[var(--text-muted)] hover:text-[var(--text-main)]',
           )}
           aria-pressed={viewMode === option.value}

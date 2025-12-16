@@ -26,7 +26,7 @@ export default function MobileBottomNav({ onOpenDrawer, pointsCount = 0 }: Mobil
   ]
 
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-50 border-t border-[var(--border-light)] bg-white shadow-lg lg:hidden">
+    <nav className="fixed right-0 bottom-0 left-0 z-50 border-t border-[var(--border-light)] bg-white shadow-lg lg:hidden dark:bg-gray-900">
       <div className="relative flex items-center justify-around">
         {navItems.map((item, index) => {
           const isActive = pathname === item.href

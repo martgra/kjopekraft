@@ -6,6 +6,7 @@ import MetricGrid from './MetricGrid'
 import ChartSection from './ChartSection'
 import SalaryPointForm from './SalaryPointForm'
 import DemoDataBanner from './DemoDataBanner'
+import StatusBanner from './StatusBanner'
 import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint, SalaryStatistics, PayChangeReason } from '@/domain/salary'
@@ -121,6 +122,7 @@ export default function DashboardDesktop({
           {hasData && (
             <>
               {isDemoMode && <DemoDataBanner onClearDemo={onClearDemo} />}
+              <StatusBanner statistics={statistics} />
               <Suspense fallback={<MetricGridSkeleton />}>
                 <MetricGrid statistics={statistics} isNetMode={isNetMode} />
               </Suspense>
