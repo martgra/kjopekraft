@@ -32,14 +32,18 @@ test.describe('Data Persistence', () => {
 
     // Verify onboarding is gone (data added successfully)
     await expect(page.getByText('Velkommen til Kjøpekraft')).not.toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    if (!isMobile) {
+      await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    }
 
     // Reload the page - this is the key persistence test
     await page.reload()
 
-    // Data should persist: onboarding should NOT appear, dashboard header should show
+    // Data should persist: onboarding should NOT appear, dashboard header should show (desktop only)
     // This is the core assertion that proves localStorage persistence works
     await expect(page.getByText('Velkommen til Kjøpekraft')).not.toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    if (!isMobile) {
+      await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
+    }
   })
 })

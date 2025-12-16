@@ -50,13 +50,13 @@ export default function MobileMetricsSummary({ statistics, isNetMode }: MobileMe
             <p className="text-[10px] font-medium text-[var(--text-muted)]">
               {isNetMode ? TEXT.metrics.totalAnnualNetSalary : TEXT.metrics.totalAnnualSalary}
             </p>
-            <p className="text-lg font-bold text-[var(--text-main)]">{latestTotal}</p>
+            <p className="text-2xl font-bold text-[var(--text-main)]">{latestTotal}</p>
           </div>
           <div className="flex-1 border-l border-[var(--border-light)] pl-4">
             <p className="text-[10px] font-medium text-[var(--text-muted)]">
               {TEXT.metrics.vsInflation}
             </p>
-            <p className={`text-lg font-bold ${gapColor}`}>
+            <p className={`text-2xl font-bold ${gapColor}`}>
               {gapPrefix}
               {statistics.gapPercent.toFixed(1)}%
             </p>

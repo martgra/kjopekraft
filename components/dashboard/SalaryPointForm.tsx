@@ -127,28 +127,28 @@ export default function SalaryPointForm({
   ])
 
   return (
-    <div className="border-b border-[var(--border-light)] p-6" data-testid={testId('container')}>
-      <div className="mb-4 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[var(--primary)]">add_circle</span>
-        <h3 className="text-base font-bold text-[var(--text-main)]">{TEXT.forms.logSalaryPoint}</h3>
+    <div className="space-y-6 p-6" data-testid={testId('container')}>
+      <div className="mb-2 flex items-center gap-2">
+        <span className="material-symbols-outlined text-2xl text-[var(--primary)]">
+          add_circle_outline
+        </span>
+        <h2 className="text-lg font-semibold text-[var(--text-main)]">
+          {TEXT.forms.logSalaryPoint}
+        </h2>
       </div>
 
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={e => e.preventDefault()}
-        data-testid={testId()}
-      >
+      <form className="space-y-6" onSubmit={e => e.preventDefault()} data-testid={testId()}>
         {/* Amount Field */}
-        <div>
+        <div className="space-y-2">
           <label
             htmlFor="salary-amount"
-            className="mb-1.5 block text-xs font-semibold tracking-wide text-[var(--text-muted)] uppercase"
+            className="block text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase"
           >
             {isNetMode ? TEXT.forms.netAmount : TEXT.forms.grossAmount}
           </label>
-          <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <span className="font-bold text-gray-500">kr</span>
+          <div className="group relative">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+              <span className="text-lg font-medium text-gray-500">kr</span>
             </div>
             <input
               id="salary-amount"
@@ -158,19 +158,19 @@ export default function SalaryPointForm({
               value={newPay}
               onChange={e => onPayChange(formatAmountInput(e.target.value))}
               placeholder="0"
-              className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] py-2.5 pr-3 pl-10 text-base text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
+              className="block w-full rounded-xl border border-transparent bg-[var(--background-light)] py-3.5 pr-4 pl-12 text-lg font-medium text-[var(--text-main)] placeholder-gray-400 shadow-sm transition-all focus:border-[var(--primary)] focus:ring-0"
             />
           </div>
-          <p className="mt-1 text-xs text-[var(--text-muted)]">
+          <p className="text-xs text-[var(--text-muted)]">
             {isNetMode ? TEXT.forms.netAmountHelp : TEXT.forms.grossAmountHelp}
           </p>
         </div>
 
         {/* Year Field */}
-        <div>
+        <div className="space-y-2">
           <label
             htmlFor="salary-year"
-            className="mb-1.5 block text-xs font-semibold tracking-wide text-[var(--text-muted)] uppercase"
+            className="block text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase"
           >
             {TEXT.forms.yearRange
               .replace('{min}', String(minYear))
@@ -185,60 +185,62 @@ export default function SalaryPointForm({
             value={newYear}
             onChange={e => onYearChange(e.target.value.replace(/\D/g, ''))}
             placeholder={String(currentYear)}
-            className="block w-full rounded-lg border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-base text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)]"
+            className="block w-full rounded-xl border border-transparent bg-[var(--background-light)] px-4 py-3.5 text-lg font-medium text-[var(--text-main)] shadow-sm transition-all focus:border-[var(--primary)] focus:ring-0"
           />
         </div>
 
         {/* Reason Field */}
-        <div>
+        <div className="space-y-2">
           <label
             htmlFor="salary-reason"
-            className="mb-1.5 block text-xs font-semibold tracking-wide text-[var(--text-muted)] uppercase"
+            className="block text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase"
           >
             {TEXT.forms.reasonLabel}
           </label>
-          <Select
-            id="salary-reason"
-            value={newReason}
-            onChange={value => onReasonChange(value as PayChangeReason | '')}
-            leftIcon="category"
-            className="bg-[var(--background-light)] text-[var(--text-main)]"
-          >
-            <SelectOption value="">{TEXT.forms.reasonPlaceholder}</SelectOption>
-            <SelectOption value="adjustment">{TEXT.forms.reasonOptions.adjustment}</SelectOption>
-            <SelectOption value="promotion">{TEXT.forms.reasonOptions.promotion}</SelectOption>
-            <SelectOption value="newJob">{TEXT.forms.reasonOptions.newJob}</SelectOption>
-          </Select>
-          <select
-            aria-hidden="true"
-            tabIndex={-1}
-            className="sr-only"
-            data-testid={testId('reason-select')}
-            value={newReason}
-            onChange={e => onReasonChange(e.target.value as PayChangeReason | '')}
-          >
-            <option value="">{TEXT.forms.reasonPlaceholder}</option>
-            <option value="adjustment">{TEXT.forms.reasonOptions.adjustment}</option>
-            <option value="promotion">{TEXT.forms.reasonOptions.promotion}</option>
-            <option value="newJob">{TEXT.forms.reasonOptions.newJob}</option>
-          </select>
-          <p className="mt-1 text-xs text-[var(--text-muted)]">{TEXT.forms.reasonHelp}</p>
+          <div className="relative">
+            <Select
+              id="salary-reason"
+              value={newReason}
+              onChange={value => onReasonChange(value as PayChangeReason | '')}
+              leftIcon="category"
+              className="text-base font-medium"
+            >
+              <SelectOption value="">{TEXT.forms.reasonPlaceholder}</SelectOption>
+              <SelectOption value="adjustment">{TEXT.forms.reasonOptions.adjustment}</SelectOption>
+              <SelectOption value="promotion">{TEXT.forms.reasonOptions.promotion}</SelectOption>
+              <SelectOption value="newJob">{TEXT.forms.reasonOptions.newJob}</SelectOption>
+            </Select>
+            <select
+              aria-hidden="true"
+              tabIndex={-1}
+              className="sr-only"
+              data-testid={testId('reason-select')}
+              value={newReason}
+              onChange={e => onReasonChange(e.target.value as PayChangeReason | '')}
+            >
+              <option value="">{TEXT.forms.reasonPlaceholder}</option>
+              <option value="adjustment">{TEXT.forms.reasonOptions.adjustment}</option>
+              <option value="promotion">{TEXT.forms.reasonOptions.promotion}</option>
+              <option value="newJob">{TEXT.forms.reasonOptions.newJob}</option>
+            </select>
+          </div>
+          <p className="text-xs text-[var(--text-muted)]">{TEXT.forms.reasonHelp}</p>
         </div>
 
         {/* Optional note */}
-        <div className="space-y-2">
+        <div className="pt-2">
           <button
             type="button"
             onClick={() => setShowNote(prev => !prev)}
-            className="flex w-full items-center justify-between rounded-md border border-[var(--border-light)] bg-white px-3 py-2 text-sm font-semibold text-[var(--text-main)] transition hover:bg-[var(--background-light)]"
+            className="group flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-left shadow-sm transition-all hover:border-[var(--primary)]/50"
           >
-            <span className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[18px] text-[var(--primary)]">
-                edit_note
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[var(--primary)]">notes</span>
+              <span className="text-base font-medium text-[var(--text-main)]">
+                {showNote ? TEXT.forms.hideNote : TEXT.forms.addNote}
               </span>
-              {showNote ? TEXT.forms.hideNote : TEXT.forms.addNote}
-            </span>
-            <span className="material-symbols-outlined text-[18px] text-[var(--text-muted)]">
+            </div>
+            <span className="material-symbols-outlined text-gray-400 transition-colors group-hover:text-[var(--primary)]">
               {showNote ? 'expand_less' : 'expand_more'}
             </span>
           </button>
@@ -272,15 +274,17 @@ export default function SalaryPointForm({
         )}
 
         {/* Submit Button */}
-        <button
-          type="button"
-          data-testid={testId('submit-button')}
-          onClick={onAdd}
-          disabled={disabled}
-          className="mt-2 flex w-full justify-center rounded-lg border border-transparent bg-[var(--primary)] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:outline-none disabled:opacity-50"
-        >
-          {TEXT.forms.saveLog}
-        </button>
+        <div className="pt-4 pb-24">
+          <button
+            type="button"
+            data-testid={testId('submit-button')}
+            onClick={onAdd}
+            disabled={disabled}
+            className="w-full rounded-xl bg-[var(--primary)] py-4 text-lg font-bold text-white shadow-sm transition-all hover:bg-[var(--primary-hover)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {TEXT.forms.saveLog}
+          </button>
+        </div>
       </form>
     </div>
   )

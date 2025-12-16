@@ -74,7 +74,7 @@ export default function MobileBottomDrawer({
 
       {/* Drawer - only on mobile */}
       <div
-        className={`fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col rounded-t-2xl bg-white shadow-2xl transition-transform duration-300 ease-out lg:hidden ${
+        className={`fixed right-0 bottom-0 left-0 z-50 flex max-h-[92vh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out lg:hidden ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         role="dialog"
@@ -82,35 +82,33 @@ export default function MobileBottomDrawer({
         aria-labelledby="drawer-title"
       >
         {/* Handle bar for swipe indication */}
-        <div className="flex w-full items-center justify-center py-3">
-          <div className="h-1 w-12 rounded-full bg-gray-300" />
+        <div className="flex w-full items-center justify-center pt-3 pb-1">
+          <div className="h-1.5 w-12 rounded-full bg-gray-300" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border-light)] px-4 pb-3">
+        <div className="flex items-center justify-between border-b border-gray-100 px-6 pb-4">
           <div className="flex items-center gap-2">
-            <h2 id="drawer-title" className="text-lg font-semibold text-[var(--text-main)]">
+            <h2 id="drawer-title" className="text-xl font-bold text-[var(--text-main)]">
               {title}
             </h2>
             {pointsCount > 0 && (
-              <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-bold text-white">
                 {pointsCount}
               </span>
             )}
           </div>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100"
+            className="-mr-2 rounded-full p-2 text-gray-400 transition-colors hover:text-gray-600"
             aria-label={TEXT.common.close}
           >
-            <span className="material-symbols-outlined text-[20px] text-[var(--text-muted)]">
-              close
-            </span>
+            <span className="material-symbols-outlined text-2xl">close</span>
           </button>
         </div>
 
         {/* Content - scrollable with bottom padding for mobile nav */}
-        <div className="flex-1 overflow-y-auto pb-20">{content}</div>
+        <div className="flex-1 overflow-y-auto">{content}</div>
       </div>
     </>
   )

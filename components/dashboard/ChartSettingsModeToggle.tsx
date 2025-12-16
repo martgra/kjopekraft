@@ -1,4 +1,3 @@
-import { Toggle } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import { createTestId } from '@/lib/testing/testIds'
 
@@ -12,22 +11,24 @@ export function ChartSettingsModeToggle({ isNetMode, onToggleMode }: ChartSettin
 
   return (
     <div
-      className="flex items-center justify-between rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] px-3 py-2.5"
+      className="flex items-center justify-between gap-4 border-b border-gray-100 p-4"
       data-testid={testId('container')}
     >
       <div>
-        <p className="text-sm font-semibold text-[var(--text-main)]">
-          {TEXT.charts.modeBadgeGross} / {TEXT.charts.modeBadgeNet}
-        </p>
-        <p className="text-xs text-[var(--text-muted)]">{TEXT.views.analysisDescription}</p>
+        <div className="text-sm font-semibold text-[var(--text-main)]">
+          {TEXT.settings.grossNetToggleTitle}
+        </div>
+        <div className="mt-0.5 text-xs text-[var(--text-muted)]">
+          {TEXT.settings.grossNetToggleSubtitle}
+        </div>
       </div>
-      <Toggle
+      <input
+        type="checkbox"
         checked={isNetMode}
         onChange={onToggleMode}
-        label={isNetMode ? TEXT.charts.modeBadgeNet : TEXT.charts.modeBadgeGross}
-        className="scale-90 md:scale-100"
-        labelClassName="min-w-[110px] text-center whitespace-nowrap text-[11px] md:text-xs"
-        dataTestId={testId('toggle')}
+        className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-gray-200 transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-white before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2"
+        aria-label={TEXT.settings.grossNetToggleTitle}
+        data-testid={testId('toggle')}
       />
     </div>
   )

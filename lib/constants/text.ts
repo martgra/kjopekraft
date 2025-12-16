@@ -1,4 +1,7 @@
 export const TEXT = {
+  app: {
+    name: 'kjopekraft.no',
+  },
   common: {
     loading: '⏳ Laster...',
     loadingData: '⏳ Henter data…',
@@ -97,6 +100,17 @@ export const TEXT = {
     showEventBaselines: 'Vis hendelseslinjer',
     referenceEnabled: 'Referanse aktiv',
     eventBaselinesHelp: 'Vis linjer som markerer prisstigning fra forfremmelser og jobbskift',
+  },
+
+  settings: {
+    displaySection: 'Visning',
+    comparisonSection: 'Sammenligning',
+    grossNetToggleTitle: 'Før / Etter skatt',
+    grossNetToggleSubtitle: 'Vis nettolønn i grafer',
+    eventBaselinesTitle: 'Vis hendelseslinjer',
+    eventBaselinesSubtitle: 'Marker forfremmelser',
+    occupationLabel: 'Yrke',
+    occupationHelp: 'Sammenlign din lønnsutvikling med gjennomsnittet for et spesifikt yrke.',
   },
 
   views: {

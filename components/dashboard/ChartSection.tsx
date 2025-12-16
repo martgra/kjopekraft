@@ -145,37 +145,28 @@ function ChartSection({
       data-testid={testId()}
     >
       <div className="border-b border-[var(--border-light)] px-3 py-2.5 md:px-6 md:py-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div className="flex-1 space-y-3">
+        <div className="flex flex-col gap-3">
+          {/* Header row */}
+          <div className="flex items-center justify-between">
             <h2 className="text-base leading-tight font-semibold text-[var(--text-main)] md:text-lg">
-              <span>{TEXT.charts.chartTitle}</span>
+              {TEXT.charts.chartTitle}
             </h2>
 
-            <ChartViewSwitcher viewMode={viewMode} options={viewOptions} onChange={setViewMode} />
-          </div>
-          <div className="flex items-start justify-end gap-2">
             <button
               type="button"
               onClick={openSettings}
-              className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 text-xs font-semibold text-[var(--text-main)] shadow-sm transition hover:bg-[var(--color-gray-50)]"
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-[var(--text-main)] transition hover:bg-[var(--color-gray-50)]"
               data-testid={testId('open-settings')}
             >
               <span className="material-symbols-outlined text-[18px] text-[var(--text-muted)]">
                 tune
               </span>
-              {TEXT.common.settings ?? 'Innstillinger'}
             </button>
           </div>
-        </div>
 
-        {apiError && (
-          <div className="mt-3 rounded-md border border-yellow-300 bg-yellow-50 p-3">
-            <div className="flex items-start gap-2">
-              <span className="material-symbols-outlined text-[20px] text-yellow-700">warning</span>
-              <p className="text-xs text-yellow-800 md:text-sm">{apiError}</p>
-            </div>
-          </div>
-        )}
+          {/* View selector below */}
+          <ChartViewSwitcher viewMode={viewMode} options={viewOptions} onChange={setViewMode} />
+        </div>
       </div>
 
       <div className="relative min-h-0 w-full flex-1 p-2 md:p-6">{renderContent()}</div>
