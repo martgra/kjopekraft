@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { ChartSettingsModal } from '@/components/dashboard/ChartSettingsModal'
+import { ThemeProvider } from '@/contexts/theme/ThemeContext'
 
 const baseProps = {
   isNetMode: false,
@@ -12,25 +13,30 @@ const baseProps = {
   onClose: vi.fn(),
 }
 
+const renderWithTheme = (ui: React.ReactElement) => {
+  return render(<ThemeProvider>{ui}</ThemeProvider>)
+}
+
 describe('ChartSettingsModal', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('renders controls with createTestId selectors when open', () => {
-    render(<ChartSettingsModal {...baseProps} isOpen />)
+    renderWithTheme(<ChartSettingsModal {...baseProps} isOpen />)
 
     expect(screen.getByTestId('chart-settings-modal-container')).toBeInTheDocument()
     expect(screen.getByTestId('chart-settings-mode-toggle')).toBeInTheDocument()
     expect(screen.getByTestId('chart-event-baselines-toggle')).toBeInTheDocument()
     expect(screen.getByTestId('chart-settings-modal-occupation-select')).toBeInTheDocument()
+    expect(screen.getByTestId('theme-toggle-container')).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('chart-settings-modal-close'))
     expect(baseProps.onClose).toHaveBeenCalled()
   })
 
   it('does not render when closed', () => {
-    const { container } = render(<ChartSettingsModal {...baseProps} isOpen={false} />)
+    const { container } = renderWithTheme(<ChartSettingsModal {...baseProps} isOpen={false} />)
     expect(container.firstChild).toBeNull()
   })
 })
