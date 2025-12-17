@@ -78,7 +78,7 @@ export function PointItem({
           <InfoTooltip label={TEXT.common.edit} asChild>
             <button
               onClick={onEdit}
-              className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 dark:active:bg-gray-700 md:p-1"
+              className="rounded-lg p-2 text-gray-400 hover:text-blue-600 active:bg-gray-100 md:p-1 dark:active:bg-gray-700"
               aria-label={TEXT.common.edit}
             >
               <Icon name="edit" size="sm" />
@@ -88,7 +88,7 @@ export function PointItem({
         <InfoTooltip label={TEXT.common.remove} asChild>
           <button
             onClick={onRemove}
-            className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 dark:active:bg-gray-700 md:p-1"
+            className="rounded-lg p-2 text-gray-400 hover:text-red-500 active:bg-gray-100 md:p-1 dark:active:bg-gray-700"
             aria-label="Fjern punkt"
           >
             <Icon name="close" size="sm" />
