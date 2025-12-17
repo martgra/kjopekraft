@@ -45,6 +45,7 @@ export const purchasingPowerSymbol = (delta: number) => {
   const baseText = delta > 0 ? 'trending_up' : 'trending_down'
   return `${baseText}`
 }
+
 export const longTermSummary = (
   baselineYear: number | null,
   change: number,

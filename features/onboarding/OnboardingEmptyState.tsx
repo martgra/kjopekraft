@@ -74,7 +74,7 @@ export default function OnboardingEmptyState({
         {FEATURES.map((feature, index) => (
           <div
             key={index}
-            className="flex flex-row items-center gap-3 rounded-lg border border-[var(--border-light)] bg-white p-3 sm:flex-col sm:items-start sm:p-4"
+            className="flex flex-row items-center gap-3 rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-3 sm:flex-col sm:items-start sm:p-4"
           >
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-green-100)] sm:mb-2">
               <span className="material-symbols-outlined text-[24px] text-[var(--primary)]">

@@ -2,7 +2,7 @@ import type { PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { ScatterDataPoint } from 'chart.js'
 import { buildInflationIndex } from '@/domain/inflation/inflationCalculator'
-import { calculateNetIncome } from '@/features/tax/taxCalculator'
+import { calculateNetIncome } from '@/domain/tax'
 
 export interface EventBaseline {
   year: number
@@ -52,7 +52,7 @@ export function calculateEventBaselines(
 
       data.push({
         x: year,
-        y: displayNet ? calculateNetIncome(year, inflatedValue) : inflatedValue,
+        y: displayNet ? calculateNetIncome(inflatedValue, year) : inflatedValue,
       })
     }
 

@@ -6,7 +6,7 @@ import {
   formatSignedCurrency,
   purchasingPowerCopy,
   purchasingPowerSymbol,
-} from '@/features/salary/components/salaryTableFormatting'
+} from '@/lib/formatters/salaryFormatting'
 
 interface SalaryRowPowerProps {
   row: SalaryTableRow

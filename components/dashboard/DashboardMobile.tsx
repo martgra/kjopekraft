@@ -1,18 +1,11 @@
 'use client'
 
-import { Suspense } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
-import ChartSection from './ChartSection'
 import SalaryPointForm from './SalaryPointForm'
-import DemoDataBanner from './DemoDataBanner'
-import StatusBanner from './StatusBanner'
-import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint, SalaryStatistics, PayChangeReason } from '@/domain/salary'
-import { TEXT } from '@/lib/constants/text'
-import { ChartSkeleton } from '@/components/ui/skeletons'
-import { createTestId } from '@/lib/testing/testIds'
+import DashboardContent from './DashboardContent'
 
 interface DashboardMobileProps {
   // Data
@@ -34,7 +27,7 @@ interface DashboardMobileProps {
   newNote: string
   minYear: number
   validationError: string
-  editingPoint: PayPoint | null
+  isSubmitDisabled: boolean
 
   // Handlers
   onDrawerOpen: () => void
@@ -66,7 +59,7 @@ export default function DashboardMobile({
   newNote,
   minYear,
   validationError,
-  editingPoint,
+  isSubmitDisabled,
   onDrawerOpen,
   onDrawerClose,
   onToggleMode,
@@ -80,8 +73,6 @@ export default function DashboardMobile({
   onNoteChange,
   onSubmitPoint,
 }: DashboardMobileProps) {
-  const dashboardTestId = createTestId('dashboard')
-
   // Drawer content for mobile
   const drawerContent = (
     <div className="flex flex-col">
@@ -93,10 +84,8 @@ export default function DashboardMobile({
         currentYear={currentYear}
         minYear={minYear}
         validationError={validationError}
+        isSubmitDisabled={isSubmitDisabled}
         isNetMode={isNetMode}
-        payPoints={payPoints}
-        inflationData={inflationData}
-        editingPoint={editingPoint}
         onYearChange={onYearChange}
         onPayChange={onPayChange}
         onReasonChange={onReasonChange}
@@ -115,43 +104,23 @@ export default function DashboardMobile({
         pointsCount={payPoints.length}
       />
       <DashboardLayout>
-        <div className="flex min-h-full flex-col gap-6" data-testid={dashboardTestId('root')}>
-          {/* Header - only show when we have data on mobile */}
-          {hasData && (
-            <div className="flex flex-col gap-1 font-medium text-[var(--text-muted)]">
-              {TEXT.app.name}
-            </div>
-          )}
-
-          {/* Metrics - only show when we have data */}
-          {hasData && (
-            <>
-              {isDemoMode && <DemoDataBanner onClearDemo={onClearDemo} />}
-              <StatusBanner statistics={statistics} />
-            </>
-          )}
-
-          {/* Chart Section */}
-          {hasData ? (
-            <div className="mb-8 flex min-h-[350px] flex-1">
-              <Suspense
-                fallback={<ChartSkeleton className="w-full rounded-xl bg-white shadow-sm" />}
-              >
-                <ChartSection
-                  payPoints={payPoints}
-                  inflationData={inflationData}
-                  isNetMode={isNetMode}
-                  onToggleMode={onToggleMode}
-                  onRequestAdd={onDrawerOpen}
-                  onEditPayPoint={onEditPoint}
-                  onRemovePayPoint={onRemovePoint}
-                />
-              </Suspense>
-            </div>
-          ) : (
-            <OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onDrawerOpen} />
-          )}
-        </div>
+        <DashboardContent
+          payPoints={payPoints}
+          statistics={statistics}
+          inflationData={inflationData}
+          hasData={hasData}
+          isDemoMode={isDemoMode}
+          isNetMode={isNetMode}
+          onToggleMode={onToggleMode}
+          onLoadDemo={onLoadDemo}
+          onClearDemo={onClearDemo}
+          onEditPoint={onEditPoint}
+          onRemovePoint={onRemovePoint}
+          onRequestAdd={onDrawerOpen}
+          showHeader={false}
+          showMetricGrid={false}
+          chartWrapperClassName="mb-8"
+        />
       </DashboardLayout>
     </>
   )

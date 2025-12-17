@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { validatePayPoint } from '@/domain/salary'
 import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
@@ -52,7 +52,7 @@ export function usePayPointFormState({
   const [newPay, setNewPay] = useState('')
   const [newReason, setNewReason] = useState<PayChangeReason | ''>('adjustment')
   const [newNote, setNewNote] = useState('')
-  const [validationError, setValidationError] = useState('')
+  const [submitValidationError, setSubmitValidationError] = useState('')
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [editingPoint, setEditingPoint] = useState<PayPoint | null>(null)
@@ -84,7 +84,7 @@ export function usePayPointFormState({
 
   const clearEditing = useCallback(() => {
     setEditingPoint(null)
-    setValidationError('')
+    setSubmitValidationError('')
   }, [])
 
   const openFormModal = useCallback(() => setIsFormModalOpen(true), [])
@@ -101,13 +101,71 @@ export function usePayPointFormState({
     setNewPay(String(point.pay))
     setNewReason(point.reason)
     setNewNote(point.note ?? '')
-    setValidationError('')
+    setSubmitValidationError('')
     setEditingPoint(point)
   }, [])
 
+  const { isSubmitDisabled, liveValidationError } = useMemo(() => {
+    const yearNum = Number(newYear)
+    const payNum = Number(newPay.replace(/\s/g, ''))
+
+    const inflationMinYear =
+      inflationData.length > 0 ? Math.min(...inflationData.map(d => d.year)) : MIN_YEAR
+
+    const isYearValid = !isNaN(yearNum) && yearNum >= MIN_YEAR && yearNum <= currentYear
+    const isYearInInflationRange = !isNaN(yearNum) && yearNum >= inflationMinYear
+    const isPayValid = !isNaN(payNum) && payNum > 0
+    const isReasonValid = Boolean(newReason)
+
+    const isDuplicateYear =
+      !isNaN(yearNum) &&
+      payPoints.some(point => {
+        if (point.year !== yearNum) return false
+        if (!editingPoint) return true
+        if (point.id && editingPoint.id) {
+          return point.id !== editingPoint.id
+        }
+        return (
+          point !== editingPoint &&
+          !(point.year === editingPoint.year && point.pay === editingPoint.pay)
+        )
+      })
+
+    const disabled =
+      !newYear ||
+      !newPay ||
+      !newReason ||
+      !isYearValid ||
+      !isPayValid ||
+      !isYearInInflationRange ||
+      isDuplicateYear
+
+    let error = ''
+    if (isDuplicateYear) {
+      error = TEXT.forms.validation.yearExists
+    } else if (newYear && !isNaN(yearNum)) {
+      if (!isYearValid) {
+        error = TEXT.forms.validation.yearRange
+          .replace('{min}', String(MIN_YEAR))
+          .replace('{max}', String(currentYear))
+      } else if (!isYearInInflationRange) {
+        error = TEXT.forms.validation.inflationDataUnavailable.replace(
+          '{minYear}',
+          String(inflationMinYear),
+        )
+      }
+    } else if (newPay && !isNaN(payNum) && !isPayValid) {
+      error = TEXT.forms.validation.payPositive
+    } else if (newReason && !isReasonValid) {
+      error = TEXT.forms.validation.required
+    }
+
+    return { isSubmitDisabled: disabled, liveValidationError: error }
+  }, [newYear, newPay, newReason, payPoints, editingPoint, inflationData, currentYear])
+
   const submitPoint = useCallback(() => {
     if (!newReason) {
-      setValidationError(TEXT.forms.validation.required)
+      setSubmitValidationError(TEXT.forms.validation.required)
       return false
     }
 
@@ -132,7 +190,7 @@ export function usePayPointFormState({
       : payPoints
     const validation = validatePayPoint(point, existingForValidation, inflationData)
     if (!validation.isValid) {
-      setValidationError(mapValidationToMessage(validation, currentYear))
+      setSubmitValidationError(mapValidationToMessage(validation, currentYear))
       return false
     }
 
@@ -162,7 +220,7 @@ export function usePayPointFormState({
     setNewPay(newPay)
     setNewReason('adjustment')
     setNewNote('')
-    setValidationError('')
+    setSubmitValidationError('')
     setEditingPoint(null)
 
     if (isFormModalOpen) {
@@ -219,10 +277,11 @@ export function usePayPointFormState({
       setPay: (value: string) => setNewPay(formatAmountInput(value)),
       setReason: setNewReason,
       setNote: setNewNote,
-      setValidationError,
+      setValidationError: setSubmitValidationError,
     },
     minYear: MIN_YEAR,
-    validationError,
+    validationError: submitValidationError || liveValidationError,
+    isSubmitDisabled,
     isDemoMode,
     isFormModalOpen,
     editingPoint,

@@ -271,9 +271,24 @@ input {
 
 html,
 body {
-  height: 100%;
-  /* Replace fixed padding with a more responsive approach */
-  padding-bottom: env(safe-area-inset-bottom, 2rem);
+  min-height: 100%;
+}
+
+@supports (height: 100dvh) {
+  html,
+  body {
+    min-height: 100dvh;
+  }
+}
+
+.app-shell {
+  height: 100vh;
+}
+
+@supports (height: 100dvh) {
+  .app-shell {
+    height: 100dvh;
+  }
 }
 
 /* Mobile-specific bottom spacing */

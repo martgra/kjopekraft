@@ -2,26 +2,6 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import SalaryPointForm from '@/components/dashboard/SalaryPointForm'
-import { useState } from 'react'
-
-const ControlledForm = () => {
-  const [newPay, setNewPay] = useState('')
-  const [newYear, setNewYear] = useState('')
-  return (
-    <SalaryPointForm
-      newYear={newYear}
-      newPay={newPay}
-      newReason="adjustment"
-      currentYear={2024}
-      minYear={2020}
-      payPoints={[]}
-      onYearChange={setNewYear}
-      onPayChange={setNewPay}
-      onReasonChange={vi.fn()}
-      onAdd={vi.fn()}
-    />
-  )
-}
 
 describe('SalaryPointForm', () => {
   const defaultProps = {
@@ -30,7 +10,6 @@ describe('SalaryPointForm', () => {
     newReason: 'adjustment' as const,
     currentYear: 2024,
     minYear: 2020,
-    payPoints: [],
     onYearChange: vi.fn(),
     onPayChange: vi.fn(),
     onReasonChange: vi.fn(),
@@ -79,15 +58,6 @@ describe('SalaryPointForm', () => {
     expect(screen.getByText(/årlig bruttolønn/i)).toBeInTheDocument()
   })
 
-  it('formats amount with spaces while typing', async () => {
-    render(<ControlledForm />)
-
-    const amountInput = screen.getByTestId('salary-form-amount-input')
-    await userEvent.type(amountInput, '500000')
-
-    expect((amountInput as HTMLInputElement).value).toBe('500 000')
-  })
-
   it('shows numeric keypad for year input', () => {
     render(<SalaryPointForm {...defaultProps} />)
 
@@ -117,17 +87,15 @@ describe('SalaryPointForm', () => {
     expect(onPayChange).toHaveBeenCalled()
   })
 
-  it('disables submit button when form is incomplete', () => {
-    render(<SalaryPointForm {...defaultProps} />)
+  it('disables submit button when instructed', () => {
+    render(<SalaryPointForm {...defaultProps} isSubmitDisabled />)
 
     const submitButton = screen.getByTestId('salary-form-submit-button')
     expect(submitButton).toBeDisabled()
   })
 
-  it('enables submit button when all fields are valid', () => {
-    render(
-      <SalaryPointForm {...defaultProps} newYear="2023" newPay="500000" newReason="adjustment" />,
-    )
+  it('enables submit button when not disabled', () => {
+    render(<SalaryPointForm {...defaultProps} isSubmitDisabled={false} />)
 
     const submitButton = screen.getByTestId('salary-form-submit-button')
     expect(submitButton).not.toBeDisabled()
@@ -168,19 +136,5 @@ describe('SalaryPointForm', () => {
     render(<SalaryPointForm {...defaultProps} isNetMode={true} />)
 
     expect(screen.getByText(/beløp etter skatt/i)).toBeInTheDocument()
-  })
-
-  it('shows duplicate year warning and disables submit', () => {
-    render(
-      <SalaryPointForm
-        {...defaultProps}
-        newYear="2023"
-        newPay="500000"
-        payPoints={[{ year: 2023, pay: 400000, reason: 'adjustment', id: '1' }]}
-      />,
-    )
-
-    expect(screen.getByText(/allerede lagt til/i)).toBeInTheDocument()
-    expect(screen.getByTestId('salary-form-submit-button')).toBeDisabled()
   })
 })

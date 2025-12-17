@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { InflationDataPoint } from '@/domain/inflation'
-import type { PayChangeReason, PayPoint } from '@/domain/salary'
+import type { PayChangeReason } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 import { Select, SelectOption } from '@/components/ui/atoms'
 import { createTestId } from '@/lib/testing/testIds'
@@ -14,11 +13,9 @@ interface SalaryPointFormProps {
   newNote?: string
   currentYear: number
   minYear: number
-  payPoints?: PayPoint[]
   validationError?: string
+  isSubmitDisabled?: boolean
   isNetMode?: boolean
-  inflationData?: InflationDataPoint[]
-  editingPoint?: PayPoint | null
   onYearChange: (yearStr: string) => void
   onPayChange: (payStr: string) => void
   onReasonChange: (reason: PayChangeReason | '') => void
@@ -33,120 +30,25 @@ export default function SalaryPointForm({
   newNote = '',
   currentYear,
   minYear,
-  payPoints = [],
-  validationError: externalValidationError,
-  editingPoint = null,
+  validationError,
+  isSubmitDisabled = false,
   onYearChange,
   onPayChange,
   onReasonChange,
   onNoteChange,
   onAdd,
   isNetMode,
-  inflationData,
 }: SalaryPointFormProps) {
-  const [internalValidationError, setInternalValidationError] = useState<string>('')
   const [showNote, setShowNote] = useState(() => Boolean(newNote))
-  const validationError = externalValidationError || internalValidationError
   const testId = createTestId('salary-form')
 
-  const yearNum = Number(newYear)
-  const payNum = Number(newPay.replace(/\s/g, ''))
-
-  const formatAmountInput = (value: string) => {
-    const digitsOnly = value.replace(/\D/g, '')
-    if (!digitsOnly) return ''
-    return digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-  }
-
-  // Determine inflation data range
-  const inflationMinYear =
-    inflationData && inflationData.length > 0
-      ? Math.min(...inflationData.map(d => d.year))
-      : minYear
-
-  const isYearValid = !isNaN(yearNum) && yearNum >= minYear && yearNum <= currentYear
-  const isYearInInflationRange = !isNaN(yearNum) && yearNum >= inflationMinYear
-  const isPayValid = !isNaN(payNum) && payNum > 0
-  const isReasonValid = Boolean(newReason)
-  const isDuplicateYear =
-    !isNaN(yearNum) &&
-    payPoints.some(point => {
-      // Skip if not the same year
-      if (point.year !== yearNum) return false
-
-      // If not editing, any matching year is a duplicate
-      if (!editingPoint) return true
-
-      // When editing, exclude the point being edited
-      // If both have IDs, compare by ID
-      if (point.id && editingPoint.id) {
-        return point.id !== editingPoint.id
-      }
-
-      // Otherwise compare by reference or year+pay combination
-      return (
-        point !== editingPoint &&
-        !(point.year === editingPoint.year && point.pay === editingPoint.pay)
-      )
-    })
-
-  const disabled =
-    !newYear ||
-    !newPay ||
-    !newReason ||
-    !isYearValid ||
-    !isPayValid ||
-    !isYearInInflationRange ||
-    isDuplicateYear
+  const disabled = isSubmitDisabled
 
   useEffect(() => {
     if (newNote && !showNote) {
       setShowNote(true)
     }
   }, [newNote, showNote])
-
-  useEffect(() => {
-    if (isDuplicateYear) {
-      setInternalValidationError(TEXT.forms.validation.yearExists)
-    } else if (newYear && !isNaN(yearNum)) {
-      if (!isYearValid) {
-        setInternalValidationError(
-          TEXT.forms.validation.yearRange
-            .replace('{min}', String(minYear))
-            .replace('{max}', String(currentYear)),
-        )
-      } else if (!isYearInInflationRange) {
-        setInternalValidationError(
-          TEXT.forms.validation.inflationDataUnavailable.replace(
-            '{minYear}',
-            String(inflationMinYear),
-          ),
-        )
-      } else {
-        setInternalValidationError('')
-      }
-    } else if (newPay && !isNaN(payNum) && !isPayValid) {
-      setInternalValidationError(TEXT.forms.validation.payPositive)
-    } else if (newReason && !isReasonValid) {
-      setInternalValidationError(TEXT.forms.validation.required)
-    } else {
-      setInternalValidationError('')
-    }
-  }, [
-    newYear,
-    newPay,
-    newReason,
-    yearNum,
-    payNum,
-    isYearValid,
-    isYearInInflationRange,
-    isPayValid,
-    isReasonValid,
-    minYear,
-    currentYear,
-    inflationMinYear,
-    isDuplicateYear,
-  ])
 
   return (
     <div className="space-y-6 p-6" data-testid={testId('container')}>
@@ -178,7 +80,7 @@ export default function SalaryPointForm({
               type="text"
               inputMode="numeric"
               value={newPay}
-              onChange={e => onPayChange(formatAmountInput(e.target.value))}
+              onChange={e => onPayChange(e.target.value)}
               placeholder="0"
               className="block w-full rounded-xl border border-transparent bg-[var(--background-light)] py-3.5 pr-4 pl-12 text-lg font-medium text-[var(--text-main)] placeholder-gray-400 shadow-sm transition-all focus:border-[var(--primary)] focus:ring-0"
             />
