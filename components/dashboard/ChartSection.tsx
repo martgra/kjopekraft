@@ -47,7 +47,6 @@ function ChartSection({
     selectedOccupation,
     occupationKey,
     handleOccupationChange,
-    apiError,
     handleReferenceError,
   } = useChartControls({
     payPoints,
@@ -136,7 +135,6 @@ function ChartSection({
     )
   }
 
-  const hasReferenceSeries = isReferenceEnabled && referenceSeries.length > 0
   const testId = createTestId('chart-section')
 
   return (
@@ -175,7 +173,6 @@ function ChartSection({
         isOpen={isSettingsOpen}
         isNetMode={isNetMode}
         showEventBaselines={showEventBaselines}
-        hasReferenceSeries={hasReferenceSeries}
         selectedOccupation={selectedOccupation}
         onToggleMode={onToggleMode}
         onToggleEventBaselines={setShowEventBaselines}

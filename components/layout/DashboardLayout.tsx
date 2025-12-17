@@ -10,14 +10,16 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children, rightPanel }: DashboardLayoutProps) {
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-[var(--background-light)] lg:flex-row">
+    <div className="app-shell flex flex-col overflow-hidden bg-[var(--background-light)] lg:flex-row">
       {/* Left Sidebar - Hidden on mobile, shown on desktop */}
       <div className="hidden lg:flex lg:h-full">
         <Sidebar />
       </div>
 
       {/* Main Content - Scrollable with mobile bottom padding for nav */}
-      <div className="flex-1 overflow-y-auto p-6 pb-20 lg:p-10 lg:pb-10">{children}</div>
+      <div className="flex-1 overflow-y-auto p-6 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:p-10 lg:pb-10">
+        {children}
+      </div>
 
       {/* Right Panel - Hidden on mobile (uses drawer instead), sidebar on desktop */}
       {rightPanel && (

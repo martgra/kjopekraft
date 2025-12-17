@@ -13,8 +13,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants = {
   primary: 'bg-[var(--primary)] text-white hover:opacity-90 shadow-sm',
-  secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-[var(--border-light)]',
-  ghost: 'bg-transparent text-[var(--text-main)] hover:bg-gray-100',
+  secondary:
+    'bg-[var(--surface-subtle)] text-[var(--text-main)] hover:bg-[var(--surface-light)] border border-[var(--border-light)]',
+  ghost: 'bg-transparent text-[var(--text-main)] hover:bg-[var(--surface-subtle)]',
   danger: 'bg-red-500 text-white hover:bg-red-600 shadow-sm',
   success: 'bg-green-500 text-white hover:bg-green-600 shadow-sm',
 }

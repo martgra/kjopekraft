@@ -1,18 +1,18 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import type { TouchEvent } from 'react'
 import { Badge } from '@/components/ui/atoms'
 import type { PayPoint, SalaryTableRow } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
+import { useSalaryRowActions } from '@/features/salary/hooks/useSalaryRowActions'
 import {
   formatCurrencyWithUnit,
   formatDate,
   reasonToLabel,
   reasonVariant,
-} from './salaryTableFormatting'
+} from '@/lib/formatters/salaryFormatting'
 import { SalaryRowExpansion } from '@/components/ui/salary/SalaryRowExpansion'
 import { SalaryRowPower } from '@/components/ui/salary/SalaryRowPower'
+import { SalaryRowActionButtons } from './SalaryRowActionButtons'
 
 interface SalaryTableRowMobileProps {
   row: SalaryTableRow
@@ -39,80 +39,22 @@ export function SalaryTableRowMobile({
   onEditPayPoint,
   onRemovePayPoint,
 }: SalaryTableRowMobileProps) {
-  const [isActionMenuOpen, setIsActionMenuOpen] = useState(false)
-  const touchStartX = useRef<number | null>(null)
-  const longPressTimer = useRef<number | null>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const rowRef = useRef<HTMLDivElement>(null)
-
-  const hasActions = Boolean(payPoint && (onEditPayPoint || onRemovePayPoint))
-
-  const openActions = () => {
-    if (!hasActions) return
-    setIsActionMenuOpen(true)
-  }
-
-  const closeActions = () => {
-    setIsActionMenuOpen(false)
-    if (longPressTimer.current) {
-      window.clearTimeout(longPressTimer.current)
-      longPressTimer.current = null
-    }
-  }
-
-  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
-    if (!hasActions || e.touches.length !== 1) return
-    touchStartX.current = e.touches[0]?.clientX ?? null
-    // Long-press to reveal actions
-    longPressTimer.current = window.setTimeout(() => {
-      openActions()
-    }, 450)
-  }
-
-  const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-    if (!hasActions || touchStartX.current === null) return
-    const currentX = e.touches[0]?.clientX
-    if (currentX === undefined) return
-    const deltaX = currentX - touchStartX.current
-    // Swipe left to reveal actions
-    if (deltaX < -40) {
-      setIsActionMenuOpen(true)
-      if (longPressTimer.current) {
-        window.clearTimeout(longPressTimer.current)
-        longPressTimer.current = null
-      }
-    }
-  }
-
-  const handleTouchEnd = () => {
-    if (longPressTimer.current) {
-      window.clearTimeout(longPressTimer.current)
-      longPressTimer.current = null
-    }
-    touchStartX.current = null
-  }
-
-  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
-      closeActions()
-    }
-  }
-
-  // Close menu when clicking outside of it (but not outside the row)
-  useEffect(() => {
-    if (!isActionMenuOpen) return
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node
-      // Close if clicking outside the menu, even if inside the row
-      if (menuRef.current && !menuRef.current.contains(target)) {
-        closeActions()
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isActionMenuOpen])
+  const {
+    hasActions,
+    isActionMenuOpen,
+    menuRef,
+    rowRef,
+    toggleActions,
+    closeActions,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    handleBlur,
+  } = useSalaryRowActions({
+    payPoint,
+    onEditPayPoint,
+    onRemovePayPoint,
+  })
 
   return (
     <div
@@ -129,7 +71,7 @@ export function SalaryTableRowMobile({
         {hasActions && (
           <button
             type="button"
-            onClick={() => setIsActionMenuOpen(open => !open)}
+            onClick={toggleActions}
             className="rounded-full p-1.5 text-[var(--text-muted)] transition hover:text-[var(--primary)]"
             aria-label="Åpne handlinger"
           >
@@ -155,31 +97,14 @@ export function SalaryTableRowMobile({
           ref={menuRef}
           className="absolute top-10 right-2 z-10 w-36 rounded-lg border border-[var(--border-light)] bg-white p-2 shadow-lg dark:bg-gray-800"
         >
-          {onEditPayPoint && (
-            <button
-              type="button"
-              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-semibold text-[var(--text-main)] hover:bg-[var(--color-gray-50)]"
-              onClick={() => {
-                onEditPayPoint(payPoint!)
-                closeActions()
-              }}
-            >
-              <span className="material-symbols-outlined text-[18px]">edit</span>
-              {TEXT.common.edit}
-            </button>
-          )}
-          {onRemovePayPoint && (
-            <button
-              type="button"
-              className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-semibold text-red-600 hover:bg-[var(--color-gray-50)]"
-              onClick={() => {
-                onRemovePayPoint(payPoint!.year, payPoint!.pay)
-                closeActions()
-              }}
-            >
-              <span className="material-symbols-outlined text-[18px]">delete</span>
-              {TEXT.common.remove}
-            </button>
+          {payPoint && (
+            <SalaryRowActionButtons
+              payPoint={payPoint}
+              variant="mobile"
+              onEditPayPoint={onEditPayPoint}
+              onRemovePayPoint={onRemovePayPoint}
+              onAfterAction={closeActions}
+            />
           )}
         </div>
       )}

@@ -1,18 +1,12 @@
 'use client'
 
-import { Suspense } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import MetricGrid from './MetricGrid'
-import ChartSection from './ChartSection'
 import SalaryPointForm from './SalaryPointForm'
-import DemoDataBanner from './DemoDataBanner'
-import StatusBanner from './StatusBanner'
-import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint, SalaryStatistics, PayChangeReason } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
-import { MetricGridSkeleton, ChartSkeleton } from '@/components/ui/skeletons'
 import { createTestId } from '@/lib/testing/testIds'
+import DashboardContent from './DashboardContent'
 
 interface DashboardDesktopProps {
   // Data
@@ -34,7 +28,7 @@ interface DashboardDesktopProps {
   newNote: string
   minYear: number
   validationError: string
-  editingPoint: PayPoint | null
+  isSubmitDisabled: boolean
 
   // Handlers
   onOpenFormModal: () => void
@@ -66,7 +60,7 @@ export default function DashboardDesktop({
   newNote,
   minYear,
   validationError,
-  editingPoint,
+  isSubmitDisabled,
   onOpenFormModal,
   onCloseFormModal,
   onToggleMode,
@@ -93,10 +87,8 @@ export default function DashboardDesktop({
         currentYear={currentYear}
         minYear={minYear}
         validationError={validationError}
+        isSubmitDisabled={isSubmitDisabled}
         isNetMode={isNetMode}
-        payPoints={payPoints}
-        inflationData={inflationData}
-        editingPoint={editingPoint}
         onYearChange={onYearChange}
         onPayChange={onPayChange}
         onReasonChange={onReasonChange}
@@ -109,50 +101,20 @@ export default function DashboardDesktop({
   return (
     <>
       <DashboardLayout rightPanel={rightPanelContent}>
-        {/* Main Dashboard Content */}
-        <div className="flex min-h-full flex-col gap-6" data-testid={dashboardTestId('root')}>
-          {/* Header */}
-          <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-bold text-[var(--text-main)] md:text-3xl">
-              {TEXT.dashboard.annualOverview}
-            </h1>
-            <p className="text-sm text-[var(--text-muted)] md:mt-1">
-              {TEXT.dashboard.annualOverviewSubtitle}
-            </p>
-          </div>
-
-          {/* Metrics Grid - only show when we have data */}
-          {hasData && (
-            <>
-              {isDemoMode && <DemoDataBanner onClearDemo={onClearDemo} />}
-              <StatusBanner statistics={statistics} />
-              <Suspense fallback={<MetricGridSkeleton />}>
-                <MetricGrid statistics={statistics} isNetMode={isNetMode} />
-              </Suspense>
-            </>
-          )}
-
-          {/* Chart Section */}
-          {hasData ? (
-            <div className="flex min-h-[350px] flex-1">
-              <Suspense
-                fallback={<ChartSkeleton className="w-full rounded-xl bg-white shadow-sm" />}
-              >
-                <ChartSection
-                  payPoints={payPoints}
-                  inflationData={inflationData}
-                  isNetMode={isNetMode}
-                  onToggleMode={onToggleMode}
-                  onRequestAdd={onOpenFormModal}
-                  onEditPayPoint={onEditPoint}
-                  onRemovePayPoint={onRemovePoint}
-                />
-              </Suspense>
-            </div>
-          ) : (
-            <OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onOpenFormModal} />
-          )}
-        </div>
+        <DashboardContent
+          payPoints={payPoints}
+          statistics={statistics}
+          inflationData={inflationData}
+          hasData={hasData}
+          isDemoMode={isDemoMode}
+          isNetMode={isNetMode}
+          onToggleMode={onToggleMode}
+          onLoadDemo={onLoadDemo}
+          onClearDemo={onClearDemo}
+          onEditPoint={onEditPoint}
+          onRemovePoint={onRemovePoint}
+          onRequestAdd={onOpenFormModal}
+        />
       </DashboardLayout>
 
       {/* Desktop Modal Overlay */}
@@ -183,9 +145,8 @@ export default function DashboardDesktop({
                 currentYear={currentYear}
                 minYear={minYear}
                 validationError={validationError}
+                isSubmitDisabled={isSubmitDisabled}
                 isNetMode={isNetMode}
-                payPoints={payPoints}
-                inflationData={inflationData}
                 onYearChange={onYearChange}
                 onPayChange={onPayChange}
                 onReasonChange={onReasonChange}

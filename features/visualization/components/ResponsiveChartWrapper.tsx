@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { ScatterDataPoint } from 'chart.js'
 import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import type { PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
+import { useIsMobile } from '@/lib/hooks/useIsMobile'
 import MobilePayChart from './MobilePayChart'
 import DesktopPayChart from './DesktopPayChart'
 import { calculateEventBaselines } from '../utils/eventBaselines'
@@ -34,14 +35,7 @@ export default function ResponsiveChartWrapper({
   inflationData,
   showEventBaselines = true,
 }: ResponsiveChartWrapperProps) {
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  const isMobile = useIsMobile()
 
   // Calculate event baselines for promotion/newJob events (only if enabled)
   const eventBaselines = useMemo(() => {

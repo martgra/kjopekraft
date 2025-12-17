@@ -74,7 +74,7 @@ export default function MobileBottomDrawer({
 
       {/* Drawer - only on mobile */}
       <div
-        className={`fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
+        className={`fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         role="dialog"

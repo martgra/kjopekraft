@@ -5,7 +5,6 @@ import { ThemeProvider } from '@/contexts/theme/ThemeContext'
 const baseProps = {
   isNetMode: false,
   showEventBaselines: false,
-  hasReferenceSeries: false,
   selectedOccupation: 'none' as const,
   onToggleMode: vi.fn(),
   onToggleEventBaselines: vi.fn(),

@@ -6,7 +6,7 @@ import DashboardDesktop from './DashboardDesktop'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
 import { usePayPointFormState } from '@/features/salary/hooks/usePayPointFormState'
 import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
-import { useIsMobile } from './hooks/useIsMobile'
+import { useIsMobile } from '@/lib/hooks/useIsMobile'
 import { DEMO_PAY_POINTS } from '@/features/onboarding/demoData'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint } from '@/domain/salary'
@@ -40,9 +40,9 @@ export default function Dashboard({
     setters: { setYear, setPay, setReason, setNote, setValidationError },
     minYear,
     validationError,
+    isSubmitDisabled,
     isDemoMode,
     isFormModalOpen,
-    editingPoint,
     openFormModal,
     closeFormModal,
     clearEditing,
@@ -121,7 +121,7 @@ export default function Dashboard({
     newNote,
     minYear,
     validationError,
-    editingPoint,
+    isSubmitDisabled,
     onToggleMode: toggleMode,
     onLoadDemo: handleLoadDemo,
     onClearDemo: handleClearDemo,

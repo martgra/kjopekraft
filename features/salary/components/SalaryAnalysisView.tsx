@@ -8,6 +8,7 @@ import { calculateNetIncome } from '@/domain/tax'
 import type { ReferenceDataPoint } from '@/domain/reference'
 import { TEXT } from '@/lib/constants/text'
 import { cn } from '@/lib/utils/cn'
+import { formatCurrency, formatPercent } from '@/lib/formatters/salaryFormatting'
 
 interface SalaryAnalysisViewProps {
   salaryData: SalaryDataPoint[]
@@ -16,18 +17,15 @@ interface SalaryAnalysisViewProps {
   isLoading?: boolean
 }
 
-const formatCurrency = (value: number | null) =>
-  value === null ? TEXT.common.noData : Math.round(value).toLocaleString('nb-NO')
-
-const formatPercent = (value: number | null) =>
-  value === null ? TEXT.common.noData : `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`
-
 export function SalaryAnalysisView({
   salaryData,
   referenceData = [],
   isNetMode,
   isLoading = false,
 }: SalaryAnalysisViewProps) {
+  const formatPercentWithFallback = (value: number | null) =>
+    formatPercent(value) || TEXT.common.noData
+
   const transformPay = useMemo(
     () =>
       isNetMode ? (value: number, year: number) => calculateNetIncome(value, year) : undefined,
@@ -73,7 +71,7 @@ export function SalaryAnalysisView({
                   {insight.year} · {formatCurrency(insight.absoluteChange)} {TEXT.common.pts}
                 </p>
                 <p className="text-sm text-[var(--text-muted)]">
-                  {formatPercent(insight.percentChange)}
+                  {formatPercentWithFallback(insight.percentChange)}
                 </p>
               </div>
               <Badge variant="success">{TEXT.views.analysis.badgeRaise}</Badge>
@@ -95,7 +93,7 @@ export function SalaryAnalysisView({
                   {insight.year} · {formatCurrency(insight.delta)} {TEXT.common.pts}
                 </p>
                 <p className="text-sm text-[var(--text-muted)]">
-                  {formatPercent(insight.percentDelta)}
+                  {formatPercentWithFallback(insight.percentDelta)}
                 </p>
               </div>
               <Badge variant="success">{TEXT.views.analysis.badgePower}</Badge>
@@ -122,7 +120,7 @@ export function SalaryAnalysisView({
                     insight.delta >= 0 ? 'text-[var(--primary)]' : 'text-red-600',
                   )}
                 >
-                  {formatPercent(insight.percentDelta)}
+                  {formatPercentWithFallback(insight.percentDelta)}
                 </p>
               </div>
               <Badge variant="warning">{TEXT.views.analysis.badgeHeadwind}</Badge>
@@ -146,7 +144,7 @@ export function SalaryAnalysisView({
                 {insight.bestGap && (
                   <p className="text-sm text-[var(--text-muted)]">
                     {insight.bestGap.year}: +{formatCurrency(insight.bestGap.gap)} {TEXT.common.pts}{' '}
-                    ({formatPercent(insight.bestGap.gapPercent)})
+                    ({formatPercentWithFallback(insight.bestGap.gapPercent)})
                   </p>
                 )}
               </div>
@@ -171,7 +169,7 @@ export function SalaryAnalysisView({
                 {insight.worstGap && (
                   <p className="text-sm text-[var(--text-muted)]">
                     {insight.worstGap.year}: {formatCurrency(insight.worstGap.gap)}{' '}
-                    {TEXT.common.pts} ({formatPercent(insight.worstGap.gapPercent)})
+                    {TEXT.common.pts} ({formatPercentWithFallback(insight.worstGap.gapPercent)})
                   </p>
                 )}
               </div>

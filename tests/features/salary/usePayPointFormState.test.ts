@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { act, renderHook } from '@testing-library/react'
 import { usePayPointFormState } from '@/features/salary/hooks/usePayPointFormState'
 import type { PayPoint } from '@/domain/salary'
+import { TEXT } from '@/lib/constants/text'
 
 const payPoints: PayPoint[] = [
   { id: 'p1', year: 2020, pay: 500000, reason: 'newJob' },
@@ -41,6 +42,24 @@ describe('usePayPointFormState', () => {
 
     expect(result.current.validationError).toBeTruthy()
     expect(addPoint).not.toHaveBeenCalled()
+  })
+
+  it('formats pay input with spaces', () => {
+    const { result } = setup()
+
+    act(() => result.current.setters.setPay('500000'))
+
+    expect(result.current.fields.pay).toBe('500 000')
+  })
+
+  it('enables submit when all required fields are valid', () => {
+    const { result } = setup()
+
+    act(() => result.current.setters.setYear('2022'))
+    act(() => result.current.setters.setPay('600000'))
+    act(() => result.current.setters.setReason('adjustment'))
+
+    expect(result.current.isSubmitDisabled).toBe(false)
   })
 
   it('adds point and advances year when valid', () => {
@@ -172,7 +191,7 @@ describe('usePayPointFormState', () => {
       // Clear editing without submitting
       act(() => result.current.clearEditing())
 
-      expect(result.current.validationError).toBe('')
+      expect(result.current.validationError).toBe(TEXT.forms.validation.yearExists)
       expect(addPoint).not.toHaveBeenCalled()
       expect(removePoint).not.toHaveBeenCalled()
     })

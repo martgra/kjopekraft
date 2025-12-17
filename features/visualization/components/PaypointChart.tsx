@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react'
 import LoadingSpinner from '@/components/ui/common/LoadingSpinner'
-import { calculateNetIncome } from '@/features/tax/taxCalculator'
+import { calculateNetIncome } from '@/domain/tax'
 import type { PayPoint, YearRange } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { ScatterDataPoint } from 'chart.js'
@@ -40,7 +40,7 @@ export default function PaypointChart({
   // 1) Build the displayed actual series (gross or net):
   const actualSeries: ScatterDataPoint[] = grossActualSeries.map(pt => ({
     x: pt.x,
-    y: displayNet ? calculateNetIncome(pt.x as number, pt.y as number) : (pt.y as number),
+    y: displayNet ? calculateNetIncome(pt.y as number, pt.x as number) : (pt.y as number),
   }))
 
   // 2) Rescale the rawInflSeries so it starts at the *display* base pay:

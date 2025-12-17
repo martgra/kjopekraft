@@ -5,13 +5,11 @@ import { createTestId } from '@/lib/testing/testIds'
 
 interface ChartSettingsReferenceProps {
   selectedOccupation: OccupationKey | 'none'
-  hasReferenceSeries: boolean
   onOccupationChange: (value: string) => void
 }
 
 export function ChartSettingsReference({
   selectedOccupation,
-  hasReferenceSeries,
   onOccupationChange,
 }: ChartSettingsReferenceProps) {
   const testId = createTestId('chart-settings-reference')

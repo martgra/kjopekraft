@@ -6,7 +6,7 @@ import {
   formatPercent,
   longTermSummary,
   reasonToLabel,
-} from '@/features/salary/components/salaryTableFormatting'
+} from '@/lib/formatters/salaryFormatting'
 
 interface SalaryRowExpansionProps {
   row: SalaryTableRow

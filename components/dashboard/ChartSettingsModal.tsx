@@ -10,7 +10,6 @@ interface ChartSettingsModalProps {
   isOpen: boolean
   isNetMode: boolean
   showEventBaselines: boolean
-  hasReferenceSeries: boolean
   selectedOccupation: OccupationKey | 'none'
   onToggleMode: () => void
   onToggleEventBaselines: (next: boolean) => void
@@ -22,7 +21,6 @@ export function ChartSettingsModal({
   isOpen,
   isNetMode,
   showEventBaselines,
-  hasReferenceSeries,
   selectedOccupation,
   onToggleMode,
   onToggleEventBaselines,
@@ -87,7 +85,6 @@ export function ChartSettingsModal({
 
               <ChartSettingsReference
                 selectedOccupation={selectedOccupation}
-                hasReferenceSeries={hasReferenceSeries}
                 onOccupationChange={onOccupationChange}
               />
             </div>

@@ -1,8 +1,22 @@
 /// <reference types="vitest" />
 
 import { createReasonMarkerPlugin, REASON_EMOJI } from '@/features/visualization/utils/chartMarkers'
-import type { Chart } from 'chart.js'
 import type { PayPoint } from '@/domain/salary'
+
+type MockScale = {
+  getPixelForValue: (
+    value: number,
+    index?: number,
+    info?: unknown,
+    includeOffset?: boolean,
+  ) => number
+}
+
+type MockChart = {
+  ctx: CanvasRenderingContext2D
+  scales: { x?: MockScale; y?: MockScale }
+  data: { datasets: Array<{ data: Array<{ x: number; y: number }> }> }
+}
 
 describe('REASON_EMOJI', () => {
   it('defines emoji for promotion', () => {
@@ -51,7 +65,7 @@ describe('createReasonMarkerPlugin', () => {
   describe('afterDatasetsDraw hook', () => {
     it('handles charts with no scales gracefully', () => {
       const plugin = createReasonMarkerPlugin(mockPayPoints)
-      const mockChart = {
+      const mockChart: MockChart = {
         ctx: {} as CanvasRenderingContext2D,
         scales: {},
         data: { datasets: [{ data: [] }] },
@@ -69,7 +83,7 @@ describe('createReasonMarkerPlugin', () => {
         info?: unknown,
         includeOffset?: boolean,
       ) => number = vi.fn().mockReturnValue(0)
-      const mockChart = {
+      const mockChart: MockChart = {
         ctx: {} as CanvasRenderingContext2D,
         scales: {
           x: { getPixelForValue: getPixelForValueMock },
@@ -100,7 +114,7 @@ describe('createReasonMarkerPlugin', () => {
         includeOffset?: boolean,
       ) => number = vi.fn().mockReturnValue(100)
 
-      const mockChart = {
+      const mockChart: MockChart = {
         ctx: mockCtx,
         scales: {
           x: { getPixelForValue: getPixelForValueMock },
@@ -148,7 +162,7 @@ describe('createReasonMarkerPlugin', () => {
         includeOffset?: boolean,
       ) => number = vi.fn().mockReturnValue(100)
 
-      const mockChart = {
+      const mockChart: MockChart = {
         ctx: mockCtx,
         scales: {
           x: { getPixelForValue: getPixelForValueMock },
@@ -161,7 +175,7 @@ describe('createReasonMarkerPlugin', () => {
             },
           ],
         },
-      } as any
+      }
 
       const draw = plugin.afterDatasetsDraw as (chart: unknown) => void
       draw(mockChart)
@@ -177,7 +191,7 @@ describe('createReasonMarkerPlugin', () => {
         fillText: vi.fn(),
       } as unknown as CanvasRenderingContext2D
 
-      const mockChart = {
+      const mockChart: MockChart = {
         ctx: mockCtx,
         scales: {
           x: { getPixelForValue: vi.fn() },
@@ -190,7 +204,7 @@ describe('createReasonMarkerPlugin', () => {
             },
           ],
         },
-      } as any
+      }
 
       const draw = plugin.afterDatasetsDraw as (chart: unknown) => void
       draw(mockChart)

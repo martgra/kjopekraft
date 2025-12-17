@@ -10,9 +10,10 @@ import {
   formatSignedCurrency,
   reasonToLabel,
   reasonVariant,
-} from './salaryTableFormatting'
+} from '@/lib/formatters/salaryFormatting'
 import { SalaryRowExpansion } from '@/components/ui/salary/SalaryRowExpansion'
 import { SalaryRowPower } from '@/components/ui/salary/SalaryRowPower'
+import { SalaryRowActionButtons } from './SalaryRowActionButtons'
 
 interface SalaryTableRowDesktopProps {
   row: SalaryTableRow
@@ -71,26 +72,12 @@ export function SalaryTableRowDesktop({
             </div>
             {(onEditPayPoint || onRemovePayPoint) && (
               <div className="flex flex-wrap gap-2 text-xs font-semibold text-[var(--text-muted)]">
-                {onEditPayPoint && (
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-full bg-[var(--color-gray-50)] px-2 py-1 text-[var(--primary)] transition hover:bg-white hover:shadow-sm"
-                    onClick={() => onEditPayPoint(payPoint)}
-                  >
-                    <span className="material-symbols-outlined text-[16px]">edit</span>
-                    {TEXT.common.edit}
-                  </button>
-                )}
-                {onRemovePayPoint && (
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-full bg-[var(--color-gray-50)] px-2 py-1 text-red-600 transition hover:bg-white hover:shadow-sm"
-                    onClick={() => onRemovePayPoint(payPoint.year, payPoint.pay)}
-                  >
-                    <span className="material-symbols-outlined text-[16px]">delete</span>
-                    {TEXT.common.remove}
-                  </button>
-                )}
+                <SalaryRowActionButtons
+                  payPoint={payPoint}
+                  variant="desktop"
+                  onEditPayPoint={onEditPayPoint}
+                  onRemovePayPoint={onRemovePayPoint}
+                />
               </div>
             )}
           </div>
