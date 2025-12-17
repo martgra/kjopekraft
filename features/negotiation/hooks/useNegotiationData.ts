@@ -31,13 +31,13 @@ export function useNegotiationData() {
   )
 
   const persistDraft = (nextDraft: NegotiationDraft) => {
+    const formData = new FormData()
+    formData.append('draft', JSON.stringify(nextDraft))
     startTransition(() => {
       setOptimisticDraft(nextDraft)
       setDraft(nextDraft)
+      saveDraftAction(formData)
     })
-    const formData = new FormData()
-    formData.append('draft', JSON.stringify(nextDraft))
-    saveDraftAction(formData)
   }
 
   const safeUserInfo = (value: NegotiationDraft['userInfo']) =>
