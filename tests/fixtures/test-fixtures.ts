@@ -117,10 +117,6 @@ export class DashboardPage {
     return this.settingsModal.getByTestId('chart-settings-reference-search')
   }
 
-  get occupationQuickPicks() {
-    return this.settingsModal.getByTestId('chart-settings-reference-quick-picks')
-  }
-
   get selectedOccupation() {
     return this.settingsModal.getByTestId('chart-settings-reference-selected')
   }

@@ -42,14 +42,12 @@ test.describe('Reference salary (Stortinget)', () => {
     await page.getByTestId('chart-section-open-settings').click()
     await expect(page.getByTestId('chart-settings-modal-container')).toBeVisible()
 
-    // Choose Stortingsrepresentant via quick pick
+    // Choose Stortingsrepresentant via search
     const referenceResponse = page.waitForResponse(
       resp => resp.url().includes('/api/reference/storting') && resp.ok(),
     )
-    await page
-      .getByTestId('chart-settings-reference-quick-picks')
-      .getByText(/stortingsrepresentant/i)
-      .click()
+    await page.getByTestId('chart-settings-reference-search').fill('storting')
+    await page.getByText(/stortingsrepresentant/i).click()
     await referenceResponse
 
     // Selected badge should now show the chosen occupation
@@ -76,10 +74,8 @@ test.describe('Reference salary (Stortinget)', () => {
     await page.getByTestId('chart-section-open-settings').click()
     await expect(page.getByTestId('chart-settings-modal-container')).toBeVisible()
 
-    await page
-      .getByTestId('chart-settings-reference-quick-picks')
-      .getByText(/stortingsrepresentant/i)
-      .click()
+    await page.getByTestId('chart-settings-reference-search').fill('storting')
+    await page.getByText(/stortingsrepresentant/i).click()
 
     // Reference comparison should be turned off (error handling is silent)
     await expect(page.getByTestId('chart-settings-reference-selected')).toHaveCount(0)
