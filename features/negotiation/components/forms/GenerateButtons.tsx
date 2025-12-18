@@ -13,7 +13,7 @@ export interface GenerateButtonsProps {
 }
 
 export function GenerateButtons({
-  pointsCount,
+  pointsCount: _pointsCount,
   isGeneratingEmail,
   emailRemaining,
   hasReachedEmailLimit,

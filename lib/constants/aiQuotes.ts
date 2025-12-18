@@ -25,5 +25,5 @@ export const AI_GENERATION_QUOTES = [
  */
 export function getRandomAIQuote(): string {
   const randomIndex = Math.floor(Math.random() * AI_GENERATION_QUOTES.length)
-  return AI_GENERATION_QUOTES[randomIndex]
+  return AI_GENERATION_QUOTES[randomIndex]!
 }

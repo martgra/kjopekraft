@@ -46,13 +46,13 @@ function MyComponent() {
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `size` | `'sm' \| 'md' \| 'lg'` | `'sm'` | Size of the spinner |
-| `className` | `string` | `''` | Custom class name for the container |
-| `spinnerClassName` | `string` | `''` | Custom class name for the spinner |
-| `quoteRotationInterval` | `number` | `3000` | Interval in milliseconds to rotate quotes |
-| `showQuote` | `boolean` | `true` | Whether to show the quote |
+| Prop                    | Type                   | Default | Description                               |
+| ----------------------- | ---------------------- | ------- | ----------------------------------------- |
+| `size`                  | `'sm' \| 'md' \| 'lg'` | `'sm'`  | Size of the spinner                       |
+| `className`             | `string`               | `''`    | Custom class name for the container       |
+| `spinnerClassName`      | `string`               | `''`    | Custom class name for the spinner         |
+| `quoteRotationInterval` | `number`               | `3000`  | Interval in milliseconds to rotate quotes |
+| `showQuote`             | `boolean`              | `true`  | Whether to show the quote                 |
 
 ## Example Integration
 
@@ -77,6 +77,7 @@ function GenerateButton({ isGenerating }: { isGenerating: boolean }) {
 ## Quotes
 
 The component displays random quotes from popular movies and sci-fi references including:
+
 - Pulp Fiction
 - Marvel Cinematic Universe
 - The Matrix
