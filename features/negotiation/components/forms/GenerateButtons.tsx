@@ -1,6 +1,6 @@
 'use client'
 
-import { Icon, Spinner } from '@/components/ui/atoms'
+import { Icon, AILoadingState } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 
 export interface GenerateButtonsProps {
@@ -38,10 +38,11 @@ export function GenerateButtons({
           disabled={isGeneratingEmail || hasReachedEmailLimit}
         >
           {isGeneratingEmail ? (
-            <span className="flex items-center gap-1.5 text-sm">
-              <Spinner size="sm" className="border-green-900 border-t-transparent" />
-              {TEXT.negotiation.generating}
-            </span>
+            <AILoadingState
+              size="sm"
+              className="text-sm"
+              spinnerClassName="border-green-900 border-t-transparent"
+            />
           ) : (
             <>
               <span className="flex items-center gap-1.5 text-sm">
