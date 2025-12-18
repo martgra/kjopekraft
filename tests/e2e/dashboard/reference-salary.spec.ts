@@ -42,16 +42,18 @@ test.describe('Reference salary (Stortinget)', () => {
     await page.getByTestId('chart-section-open-settings').click()
     await expect(page.getByTestId('chart-settings-modal-container')).toBeVisible()
 
-    // Open occupation selector and choose Stortingsrepresentant
-    await page.getByTestId('chart-settings-modal-occupation-select').click()
+    // Choose Stortingsrepresentant via quick pick
     const referenceResponse = page.waitForResponse(
       resp => resp.url().includes('/api/reference/storting') && resp.ok(),
     )
-    await page.getByText(/stortingsrepresentant/i).click()
+    await page
+      .getByTestId('chart-settings-reference-quick-picks')
+      .getByText(/stortingsrepresentant/i)
+      .click()
     await referenceResponse
 
-    // Selector button should now show the chosen occupation
-    await expect(page.getByTestId('chart-settings-modal-occupation-select')).toHaveText(
+    // Selected badge should now show the chosen occupation
+    await expect(page.getByTestId('chart-settings-reference-selected')).toContainText(
       /stortingsrepresentant/i,
     )
     // URL should carry the reference flag
@@ -74,14 +76,13 @@ test.describe('Reference salary (Stortinget)', () => {
     await page.getByTestId('chart-section-open-settings').click()
     await expect(page.getByTestId('chart-settings-modal-container')).toBeVisible()
 
-    await page.getByTestId('chart-settings-modal-occupation-select').click()
-    await page.getByText(/stortingsrepresentant/i).click()
+    await page
+      .getByTestId('chart-settings-reference-quick-picks')
+      .getByText(/stortingsrepresentant/i)
+      .click()
 
     // Reference comparison should be turned off (error handling is silent)
-    // Dropdown should reset to "Ingen referanse"
-    await expect(page.getByTestId('chart-settings-modal-occupation-select')).toHaveText(
-      /ingen referanse/i,
-    )
+    await expect(page.getByTestId('chart-settings-reference-selected')).toHaveCount(0)
     await expect(page).not.toHaveURL(/reference=true/)
   })
 })

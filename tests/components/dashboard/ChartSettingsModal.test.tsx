@@ -10,7 +10,7 @@ const baseProps = {
     { value: 'auto', label: 'Auto' },
     { value: '2022', label: '2022' },
   ],
-  selectedOccupation: 'none' as const,
+  selectedOccupation: null,
   onToggleMode: vi.fn(),
   onChangeInflationBase: vi.fn(),
   onOccupationChange: vi.fn(),
@@ -32,7 +32,7 @@ describe('ChartSettingsModal', () => {
     expect(screen.getByTestId('chart-settings-modal-container')).toBeInTheDocument()
     expect(screen.getByTestId('chart-settings-mode-toggle')).toBeInTheDocument()
     expect(screen.getByTestId('chart-settings-inflation-base-select')).toBeInTheDocument()
-    expect(screen.getByTestId('chart-settings-modal-occupation-select')).toBeInTheDocument()
+    expect(screen.getByTestId('chart-settings-reference-search')).toBeInTheDocument()
     expect(screen.getByTestId('theme-toggle-container')).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('chart-settings-modal-close'))

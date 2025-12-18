@@ -11,13 +11,13 @@ import { filterReferenceByYearRange } from '@/domain/reference'
 import { adjustSalaries, resolvePurchasingPowerBaseYear } from '@/domain/salary'
 import { calculateNetIncome } from '@/domain/tax'
 import type { ScatterDataPoint } from 'chart.js'
-import type { OccupationKey } from '@/features/referenceSalary/occupations'
+import type { ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
 
 export function usePaypointChartData(
   payPoints: PayPoint[],
   inflationData: InflationDataPoint[],
   currentYear: number,
-  occupation?: OccupationKey,
+  occupation?: ReferenceOccupationSelection | null,
   baseYearOverride?: number,
 ) {
   const {

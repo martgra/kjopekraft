@@ -56,20 +56,21 @@ export default function NegotiationPage({
   const prefilledDesiredSalary = useRef<number | null>(null)
 
   // Get salary statistics for pre-filling current salary
-  const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear, {
-    useNet: true,
-  })
-  const baseStats = purchasingPower.net?.statistics ?? purchasingPower.statistics
-  const derivedCurrentSalary = baseStats.latestPay ? String(baseStats.latestPay) : ''
+  const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear)
+  const grossStats = purchasingPower.statistics
+  const netStats = purchasingPower.net?.statistics
+  const purchasingPowerStats = netStats ?? grossStats
+  const derivedCurrentSalary = grossStats.latestPay ? String(grossStats.latestPay) : ''
   const hasSalaryHistory = payPoints.length > 0
   const derivedIsNewJob = payPoints[payPoints.length - 1]?.reason === 'newJob'
   const inflationGapPercent =
-    typeof baseStats?.gapPercent === 'number' && !Number.isNaN(baseStats.gapPercent)
-      ? baseStats.gapPercent
+    typeof purchasingPowerStats?.gapPercent === 'number' &&
+    !Number.isNaN(purchasingPowerStats.gapPercent)
+      ? purchasingPowerStats.gapPercent
       : null
   const taxYear =
-    typeof baseStats?.latestYear === 'number' && Number.isFinite(baseStats.latestYear)
-      ? baseStats.latestYear
+    typeof grossStats?.latestYear === 'number' && Number.isFinite(grossStats.latestYear)
+      ? grossStats.latestYear
       : currentYear
   const latestInflationRate = inflationData.reduce<InflationDataPoint | null>(
     (acc, point) => (!acc || point.year > acc.year ? point : acc),
@@ -125,15 +126,15 @@ export default function NegotiationPage({
     if (
       currentGrossValue === null ||
       !Number.isFinite(currentGrossValue) ||
-      baseStats?.inflationAdjustedPay == null ||
-      !Number.isFinite(baseStats.inflationAdjustedPay)
+      grossStats?.inflationAdjustedPay == null ||
+      !Number.isFinite(grossStats.inflationAdjustedPay)
     ) {
       return null
     }
 
     return estimateDesiredGrossSalary({
       currentGross: currentGrossValue,
-      inflationAdjustedGross: baseStats.inflationAdjustedPay,
+      inflationAdjustedGross: grossStats.inflationAdjustedPay,
       latestInflationRate: estimatedInflationRate,
       taxYear,
       bufferPercent: 0.5,
@@ -152,7 +153,7 @@ export default function NegotiationPage({
     }
   }, [derivedCurrentSalary, persistUserInfo, userInfo.currentSalary])
 
-  // Prefill desired salary based on net purchasing power gap + next year's inflation
+  // Prefill desired salary based on purchasing power gap + next year's inflation
   useEffect(() => {
     if (
       !userInfo.desiredSalary &&

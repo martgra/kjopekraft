@@ -22,15 +22,35 @@ export type NegotiationDraft = z.infer<typeof NegotiationDraftSchema>
 
 export const defaultNegotiationDraft: NegotiationDraft = NegotiationDraftSchema.parse({})
 
+function safeDecode(value: string) {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
 export function parseDraft(raw: string | undefined): NegotiationDraft {
   if (!raw) return defaultNegotiationDraft
-  try {
-    const parsed = JSON.parse(decodeURIComponent(raw))
-    return NegotiationDraftSchema.parse(parsed)
-  } catch (error) {
-    console.warn('Failed to parse negotiation draft cookie, using defaults', error)
-    return defaultNegotiationDraft
+
+  const attempts = [
+    safeDecode(raw), // normal single-encoded cookie
+    safeDecode(safeDecode(raw)), // double-encoded cookie from older clients
+    raw, // already-decoded string
+  ].filter((value, index, self) => self.indexOf(value) === index)
+
+  let lastError: unknown
+  for (const candidate of attempts) {
+    try {
+      const parsed = JSON.parse(candidate)
+      return NegotiationDraftSchema.parse(parsed)
+    } catch (error) {
+      lastError = error
+    }
   }
+
+  console.warn('Failed to parse negotiation draft cookie, using defaults', lastError)
+  return defaultNegotiationDraft
 }
 
 export function readDraftFromDocument(): NegotiationDraft {

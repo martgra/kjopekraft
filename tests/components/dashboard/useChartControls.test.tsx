@@ -28,10 +28,18 @@ describe('useChartControls', () => {
       useChartControls({ payPoints, isReferenceEnabled: false, toggleReference }),
     )
 
-    act(() => result.current.handleOccupationChange('nurses'))
+    act(() =>
+      result.current.handleOccupationChange({
+        code: '2223',
+        label: 'Sykepleiere',
+        provider: 'ssb',
+      }),
+    )
 
     expect(toggleReference).toHaveBeenCalledTimes(1)
-    expect(result.current.selectedOccupation).toBe('nurses')
+    expect(result.current.selectedOccupation).toEqual(
+      expect.objectContaining({ code: '2223', label: 'Sykepleiere' }),
+    )
   })
 
   it('resets selection and disables reference on errors', () => {
@@ -39,10 +47,16 @@ describe('useChartControls', () => {
       useChartControls({ payPoints, isReferenceEnabled: true, toggleReference }),
     )
 
-    act(() => result.current.handleOccupationChange('nurses'))
+    act(() =>
+      result.current.handleOccupationChange({
+        code: '2223',
+        label: 'Sykepleiere',
+        provider: 'ssb',
+      }),
+    )
     act(() => result.current.handleReferenceError('oops'))
 
-    expect(result.current.selectedOccupation).toBe('none')
+    expect(result.current.selectedOccupation).toBeNull()
     expect(result.current.apiError).toMatch(/deaktivert/i)
     expect(toggleReference).toHaveBeenCalled()
   })

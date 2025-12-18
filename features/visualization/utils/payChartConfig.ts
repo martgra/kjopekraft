@@ -1,7 +1,5 @@
 import type { ChartConfiguration, ScatterDataPoint } from 'chart.js'
-import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import type { PayPoint } from '@/domain/salary'
-import { OCCUPATIONS } from '@/features/referenceSalary/occupations'
 import { TEXT } from '@/lib/constants/text'
 import { createReasonMarkerPlugin } from './chartMarkers'
 import type { EventBaseline } from './eventBaselines'
@@ -15,7 +13,7 @@ interface PayChartConfigOptions {
   referenceSeries: ScatterDataPoint[]
   yearRange: { minYear: number; maxYear: number }
   displayNet: boolean
-  occupation?: OccupationKey
+  referenceLabel?: string
   payPoints: PayPoint[]
   eventBaselines: EventBaseline[]
 }
@@ -27,14 +25,14 @@ export function buildPayChartConfig({
   referenceSeries,
   yearRange,
   displayNet,
-  occupation,
+  referenceLabel,
   payPoints,
   eventBaselines,
 }: PayChartConfigOptions): ChartConfiguration<'line', ScatterDataPoint[], unknown> {
   const isMobile = variant === 'mobile'
   const markerFontSize = isMobile ? 16 : 20
 
-  const referenceLabel = occupation ? `Referanse (${OCCUPATIONS[occupation].label})` : 'Referanse'
+  const resolvedReferenceLabel = referenceLabel ?? 'Referanse'
   const reasonMap = new Map(payPoints.map(p => [p.year, p.reason]))
   const markerPlugin = createReasonMarkerPlugin(payPoints, markerFontSize)
 
@@ -70,7 +68,7 @@ export function buildPayChartConfig({
   const referenceDataset = referenceSeries.length
     ? [
         {
-          label: referenceLabel,
+          label: resolvedReferenceLabel,
           data: referenceSeries,
           tension: 0.4,
           fill: false,

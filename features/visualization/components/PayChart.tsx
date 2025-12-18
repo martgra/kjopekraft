@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react'
 import Chart from '@/lib/chartjs'
 import type { ScatterDataPoint } from 'chart.js'
-import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import type { PayPoint } from '@/domain/salary'
 import type { EventBaseline } from '../utils/eventBaselines'
 import { buildPayChartConfig } from '../utils/payChartConfig'
@@ -17,7 +16,7 @@ export interface PayChartProps {
   referenceSeries: ScatterDataPoint[]
   yearRange: { minYear: number; maxYear: number }
   displayNet: boolean
-  occupation?: OccupationKey
+  referenceLabel?: string
   className?: string
   payPoints: PayPoint[]
   eventBaselines: EventBaseline[]
@@ -32,7 +31,7 @@ export default function PayChart({
   referenceSeries,
   yearRange,
   displayNet,
-  occupation,
+  referenceLabel,
   className = '',
   payPoints,
   eventBaselines,
@@ -52,7 +51,7 @@ export default function PayChart({
       referenceSeries,
       yearRange,
       displayNet,
-      occupation,
+      referenceLabel,
       payPoints,
       eventBaselines,
     })
@@ -70,7 +69,7 @@ export default function PayChart({
     referenceSeries,
     yearRange,
     displayNet,
-    occupation,
+    referenceLabel,
     payPoints,
     eventBaselines,
   ])

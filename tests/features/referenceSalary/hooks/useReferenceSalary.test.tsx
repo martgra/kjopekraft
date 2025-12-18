@@ -64,7 +64,7 @@ describe('useReferenceSalary', () => {
     expect(apiUrl).toBe('/api/ssb/salary?occupation=1120&fromYear=2010&sector=6500')
     expect(result.current.data).toEqual(response.derived?.yearlyNok)
     expect(result.current.metadata).toEqual({
-      occupation: response.occupation,
+      occupation: { code: '1120', label: 'Ledere i offentlig sektor (kommune)' },
       unit: response.unit,
       source: response.source,
       filters: response.filters,

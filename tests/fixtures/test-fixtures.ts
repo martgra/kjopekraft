@@ -114,7 +114,15 @@ export class DashboardPage {
   }
 
   get occupationSelect() {
-    return this.settingsModal.getByTestId('chart-settings-modal-occupation-select')
+    return this.settingsModal.getByTestId('chart-settings-reference-search')
+  }
+
+  get occupationQuickPicks() {
+    return this.settingsModal.getByTestId('chart-settings-reference-quick-picks')
+  }
+
+  get selectedOccupation() {
+    return this.settingsModal.getByTestId('chart-settings-reference-selected')
   }
 
   get inflationBaseSelect() {

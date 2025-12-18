@@ -1,21 +1,21 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+import { vi } from 'vitest'
 import { ChartSettingsReference } from '@/components/dashboard/ChartSettingsReference'
 
 describe('ChartSettingsReference', () => {
-  it('renders occupation select', () => {
+  it('renders occupation search input', () => {
     const onChange = vi.fn()
-    render(<ChartSettingsReference selectedOccupation="none" onOccupationChange={onChange} />)
+    render(<ChartSettingsReference selectedOccupation={null} onOccupationChange={onChange} />)
 
-    expect(screen.getAllByText(/referanse/i).length).toBeGreaterThan(0)
+    expect(screen.getByTestId('chart-settings-reference-search')).toBeInTheDocument()
   })
 
-  it('calls onChange when selecting occupation', () => {
+  it('calls onChange when using quick pick', () => {
     const onChange = vi.fn()
-    render(<ChartSettingsReference selectedOccupation="none" onOccupationChange={onChange} />)
+    render(<ChartSettingsReference selectedOccupation={null} onOccupationChange={onChange} />)
 
     expect(screen.getByTestId('chart-settings-reference-container')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('chart-settings-modal-occupation-select'))
-    // Select uses buttons; just assert we opened the menu
-    expect(onChange).not.toHaveBeenCalled() // selection happens via option; menu open is enough smoke check
+    fireEvent.click(screen.getByText('Sykepleiere'))
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ code: '2223' }))
   })
 })

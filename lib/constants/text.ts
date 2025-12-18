@@ -114,6 +114,10 @@ export const TEXT = {
     inflationBaseInvalid: 'Bruk et år du har registrert, eller skriv "auto".',
     inflationBaseHint: 'Skriv "auto" eller et år du har data for.',
     occupationLabel: 'Yrke',
+    occupationSearchPlaceholder: 'Søk etter yrkeskode eller tittel (SSB)',
+    occupationNoResults: 'Ingen treff. Prøv en annen tittel eller kode.',
+    selectedOccupationFallback: 'Valgt referanse',
+    clearSelection: 'Fjern',
     occupationHelp: 'Sammenlign din lønnsutvikling med gjennomsnittet for et spesifikt yrke.',
   },
 

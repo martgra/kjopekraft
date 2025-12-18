@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react'
 import type { ScatterDataPoint } from 'chart.js'
-import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import type { PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { useIsMobile } from '@/lib/hooks/useIsMobile'
@@ -16,7 +15,7 @@ interface ResponsiveChartWrapperProps {
   referenceSeries: ScatterDataPoint[]
   yearRange: { minYear: number; maxYear: number }
   displayNet: boolean
-  occupation?: OccupationKey
+  referenceLabel?: string
   className?: string
   payPoints: PayPoint[]
   inflationData: InflationDataPoint[]
@@ -29,7 +28,7 @@ export default function ResponsiveChartWrapper({
   referenceSeries,
   yearRange,
   displayNet,
-  occupation,
+  referenceLabel,
   className = '',
   payPoints,
   inflationData,
@@ -51,7 +50,7 @@ export default function ResponsiveChartWrapper({
         referenceSeries={referenceSeries}
         yearRange={yearRange}
         displayNet={displayNet}
-        occupation={occupation}
+        referenceLabel={referenceLabel}
         className={className}
         payPoints={payPoints}
         eventBaselines={eventBaselines}
@@ -66,7 +65,7 @@ export default function ResponsiveChartWrapper({
       referenceSeries={referenceSeries}
       yearRange={yearRange}
       displayNet={displayNet}
-      occupation={occupation}
+      referenceLabel={referenceLabel}
       className={className}
       payPoints={payPoints}
       eventBaselines={eventBaselines}
