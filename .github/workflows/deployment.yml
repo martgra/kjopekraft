@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     env:
-      IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+      DOCKER_IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
     steps:
       - name: Checkout code
@@ -32,8 +32,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build --pull -t $IMAGE .
-          docker push $IMAGE
+          docker build --pull -t $DOCKER_IMAGE .
+          docker push $DOCKER_IMAGE
 
       - name: Set App Settings (OpenAI)
         run: |
@@ -46,4 +46,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ vars.AZURE_APP_NAME }}
-          images: ${{ env.IMAGE }}
+          images: ${{ env.DOCKER_IMAGE }}
