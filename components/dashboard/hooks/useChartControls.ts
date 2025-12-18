@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import type { PayPoint } from '@/domain/salary'
-import type { OccupationKey } from '@/features/referenceSalary/occupations'
+import type { ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
 import { viewModes, type ViewMode } from '@/lib/searchParams'
 
 interface UseChartControlsParams {
@@ -16,7 +16,9 @@ export function useChartControls({
   toggleReference,
 }: UseChartControlsParams) {
   void _payPoints
-  const [selectedOccupation, setSelectedOccupation] = useState<OccupationKey | 'none'>('none')
+  const [selectedOccupation, setSelectedOccupation] = useState<ReferenceOccupationSelection | null>(
+    null,
+  )
   const [apiError, setApiError] = useState<string | null>(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [viewMode, setViewMode] = useQueryState<ViewMode>(
@@ -24,12 +26,12 @@ export function useChartControls({
     parseAsStringLiteral(viewModes).withDefault('graph'),
   )
 
-  const handleOccupationChange = (value: string) => {
-    setSelectedOccupation(value as OccupationKey | 'none')
+  const handleOccupationChange = (value: ReferenceOccupationSelection | null) => {
+    setSelectedOccupation(value)
     setApiError(null)
-    if (value === 'none' && isReferenceEnabled) {
+    if (!value && isReferenceEnabled) {
       toggleReference()
-    } else if (value !== 'none' && !isReferenceEnabled) {
+    } else if (value && !isReferenceEnabled) {
       toggleReference()
     }
   }
@@ -38,16 +40,13 @@ export function useChartControls({
     (referenceError: string | null) => {
       if (!referenceError) return
       setApiError('Kunne ikke laste referansedata. Referansesammenligningen er deaktivert.')
-      setSelectedOccupation('none')
+      setSelectedOccupation(null)
       if (isReferenceEnabled) {
         toggleReference()
       }
     },
     [isReferenceEnabled, toggleReference],
   )
-
-  const occupationKey: OccupationKey | undefined =
-    selectedOccupation === 'none' ? undefined : selectedOccupation
 
   return {
     viewMode,
@@ -56,7 +55,6 @@ export function useChartControls({
     openSettings: () => setIsSettingsOpen(true),
     closeSettings: () => setIsSettingsOpen(false),
     selectedOccupation,
-    occupationKey,
     handleOccupationChange,
     apiError,
     handleReferenceError,

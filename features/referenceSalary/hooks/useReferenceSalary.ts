@@ -4,8 +4,12 @@
 
 import useSWR from 'swr'
 import type { ReferenceSalaryResponse, ReferenceDataPoint, OccupationDefinition } from '../types'
-import type { OccupationKey } from '../occupations'
-import { DEFAULT_OCCUPATION, OCCUPATIONS } from '../occupations'
+import {
+  DEFAULT_OCCUPATION,
+  OCCUPATIONS,
+  type OccupationKey,
+  type ReferenceOccupationSelection,
+} from '../occupations'
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -17,7 +21,7 @@ const fetcher = async (url: string) => {
 }
 
 export type UseReferenceSalaryOptions = {
-  occupation?: OccupationKey
+  occupation?: ReferenceOccupationSelection | OccupationKey | null
   fromYear?: number
   enabled?: boolean // Allow conditional fetching
 }
@@ -25,22 +29,34 @@ export type UseReferenceSalaryOptions = {
 export function useReferenceSalary(options: UseReferenceSalaryOptions = {}) {
   const { occupation = DEFAULT_OCCUPATION, fromYear = 2015, enabled = true } = options
 
-  // Map occupation key to provider-specific configuration
-  const occupationDef: OccupationDefinition = OCCUPATIONS[occupation] as OccupationDefinition
-  const occupationCode = occupationDef.code
-  const sector = 'sector' in occupationDef ? occupationDef.sector : undefined // Optional sector filter
-  const provider = occupationDef.provider ?? 'ssb'
+  const occupationDef: OccupationDefinition | ReferenceOccupationSelection | null =
+    occupation && typeof occupation === 'string'
+      ? (OCCUPATIONS[occupation] as OccupationDefinition)
+      : occupation
+
+  const occupationCode = occupationDef?.code
+  const occupationLabel =
+    (occupationDef as ReferenceOccupationSelection | undefined)?.label ??
+    (occupationDef && 'label' in occupationDef ? occupationDef.label : undefined)
+  const sector =
+    (occupationDef as { sector?: string } | undefined)?.sector !== undefined
+      ? (occupationDef as { sector?: string }).sector
+      : undefined // Optional sector filter
+  const provider = (occupationDef as ReferenceOccupationSelection | undefined)?.provider ?? 'ssb'
   const effectiveFromYear =
-    occupationDef.availableFromYear && occupationDef.availableFromYear > fromYear
-      ? occupationDef.availableFromYear
+    occupationDef && 'availableFromYear' in occupationDef && occupationDef.availableFromYear
+      ? occupationDef.availableFromYear > fromYear
+        ? occupationDef.availableFromYear
+        : fromYear
       : fromYear
 
   // Build API URL per provider
-  const apiUrl = enabled
-    ? provider === 'stortinget'
-      ? `/api/reference/storting?fromYear=${effectiveFromYear}`
-      : `/api/ssb/salary?occupation=${occupationCode}&fromYear=${effectiveFromYear}${sector ? `&sector=${sector}` : ''}`
-    : null
+  const apiUrl =
+    enabled && occupationCode
+      ? provider === 'stortinget'
+        ? `/api/reference/storting?fromYear=${effectiveFromYear}`
+        : `/api/ssb/salary?occupation=${occupationCode}&fromYear=${effectiveFromYear}${sector ? `&sector=${sector}` : ''}`
+      : null
 
   const { data, error, isLoading } = useSWR<ReferenceSalaryResponse>(apiUrl, fetcher, {
     revalidateOnFocus: false,
@@ -61,7 +77,7 @@ export function useReferenceSalary(options: UseReferenceSalaryOptions = {}) {
     error: error as Error | null,
     metadata: data
       ? {
-          occupation: data.occupation,
+          occupation: { ...data.occupation, label: occupationLabel ?? data.occupation.label },
           unit: data.unit,
           source: data.source,
           filters: data.filters,

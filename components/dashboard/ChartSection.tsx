@@ -17,6 +17,7 @@ import { useChartControls } from './hooks/useChartControls'
 import { createTestId } from '@/lib/testing/testIds'
 import { reasonToLabel } from '@/lib/formatters/salaryFormatting'
 import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
+import type { ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
 
 interface ChartSectionProps {
   payPoints: PayPoint[]
@@ -47,7 +48,6 @@ function ChartSection({
     openSettings,
     closeSettings,
     selectedOccupation,
-    occupationKey,
     handleOccupationChange,
     handleReferenceError,
   } = useChartControls({
@@ -83,7 +83,13 @@ function ChartSection({
     referenceData = [],
     yearRange,
     referenceError,
-  } = usePaypointChartData(payPoints, inflationData, currentYear, occupationKey, baseYearOverride)
+  } = usePaypointChartData(
+    payPoints,
+    inflationData,
+    currentYear,
+    selectedOccupation as ReferenceOccupationSelection | null,
+    baseYearOverride,
+  )
 
   useEffect(() => {
     const normalizedError =
@@ -147,7 +153,7 @@ function ChartSection({
         grossInflationSeries={rawInflSeries}
         referenceSeries={referenceSeries}
         yearRange={yearRange}
-        occupation={occupationKey}
+        referenceLabel={selectedOccupation?.label ?? selectedOccupation?.code}
         isLoading={isLoading}
         inflationData={inflationData}
         showEventBaselines={false}

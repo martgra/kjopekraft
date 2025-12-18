@@ -6,7 +6,6 @@ import { calculateNetIncome } from '@/domain/tax'
 import type { PayPoint, YearRange } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { ScatterDataPoint } from 'chart.js'
-import type { OccupationKey } from '@/features/referenceSalary/occupations'
 import { TEXT } from '@/lib/constants/text'
 import ResponsiveChartWrapper from './ResponsiveChartWrapper'
 
@@ -19,7 +18,7 @@ interface PaypointChartProps {
   yearRange: YearRange
   className?: string
   isLoading?: boolean
-  occupation?: OccupationKey
+  referenceLabel?: string
   inflationData: InflationDataPoint[]
   showEventBaselines?: boolean
 }
@@ -33,7 +32,7 @@ export default function PaypointChart({
   yearRange,
   className = '',
   isLoading = false,
-  occupation,
+  referenceLabel,
   inflationData,
   showEventBaselines = false,
 }: PaypointChartProps) {
@@ -87,7 +86,7 @@ export default function PaypointChart({
       referenceSeries={rawReferenceSeries}
       yearRange={yearRange}
       displayNet={displayNet}
-      occupation={occupation}
+      referenceLabel={referenceLabel}
       className={className}
       payPoints={payPoints}
       inflationData={inflationData}

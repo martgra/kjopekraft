@@ -16,7 +16,7 @@
   - `chart-view-switcher-option-{graph|table|analysis}`
   - `chart-section-open-settings`, `chart-settings-modal-container`
   - `chart-settings-mode-toggle` (Brutto/Netto), `chart-settings-inflation-base-select` (numeric input; accepts pay-point years or "auto")
-  - `chart-settings-modal-occupation-select`
+  - `chart-settings-reference-search`, `chart-settings-reference-results`, `chart-settings-reference-selected`
   - `salary-form-*` (amount-input, year-input, reason-select, note-input, submit-button)
 - Prefer these test IDs over text labels for Playwright/Testing Library stability.
 

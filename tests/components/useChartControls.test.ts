@@ -38,7 +38,7 @@ describe('useChartControls', () => {
     act(() => result.current.handleReferenceError('boom'))
 
     expect(result.current.apiError).toBeTruthy()
-    expect(result.current.selectedOccupation).toBe('none')
+    expect(result.current.selectedOccupation).toBeNull()
     expect(toggleReference).toHaveBeenCalled()
   })
 })

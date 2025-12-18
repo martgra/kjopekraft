@@ -48,3 +48,22 @@ export const OCCUPATIONS = {
 export type OccupationKey = keyof typeof OCCUPATIONS
 
 export const DEFAULT_OCCUPATION: OccupationKey = 'nurses'
+
+export type ReferenceOccupationSelection = {
+  code: string
+  label?: string
+  provider?: 'ssb' | 'stortinget'
+  sector?: string
+  availableFromYear?: number
+  presetKey?: OccupationKey
+}
+
+export function presetOccupationToSelection(key: OccupationKey): ReferenceOccupationSelection {
+  const preset = OCCUPATIONS[key]
+  return {
+    ...preset,
+    provider: 'provider' in preset && preset.provider ? preset.provider : 'ssb',
+    sector: (preset as { sector?: string }).sector,
+    presetKey: key,
+  }
+}
