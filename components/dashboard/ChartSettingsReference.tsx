@@ -4,10 +4,7 @@ import { useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { Input } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
-import {
-  type ReferenceOccupationSelection,
-  presetOccupationToSelection,
-} from '@/features/referenceSalary/occupations'
+import { type ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
 import { createTestId } from '@/lib/testing/testIds'
 import {
   SSB_OCCUPATION_DOCS,
@@ -56,16 +53,6 @@ export function ChartSettingsReference({
     onOccupationChange(selection)
     setQuery('')
   }
-
-  const quickPicks = useMemo(
-    () => [
-      presetOccupationToSelection('nurses'),
-      presetOccupationToSelection('teachers'),
-      presetOccupationToSelection('managersState'),
-      presetOccupationToSelection('stortingsrepresentant'),
-    ],
-    [],
-  )
 
   return (
     <div
@@ -120,27 +107,6 @@ export function ChartSettingsReference({
             ))}
           </div>
         )}
-
-        <div className="flex flex-wrap gap-2" data-testid={testId('quick-picks')}>
-          {quickPicks.map(pick => (
-            <button
-              key={pick.code + pick.presetKey}
-              type="button"
-              onClick={() => handleSelect(pick)}
-              className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[var(--text-main)] shadow-sm transition hover:bg-[var(--color-gray-50)] dark:bg-gray-800 dark:hover:bg-gray-700"
-            >
-              {pick.label}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => onOccupationChange(null)}
-            className="rounded-full border border-[var(--border-light)] bg-white px-3 py-1 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--color-gray-50)] dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
-            data-testid={testId('clear')}
-          >
-            {TEXT.charts.noReference}
-          </button>
-        </div>
 
         {selectedOccupation && (
           <div

@@ -42,7 +42,7 @@ export function ChartSettingsModal({
       <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center px-4">
         {/* Modal card */}
         <div
-          className="pointer-events-auto relative flex w-full max-w-[350px] animate-[fadeIn_0.2s_ease-out] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-gray-900"
+          className="pointer-events-auto relative flex w-full max-w-[350px] max-h-[700px] animate-[fadeIn_0.2s_ease-out] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-gray-900"
           data-testid={testId('container')}
         >
           {/* Modal header */}
@@ -62,7 +62,7 @@ export function ChartSettingsModal({
           </div>
 
           {/* Modal content */}
-          <div className="space-y-6 px-6 pt-5 pb-6">
+          <div className="space-y-6 px-6 pt-5 pb-6 overflow-y-auto">
             {/* Section: Visning (Display settings) */}
             <div>
               <div className="mb-3 pl-1 text-xs font-semibold tracking-wider text-[var(--text-muted)] uppercase">
