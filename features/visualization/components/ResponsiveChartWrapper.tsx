@@ -33,7 +33,7 @@ export default function ResponsiveChartWrapper({
   className = '',
   payPoints,
   inflationData,
-  showEventBaselines = true,
+  showEventBaselines = false,
 }: ResponsiveChartWrapperProps) {
   const isMobile = useIsMobile()
 

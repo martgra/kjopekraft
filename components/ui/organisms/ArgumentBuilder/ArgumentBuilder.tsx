@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Card, Button, Input, Icon } from '@/components/ui/atoms'
 import { PointItem } from '@/components/ui/molecules'
 import { TEXT } from '@/lib/constants/text'
+import { NEGOTIATION_MAX_POINTS, NEGOTIATION_POINT_TYPES } from '@/lib/negotiation/pointTypes'
 
 export interface NegotiationPoint {
   description: string
@@ -18,21 +19,12 @@ export interface ArgumentBuilderProps {
   className?: string
 }
 
-// Map internal type values to Norwegian labels
-const POINT_TYPES = [
-  { value: 'Achievement', label: TEXT.negotiation.typeAchievement },
-  { value: 'Experience', label: TEXT.negotiation.typeExperience },
-  { value: 'Market Data', label: TEXT.negotiation.typeMarket },
-  { value: 'Responsibility', label: TEXT.negotiation.typeResponsibility },
-  { value: 'Certification', label: TEXT.negotiation.typeCertification },
-]
-
 function EmptyState() {
   return (
     <div className="flex h-full flex-col items-center justify-center py-8 text-center">
-      <Icon name="playlist_add" size="xl" className="mb-2 text-gray-300" />
+      <Icon name="playlist_add" size="xl" className="mb-2 text-[var(--text-muted)]" />
       <p className="text-sm text-[var(--text-muted)]">{TEXT.negotiation.noPointsYet}</p>
-      <p className="mt-1 text-xs text-gray-400">{TEXT.negotiation.addPointsHint}</p>
+      <p className="mt-1 text-xs text-[var(--text-muted)]">{TEXT.negotiation.addPointsHint}</p>
     </div>
   )
 }
@@ -46,9 +38,10 @@ export function ArgumentBuilder({
 }: ArgumentBuilderProps) {
   const [desc, setDesc] = useState('')
   const [type, setType] = useState('Achievement')
+  const maxReached = points.length >= NEGOTIATION_MAX_POINTS
 
   const handleAdd = () => {
-    if (!desc.trim()) return
+    if (!desc.trim() || maxReached) return
     onAddPoint({ description: desc.trim(), type })
     setDesc('')
   }
@@ -79,7 +72,7 @@ export function ArgumentBuilder({
   return (
     <Card padding="none" className={className}>
       {/* Header */}
-      <div className="flex-shrink-0 border-b border-gray-100 bg-gray-50/50 px-4 py-3">
+      <div className="flex-shrink-0 border-b border-[var(--border-light)] bg-[var(--surface-subtle)] px-4 py-3">
         <h2 className="flex items-center gap-2 text-sm font-bold text-[var(--text-main)]">
           <Icon name="lightbulb" className="text-orange-500" />
           {TEXT.negotiation.argumentBuilderTitle}
@@ -87,14 +80,14 @@ export function ArgumentBuilder({
       </div>
 
       {/* Input Section */}
-      <div className="flex-shrink-0 space-y-2 bg-white p-3">
+      <div className="flex-shrink-0 space-y-2 bg-[var(--surface-light)] p-3">
         <div className="flex gap-2">
           <select
-            className="w-[35%] rounded-md border border-[var(--border-light)] bg-gray-50 py-2 text-base text-[var(--text-main)] focus:ring-1 focus:ring-[var(--primary)]"
+            className="w-[35%] rounded-md border border-[var(--border-light)] bg-[var(--surface-subtle)] py-2 text-base text-[var(--text-main)] focus:ring-1 focus:ring-[var(--primary)]"
             value={type}
             onChange={e => setType(e.target.value)}
           >
-            {POINT_TYPES.map(t => (
+            {NEGOTIATION_POINT_TYPES.map(t => (
               <option key={t.value} value={t.value}>
                 {t.label}
               </option>
@@ -108,14 +101,22 @@ export function ArgumentBuilder({
             className="flex-1"
           />
         </div>
-        <Button variant="secondary" className="w-full" onClick={handleAdd} disabled={!desc.trim()}>
+        <Button
+          variant="secondary"
+          className="w-full"
+          onClick={handleAdd}
+          disabled={!desc.trim() || maxReached}
+        >
           <Icon name="add" size="sm" />
           {TEXT.negotiation.addToList}
         </Button>
+        {maxReached ? (
+          <p className="text-xs text-[var(--text-muted)]">{TEXT.negotiation.maxPointsWarning}</p>
+        ) : null}
       </div>
 
       {/* Points List */}
-      <div className="flex-1 overflow-y-auto border-t border-gray-100 bg-gray-50/30 px-4 py-2">
+      <div className="flex-1 overflow-y-auto border-t border-[var(--border-light)] bg-[var(--surface-subtle)] px-4 py-2">
         {points.length === 0 ? (
           <EmptyState />
         ) : (

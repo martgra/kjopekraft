@@ -75,11 +75,12 @@ export default function MobileBottomDrawer({
       {/* Drawer - only on mobile */}
       <div
         className={`fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
-          isOpen ? 'translate-y-0' : 'translate-y-full'
+          isOpen ? 'translate-y-0' : 'pointer-events-none translate-y-full'
         }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
+        aria-hidden={!isOpen}
       >
         {/* Handle bar for swipe indication */}
         <div className="flex w-full items-center justify-center pt-3 pb-1">
@@ -108,7 +109,7 @@ export default function MobileBottomDrawer({
         </div>
 
         {/* Content - scrollable with bottom padding for mobile nav */}
-        <div className="flex-1 overflow-y-auto">{content}</div>
+        <div className="flex-1 overflow-y-auto px-4 pb-24">{content}</div>
       </div>
     </>
   )

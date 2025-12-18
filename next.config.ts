@@ -11,15 +11,15 @@ const nextConfig: NextConfig = {
   cacheLife: {
     // SSB salary data - updated infrequently, cache for longer
     ssb: {
-      stale: 3600, // 1 hour stale
-      revalidate: 86400, // 24 hour revalidate
+      stale: 43200, // 12 hour stale window
+      revalidate: 43200, // Revalidate twice per day
       expire: 604800, // 7 day expire
     },
     // Inflation data - updated monthly, moderate cache
     inflation: {
-      stale: 1800, // 30 min stale
-      revalidate: 3600, // 1 hour revalidate
-      expire: 86400, // 1 day expire
+      stale: 43200, // 12 hour stale window
+      revalidate: 43200, // Revalidate twice per day
+      expire: 604800, // 7 day max lifetime
     },
     // AI generated content - minimal caching, almost always fresh
     ai: {

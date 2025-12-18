@@ -9,7 +9,8 @@ import { defineConfig, devices } from '@playwright/test'
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const PLAYWRIGHT_PORT = process.env.PLAYWRIGHT_PORT || '3000'
+// Use a dedicated port for Playwright to avoid colliding with a locally running dev server.
+const PLAYWRIGHT_PORT = process.env.PLAYWRIGHT_PORT || '3100'
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -28,7 +29,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3000',
+    baseURL: `http://localhost:${PLAYWRIGHT_PORT}`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     /* Action timeout */
@@ -55,6 +56,8 @@ export default defineConfig({
     url: `http://localhost:${PLAYWRIGHT_PORT}`,
     env: {
       PORT: PLAYWRIGHT_PORT,
+      // Isolate Next.js dev cache/lockfiles so local dev servers don't conflict with Playwright
+      NEXT_CACHE_DIR: '.next-playwright',
     },
     reuseExistingServer: !process.env.CI,
     timeout: 120000, // 2 minutes to start the server

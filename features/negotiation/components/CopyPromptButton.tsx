@@ -21,11 +21,11 @@ export function CopyPromptButton({ content, label }: CopyPromptButtonProps) {
   return (
     <button
       type="button"
-      className="inline-flex items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-300 transition-all ring-inset hover:bg-gray-50"
+      className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--surface-light)] px-3 py-2 text-sm font-medium text-[var(--text-main)] shadow-sm ring-1 ring-[var(--border-light)] transition-all ring-inset hover:bg-[var(--surface-subtle)]"
       onClick={handleCopy}
       aria-label={label}
     >
-      <Icon name="content_copy" className="text-lg text-gray-500" />
+      <Icon name="content_copy" className="text-lg text-[var(--text-muted)]" />
       {copied === true ? label + ' ✓' : copied === false ? label + ' ✗' : label}
     </button>
   )

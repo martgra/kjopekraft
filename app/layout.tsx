@@ -13,7 +13,10 @@ const fontVariables = `
   --font-geist-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
 `
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kjopekraft.no'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'Kjøpekraft',
   description: 'Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge.',
   icons: {
@@ -29,26 +32,21 @@ export const metadata: Metadata = {
     title: 'Kjøpekraft',
     description: 'Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge.',
     siteName: 'Kjøpekraft',
-    // Make image optional until we create it
-    ...(process.env.NODE_ENV === 'production'
-      ? {
-          images: [
-            {
-              url: '/og-image.png',
-              width: 1200,
-              height: 630,
-              alt: 'Kjøpekraft - Sjekk kjøpekraften din!',
-            },
-          ],
-        }
-      : {}),
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1536,
+        height: 1024,
+        alt: 'Kjøpekraft - Sjekk kjøpekraften din!',
+      },
+    ],
   },
   // Add Twitter card metadata
   twitter: {
     card: 'summary_large_image',
     title: 'Kjøpekraft',
     description: 'Sjekk kjøpekraften din! Beregn og sammenlign din kjøpekraft i Norge.',
-    ...(process.env.NODE_ENV === 'production' ? { images: ['/og-image.jpg'] } : {}),
+    images: ['/og-image.png'],
   },
   // Add robots directives for better indexing
   robots: {

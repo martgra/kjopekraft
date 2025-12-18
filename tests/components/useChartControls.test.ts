@@ -25,22 +25,6 @@ describe('useChartControls', () => {
     localStorage.clear()
   })
 
-  it('persists event baseline preference to localStorage', () => {
-    const { result } = renderHook(() =>
-      useChartControls({
-        payPoints,
-        isReferenceEnabled: false,
-        toggleReference: () => {},
-      }),
-    )
-
-    act(() => result.current.setShowEventBaselines(true))
-    expect(localStorage.getItem('salary-show-event-baselines')).toBe('true')
-
-    act(() => result.current.setShowEventBaselines(false))
-    expect(localStorage.getItem('salary-show-event-baselines')).toBe('false')
-  })
-
   it('resets occupation and reference when reference fetch fails', () => {
     const toggleReference = vi.fn()
     const { result } = renderHook(() =>

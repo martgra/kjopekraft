@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import type { PayPoint } from '@/domain/salary'
 import type { OccupationKey } from '@/features/referenceSalary/occupations'
@@ -11,28 +11,18 @@ interface UseChartControlsParams {
 }
 
 export function useChartControls({
-  payPoints,
+  payPoints: _payPoints,
   isReferenceEnabled,
   toggleReference,
 }: UseChartControlsParams) {
+  void _payPoints
   const [selectedOccupation, setSelectedOccupation] = useState<OccupationKey | 'none'>('none')
   const [apiError, setApiError] = useState<string | null>(null)
-  const [showEventBaselines, setShowEventBaselines] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('salary-show-event-baselines')
-      return stored === 'true'
-    }
-    return false
-  })
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [viewMode, setViewMode] = useQueryState<ViewMode>(
     'view',
     parseAsStringLiteral(viewModes).withDefault('graph'),
   )
-
-  useEffect(() => {
-    localStorage.setItem('salary-show-event-baselines', String(showEventBaselines))
-  }, [showEventBaselines])
 
   const handleOccupationChange = (value: string) => {
     setSelectedOccupation(value as OccupationKey | 'none')
@@ -59,16 +49,9 @@ export function useChartControls({
   const occupationKey: OccupationKey | undefined =
     selectedOccupation === 'none' ? undefined : selectedOccupation
 
-  const hasEventReasons = useMemo(
-    () => payPoints.some(point => point.reason === 'promotion' || point.reason === 'newJob'),
-    [payPoints],
-  )
-
   return {
     viewMode,
     setViewMode,
-    showEventBaselines,
-    setShowEventBaselines,
     isSettingsOpen,
     openSettings: () => setIsSettingsOpen(true),
     closeSettings: () => setIsSettingsOpen(false),
@@ -76,7 +59,6 @@ export function useChartControls({
     occupationKey,
     handleOccupationChange,
     apiError,
-    hasEventReasons,
     handleReferenceError,
   }
 }

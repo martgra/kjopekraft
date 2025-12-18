@@ -31,11 +31,11 @@ export function CopyRichButton({ containerRef, label }: CopyRichButtonProps) {
   return (
     <button
       type="button"
-      className="text-primary inline-flex items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-blue-200 transition-all ring-inset hover:bg-blue-50 hover:ring-blue-300"
+      className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--surface-light)] px-3 py-2 text-sm font-medium text-[var(--primary)] shadow-sm ring-1 ring-[var(--border-light)] transition-all ring-inset hover:bg-[var(--surface-subtle)]"
       onClick={handleCopy}
       aria-label={label}
     >
-      <Icon name="edit_note" className="text-primary text-lg" />
+      <Icon name="edit_note" className="text-lg text-[var(--primary)]" />
       {copied === true ? label + ' ✓' : copied === false ? label + ' ✗' : label}
     </button>
   )

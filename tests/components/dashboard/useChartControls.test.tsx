@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useChartControls } from '@/components/dashboard/hooks/useChartControls'
 
@@ -20,20 +21,6 @@ describe('useChartControls', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     localStorage.clear()
-  })
-
-  it('hydrates and persists event baseline preference', () => {
-    localStorage.setItem('salary-show-event-baselines', 'true')
-    const { result, rerender } = renderHook(() =>
-      useChartControls({ payPoints, isReferenceEnabled: false, toggleReference }),
-    )
-
-    expect(result.current.showEventBaselines).toBe(true)
-
-    act(() => result.current.setShowEventBaselines(false))
-    rerender()
-
-    expect(localStorage.getItem('salary-show-event-baselines')).toBe('false')
   })
 
   it('enables reference when selecting an occupation', () => {

@@ -2,17 +2,18 @@ import { TEXT } from '@/lib/constants/text'
 import { type OccupationKey } from '@/features/referenceSalary/occupations'
 import { createTestId } from '@/lib/testing/testIds'
 import { ChartSettingsModeToggle } from './ChartSettingsModeToggle'
-import { ChartSettingsBaselines } from './ChartSettingsBaselines'
+import { ChartSettingsInflationBase } from './ChartSettingsInflationBase'
 import { ChartSettingsReference } from './ChartSettingsReference'
 import { ThemeToggle } from './ThemeToggle'
 
 interface ChartSettingsModalProps {
   isOpen: boolean
   isNetMode: boolean
-  showEventBaselines: boolean
+  inflationBaseValue: string
+  inflationBaseOptions: { value: string; label: string }[]
   selectedOccupation: OccupationKey | 'none'
   onToggleMode: () => void
-  onToggleEventBaselines: (next: boolean) => void
+  onChangeInflationBase: (value: string) => void
   onOccupationChange: (value: string) => void
   onClose: () => void
 }
@@ -20,10 +21,11 @@ interface ChartSettingsModalProps {
 export function ChartSettingsModal({
   isOpen,
   isNetMode,
-  showEventBaselines,
+  inflationBaseValue,
+  inflationBaseOptions,
   selectedOccupation,
   onToggleMode,
-  onToggleEventBaselines,
+  onChangeInflationBase,
   onOccupationChange,
   onClose,
 }: ChartSettingsModalProps) {
@@ -69,9 +71,10 @@ export function ChartSettingsModal({
 
               <div className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
                 <ChartSettingsModeToggle isNetMode={isNetMode} onToggleMode={onToggleMode} />
-                <ChartSettingsBaselines
-                  showEventBaselines={showEventBaselines}
-                  onToggleEventBaselines={onToggleEventBaselines}
+                <ChartSettingsInflationBase
+                  value={inflationBaseValue}
+                  options={inflationBaseOptions}
+                  onChange={onChangeInflationBase}
                 />
                 <ThemeToggle />
               </div>

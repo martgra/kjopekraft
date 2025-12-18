@@ -16,7 +16,7 @@ export type ViewMode = (typeof viewModes)[number]
 // Search params parsers
 export const searchParamsParsers = {
   // Display mode for salary (net/gross)
-  display: parseAsStringLiteral(displayModes).withDefault('net'),
+  display: parseAsStringLiteral(displayModes).withDefault('gross'),
   // Reference salary overlay toggle
   reference: parseAsBoolean.withDefault(false),
   // Selected dashboard view

@@ -96,10 +96,7 @@ export const TEXT = {
     referenceHelp:
       'Referanselønn er snittet for valgt yrke. Bruk den for å se hvordan lønnen din ligger an.',
     noReference: 'Ingen referanse',
-    // Event baselines toggle
-    showEventBaselines: 'Vis hendelseslinjer',
     referenceEnabled: 'Referanse aktiv',
-    eventBaselinesHelp: 'Vis linjer som markerer prisstigning fra forfremmelser og jobbskift',
   },
 
   settings: {
@@ -109,8 +106,13 @@ export const TEXT = {
     grossNetToggleSubtitle: 'Vis nettolønn i grafer',
     themeToggleTitle: 'Mørkt modus',
     themeToggleSubtitle: 'Bytt mellom lyst og mørkt tema',
-    eventBaselinesTitle: 'Vis hendelseslinjer',
-    eventBaselinesSubtitle: 'Marker forfremmelser',
+    inflationBaseTitle: 'Inflasjonsbase',
+    inflationBaseSubtitle: 'Velg året kjøpekraften regnes fra',
+    inflationBaseAutoLabel: 'Automatisk (siste betydelige endring)',
+    inflationBaseYearOption: (year: number, reasonLabel?: string) =>
+      reasonLabel ? `${year} (${reasonLabel})` : String(year),
+    inflationBaseInvalid: 'Bruk et år du har registrert, eller skriv "auto".',
+    inflationBaseHint: 'Skriv "auto" eller et år du har data for.',
     occupationLabel: 'Yrke',
     occupationHelp: 'Sammenlign din lønnsutvikling med gjennomsnittet for et spesifikt yrke.',
   },
@@ -284,7 +286,7 @@ export const TEXT = {
 
   negotiationPage: {
     title: 'Lønnsforhandlings-assistent',
-    subtitle: 'Generer personlige forhandlingsstrategier og e-poster drevet av AI.',
+    subtitle: 'Bygg argumentene dine og generer et tydelig e-postutkast drevet av AI.',
     backToDashboard: 'Tilbake til oversikt',
   },
 
@@ -305,6 +307,8 @@ export const TEXT = {
     desiredSalaryPlaceholder: 'F.eks. 700 000 kr',
     marketDataLabel: 'Markedsdata/lønnsstatistikk',
     marketDataPlaceholder: 'F.eks. SSB: Medianlønn for din rolle, rapporter, etc.',
+    marketDataHint:
+      'SSB-data hentes automatisk når stillingstittel er oppgitt. Du kan legge til egne kilder hvis vi ikke finner en match.',
     otherBenefitsLabel: 'Betingelser/goder',
     otherBenefitsPlaceholder: 'F.eks. bonus, ekstra ferie, fleksibilitet',
     achievementsNote: 'Prestasjoner/resultater legges til som egne forhandlingspunkter nedenfor.',
@@ -316,30 +320,31 @@ export const TEXT = {
     showArguments: 'Vis argumenter',
     hideArguments: 'Skjul argumenter',
     guide:
-      'Legg inn dine viktigste argumenter for lønnsforhandling. Skriv fritt og bruk flere punkter – dette hjelper deg å forberede en god forhandlingsstrategi! Du kan også generere en e-post eller et forhandlings-playbook basert på punktene dine.',
+      'Legg inn dine viktigste argumenter for lønnsforhandling. Skriv fritt og bruk flere punkter – dette hjelper deg å forberede en god forhandlingsstrategi!',
     descriptionPlaceholder: 'Beskriv et argument, prestasjon eller markedssituasjon',
     keyPointPlaceholder: 'Beskriv nøkkelpunktet ditt...',
     typePlaceholder: 'Velg type',
     typeAchievement: 'Prestasjon',
-    typeExperience: 'Erfaring',
     typeMarket: 'Marked',
     typeResponsibility: 'Ansvar',
-    typeCertification: 'Sertifisering',
+    typeCompetence: 'Kompetanse',
+    typeOther: 'Annet',
     addButton: 'Legg til',
     addToList: 'Legg til i listen',
-    emailButton: 'E-post',
+    emailButton: 'Generer forslag',
     playbookButton: 'Spillbok',
     generating: 'Genererer...',
     remaining: 'igjen',
-    generateEmail: 'Generer e-post',
+    generateEmail: 'Generer forslag',
     generatePlaybook: 'Generer spillbok',
     generatingEmail: 'Genererer e-post...',
     generatingPlaybook: 'Genererer spillbok...',
     tabGuide:
-      'Legg inn dine viktigste argumenter og generer e-post eller spillbok for forhandling. Dette hjelper deg å være best mulig forberedt!',
+      'Legg inn dine viktigste argumenter og generer et forslag til e-post. Dette hjelper deg å være best mulig forberedt!',
     minPointsWarning: 'Legg til minst ett forhandlingspunkt før du genererer innhold.',
     suggestionMorePoints: 'Tips: Legg til flere punkter for bedre resultater (anbefalt: 3+)',
     addPointsHint: 'Legg til dine nøkkelpunkter ovenfor',
+    maxPointsWarning: 'Du har nådd maks antall forhandlingspunkter.',
     maxGenerationsWarning: 'Du har nådd maks antall genereringer.',
     emailErrorTitle: 'Det oppstod en feil med e-post generering',
     playbookErrorTitle: 'Det oppstod en feil med spillbok generering',
@@ -350,6 +355,8 @@ export const TEXT = {
     copyRichSuccess: 'Rik tekst kopiert!',
     copyRichError: 'Kunne ikke kopiere rik tekst',
     downloadDocx: 'Last ned som DOCX',
+    moreOptions: 'Flere valg',
+    hideOptions: 'Skjul valg',
     collapseEmail: 'Vis/skjul e-post',
     collapsePlaybook: 'Vis/skjul spillbok',
     emailSectionTitle: 'Forslag til e-post',
@@ -371,6 +378,80 @@ export const TEXT = {
         '2146': 'Ingeniører (bygg og anlegg)',
       },
     },
+  },
+
+  negotiationSummary: {
+    title: 'Forhandlingsoppsummering',
+    subtitle: 'Basert på lønnsdata, inflasjon og SSB-markedstall.',
+    badge: 'SSB + inflasjon',
+    inflationLabel: 'Kjøpekraft',
+    marketLabel: 'Marked',
+    raiseLabel: 'Anbefalt spenn',
+    aboveInflation: (percent: string) => `Du ligger ${percent} over inflasjonen.`,
+    belowInflation: (percent: string) => `Du ligger ${percent} under inflasjonen.`,
+    noInflationData: 'Legg inn lønnsdata i oversikten for å se kjøpekraften din.',
+    marketMedian: (occupation: string, year: number, value: string) =>
+      `Medianlønn for ${occupation} (${year}): ${value}.`,
+    loadingMarketData: 'Henter markedsdata fra SSB...',
+    marketDataError: 'Kunne ikke hente markedsdata fra SSB akkurat nå.',
+    noMarketData: 'Fant ingen SSB-match. Legg til egne markedsdata om du vil.',
+    desiredAboveMedian: (percent: string) => `Ønsket lønn er ${percent} over medianen.`,
+    desiredBelowMedian: (percent: string) => `Ønsket lønn er ${percent} under medianen.`,
+    desiredAtMedian: 'Ønsket lønn er på medianen.',
+    noDesiredComparison: 'Legg inn ønsket lønn for å sammenligne med markedet.',
+    suggestedRange: (min: string, max: string) => `${min}–${max}`,
+    approximateMatch: (occupation: string) =>
+      `Merk: Bruker nærmeste yrkeskategori (${occupation}).`,
+    footer: 'Tips: Bruk tallene som støtte, men tilpass ønsket til din situasjon.',
+  },
+
+  negotiationSuggestions: {
+    title: 'Forslag til argumenter',
+    subtitle: 'Velg punkter som passer deg, og rediger dem videre i argumentbyggeren.',
+    addLabel: 'Legg til',
+    addedLabel: 'Lagt til',
+    items: {
+      responsibility: 'Jeg har tatt på meg nye ansvarsområder utover stillingsbeskrivelsen.',
+      results: 'Jeg har levert resultater som har gitt målbar verdi eller spart kostnader.',
+      skills: 'Jeg har utviklet ny kompetanse eller sertifiseringer som styrker rollen min.',
+      loyalty: 'Jeg har vært stabil over tid og bidrar med kontinuitet og trygghet.',
+      projects: 'Jeg har levert krevende prosjekter og støttet viktige kunde- eller teambehov.',
+      growth: 'Jeg utvikler meg faglig og kan ta større ansvar fremover.',
+    },
+  },
+
+  negotiationBenefits: {
+    title: 'Forhandle goder',
+    description:
+      'Velg goder som er viktige for deg. Hvis lønnen ikke møter ønsket nivå, kan goder være et godt alternativ.',
+    toggleLabel: 'Vis alle goder',
+    notesLabel: 'Andre goder (valgfritt)',
+    notesPlaceholder: 'F.eks. fleksibel oppstart, ekstra ferieuke, helseforsikring',
+    items: {
+      pension: 'Pensjon',
+      bonus: 'Bonus',
+      equity: 'Aksjer/opsjoner',
+      extraVacation: 'Ekstra ferie',
+      flexTime: 'Fleksitid',
+      remoteWork: 'Hjemmekontor/fjernarbeid',
+      insurance: 'Forsikringer',
+      training: 'Kompetansebudsjett/sertifiseringer',
+      wellness: 'Helse/velværetiltak',
+      phoneInternet: 'Mobil/bredbånd',
+      overtime: 'Overtidsavtale',
+      travel: 'Reisegodtgjørelse',
+    },
+  },
+
+  negotiationTips: {
+    title: 'Forhandlingstips',
+    items: [
+      'Forbered et realistisk spenn, ikke bare ett tall.',
+      'Hold tonen samarbeidsorientert og still spørsmål.',
+      'Knytt ønsket til hva arbeidsgiver får igjen for det.',
+      'Bruk statistikk og konkrete resultater som støtte.',
+      'Vurder møte/telefon i tillegg til e-post.',
+    ],
   },
 
   onboarding: {

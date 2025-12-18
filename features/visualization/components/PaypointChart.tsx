@@ -35,7 +35,7 @@ export default function PaypointChart({
   isLoading = false,
   occupation,
   inflationData,
-  showEventBaselines = true,
+  showEventBaselines = false,
 }: PaypointChartProps) {
   // 1) Build the displayed actual series (gross or net):
   const actualSeries: ScatterDataPoint[] = grossActualSeries.map(pt => ({
@@ -47,19 +47,22 @@ export default function PaypointChart({
   //    multiplier = rawInflAtYear / rawActualAtBaseYear
   //    then inflAtYear = multiplier * displayBasePay
   const inflSeries: ScatterDataPoint[] = useMemo(() => {
-    if (grossActualSeries.length === 0 || grossInflationSeries.length === 0) {
+    if (grossInflationSeries.length === 0) {
       return []
     }
-    const firstRaw = grossActualSeries[0]
-    const firstActual = actualSeries[0]
-    if (!firstRaw || !firstActual) return []
-    const baseGross = firstRaw.y as number
-    const baseDisplay = firstActual.y as number
+    const basePoint = grossInflationSeries[0]
+    if (!basePoint) return []
+    const baseGross = basePoint.y as number
+    const baseYear = basePoint.x as number
+    const baseDisplay = displayNet ? calculateNetIncome(baseGross, baseYear) : baseGross
+    if (!Number.isFinite(baseGross) || baseGross <= 0 || !Number.isFinite(baseDisplay)) {
+      return []
+    }
     return grossInflationSeries.map(pt => ({
       x: pt.x,
       y: ((pt.y as number) / baseGross) * baseDisplay,
     }))
-  }, [grossActualSeries, grossInflationSeries, actualSeries])
+  }, [grossInflationSeries, displayNet])
 
   if (isLoading) {
     return (

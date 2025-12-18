@@ -4,7 +4,10 @@ import { useEffect } from 'react'
 import Dashboard from './Dashboard'
 import { useDrawer } from '@/contexts/drawer/DrawerContext'
 import type { InflationDataPoint } from '@/domain/inflation'
-import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
+import {
+  SalaryDataProvider,
+  useSalaryDataContext,
+} from '@/features/salary/providers/SalaryDataProvider'
 
 interface DashboardWithDrawerProps {
   inflationData: InflationDataPoint[]
@@ -15,10 +18,23 @@ export default function DashboardWithDrawer({
   inflationData,
   currentYear,
 }: DashboardWithDrawerProps) {
-  const { isOpen, openDrawer, closeDrawer, setDashboardPointsCount } = useDrawer()
-  const { payPoints } = useSalaryData(inflationData, currentYear)
+  return (
+    <SalaryDataProvider inflationData={inflationData} currentYear={currentYear}>
+      <DashboardWithContext inflationData={inflationData} currentYear={currentYear} />
+    </SalaryDataProvider>
+  )
+}
 
-  // Update points count for the FAB badge
+function DashboardWithContext({
+  inflationData,
+  currentYear,
+}: {
+  inflationData: InflationDataPoint[]
+  currentYear: number
+}) {
+  const { isOpen, openDrawer, closeDrawer, setDashboardPointsCount } = useDrawer()
+  const { payPoints } = useSalaryDataContext()
+
   useEffect(() => {
     setDashboardPointsCount(payPoints.length)
   }, [payPoints.length, setDashboardPointsCount])

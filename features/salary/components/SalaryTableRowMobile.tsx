@@ -67,15 +67,15 @@ export function SalaryTableRowMobile({
       onBlur={handleBlur}
       tabIndex={-1}
     >
-      <div className="absolute top-3 right-3 flex items-center gap-2">
+      <div className="absolute top-3 right-3 flex items-center gap-1">
         {hasActions && (
           <button
             type="button"
             onClick={toggleActions}
             className="rounded-full p-1.5 text-[var(--text-muted)] transition hover:text-[var(--primary)]"
-            aria-label="Åpne handlinger"
+            aria-label="Flere valg"
           >
-            <span className="material-symbols-outlined text-[18px]">more_vert</span>
+            <span className="material-symbols-outlined text-[18px]">more_horiz</span>
           </button>
         )}
         <button
@@ -92,7 +92,7 @@ export function SalaryTableRowMobile({
           </span>
         </button>
       </div>
-      {isActionMenuOpen && hasActions && (
+      {hasActions && isActionMenuOpen && (
         <div
           ref={menuRef}
           className="absolute top-10 right-2 z-10 w-36 rounded-lg border border-[var(--border-light)] bg-white p-2 shadow-lg dark:bg-gray-800"
@@ -109,26 +109,29 @@ export function SalaryTableRowMobile({
         </div>
       )}
       <div className="flex items-start gap-3">
-        <div className="w-12 pt-1 text-xs font-semibold text-[var(--text-muted)] uppercase">
-          <span>{formatDate(row.year)}</span>
+        <div className="w-14 pt-1 text-xs font-semibold text-[var(--text-muted)] uppercase">
+          <span className="tabular-nums">{formatDate(row.year)}</span>
           {row.isInterpolated && (
             <Badge className="mt-1" size="sm" variant="info">
               {TEXT.views.table.interpolated}
             </Badge>
           )}
         </div>
-        <div className="flex-1 space-y-3 pr-8">
-          <div className="flex items-start justify-between gap-2">
-            <div className="space-y-1">
-              <p className="text-xl leading-tight font-bold text-[var(--text-main)]">
-                {formatCurrencyWithUnit(row.salary)}
-              </p>
-            </div>
+        <div className="flex-1 space-y-2 pr-10">
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-lg leading-tight font-bold text-[var(--text-main)] tabular-nums">
+              {formatCurrencyWithUnit(row.salary)}
+            </p>
+            <SalaryRowPower
+              row={row}
+              mode={powerMode}
+              showDescription={false}
+              showSeparator={false}
+              srDescription
+              className="text-[11px]"
+            />
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-[11px] text-[var(--text-muted)]">
-            <SalaryRowPower row={row} mode={powerMode} className="text-[11px]" />
-          </div>
-          {payPoint?.reason && (
+          {payPoint?.reason && isExpanded && (
             <div className="flex flex-wrap items-center gap-2 text-[11px]">
               <Badge
                 size="sm"

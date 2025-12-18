@@ -13,7 +13,7 @@ test.describe('Salary Tracking with Reasons', () => {
     await dashboardPage.goto()
   })
 
-  test('event baselines toggle preference persists', async ({ dashboardPage, page, isMobile }) => {
+  test('inflation base selection persists', async ({ dashboardPage, page, isMobile }) => {
     await dashboardPage.addOwnDataButton.click()
 
     // Add points with events
@@ -29,10 +29,8 @@ test.describe('Salary Tracking with Reasons', () => {
     // Wait for chart
     await expect(dashboardPage.chart).toBeVisible()
 
-    const toggle = dashboardPage.eventBaselinesToggle
-    await toggle.check()
-    await expect(toggle).toBeChecked()
-    expect(await dashboardPage.getLocalStorage('salary-show-event-baselines')).toBe(true)
+    await dashboardPage.setInflationBase('2020')
+    expect(await dashboardPage.getLocalStorage('salary-inflation-base-year')).toBe(2020)
     await dashboardPage.closeChartSettings()
 
     // Reload page
@@ -43,8 +41,29 @@ test.describe('Salary Tracking with Reasons', () => {
 
     await dashboardPage.openChartSettings()
 
-    // Toggle state should be persisted
-    await expect(dashboardPage.eventBaselinesToggle).toBeChecked()
+    // Selection should be persisted
+    await expect(dashboardPage.inflationBaseSelect).toHaveValue('2020')
     await dashboardPage.closeChartSettings()
+  })
+
+  test('shows validation when inflation base is outside available years', async ({
+    dashboardPage,
+    isMobile,
+  }) => {
+    await dashboardPage.addOwnDataButton.click()
+    await dashboardPage.addSalaryPoint(2020, 500000, 'newJob')
+    await dashboardPage.addSalaryPoint(2022, 600000, 'promotion')
+
+    if (isMobile) {
+      await dashboardPage.closeDrawerIfOpen()
+    }
+
+    await dashboardPage.openChartSettings()
+    await dashboardPage.setInflationBase('1999')
+
+    await expect(
+      dashboardPage.settingsModal.getByText(/Bruk et år du har registrert/i),
+    ).toBeVisible()
+    expect(await dashboardPage.getLocalStorage('salary-inflation-base-year')).toBe('auto')
   })
 })

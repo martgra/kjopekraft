@@ -12,9 +12,28 @@ interface SalaryRowPowerProps {
   row: SalaryTableRow
   className?: string
   mode?: 'absolute' | 'percent'
+  /**
+   * Hide verbose copy (e.g. "Kjøpekraften økte") when embedding in tight layouts.
+   */
+  showDescription?: boolean
+  /**
+   * Hide the middle separator dot when description is hidden.
+   */
+  showSeparator?: boolean
+  /**
+   * Render description as screen-reader only text when hidden visually.
+   */
+  srDescription?: boolean
 }
 
-export function SalaryRowPower({ row, className, mode = 'absolute' }: SalaryRowPowerProps) {
+export function SalaryRowPower({
+  row,
+  className,
+  mode = 'absolute',
+  showDescription = true,
+  showSeparator = true,
+  srDescription = false,
+}: SalaryRowPowerProps) {
   const powerVariant =
     row.purchasingPowerDelta > 0 ? 'success' : row.purchasingPowerDelta < 0 ? 'error' : 'info'
   const purchasingPowerText = purchasingPowerCopy(row.purchasingPowerDelta)
@@ -43,15 +62,24 @@ export function SalaryRowPower({ row, className, mode = 'absolute' }: SalaryRowP
       ) : (
         <span className="tabular-nums">{formatPercent(row.purchasingPowerPercent)}</span>
       )}
-      <span className="h-1 w-1 rounded-full bg-[var(--border-light)]" />
-      <span
-        className={cn(
-          'font-medium',
-          powerVariant === 'error' ? 'text-red-600' : 'text-[var(--text-main)]',
-        )}
-      >
-        {purchasingPowerText}
-      </span>
+      {showDescription && (
+        <>
+          {showSeparator && <span className="h-1 w-1 rounded-full bg-[var(--border-light)]" />}
+          <span
+            className={cn(
+              'font-medium',
+              powerVariant === 'error' ? 'text-red-600' : 'text-[var(--text-main)]',
+            )}
+          >
+            {purchasingPowerText}
+          </span>
+        </>
+      )}
+      {!showDescription && srDescription && (
+        <span className="sr-only">
+          {purchasingPowerText} ({formatPercent(row.purchasingPowerPercent)})
+        </span>
+      )}
     </div>
   )
 }

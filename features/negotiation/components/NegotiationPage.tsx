@@ -1,15 +1,24 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNegotiationData } from '../hooks/useNegotiationData'
-import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
-import { DetailsForm, ContextForm, GenerateButtons, type UserInfo } from './forms'
+import { usePurchasingPower } from '@/features/salary/hooks/usePurchasingPower'
+import { DetailsForm, ContextForm, GenerateButtons, BenefitsForm, type UserInfo } from './forms'
 import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
-import { Badge } from '@/components/ui/atoms'
+import { Badge, Button, Icon, Spinner } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import type { InflationDataPoint } from '@/domain/inflation'
+import { useSsbMedianSalary } from '@/features/negotiation/hooks/useSsbMedianSalary'
+import { parseSalaryInput } from '@/lib/utils/parseSalaryInput'
+import { NegotiationSummary } from './NegotiationSummary'
+import { NegotiationSuggestions } from './NegotiationSuggestions'
+import { NegotiationTips } from './NegotiationTips'
+import { estimateDesiredGrossSalary } from '@/domain/negotiation'
+import { formatCurrency } from '@/lib/formatters/salaryFormatting'
+import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
+import { useSalaryDataContext } from '@/features/salary/providers/SalaryDataProvider'
 
 interface NegotiationPageProps {
   inflationData: InflationDataPoint[]
@@ -24,43 +33,143 @@ export default function NegotiationPage({
   isDrawerOpen,
   onDrawerClose,
 }: NegotiationPageProps) {
+  const { baseYearOverride } = usePurchasingPowerBase()
+  const { payPoints } = useSalaryDataContext()
   const {
     points,
     addPoint,
     removePoint,
     emailContent,
-    playbookContent,
     setEmail,
-    setPlaybook,
     hasReachedEmailGenerationLimit,
-    hasReachedPlaybookGenerationLimit,
     MAX_GENERATIONS,
     emailGenerationCount,
-    playbookGenerationCount,
     userInfo,
     updateUserInfo: persistUserInfo,
     emailPrompt,
-    playbookPrompt,
-    setEmailPrompt,
-    setPlaybookPrompt,
   } = useNegotiationData()
 
   // Generation states
   const [isGeneratingEmail, setIsGeneratingEmail] = useState(false)
-  const [isGeneratingPlaybook, setIsGeneratingPlaybook] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
-  const [playbookError, setPlaybookError] = useState<string | null>(null)
+  const prefilledCurrentSalary = useRef<string | null>(null)
+  const prefilledDesiredSalary = useRef<number | null>(null)
 
   // Get salary statistics for pre-filling current salary
-  const { statistics } = useSalaryData(inflationData, currentYear)
-  const derivedCurrentSalary = statistics?.latestPay ? String(statistics.latestPay) : ''
+  const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear, {
+    useNet: true,
+  })
+  const baseStats = purchasingPower.net?.statistics ?? purchasingPower.statistics
+  const derivedCurrentSalary = baseStats.latestPay ? String(baseStats.latestPay) : ''
+  const hasSalaryHistory = payPoints.length > 0
+  const derivedIsNewJob = payPoints[payPoints.length - 1]?.reason === 'newJob'
+  const inflationGapPercent =
+    typeof baseStats?.gapPercent === 'number' && !Number.isNaN(baseStats.gapPercent)
+      ? baseStats.gapPercent
+      : null
+  const taxYear =
+    typeof baseStats?.latestYear === 'number' && Number.isFinite(baseStats.latestYear)
+      ? baseStats.latestYear
+      : currentYear
+  const latestInflationRate = inflationData.reduce<InflationDataPoint | null>(
+    (acc, point) => (!acc || point.year > acc.year ? point : acc),
+    null,
+  )
+  const estimatedInflationRate = latestInflationRate ? latestInflationRate.inflation / 100 : 0
+
+  const {
+    occupationMatch,
+    medianSalary,
+    medianYear,
+    error: medianError,
+    isLoading: isMedianLoading,
+  } = useSsbMedianSalary(userInfo.jobTitle)
+
+  const desiredSalaryValue = parseSalaryInput(userInfo.desiredSalary)
+  const currentSalaryValue = parseSalaryInput(userInfo.currentSalary)
+  const currentGrossValue = currentSalaryValue ?? purchasingPower.statistics?.latestPay ?? null
+  const desiredVsMedianPercent =
+    medianSalary !== null && desiredSalaryValue !== null
+      ? ((desiredSalaryValue - medianSalary) / medianSalary) * 100
+      : null
+  const desiredVsMedianIsAbove =
+    desiredVsMedianPercent !== null ? desiredVsMedianPercent >= 0 : false
+
+  const suggestedRange = (() => {
+    if (currentGrossValue === null) return null
+    const catchUp =
+      inflationGapPercent !== null && Number.isFinite(inflationGapPercent)
+        ? Math.max(0, -inflationGapPercent)
+        : 0
+    const desiredRaise =
+      desiredSalaryValue !== null
+        ? ((desiredSalaryValue - currentGrossValue) / currentGrossValue) * 100
+        : null
+    const marketRaise =
+      medianSalary !== null ? ((medianSalary - currentGrossValue) / currentGrossValue) * 100 : null
+    const hasSignal = inflationGapPercent !== null || desiredRaise !== null || marketRaise !== null
+    if (!hasSignal) return null
+    const candidates = [catchUp]
+    if (desiredRaise !== null && Number.isFinite(desiredRaise)) candidates.push(desiredRaise)
+    if (marketRaise !== null && Number.isFinite(marketRaise)) candidates.push(marketRaise)
+    const upper = Math.max(...candidates)
+    if (!Number.isFinite(upper) || upper <= 0) return null
+    const min = Math.max(0, Math.min(catchUp, upper))
+    return {
+      min: Math.round(min * 10) / 10,
+      max: Math.round(Math.max(min, upper) * 10) / 10,
+    }
+  })()
+
+  const desiredSalaryEstimate = (() => {
+    if (
+      currentGrossValue === null ||
+      !Number.isFinite(currentGrossValue) ||
+      baseStats?.inflationAdjustedPay == null ||
+      !Number.isFinite(baseStats.inflationAdjustedPay)
+    ) {
+      return null
+    }
+
+    return estimateDesiredGrossSalary({
+      currentGross: currentGrossValue,
+      inflationAdjustedGross: baseStats.inflationAdjustedPay,
+      latestInflationRate: estimatedInflationRate,
+      taxYear,
+      bufferPercent: 0.5,
+    })
+  })()
 
   // Update current salary when derived value changes
   useEffect(() => {
-    if (derivedCurrentSalary && !userInfo.currentSalary) {
+    if (
+      derivedCurrentSalary &&
+      !userInfo.currentSalary &&
+      prefilledCurrentSalary.current !== derivedCurrentSalary
+    ) {
+      prefilledCurrentSalary.current = derivedCurrentSalary
       persistUserInfo({ currentSalary: derivedCurrentSalary })
     }
   }, [derivedCurrentSalary, persistUserInfo, userInfo.currentSalary])
+
+  // Prefill desired salary based on net purchasing power gap + next year's inflation
+  useEffect(() => {
+    if (
+      !userInfo.desiredSalary &&
+      desiredSalaryEstimate &&
+      prefilledDesiredSalary.current !== desiredSalaryEstimate
+    ) {
+      prefilledDesiredSalary.current = desiredSalaryEstimate
+      persistUserInfo({ desiredSalary: formatCurrency(desiredSalaryEstimate) })
+    }
+  }, [desiredSalaryEstimate, persistUserInfo, userInfo.desiredSalary])
+
+  // Update new job flag when latest salary point is available
+  useEffect(() => {
+    if (hasSalaryHistory && userInfo.isNewJob !== derivedIsNewJob) {
+      persistUserInfo({ isNewJob: derivedIsNewJob })
+    }
+  }, [derivedIsNewJob, hasSalaryHistory, persistUserInfo, userInfo.isNewJob])
 
   // Handler for updating user info
   const updateUserInfo = (updates: Partial<UserInfo>) => {
@@ -69,7 +178,7 @@ export default function NegotiationPage({
 
   // Email generation handler
   async function handleEmailGenerate() {
-    if (points.length === 0 || isGeneratingEmail || hasReachedEmailGenerationLimit()) {
+    if (isGeneratingEmail || hasReachedEmailGenerationLimit()) {
       return
     }
     try {
@@ -84,8 +193,7 @@ export default function NegotiationPage({
       if (!response.ok) {
         throw new Error(data.error || TEXT.negotiation.emailErrorTitle)
       }
-      setEmail(data.result)
-      setEmailPrompt(data.prompt)
+      setEmail(data.result, data.prompt)
     } catch (err) {
       console.error('Email generation error:', err)
       setEmailError(TEXT.negotiation.emailErrorTitle)
@@ -94,36 +202,10 @@ export default function NegotiationPage({
     }
   }
 
-  // Playbook generation handler
-  async function handlePlaybookGenerate() {
-    if (points.length === 0 || isGeneratingPlaybook || hasReachedPlaybookGenerationLimit()) {
-      return
-    }
-    try {
-      setIsGeneratingPlaybook(true)
-      setPlaybookError(null)
-      const response = await fetch('/api/generate/playbook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ points, userInfo }),
-      })
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.error || TEXT.negotiation.playbookErrorTitle)
-      }
-      setPlaybook(data.result)
-      setPlaybookPrompt(data.prompt)
-    } catch (err) {
-      console.error('Playbook generation error:', err)
-      setPlaybookError(TEXT.negotiation.playbookErrorTitle)
-    } finally {
-      setIsGeneratingPlaybook(false)
-    }
-  }
-
   // Hydrate prompts from localStorage on mount (content is handled by the hook)
   const emailRemaining = MAX_GENERATIONS - emailGenerationCount
-  const playbookRemaining = MAX_GENERATIONS - playbookGenerationCount
+  const showMarketData =
+    !occupationMatch || Boolean(medianError) || Boolean(userInfo.marketData.trim())
 
   // Argument builder content (shared between desktop sidebar and mobile drawer)
   const argumentBuilderContent = (
@@ -132,27 +214,24 @@ export default function NegotiationPage({
         points={points}
         onAddPoint={addPoint}
         onRemovePoint={removePoint}
-        className="flex-1 overflow-hidden border-0 shadow-none"
+        className="min-h-0 flex-1 overflow-hidden border-0 shadow-none"
       />
-      <GenerateButtons
-        pointsCount={points.length}
-        isGeneratingEmail={isGeneratingEmail}
-        emailRemaining={emailRemaining}
-        hasReachedEmailLimit={hasReachedEmailGenerationLimit()}
-        onGenerateEmail={handleEmailGenerate}
-        isGeneratingPlaybook={isGeneratingPlaybook}
-        playbookRemaining={playbookRemaining}
-        hasReachedPlaybookLimit={hasReachedPlaybookGenerationLimit()}
-        onGeneratePlaybook={handlePlaybookGenerate}
-        emailError={emailError}
-        playbookError={playbookError}
-      />
+      <div className="sticky bottom-0 z-10 bg-[var(--surface-light)]">
+        <GenerateButtons
+          pointsCount={points.length}
+          isGeneratingEmail={isGeneratingEmail}
+          emailRemaining={emailRemaining}
+          hasReachedEmailLimit={hasReachedEmailGenerationLimit()}
+          onGenerateEmail={handleEmailGenerate}
+          emailError={emailError}
+        />
+      </div>
     </>
   )
 
   // Right panel content - CSS handles mobile/desktop visibility
   const rightPanelContent = (
-    <div className="flex h-full flex-col overflow-hidden">{argumentBuilderContent}</div>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">{argumentBuilderContent}</div>
   )
 
   return (
@@ -165,28 +244,74 @@ export default function NegotiationPage({
       />
       <DashboardLayout rightPanel={rightPanelContent}>
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-[var(--text-main)]">
               {TEXT.negotiationPage.title}
             </h1>
             <p className="mt-1 text-sm text-[var(--text-muted)]">{TEXT.negotiationPage.subtitle}</p>
           </div>
-          <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleEmailGenerate}
+              disabled={isGeneratingEmail || hasReachedEmailGenerationLimit()}
+              className="inline-flex"
+            >
+              {isGeneratingEmail ? (
+                <span className="flex items-center gap-1 text-sm">
+                  <Spinner size="sm" />
+                  {TEXT.negotiation.generating}
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-sm">
+                  <Icon name="mail" size="sm" />
+                  {TEXT.negotiation.emailButton}
+                </span>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Forms */}
         <div className="flex flex-col gap-4">
-          <DetailsForm userInfo={userInfo} onChange={updateUserInfo} />
-          <ContextForm userInfo={userInfo} onChange={updateUserInfo} />
+          <NegotiationSummary
+            inflationGapPercent={inflationGapPercent}
+            medianSalary={medianSalary}
+            medianYear={medianYear}
+            occupationLabel={occupationMatch?.label ?? null}
+            isApproximateMatch={occupationMatch?.isApproximate ?? false}
+            isMarketLoading={isMedianLoading}
+            hasMarketError={Boolean(medianError)}
+            desiredVsMedianPercent={
+              desiredVsMedianPercent !== null
+                ? Math.round(Math.abs(desiredVsMedianPercent) * 10) / 10
+                : null
+            }
+            desiredVsMedianIsAbove={desiredVsMedianIsAbove}
+            suggestedRange={suggestedRange}
+          />
+          <NegotiationSuggestions points={points} onAddPoint={addPoint} />
+          <DetailsForm
+            userInfo={userInfo}
+            onChange={updateUserInfo}
+            showIsNewJobControl={!hasSalaryHistory}
+          />
+          <ContextForm
+            userInfo={userInfo}
+            onChange={updateUserInfo}
+            showMarketData={showMarketData}
+          />
+          <BenefitsForm userInfo={userInfo} onChange={updateUserInfo} />
+          <NegotiationTips />
         </div>
 
         {/* Generated Content */}
         <GeneratedContent
           emailContent={emailContent || undefined}
           emailPrompt={emailPrompt || undefined}
-          playbookContent={playbookContent || undefined}
-          playbookPrompt={playbookPrompt || undefined}
         />
       </DashboardLayout>
     </>

@@ -1,30 +1,31 @@
 import { useMemo } from 'react'
-import { adjustSalaries, computeStatistics } from '@/domain/salary'
+import { adjustSalaries, calculateYearRange, computeStatistics } from '@/domain/salary'
 import type { PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 
 /**
  * Hook to derive a per-year salary series + summary stats
  */
-export function useSalaryCalculations(payPoints: PayPoint[], inflationData: InflationDataPoint[]) {
+export function useSalaryCalculations(
+  payPoints: PayPoint[],
+  inflationData: InflationDataPoint[],
+  currentYear: number,
+  baseYearOverride?: number,
+) {
   // 1. Build the adjusted per-year salary series
   const salaryData = useMemo(
-    () => adjustSalaries(payPoints, inflationData),
-    [payPoints, inflationData],
+    () => adjustSalaries(payPoints, inflationData, currentYear, baseYearOverride),
+    [payPoints, inflationData, currentYear, baseYearOverride],
   )
 
   // 2. Compute summary statistics from that series
   const statistics = useMemo(() => computeStatistics(salaryData), [salaryData])
 
   // 3. Derive the full year range for chart axes
-  const yearRange = useMemo(() => {
-    if (!salaryData.length) {
-      const current = new Date().getFullYear()
-      return { minYear: current - 5, maxYear: current }
-    }
-    const yrs = salaryData.map(p => p.year)
-    return { minYear: Math.min(...yrs), maxYear: Math.max(...yrs) }
-  }, [salaryData])
+  const yearRange = useMemo(
+    () => calculateYearRange(salaryData, currentYear),
+    [salaryData, currentYear],
+  )
 
   // 4. Loading flag: we consider the hook "done" once salaryData is built
   const isLoading = false

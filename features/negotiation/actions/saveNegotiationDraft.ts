@@ -36,7 +36,10 @@ export async function saveNegotiationDraft(
       return { status: 'error', message: 'Draft payload missing' }
     }
 
-    const parsed = DraftInputSchema.parse(JSON.parse(raw) ?? defaultNegotiationDraft)
+    const parsedRaw = raw === 'undefined' ? null : raw
+    const parsed = DraftInputSchema.parse(
+      parsedRaw ? (JSON.parse(parsedRaw) ?? defaultNegotiationDraft) : defaultNegotiationDraft,
+    )
 
     const cookieStore = await cookies()
     cookieStore.set(NEGOTIATION_DRAFT_COOKIE, serializeDraft(parsed), {

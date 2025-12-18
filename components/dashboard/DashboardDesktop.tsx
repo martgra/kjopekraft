@@ -3,7 +3,7 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import SalaryPointForm from './SalaryPointForm'
 import type { InflationDataPoint } from '@/domain/inflation'
-import type { PayPoint, SalaryStatistics, PayChangeReason } from '@/domain/salary'
+import type { PayPoint, PayChangeReason, SalaryStatistics } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 import { createTestId } from '@/lib/testing/testIds'
 import DashboardContent from './DashboardContent'
@@ -47,8 +47,8 @@ interface DashboardDesktopProps {
 
 export default function DashboardDesktop({
   payPoints,
-  statistics,
   inflationData,
+  statistics,
   currentYear,
   hasData,
   isDemoMode,
@@ -105,6 +105,7 @@ export default function DashboardDesktop({
           payPoints={payPoints}
           statistics={statistics}
           inflationData={inflationData}
+          currentYear={currentYear}
           hasData={hasData}
           isDemoMode={isDemoMode}
           isNetMode={isNetMode}

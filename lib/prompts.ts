@@ -1,6 +1,7 @@
 // promptBuilders.ts
 import { NegotiationPoint, NegotiationUserInfo } from '@/lib/models/types'
 import { EMAIL_EXAMPLE, PLAYBOOK_EXAMPLE } from '@/lib/examples'
+import { formatBenefitLabels } from '@/lib/negotiation/benefitOptions'
 
 export function buildEmailPrompt(
   points: NegotiationPoint[],
@@ -8,6 +9,9 @@ export function buildEmailPrompt(
 ): string {
   let userSection = ''
   if (userInfo) {
+    const benefits = userInfo.benefits?.length
+      ? formatBenefitLabels(userInfo.benefits).join(', ')
+      : 'Ikke oppgitt'
     userSection =
       `\n\nBakgrunnsinfo fra bruker:\n` +
       `- Stillingstittel: ${userInfo.jobTitle || 'Ikke oppgitt'}\n` +
@@ -17,6 +21,7 @@ export function buildEmailPrompt(
       `- Ønsket lønn: ${userInfo.desiredSalary || 'Ikke oppgitt'}\n` +
       `- Prestasjoner: ${userInfo.achievements || 'Ikke oppgitt'}\n` +
       `- Markedsdata: ${userInfo.marketData || 'Ikke oppgitt'}\n` +
+      `- Ønskede goder: ${benefits}\n` +
       `- Andre goder: ${userInfo.otherBenefits || 'Ikke oppgitt'}\n`
   }
   return `Skriv en profesjonell, høflig og kulturtilpasset e-post på norsk til lønnsforhandling basert på følgende punkter:
@@ -40,6 +45,9 @@ export function buildPlaybookPrompt(
 ): string {
   let userSection = ''
   if (userInfo) {
+    const benefits = userInfo.benefits?.length
+      ? formatBenefitLabels(userInfo.benefits).join(', ')
+      : 'Ikke oppgitt'
     userSection =
       `\n\nBakgrunnsinfo fra bruker:\n` +
       `- Stillingstittel: ${userInfo.jobTitle || 'Ikke oppgitt'}\n` +
@@ -49,6 +57,7 @@ export function buildPlaybookPrompt(
       `- Ønsket lønn: ${userInfo.desiredSalary || 'Ikke oppgitt'}\n` +
       `- Prestasjoner: ${userInfo.achievements || 'Ikke oppgitt'}\n` +
       `- Markedsdata: ${userInfo.marketData || 'Ikke oppgitt'}\n` +
+      `- Ønskede goder: ${benefits}\n` +
       `- Andre goder: ${userInfo.otherBenefits || 'Ikke oppgitt'}\n`
   }
   return `Lag en profesjonell, detaljert og kulturtilpasset forhandlingsplan (playbook) på norsk basert på følgende punkter:

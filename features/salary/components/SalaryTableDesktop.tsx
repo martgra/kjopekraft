@@ -43,7 +43,6 @@ export function SalaryTableDesktop({
             <th className="px-5 py-4">
               {isNetMode ? TEXT.views.table.columns.netSalary : TEXT.views.table.columns.salary}
             </th>
-            <th className="px-5 py-4">{TEXT.views.table.columns.yoyChange}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--border-light)] bg-[var(--surface-light)]">

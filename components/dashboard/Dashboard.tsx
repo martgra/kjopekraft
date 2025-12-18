@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import DashboardMobile from './DashboardMobile'
 import DashboardDesktop from './DashboardDesktop'
-import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
+import { usePurchasingPower } from '@/features/salary/hooks/usePurchasingPower'
 import { usePayPointFormState } from '@/features/salary/hooks/usePayPointFormState'
 import { useDisplayMode } from '@/contexts/displayMode/DisplayModeContext'
 import { useIsMobile } from '@/lib/hooks/useIsMobile'
@@ -11,6 +11,7 @@ import { DEMO_PAY_POINTS } from '@/features/onboarding/demoData'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
+import { useSalaryDataContext } from '@/features/salary/providers/SalaryDataProvider'
 
 interface DashboardProps {
   inflationData: InflationDataPoint[]
@@ -29,12 +30,12 @@ export default function Dashboard({
 }: DashboardProps) {
   const isMobile = useIsMobile()
 
-  const { payPoints, statistics, hasData, addPoint, removePoint, isLoading, error } = useSalaryData(
-    inflationData,
-    currentYear,
-  )
-
+  const { payPoints, hasData, addPoint, removePoint, isLoading, error } = useSalaryDataContext()
   const { isNetMode, toggleMode } = useDisplayMode()
+  const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear, {
+    // Kjøpekraft calculations should be net-first when available
+    useNet: true,
+  })
   const {
     fields: { year: newYear, pay: newPay, reason: newReason, note: newNote },
     setters: { setYear, setPay, setReason, setNote, setValidationError },
@@ -107,9 +108,13 @@ export default function Dashboard({
   }
 
   // Shared props for both mobile and desktop
+  const displayStatistics = isNetMode
+    ? (purchasingPower.net?.statistics ?? purchasingPower.statistics)
+    : purchasingPower.statistics
+
   const commonProps = {
     payPoints,
-    statistics,
+    statistics: displayStatistics,
     inflationData,
     currentYear,
     hasData,

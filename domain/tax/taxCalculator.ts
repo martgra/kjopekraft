@@ -121,3 +121,32 @@ export function calculateTaxBreakdown(year: number, grossIncome: number): TaxBre
 export function calculateNetIncome(grossIncome: number, year: number): number {
   return calculateTaxBreakdown(year, grossIncome).netIncome
 }
+
+/**
+ * Estimate required gross income to reach a target net income.
+ * Uses a monotonic binary search over gross salary space.
+ */
+export function estimateGrossIncomeFromNet(targetNetIncome: number, year: number): number {
+  if (targetNetIncome <= 0) return 0
+
+  let lower = targetNetIncome
+  let upper = targetNetIncome * 2
+  let iterations = 0
+
+  while (calculateNetIncome(upper, year) < targetNetIncome && iterations < 20) {
+    upper *= 2
+    iterations += 1
+  }
+
+  for (let i = 0; i < 30; i += 1) {
+    const mid = (lower + upper) / 2
+    const net = calculateNetIncome(mid, year)
+    if (net >= targetNetIncome) {
+      upper = mid
+    } else {
+      lower = mid
+    }
+  }
+
+  return Math.ceil(upper / 1000) * 1000
+}

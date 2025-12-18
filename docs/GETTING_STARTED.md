@@ -68,15 +68,7 @@ bun dev
 
 The application will start on [http://localhost:3000](http://localhost:3000).
 
-You should see:
-
-```
-  ▲ Next.js 15.x
-  - Local:        http://localhost:3000
-  - Environments: .env.local
-
- ✓ Ready in 1.2s
-```
+You should see a Next.js 16 banner with the local URL when the server is ready.
 
 ## Development Workflow
 
@@ -196,8 +188,8 @@ The chart will update immediately showing:
 
 **Dashboard Features**:
 
-- Toggle between Net (Netto) and Gross (Brutto) salary modes
-- Enable reference salary comparison (currently nurses)
+- Open chart settings (gear button) to toggle between Net (Netto) and Gross (Brutto), choose inflation base year, and enable reference salary comparison (currently nurses).
+- Chart, metrics, and negotiation tools share the same salary data via the `SalaryDataProvider`.
 - View detailed metrics (real annual value, inflation impact)
 - Filter time ranges (1Y, 3Y, ALL)
 

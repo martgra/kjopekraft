@@ -1,13 +1,54 @@
-import type { PayPoint, SalaryDataPoint, SalaryStatistics, YearRange } from './salaryTypes'
+import type {
+  PayChangeReason,
+  PayPoint,
+  SalaryDataPoint,
+  SalaryStatistics,
+  YearRange,
+} from './salaryTypes'
 import type { InflationDataPoint } from '@/domain/inflation'
 
+const SIGNIFICANT_REASONS: PayChangeReason[] = ['promotion', 'newJob']
+
+function clampYear(year: number, startYear: number, endYear: number): number {
+  return Math.min(Math.max(year, startYear), endYear)
+}
+
+export function resolvePurchasingPowerBaseYear(
+  payPoints: PayPoint[],
+  _currentYear?: number,
+  baseYearOverride?: number,
+): number | null {
+  if (!payPoints.length) return null
+
+  const pts = [...payPoints].sort((a, b) => a.year - b.year)
+  const startYear = pts[0]?.year
+  const endYear = pts[pts.length - 1]?.year
+  if (startYear == null || endYear == null) return null
+
+  if (baseYearOverride != null && Number.isFinite(baseYearOverride)) {
+    return clampYear(Math.round(baseYearOverride), startYear, endYear)
+  }
+
+  const significant = pts.filter(point => SIGNIFICANT_REASONS.includes(point.reason))
+  if (!significant.length) return startYear
+
+  const nonLatest = significant.filter(point => point.year < endYear)
+  if (nonLatest.length) {
+    return nonLatest[nonLatest.length - 1]?.year ?? startYear
+  }
+
+  return startYear
+}
+
 /**
- * Build a per-year salary series (actual vs. inflation) starting from the earliest pay point,
- * scaling the initial salary forward by CPI alone.
+ * Build a per-year salary series (actual vs. inflation) using the last significant change
+ * (promotion/new job) as the inflation baseline.
  */
 export function adjustSalaries(
   payPoints: PayPoint[],
   inflation: InflationDataPoint[],
+  currentYear?: number,
+  baseYearOverride?: number,
 ): SalaryDataPoint[] {
   if (!payPoints.length || !inflation.length) return []
 
@@ -15,25 +56,12 @@ export function adjustSalaries(
   const pts = [...payPoints].sort((a, b) => a.year - b.year)
   const cpi = [...inflation].sort((a, b) => a.year - b.year)
 
-  // Determine base salary (earliest point) and base year
   const firstPt = pts[0]
   const lastPt = pts[pts.length - 1]
   if (!firstPt || !lastPt) return []
 
-  const baseYear = firstPt.year
-  const baseSalary = firstPt.pay
+  const startYear = firstPt.year
   const endYear = lastPt.year
-
-  // Build a map of year → CPI cumulative index relative to baseYear
-  const rateMap = new Map<number, number>(cpi.map(d => [d.year, d.inflation / 100]))
-  const indexMap = new Map<number, number>()
-  let idx = 1
-  indexMap.set(baseYear, idx)
-  for (let y = baseYear + 1; y <= endYear; y++) {
-    const r = rateMap.get(y) ?? 0
-    idx *= 1 + r
-    indexMap.set(y, idx)
-  }
 
   // Interpolate actual salary per year between payPoints
   const salaryMap = new Map<number, number>()
@@ -49,9 +77,30 @@ export function adjustSalaries(
     }
   }
 
+  // Determine base salary and base year from last significant change (with current-year fallback)
+  const baseYear = resolvePurchasingPowerBaseYear(pts, currentYear, baseYearOverride) ?? startYear
+  const baseSalary = salaryMap.get(baseYear) ?? pts[0]?.pay ?? 0
+
+  // Build a map of year → CPI cumulative index relative to baseYear
+  const rateMap = new Map<number, number>(cpi.map(d => [d.year, d.inflation / 100]))
+  const indexMap = new Map<number, number>()
+  let idx = 1
+  indexMap.set(baseYear, idx)
+  for (let y = baseYear + 1; y <= endYear; y++) {
+    const r = rateMap.get(y) ?? 0
+    idx *= 1 + r
+    indexMap.set(y, idx)
+  }
+  idx = 1
+  for (let y = baseYear - 1; y >= startYear; y--) {
+    const r = rateMap.get(y + 1) ?? 0
+    idx /= 1 + r
+    indexMap.set(y, idx)
+  }
+
   // Build output series: actual (interpolated) vs. inflation growth of baseSalary
   const result: SalaryDataPoint[] = []
-  for (let y = baseYear; y <= endYear; y++) {
+  for (let y = startYear; y <= endYear; y++) {
     const actual = salaryMap.get(y) ?? baseSalary
     const factor = indexMap.get(y) ?? 1
     result.push({

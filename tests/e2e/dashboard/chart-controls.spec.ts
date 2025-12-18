@@ -13,7 +13,7 @@ test.describe('Chart Controls', () => {
     await dashboardPage.openChartSettings()
     await expect(dashboardPage.settingsModal).toBeVisible()
     await expect(dashboardPage.netGrossToggle).toBeVisible()
-    await expect(dashboardPage.eventBaselinesToggle).toBeVisible()
+    await expect(dashboardPage.inflationBaseSelect).toBeVisible()
     await expect(dashboardPage.occupationSelect).toBeVisible()
     await dashboardPage.closeChartSettings()
   })
@@ -34,6 +34,22 @@ test.describe('Chart Controls', () => {
 
     // Back to graph
     await dashboardPage.switchView('graph')
+    await expect(dashboardPage.chart).toBeVisible()
+  })
+
+  test('net/gross toggle updates badge without breaking chart', async ({ dashboardPage }) => {
+    await dashboardPage.loadDemoData()
+    await dashboardPage.openChartSettings()
+
+    // Switch to net
+    await dashboardPage.netGrossToggle.click()
+    // Preference should persist and chart stays visible
+    expect(await dashboardPage.getLocalStorage('salaryDisplayMode')).toBe('net')
+    await expect(dashboardPage.chart).toBeVisible()
+
+    // Switch back to gross
+    await dashboardPage.netGrossToggle.click()
+    expect(await dashboardPage.getLocalStorage('salaryDisplayMode')).toBe('gross')
     await expect(dashboardPage.chart).toBeVisible()
   })
 })
