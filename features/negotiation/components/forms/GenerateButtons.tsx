@@ -1,6 +1,6 @@
 'use client'
 
-import { Icon, AILoadingState } from '@/components/ui/atoms'
+import { AILoadingState, Icon } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 
 export interface GenerateButtonsProps {
@@ -37,27 +37,25 @@ export function GenerateButtons({
           onClick={onGenerateEmail}
           disabled={isGeneratingEmail || hasReachedEmailLimit}
         >
-          {isGeneratingEmail ? (
-            <div className="flex flex-col items-center gap-1.5 py-1">
-              <AILoadingState
-                size="sm"
-                className="text-xs font-normal"
-                spinnerClassName="border-green-900 border-t-transparent"
-                showQuote={true}
-              />
-            </div>
-          ) : (
-            <>
-              <span className="flex items-center gap-1.5 text-sm">
-                <Icon name="mail" size="sm" />
-                {TEXT.negotiation.emailButton}
-              </span>
-              <span className="text-[9px] font-normal opacity-70">
-                {emailRemaining} {TEXT.negotiation.remaining}
-              </span>
-            </>
-          )}
+          <>
+            <span className="flex items-center gap-1.5 text-sm">
+              <Icon name="mail" size="sm" />
+              {isGeneratingEmail ? TEXT.negotiation.generating : TEXT.negotiation.emailButton}
+            </span>
+            <span className="text-[9px] font-normal opacity-70">
+              {emailRemaining} {TEXT.negotiation.remaining}
+            </span>
+          </>
         </button>
+        {isGeneratingEmail && (
+          <div className="mt-1 flex min-w-0">
+            <AILoadingState
+              size="sm"
+              className="gap-1.5 truncate text-[11px] text-[var(--text-muted)] italic"
+              spinnerClassName="border-[var(--primary)] border-t-transparent"
+            />
+          </div>
+        )}
       </div>
     </div>
   )
