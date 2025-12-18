@@ -22,3 +22,6 @@ export type { SelectProps, SelectOptionProps } from './Select'
 
 export { Toggle } from './Toggle'
 export type { ToggleProps } from './Toggle'
+
+export { AILoadingState } from './AILoadingState'
+export type { AILoadingStateProps } from './AILoadingState'
