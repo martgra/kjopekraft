@@ -3,6 +3,7 @@ import type { NegotiationPoint } from '@/lib/models/types'
 import {
   defaultNegotiationDraft,
   readDraftFromDocument,
+  writeDraftToDocument,
   type NegotiationDraft,
 } from '@/features/negotiation/utils/draftCookie'
 import { saveNegotiationDraft } from '@/features/negotiation/actions/saveNegotiationDraft'
@@ -45,6 +46,10 @@ export function useNegotiationData() {
       const payload = resolved ?? defaultNegotiationDraft
       setOptimisticDraft(payload)
 
+      // Immediately write to client-side cookie for instant persistence
+      writeDraftToDocument(payload)
+
+      // Also save via server action for server-side synchronization
       const formData = new FormData()
       formData.append('draft', JSON.stringify(payload))
       saveDraftAction(formData)

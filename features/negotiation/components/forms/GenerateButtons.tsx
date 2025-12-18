@@ -38,11 +38,14 @@ export function GenerateButtons({
           disabled={isGeneratingEmail || hasReachedEmailLimit}
         >
           {isGeneratingEmail ? (
-            <AILoadingState
-              size="sm"
-              className="text-sm"
-              spinnerClassName="border-green-900 border-t-transparent"
-            />
+            <div className="flex flex-col items-center gap-1.5 py-1">
+              <AILoadingState
+                size="sm"
+                className="text-xs font-normal"
+                spinnerClassName="border-green-900 border-t-transparent"
+                showQuote={true}
+              />
+            </div>
           ) : (
             <>
               <span className="flex items-center gap-1.5 text-sm">
