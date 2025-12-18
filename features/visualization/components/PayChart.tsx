@@ -74,5 +74,5 @@ export default function PayChart({
     eventBaselines,
   ])
 
-  return <canvas ref={canvasRef} className={className} />
+  return <canvas ref={canvasRef} className={className} style={{ touchAction: 'manipulation' }} />
 }
