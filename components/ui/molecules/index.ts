@@ -7,3 +7,6 @@ export type { FormFieldProps } from './FormField'
 
 export { PointItem } from './PointItem'
 export type { PointItemProps } from './PointItem'
+
+export { AIStatusBadge } from './AIStatusBadge'
+export type { AIStatusBadgeProps } from './AIStatusBadge'

@@ -7,7 +7,7 @@ import { DetailsForm, ContextForm, GenerateButtons, BenefitsForm, type UserInfo 
 import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
-import { Badge, Button, Icon, Spinner } from '@/components/ui/atoms'
+import { AILoadingState, Badge, Button, Icon } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { useSsbMedianSalary } from '@/features/negotiation/hooks/useSsbMedianSalary'
@@ -245,34 +245,38 @@ export default function NegotiationPage({
       />
       <DashboardLayout rightPanel={rightPanelContent}>
         {/* Header */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-[var(--text-main)]">
               {TEXT.negotiationPage.title}
             </h1>
             <p className="mt-1 text-sm text-[var(--text-muted)]">{TEXT.negotiationPage.subtitle}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-start gap-2">
             <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleEmailGenerate}
-              disabled={isGeneratingEmail || hasReachedEmailGenerationLimit()}
-              className="inline-flex"
-            >
-              {isGeneratingEmail ? (
-                <span className="flex items-center gap-1 text-sm">
-                  <Spinner size="sm" />
-                  {TEXT.negotiation.generating}
-                </span>
-              ) : (
+            <div className="flex flex-col items-start gap-1">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleEmailGenerate}
+                disabled={isGeneratingEmail || hasReachedEmailGenerationLimit()}
+                className="inline-flex"
+              >
                 <span className="flex items-center gap-1 text-sm">
                   <Icon name="mail" size="sm" />
-                  {TEXT.negotiation.emailButton}
+                  {isGeneratingEmail ? TEXT.negotiation.generating : TEXT.negotiation.emailButton}
                 </span>
+              </Button>
+              {isGeneratingEmail && (
+                <div className="flex min-w-0">
+                  <AILoadingState
+                    size="sm"
+                    className="gap-1.5 truncate text-[11px] text-[var(--text-muted)] italic"
+                    spinnerClassName="border-[var(--primary)] border-t-transparent"
+                  />
+                </div>
               )}
-            </Button>
+            </div>
           </div>
         </div>
 
