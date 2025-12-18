@@ -1,0 +1,27 @@
+name: Cleanup Old Docker Images
+
+on:
+  # Run weekly on Sundays at 2 AM UTC
+  schedule:
+    - cron: '0 2 * * 0'
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    name: Delete Old Images
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Delete old container images
+        uses: snok/container-retention-policy@v3.0.0
+        with:
+          image-names: kjopekraft
+          cut-off: 30 days ago UTC
+          keep-at-least: 5
+          account-type: personal
+          token: ${{ secrets.GITHUB_TOKEN }}
+          skip-tags: latest
