@@ -49,15 +49,16 @@ function normalize(vec: number[]): number[] {
 
 async function embedQueryOpenAI(query: string): Promise<number[]> {
   const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey) throw new Error('OPENAI_API_KEY is required for embedding search.')
+  if (!apiKey) throw new Error('Embeddings disabled: set OPENAI_API_KEY to enable semantic search.')
 
-  const model = process.env.OPENAI_EMBED_MODEL ?? 'openai/text-embedding-3-small'
+  const configuredModel = (process.env.OPENAI_EMBED_MODEL ?? 'text-embedding-3-small').replace(
+    /^openai\//,
+    '',
+  )
+
   const { embedding } = await embed({
-    model,
+    model: openai.textEmbeddingModel(configuredModel),
     value: query,
-    providerOptions: {
-      openai: { apiKey },
-    },
   })
 
   return normalize(embedding)
@@ -122,12 +123,21 @@ export async function hybridOccupationSearch(query: string, limit = 8): Promise<
     fuseScore: r.score,
   }))
 
+  const hasOpenAiKey = Boolean(process.env.OPENAI_API_KEY)
+
   // 2) Get embedding results (semantic recall) with graceful fallback
   let embeddingResults: EmbeddingResult[] = []
-  try {
-    embeddingResults = await searchOccupationsByEmbedding(query, Math.max(limit, 20))
-  } catch (error) {
-    console.warn('Embedding search failed, falling back to Fuse only:', error)
+  if (hasOpenAiKey) {
+    try {
+      embeddingResults = await searchOccupationsByEmbedding(query, Math.max(limit, 20))
+    } catch (error) {
+      console.warn('Embedding search failed, falling back to Fuse only:', error)
+    }
+  } else {
+    // No keys configured; silently rely on Fuse to avoid noisy logs in local/dev.
+    if (process.env.NODE_ENV !== 'production') {
+      console.info('Embedding search disabled (missing OPENAI_API_KEY); using Fuse fallback only.')
+    }
   }
 
   // 3) Merge by code

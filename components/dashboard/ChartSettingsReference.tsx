@@ -5,6 +5,8 @@ import useSWR from 'swr'
 import { Input } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import {
+  OCCUPATIONS,
+  type OccupationKey,
   type ReferenceOccupationSelection,
   presetOccupationToSelection,
 } from '@/features/referenceSalary/occupations'
@@ -48,7 +50,39 @@ export function ChartSettingsReference({
     },
   )
 
-  const results = data?.results ?? []
+  const presetMatches: ReferenceOccupationSelection[] = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (q.length < 2) return []
+
+    return (Object.keys(OCCUPATIONS) as OccupationKey[])
+      .filter(key => {
+        const preset = OCCUPATIONS[key]
+        return 'provider' in preset && preset.provider === 'stortinget'
+      })
+      .map(key => presetOccupationToSelection(key))
+      .filter(selection => {
+        const haystack = `${selection.code} ${selection.label ?? ''}`.toLowerCase()
+        return haystack.includes(q)
+      })
+  }, [query])
+
+  const results: ReferenceOccupationSelection[] = useMemo(() => {
+    const apiResults =
+      data?.results?.map(result => ({
+        code: result.code,
+        label: result.label,
+        provider: 'ssb' as const,
+      })) ?? []
+
+    const merged = [...presetMatches, ...apiResults]
+    const seen = new Set<string>()
+    return merged.filter(item => {
+      const key = `${item.provider ?? 'ssb'}-${item.code}`
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }, [data?.results, presetMatches])
 
   const testId = createTestId('chart-settings-reference')
 
@@ -56,16 +90,6 @@ export function ChartSettingsReference({
     onOccupationChange(selection)
     setQuery('')
   }
-
-  const quickPicks = useMemo(
-    () => [
-      presetOccupationToSelection('nurses'),
-      presetOccupationToSelection('teachers'),
-      presetOccupationToSelection('managersState'),
-      presetOccupationToSelection('stortingsrepresentant'),
-    ],
-    [],
-  )
 
   return (
     <div
@@ -103,15 +127,9 @@ export function ChartSettingsReference({
             )}
             {results.map(result => (
               <button
-                key={result.code}
+                key={`${result.provider ?? 'ssb'}-${result.code}`}
                 type="button"
-                onClick={() =>
-                  handleSelect({
-                    code: result.code,
-                    label: result.label,
-                    provider: 'ssb',
-                  })
-                }
+                onClick={() => handleSelect(result)}
                 className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800"
                 data-testid={testId(`result-${result.code}`)}
               >
@@ -120,27 +138,6 @@ export function ChartSettingsReference({
             ))}
           </div>
         )}
-
-        <div className="flex flex-wrap gap-2" data-testid={testId('quick-picks')}>
-          {quickPicks.map(pick => (
-            <button
-              key={pick.code + pick.presetKey}
-              type="button"
-              onClick={() => handleSelect(pick)}
-              className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[var(--text-main)] shadow-sm transition hover:bg-[var(--color-gray-50)] dark:bg-gray-800 dark:hover:bg-gray-700"
-            >
-              {pick.label}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => onOccupationChange(null)}
-            className="rounded-full border border-[var(--border-light)] bg-white px-3 py-1 text-xs font-semibold text-[var(--text-muted)] transition hover:bg-[var(--color-gray-50)] dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
-            data-testid={testId('clear')}
-          >
-            {TEXT.charts.noReference}
-          </button>
-        </div>
 
         {selectedOccupation && (
           <div
