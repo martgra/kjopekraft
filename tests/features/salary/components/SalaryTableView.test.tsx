@@ -40,7 +40,10 @@ describe('SalaryTableView', () => {
     expect(
       screen.getAllByText(text => text.includes(TEXT.views.table.purchasingPowerGain))[0],
     ).toBeInTheDocument()
-    expect(screen.getAllByText(/\+19\.0%/).length).toBeGreaterThan(0)
+    // With year-over-year calculation:
+    // 2024: 500k - (400k * 1.025) = 90k
+    // Percent: (90k / 410k) * 100 = 21.95% ≈ 22.0%
+    expect(screen.getAllByText(/\+22\.0%/).length).toBeGreaterThan(0)
   })
 
   it('reveals cumulative growth on expand', async () => {

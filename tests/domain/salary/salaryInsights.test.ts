@@ -95,8 +95,12 @@ describe('buildSalaryInsights', () => {
     const largestRaise = insights.find(i => i.kind === 'largestRaise')
     expect(largestRaise).toMatchObject({ year: 2021, absoluteChange: 50_000 })
 
+    // With year-over-year calculation, streak is 2020-2021 (length 2)
+    // 2020: 400k - 380k = 20k > 0 (first year uses base comparison)
+    // 2021: 450k - (400k * 1.02) = 42k > 0
+    // 2022: 440k - (450k * 1.05) = -32.5k < 0 (breaks streak)
     const streak = insights.find(i => i.kind === 'inflationBeatingStreak')
-    expect(streak).toMatchObject({ startYear: 2020, endYear: 2022, length: 3 })
+    expect(streak).toMatchObject({ startYear: 2020, endYear: 2021, length: 2 })
   })
 
   it('returns empty when no salary data', () => {
