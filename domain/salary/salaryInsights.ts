@@ -46,10 +46,15 @@ export function buildSalaryTableRows({
     const cumulativePercent =
       baseSalary !== 0 ? roundPercent((cumulativeChange / baseSalary) * 100) : null
 
-    const purchasingPowerDelta = point.salary - point.inflationAdjusted
+    // Calculate purchasing power based on previous year (year-over-year)
+    // For the first year, compare to base year inflation-adjusted salary
+    const previousInflationAdjusted = previous
+      ? previous.salary * (1 + point.inflationRate / 100)
+      : point.inflationAdjusted
+    const purchasingPowerDelta = point.salary - previousInflationAdjusted
     const purchasingPowerPercent =
-      point.inflationAdjusted !== 0
-        ? roundPercent((purchasingPowerDelta / point.inflationAdjusted) * 100)
+      previousInflationAdjusted !== 0
+        ? roundPercent((purchasingPowerDelta / previousInflationAdjusted) * 100)
         : null
 
     const referencePoint = referenceByYear.get(point.year)
