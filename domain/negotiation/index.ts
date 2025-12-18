@@ -1,0 +1,1 @@
+export { estimateDesiredGrossSalary } from './negotiationCalculator'

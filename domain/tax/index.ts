@@ -4,7 +4,11 @@
  * Pure functions for Norwegian tax calculations
  */
 
-export { calculateNetIncome, calculateTaxBreakdown } from './taxCalculator'
+export {
+  calculateNetIncome,
+  calculateTaxBreakdown,
+  estimateGrossIncomeFromNet,
+} from './taxCalculator'
 export type {
   TaxBreakdown,
   YearlyTaxConfig,

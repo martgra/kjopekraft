@@ -29,13 +29,24 @@ export function useNegotiationData() {
     saveNegotiationDraft,
     { status: 'idle' },
   )
+  const currentDraft = optimisticDraft ?? draft ?? defaultNegotiationDraft
 
-  const persistDraft = (nextDraft: NegotiationDraft) => {
-    const formData = new FormData()
-    formData.append('draft', JSON.stringify(nextDraft))
+  const persistDraft = (
+    nextDraft: NegotiationDraft | ((prev: NegotiationDraft) => NegotiationDraft),
+  ) => {
     startTransition(() => {
-      setOptimisticDraft(nextDraft)
-      setDraft(nextDraft)
+      let resolved: NegotiationDraft | undefined
+
+      setDraft(prev => {
+        resolved = typeof nextDraft === 'function' ? nextDraft(prev) : nextDraft
+        return resolved ?? defaultNegotiationDraft
+      })
+
+      const payload = resolved ?? defaultNegotiationDraft
+      setOptimisticDraft(payload)
+
+      const formData = new FormData()
+      formData.append('draft', JSON.stringify(payload))
       saveDraftAction(formData)
     })
   }
@@ -45,99 +56,93 @@ export function useNegotiationData() {
 
   // Points management
   function addPoint(point: NegotiationPoint) {
-    const nextDraft = { ...draft, points: [...draft.points, point] }
-    persistDraft(nextDraft)
+    persistDraft(prev => ({ ...prev, points: [...prev.points, point] }))
   }
 
   function removePoint(idx: number) {
-    const nextDraft = { ...draft, points: draft.points.filter((_, i) => i !== idx) }
-    persistDraft(nextDraft)
+    persistDraft(prev => ({ ...prev, points: prev.points.filter((_, i) => i !== idx) }))
   }
 
   function clearPoints() {
-    const nextDraft = { ...draft, points: [] }
-    persistDraft(nextDraft)
+    persistDraft(prev => ({ ...prev, points: [] }))
   }
 
   // Content management
-  function setEmail(content: string) {
-    const validPrev =
-      typeof draft.emailGenerationCount === 'number' && !isNaN(draft.emailGenerationCount)
-        ? draft.emailGenerationCount
-        : 0
-    const nextDraft = {
-      ...draft,
-      emailContent: content,
-      emailGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
-    }
-    persistDraft(nextDraft)
+  function setEmail(content: string, prompt?: string) {
+    persistDraft(prev => {
+      const validPrev =
+        typeof prev.emailGenerationCount === 'number' && !isNaN(prev.emailGenerationCount)
+          ? prev.emailGenerationCount
+          : 0
+      return {
+        ...prev,
+        emailContent: content,
+        emailPrompt: prompt ?? prev.emailPrompt,
+        emailGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
+      }
+    })
   }
 
   function setPlaybook(content: string) {
-    const validPrev =
-      typeof draft.playbookGenerationCount === 'number' && !isNaN(draft.playbookGenerationCount)
-        ? draft.playbookGenerationCount
-        : 0
-    const nextDraft = {
-      ...draft,
-      playbookContent: content,
-      playbookGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
-    }
-    persistDraft(nextDraft)
+    persistDraft(prev => {
+      const validPrev =
+        typeof prev.playbookGenerationCount === 'number' && !isNaN(prev.playbookGenerationCount)
+          ? prev.playbookGenerationCount
+          : 0
+      return {
+        ...prev,
+        playbookContent: content,
+        playbookGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
+      }
+    })
   }
 
   // Generation counter management
   function incrementEmailGenerationCount() {
-    const validPrev =
-      typeof draft.emailGenerationCount === 'number' && !isNaN(draft.emailGenerationCount)
-        ? draft.emailGenerationCount
-        : 0
-    const nextDraft = {
-      ...draft,
-      emailGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
-    }
-    persistDraft(nextDraft)
+    persistDraft(prev => {
+      const validPrev =
+        typeof prev.emailGenerationCount === 'number' && !isNaN(prev.emailGenerationCount)
+          ? prev.emailGenerationCount
+          : 0
+      return {
+        ...prev,
+        emailGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
+      }
+    })
   }
 
   function incrementPlaybookGenerationCount() {
-    const validPrev =
-      typeof draft.playbookGenerationCount === 'number' && !isNaN(draft.playbookGenerationCount)
-        ? draft.playbookGenerationCount
-        : 0
-    const nextDraft = {
-      ...draft,
-      playbookGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
-    }
-    persistDraft(nextDraft)
+    persistDraft(prev => {
+      const validPrev =
+        typeof prev.playbookGenerationCount === 'number' && !isNaN(prev.playbookGenerationCount)
+          ? prev.playbookGenerationCount
+          : 0
+      return {
+        ...prev,
+        playbookGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
+      }
+    })
   }
 
   function resetGenerationCounts() {
-    const nextDraft = { ...draft, emailGenerationCount: 0, playbookGenerationCount: 0 }
-    persistDraft(nextDraft)
+    persistDraft(prev => ({ ...prev, emailGenerationCount: 0, playbookGenerationCount: 0 }))
   }
 
   function hasReachedEmailGenerationLimit() {
-    // Ensure the count is valid before checking the limit
-    return (
-      typeof draft.emailGenerationCount === 'number' &&
-      !isNaN(draft.emailGenerationCount) &&
-      draft.emailGenerationCount >= MAX_GENERATIONS
-    )
+    const value = currentDraft.emailGenerationCount
+    return typeof value === 'number' && !isNaN(value) && value >= MAX_GENERATIONS
   }
 
   function hasReachedPlaybookGenerationLimit() {
-    // Ensure the count is valid before checking the limit
-    return (
-      typeof draft.playbookGenerationCount === 'number' &&
-      !isNaN(draft.playbookGenerationCount) &&
-      draft.playbookGenerationCount >= MAX_GENERATIONS
-    )
+    const value = currentDraft.playbookGenerationCount
+    return typeof value === 'number' && !isNaN(value) && value >= MAX_GENERATIONS
   }
 
   function updateUserInfo(updates: Partial<NegotiationDraft['userInfo']>) {
-    const merged = safeUserInfo({ ...draft.userInfo, ...updates })
-    const nextDraft = { ...draft, userInfo: merged }
-    persistDraft(nextDraft)
+    persistDraft(prev => {
+      const merged = safeUserInfo({ ...prev.userInfo, ...updates })
+      return { ...prev, userInfo: merged }
+    })
   }
 
   // Add a function to handle emergency reset - useful for users with corrupt data
@@ -147,30 +152,38 @@ export function useNegotiationData() {
 
   return {
     // Data points
-    points: optimisticDraft.points,
+    points: currentDraft.points,
     addPoint,
     removePoint,
     clearPoints,
 
     // Generated content
-    emailContent: optimisticDraft.emailContent,
-    playbookContent: optimisticDraft.playbookContent,
+    emailContent: currentDraft.emailContent,
+    playbookContent: currentDraft.playbookContent,
     setEmail,
     setPlaybook,
 
     // Prompts
-    emailPrompt: optimisticDraft.emailPrompt,
-    playbookPrompt: optimisticDraft.playbookPrompt,
-    setEmailPrompt: (prompt: string) => persistDraft({ ...draft, emailPrompt: prompt }),
-    setPlaybookPrompt: (prompt: string) => persistDraft({ ...draft, playbookPrompt: prompt }),
+    emailPrompt: currentDraft.emailPrompt,
+    playbookPrompt: currentDraft.playbookPrompt,
+    setEmailPrompt: (prompt: string) =>
+      persistDraft(prev => ({
+        ...prev,
+        emailPrompt: prompt,
+      })),
+    setPlaybookPrompt: (prompt: string) =>
+      persistDraft(prev => ({
+        ...prev,
+        playbookPrompt: prompt,
+      })),
 
     // User info
-    userInfo: optimisticDraft.userInfo,
+    userInfo: currentDraft.userInfo,
     updateUserInfo,
 
     // Generation counts
-    emailGenerationCount: optimisticDraft.emailGenerationCount,
-    playbookGenerationCount: optimisticDraft.playbookGenerationCount,
+    emailGenerationCount: currentDraft.emailGenerationCount,
+    playbookGenerationCount: currentDraft.playbookGenerationCount,
     incrementEmailGenerationCount,
     incrementPlaybookGenerationCount,
     resetGenerationCounts,

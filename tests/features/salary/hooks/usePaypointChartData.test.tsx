@@ -57,7 +57,7 @@ describe('usePaypointChartData', () => {
       toggleReference: vi.fn(),
       setReferenceEnabled: vi.fn(),
     })
-    const { result } = renderHook(() => usePaypointChartData(payPoints, inflation, 'nurses'))
+    const { result } = renderHook(() => usePaypointChartData(payPoints, inflation, 2024, 'nurses'))
     expect(result.current.referenceSeries).toEqual([])
     expect(result.current.actualSeries).toHaveLength(2)
     expect(result.current.inflSeries).toHaveLength(2)
@@ -70,7 +70,7 @@ describe('usePaypointChartData', () => {
       toggleMode: vi.fn(),
       setDisplayMode: vi.fn(),
     })
-    const { result } = renderHook(() => usePaypointChartData(payPoints, inflation, 'nurses'))
+    const { result } = renderHook(() => usePaypointChartData(payPoints, inflation, 2024, 'nurses'))
     expect(result.current.referenceSeries).toHaveLength(2)
     expect(result.current.referenceSeries[0]?.y).toBeLessThanOrEqual(400_000) // net income
     expect(result.current.isLoading).toBe(false)

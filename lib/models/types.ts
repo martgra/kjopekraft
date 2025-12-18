@@ -51,5 +51,6 @@ export interface NegotiationUserInfo {
   desiredSalary: string
   achievements: string
   marketData: string
+  benefits: string[]
   otherBenefits: string
 }

@@ -117,8 +117,14 @@ export class DashboardPage {
     return this.settingsModal.getByTestId('chart-settings-modal-occupation-select')
   }
 
-  get eventBaselinesToggle() {
-    return this.settingsModal.getByTestId('chart-event-baselines-toggle')
+  get inflationBaseSelect() {
+    return this.settingsModal.getByTestId('chart-settings-inflation-base-select')
+  }
+
+  async setInflationBase(value: string) {
+    const input = this.inflationBaseSelect
+    await input.fill('')
+    await input.fill(value)
   }
 
   async closeChartSettings() {
@@ -211,7 +217,8 @@ export class DashboardPage {
 
   async closeDrawerIfOpen() {
     const dialog = this.page.getByRole('dialog')
-    const dialogExists = (await dialog.count()) > 0
+    const dialogCount = await dialog.count()
+    const dialogExists = dialogCount > 0
 
     if (
       dialogExists &&
@@ -220,7 +227,19 @@ export class DashboardPage {
       }))
     ) {
       await this.mobileDrawerCloseButton.click()
-      await expect(dialog).toHaveClass(/translate-y-full/)
+      // Drawer may either slide out of view or unmount entirely depending on route change timing
+      try {
+        await expect(dialog).toHaveClass(/translate-y-full/)
+      } catch (err) {
+        // If the drawer unmounted, confirm it's gone
+        const remaining = await dialog.count()
+        if (remaining > 0) throw err
+      }
+    }
+
+    // Treat missing dialog as already closed for test stability
+    if (!dialogExists) {
+      return
     }
   }
 
@@ -279,7 +298,12 @@ export class DashboardPage {
   async getLocalStorage(key: string) {
     return this.page.evaluate(k => {
       const item = localStorage.getItem(k)
-      return item ? JSON.parse(item) : null
+      if (!item) return null
+      try {
+        return JSON.parse(item)
+      } catch {
+        return item
+      }
     }, key)
   }
 }

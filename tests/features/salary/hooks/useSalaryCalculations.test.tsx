@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-
+import { describe, expect, it } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useSalaryCalculations } from '@/features/salary/hooks/useSalaryCalculations'
 import type { PayPoint } from '@/domain/salary'
@@ -18,14 +17,14 @@ const inflation: InflationDataPoint[] = [
 
 describe('useSalaryCalculations', () => {
   it('returns empty state with default year window when no data', () => {
-    const { result } = renderHook(() => useSalaryCalculations([], inflation))
+    const { result } = renderHook(() => useSalaryCalculations([], inflation, 2024))
     expect(result.current.salaryData).toEqual([])
     expect(result.current.hasData).toBe(false)
     expect(result.current.yearRange.maxYear - result.current.yearRange.minYear).toBe(5)
   })
 
   it('computes salary series, stats, and year range when data present', () => {
-    const { result } = renderHook(() => useSalaryCalculations(payPoints, inflation))
+    const { result } = renderHook(() => useSalaryCalculations(payPoints, inflation, 2024))
     expect(result.current.salaryData).toHaveLength(3)
     expect(result.current.statistics.latestPay).toBeGreaterThan(0)
     expect(result.current.yearRange).toEqual({ minYear: 2020, maxYear: 2022 })

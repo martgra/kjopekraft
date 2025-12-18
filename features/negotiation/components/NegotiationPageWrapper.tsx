@@ -6,6 +6,7 @@ import { Spinner } from '@/components/ui/atoms'
 import { useDrawer } from '@/contexts/drawer/DrawerContext'
 import { useNegotiationData } from '../hooks/useNegotiationData'
 import type { InflationDataPoint } from '@/domain/inflation'
+import { SalaryDataProvider } from '@/features/salary/providers/SalaryDataProvider'
 
 /**
  * Client-side wrapper that fetches inflation data and passes it to NegotiationPage
@@ -67,11 +68,13 @@ export default function NegotiationPageWrapper() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <NegotiationPage
-      inflationData={inflationData}
-      currentYear={currentYear}
-      isDrawerOpen={isOpen}
-      onDrawerClose={closeDrawer}
-    />
+    <SalaryDataProvider inflationData={inflationData} currentYear={currentYear}>
+      <NegotiationPage
+        inflationData={inflationData}
+        currentYear={currentYear}
+        isDrawerOpen={isOpen}
+        onDrawerClose={closeDrawer}
+      />
+    </SalaryDataProvider>
   )
 }

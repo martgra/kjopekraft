@@ -9,19 +9,19 @@ export interface BadgeProps {
 }
 
 const variants = {
-  default: 'bg-gray-50 text-gray-700',
+  default: 'bg-[var(--surface-subtle)] text-[var(--text-main)]',
   success: 'bg-[var(--color-green-100)] text-[var(--primary)]',
-  warning: 'bg-[var(--color-yellow-100)] text-yellow-800',
-  error: 'bg-red-50 text-red-700',
+  warning: 'bg-[var(--color-yellow-100)] text-[var(--accent)]',
+  error: 'bg-red-500/10 text-red-400',
   info: 'bg-[var(--color-blue-100)] text-[var(--secondary)]',
   primary: 'bg-[var(--primary)]/10 text-[var(--primary)]',
 }
 
 const ringVariants = {
-  default: 'ring-1 ring-inset ring-gray-600/10',
+  default: 'ring-1 ring-inset ring-[var(--border-light)]',
   success: 'ring-1 ring-inset ring-[var(--primary)]/20',
   warning: 'ring-1 ring-inset ring-[var(--accent)]/20',
-  error: 'ring-1 ring-inset ring-red-600/20',
+  error: 'ring-1 ring-inset ring-red-500/20',
   info: 'ring-1 ring-inset ring-[var(--secondary)]/20',
   primary: 'ring-1 ring-inset ring-[var(--primary)]/20',
 }

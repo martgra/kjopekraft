@@ -1,12 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import {
-  adjustSalaries,
-  computeStatistics,
-  calculateYearRange,
-  validatePayPoint,
-} from '@/domain/salary'
+import { adjustSalaries, calculateYearRange, validatePayPoint } from '@/domain/salary'
 import { calculateNetIncome } from '@/domain/tax'
 import type {
   PayChangeReason,
@@ -28,7 +23,11 @@ const DEFAULT_REASON: PayChangeReason = 'adjustment'
  * @param inflationData - Inflation data passed from server
  * @param currentYear - Current year (passed from server to avoid runtime Date access)
  */
-export function useSalaryData(inflationData: InflationDataPoint[], currentYear: number) {
+export function useSalaryData(
+  inflationData: InflationDataPoint[],
+  currentYear: number,
+  baseYearOverride?: number,
+) {
   // Local state for pay points
   const [isLoading, setIsLoading] = useState(true)
   const [payPoints, setPayPoints] = useState<PayPoint[]>([])
@@ -105,11 +104,9 @@ export function useSalaryData(inflationData: InflationDataPoint[], currentYear: 
 
   // Memoized calculations
   const salaryData = useMemo<SalaryDataPoint[]>(
-    () => adjustSalaries(payPoints, inflationData),
-    [payPoints, inflationData],
+    () => adjustSalaries(payPoints, inflationData, currentYear, baseYearOverride),
+    [payPoints, inflationData, currentYear, baseYearOverride],
   )
-
-  const statistics = useMemo<SalaryStatistics>(() => computeStatistics(salaryData), [salaryData])
 
   const yearRange = useMemo(
     () => calculateYearRange(salaryData, currentYear),
@@ -159,7 +156,7 @@ export function useSalaryData(inflationData: InflationDataPoint[], currentYear: 
     }
   }, [payPoints, inflationData, salaryData])
 
-  const hasData = salaryData.length > 0 && !Number.isNaN(statistics.startingPay)
+  const hasData = payPoints.length > 0
 
   return {
     // Data
@@ -171,8 +168,6 @@ export function useSalaryData(inflationData: InflationDataPoint[], currentYear: 
     chartData,
     yearRange,
 
-    // Statistics
-    statistics,
     hasData,
 
     // State management

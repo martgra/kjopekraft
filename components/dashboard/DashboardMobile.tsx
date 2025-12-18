@@ -4,7 +4,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import SalaryPointForm from './SalaryPointForm'
 import type { InflationDataPoint } from '@/domain/inflation'
-import type { PayPoint, SalaryStatistics, PayChangeReason } from '@/domain/salary'
+import type { PayPoint, PayChangeReason, SalaryStatistics } from '@/domain/salary'
 import DashboardContent from './DashboardContent'
 
 interface DashboardMobileProps {
@@ -46,8 +46,8 @@ interface DashboardMobileProps {
 
 export default function DashboardMobile({
   payPoints,
-  statistics,
   inflationData,
+  statistics,
   currentYear,
   hasData,
   isDemoMode,
@@ -108,6 +108,7 @@ export default function DashboardMobile({
           payPoints={payPoints}
           statistics={statistics}
           inflationData={inflationData}
+          currentYear={currentYear}
           hasData={hasData}
           isDemoMode={isDemoMode}
           isNetMode={isNetMode}

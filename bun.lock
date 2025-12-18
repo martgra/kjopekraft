@@ -54,7 +54,7 @@
         "prettier-plugin-tailwindcss": "^0.6.11",
         "secretlint": "^11.2.5",
         "tailwindcss": "^4",
-        "typescript": "^5.9.3",
+        "typescript": "5.9.3",
         "typescript-eslint": "^8.49.0",
         "vitest": "^4.0.15",
       },

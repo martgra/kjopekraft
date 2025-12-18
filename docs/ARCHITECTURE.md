@@ -19,7 +19,7 @@ Kjøpekraft is a Next.js 16 App Router app built with a layered, feature-based s
 - `services/`: server-only data fetching. Depends on `domain/` + Next.js server utilities.
 - `features/`: React hooks + feature UI. Depends on `domain/`, shared UI, and `lib/`.
 - `components/`: reusable UI (dashboard/layout/ui primitives). Can depend on `features/` and `domain/`.
-- `contexts/`: global providers (display mode, reference mode, drawer).
+- `contexts/`: global providers (display mode, reference mode, drawer, purchasing-power base year).
 - `lib/`: shared utilities, constants (`lib/constants/text.ts`), schemas, chart config.
 - **No feature→feature imports.** Shared logic lives in `domain/` or `lib/`.
 
@@ -32,7 +32,7 @@ app/                     # Routes + API handlers
   negotiation/page.tsx   # Client page wrapper (localStorage-heavy)
   api/                   # API routes for client-side fetching & AI
 components/              # Reusable UI (dashboard, layout, ui/*)
-contexts/                # Global providers (display/reference/drawer)
+contexts/                # Global providers (display/reference/drawer/purchasing power base)
 domain/                  # Pure calculations (salary, tax, inflation, reference)
 features/                # Feature modules (salary, tax, referenceSalary, negotiation, onboarding, visualization)
 services/                # Server-only fetchers (inflation, storting reference)
@@ -58,9 +58,11 @@ docs/                    # Documentation set
 ### Salary + inflation dashboard
 
 - `app/page.tsx` (Server) fetches inflation data via `services/inflation`.
-- `components/dashboard/Dashboard.tsx` (Client) manages salary state via `features/salary` hooks.
+- `components/dashboard/DashboardWithDrawer` wraps `Dashboard` in the shared `SalaryDataProvider`, making pay points the single source of truth for dashboard + negotiation.
+- Purchasing-power series and summary stats (gross + net) come from `features/salary/hooks/usePurchasingPower`, which also respects the base-year override from `PurchasingPowerBaseContext`.
 - Calculations and validation are delegated to `domain/salary` and `domain/inflation`.
 - Chart data prep lives in `features/visualization` hooks/components; Chart.js config is shared from `lib/chartjs.ts`.
+- Inflation baseline: `resolvePurchasingPowerBaseYear` picks the most recent significant change (promotion/new job) that is not in the latest year; if the latest pay point is also significant, it falls back to the previous significant year. Users can override via the chart settings base-year input (validated against available pay-point years).
 
 ### Reference salary (SSB)
 
@@ -73,8 +75,8 @@ docs/                    # Documentation set
 ### Negotiation
 
 - `app/negotiation/page.tsx` is client-only to allow `localStorage`.
-- AI endpoints: `app/api/generate/{email|playbook}/route.ts` use the `ai` SDK + OpenAI.
-- Prompt building and schemas live in `lib/prompts.ts` and `lib/schemas`.
+- Negotiation UI consumes pay points from the shared `SalaryDataProvider` and purchasing-power statistics from `usePurchasingPower`.
+- AI endpoint in use: `app/api/generate/email/route.ts` (the playbook output is currently disabled in the UI). Prompts/schemas live in `lib/prompts.ts` and `lib/schemas`.
 
 ## UI conventions
 

@@ -6,6 +6,7 @@
 
 export {
   adjustSalaries,
+  resolvePurchasingPowerBaseYear,
   computeStatistics,
   calculateYearRange,
   interpolateSalary,

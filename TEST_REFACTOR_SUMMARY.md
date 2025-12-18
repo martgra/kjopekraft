@@ -36,8 +36,8 @@ Added test ID to event baselines toggle:
 
 ```tsx
 <input
-  id="chart-event-baselines-toggle"
-  data-testid="chart-event-baselines-toggle"
+  id="chart-settings-inflation-base-select"
+  data-testid="chart-settings-inflation-base-select"
   type="checkbox"
 />
 ```
@@ -121,7 +121,7 @@ Added new getter for event baselines toggle:
 
 ```ts
 get eventBaselinesToggle() {
-  return this.page.getByTestId('chart-event-baselines-toggle')
+  return this.page.getByTestId('chart-settings-inflation-base-select')
 }
 ```
 
@@ -155,7 +155,7 @@ Examples:
 - salary-form-amount-input
 - salary-form-reason-select
 - salary-form-submit-button
-- chart-event-baselines-toggle
+- chart-settings-inflation-base-select
 ```
 
 ## Best Practices Applied

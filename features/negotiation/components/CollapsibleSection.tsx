@@ -23,16 +23,16 @@ export default function CollapsibleSection({
     <div className="overflow-hidden rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm">
       <button
         type="button"
-        className="flex w-full items-center justify-between bg-gray-50/50 p-4 transition-colors hover:bg-gray-50 dark:bg-gray-800/50 dark:hover:bg-gray-800"
+        className="flex w-full items-center justify-between bg-[var(--surface-subtle)] p-4 transition-colors hover:bg-[var(--surface-light)]"
         onClick={() => setCollapsed(c => !c)}
         aria-expanded={!collapsed}
         aria-controls={title.replace(/\s/g, '-') + '-section'}
       >
         <div className="flex items-center gap-2">
-          <Icon name={icon} className="text-gray-700 dark:text-gray-300" />
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+          <Icon name={icon} className="text-[var(--text-main)]" />
+          <h2 className="text-lg font-bold text-[var(--text-main)]">{title}</h2>
         </div>
-        <div className="text-primary flex items-center gap-2 text-sm font-medium transition-colors hover:text-[var(--primary-hover)]">
+        <div className="flex items-center gap-2 text-sm font-medium text-[var(--primary)] transition-colors hover:text-[var(--primary-hover)]">
           {collapseLabel}
           <Icon name={collapsed ? 'expand_more' : 'expand_less'} className="text-lg" />
         </div>

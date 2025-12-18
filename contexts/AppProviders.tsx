@@ -5,6 +5,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeContext'
 import { ThemeProvider } from '@/contexts/theme/ThemeContext'
+import { PurchasingPowerBaseProvider } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
 
 interface AppProvidersProps {
   children: ReactNode
@@ -30,7 +31,9 @@ export function AppProviders({ children }: AppProvidersProps) {
     <ThemeProvider>
       <NuqsAdapter>
         <DisplayModeProvider>
-          <ReferenceModeProvider>{children}</ReferenceModeProvider>
+          <ReferenceModeProvider>
+            <PurchasingPowerBaseProvider>{children}</PurchasingPowerBaseProvider>
+          </ReferenceModeProvider>
         </DisplayModeProvider>
       </NuqsAdapter>
     </ThemeProvider>

@@ -21,7 +21,7 @@ describe('StatusBanner Integration with Real Calculations', () => {
       { year: 2024, inflation: 4.5 },
     ]
 
-    const series = adjustSalaries(payPoints, inflation)
+    const series = adjustSalaries(payPoints, inflation, 2024)
     const statistics = computeStatistics(series)
 
     render(<StatusBanner statistics={statistics} />)
@@ -48,7 +48,7 @@ describe('StatusBanner Integration with Real Calculations', () => {
       { year: 2024, inflation: 4.5 },
     ]
 
-    const series = adjustSalaries(payPoints, inflation)
+    const series = adjustSalaries(payPoints, inflation, 2024)
     const statistics = computeStatistics(series)
 
     render(<StatusBanner statistics={statistics} />)
@@ -76,7 +76,7 @@ describe('StatusBanner Integration with Real Calculations', () => {
       { year: 2024, inflation: 4.5 },
     ]
 
-    const series = adjustSalaries(payPoints, inflation)
+    const series = adjustSalaries(payPoints, inflation, 2024)
     const statistics = computeStatistics(series)
 
     render(<StatusBanner statistics={statistics} />)
@@ -103,7 +103,7 @@ describe('StatusBanner Integration with Real Calculations', () => {
       { year: 2024, inflation: 4.5 },
     ]
 
-    const series = adjustSalaries(payPoints, inflation)
+    const series = adjustSalaries(payPoints, inflation, 2024)
     const statistics = computeStatistics(series)
 
     render(<StatusBanner statistics={statistics} />)
@@ -129,7 +129,7 @@ describe('StatusBanner Integration with Real Calculations', () => {
       { year: 2024, inflation: 4.5 },
     ]
 
-    const series = adjustSalaries(payPoints, inflation)
+    const series = adjustSalaries(payPoints, inflation, 2024)
     const statistics = computeStatistics(series)
 
     // With ~20% cumulative inflation, no salary growth means ~-16.7% real loss
@@ -157,7 +157,7 @@ describe('StatusBanner Integration with Real Calculations', () => {
       { year: 2024, inflation: 4.5 },
     ]
 
-    const series = adjustSalaries(payPoints, inflation)
+    const series = adjustSalaries(payPoints, inflation, 2024)
     const statistics = computeStatistics(series)
 
     render(<StatusBanner statistics={statistics} />)

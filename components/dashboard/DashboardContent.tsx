@@ -16,6 +16,7 @@ interface DashboardContentProps {
   payPoints: PayPoint[]
   statistics: SalaryStatistics
   inflationData: InflationDataPoint[]
+  currentYear: number
   hasData: boolean
   isDemoMode: boolean
   isNetMode: boolean
@@ -34,6 +35,7 @@ export default function DashboardContent({
   payPoints,
   statistics,
   inflationData,
+  currentYear,
   hasData,
   isDemoMode,
   isNetMode,
@@ -81,6 +83,7 @@ export default function DashboardContent({
             <ChartSection
               payPoints={payPoints}
               inflationData={inflationData}
+              currentYear={currentYear}
               isNetMode={isNetMode}
               onToggleMode={onToggleMode}
               onRequestAdd={onRequestAdd}

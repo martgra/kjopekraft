@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-
+import { describe, expect, it } from 'vitest'
 import {
   adjustSalaries,
   calculateYearRange,
@@ -10,42 +9,90 @@ import type { PayPoint } from '@/domain/salary/salaryTypes'
 import type { InflationDataPoint } from '@/domain/inflation'
 
 const payPoints: PayPoint[] = [
-  { year: 2020, pay: 500_000, reason: 'newJob' },
-  { year: 2022, pay: 600_000, reason: 'promotion' },
+  { year: 2020, pay: 100, reason: 'newJob' },
+  { year: 2022, pay: 200, reason: 'promotion' },
 ]
 
 const inflation: InflationDataPoint[] = [
   { year: 2020, inflation: 0 },
-  { year: 2021, inflation: 2 },
-  { year: 2022, inflation: 3 },
+  { year: 2021, inflation: 100 },
+  { year: 2022, inflation: 100 },
 ]
 
 describe('adjustSalaries', () => {
   it('returns interpolated actual pay and CPI-adjusted baseline', () => {
-    const result = adjustSalaries(payPoints, inflation)
+    const result = adjustSalaries(payPoints, inflation, 2024)
     expect(result).toHaveLength(3)
 
     const [y2020, y2021, y2022] = result
-    expect(y2020).toMatchObject({ year: 2020, actualPay: 500_000, inflationAdjustedPay: 500_000 })
-    expect(y2021).toMatchObject({ year: 2021, actualPay: 550_000, inflationAdjustedPay: 510_000 })
+    expect(y2020).toMatchObject({ year: 2020, actualPay: 100, inflationAdjustedPay: 100 })
+    expect(y2021).toMatchObject({ year: 2021, actualPay: 150, inflationAdjustedPay: 200 })
     expect(y2021?.isInterpolated).toBe(true)
-    expect(y2022).toMatchObject({ year: 2022, actualPay: 600_000, inflationAdjustedPay: 525_300 })
+    expect(y2022).toMatchObject({ year: 2022, actualPay: 200, inflationAdjustedPay: 400 })
+  })
+
+  it('uses the previous significant change when the latest is the last data year', () => {
+    const points: PayPoint[] = [
+      { year: 2022, pay: 100, reason: 'promotion' },
+      { year: 2023, pay: 110, reason: 'adjustment' },
+      { year: 2024, pay: 200, reason: 'newJob' },
+    ]
+    const rates: InflationDataPoint[] = [
+      { year: 2022, inflation: 0 },
+      { year: 2023, inflation: 10 },
+      { year: 2024, inflation: 10 },
+    ]
+
+    const result = adjustSalaries(points, rates, 2024)
+    expect(result[result.length - 1]?.inflationAdjustedPay).toBe(121)
+  })
+
+  it('falls back to the earliest point when no prior significant change exists', () => {
+    const points: PayPoint[] = [
+      { year: 2023, pay: 100, reason: 'adjustment' },
+      { year: 2024, pay: 200, reason: 'promotion' },
+    ]
+    const rates: InflationDataPoint[] = [
+      { year: 2023, inflation: 0 },
+      { year: 2024, inflation: 10 },
+    ]
+
+    const result = adjustSalaries(points, rates, 2024)
+    expect(result[result.length - 1]?.inflationAdjustedPay).toBe(110)
+  })
+
+  it('uses the override base year when provided', () => {
+    const points: PayPoint[] = [
+      { year: 2020, pay: 100, reason: 'newJob' },
+      { year: 2022, pay: 100, reason: 'adjustment' },
+    ]
+    const rates: InflationDataPoint[] = [
+      { year: 2020, inflation: 0 },
+      { year: 2021, inflation: 10 },
+      { year: 2022, inflation: 10 },
+    ]
+
+    const result = adjustSalaries(points, rates, 2024, 2021)
+    const y2021 = result.find(point => point.year === 2021)
+    const y2022 = result.find(point => point.year === 2022)
+    expect(y2021?.inflationAdjustedPay).toBe(100)
+    expect(y2022?.inflationAdjustedPay).toBe(110)
   })
 })
 
 describe('computeStatistics', () => {
   it('calculates key salary deltas and rounding', () => {
     const stats = computeStatistics(
-      adjustSalaries(payPoints, inflation).map(point => ({
+      adjustSalaries(payPoints, inflation, 2024).map(point => ({
         ...point,
         inflationAdjustedPay: Math.round(point.inflationAdjustedPay),
       })),
     )
     expect(stats).toEqual({
-      startingPay: 500_000,
-      latestPay: 600_000,
-      inflationAdjustedPay: 525_300,
-      gapPercent: Math.round(((600_000 - 525_300) / 525_300) * 1000) / 10,
+      startingPay: 100,
+      latestPay: 200,
+      inflationAdjustedPay: 400,
+      gapPercent: Math.round(((200 - 400) / 400) * 1000) / 10,
       startingYear: 2020,
       latestYear: 2022,
     })

@@ -17,6 +17,7 @@ export const NegotiationUserInfoSchema = z.object({
   desiredSalary: z.string().default(''),
   achievements: z.string().default(''),
   marketData: z.string().default(''),
+  benefits: z.array(z.string()).default([]),
   otherBenefits: z.string().default(''),
 })
 

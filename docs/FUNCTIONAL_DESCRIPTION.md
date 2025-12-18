@@ -10,7 +10,7 @@ This document describes Kjøpekraft's features, user workflows, and business log
 
 - **Track Real Purchasing Power**: Not just salary growth, but actual purchasing power after adjusting for inflation
 - **Norwegian-Specific**: Uses official SSB (Statistics Norway) data and accurate Norwegian tax calculations
-- **Honest Data Visualization**: Shows only your actual data points, no artificial interpolation or estimates
+- **Honest Data Visualization**: Actual data points are preserved; interpolated years are clearly marked as estimates
 - **Negotiation Support**: Generate professional negotiation materials based on your salary history and arguments
 - **Privacy-First**: All data stored locally in your browser, no account required
 
@@ -46,10 +46,10 @@ The main view showing your salary development over time with modern, polished UI
 - **Chart Section**: Interactive visualization with:
   - Professional badge styling in header (BRUTTO/NETTO, REFERANSE AKTIV)
   - Clean chart area with legend integrated in the visualization
-  - Controls menu below chart with:
-    - Reference salary comparison dropdown (e.g., "Sykepleiere")
-    - Toggle for gross/net view
-    - Toggle for reference comparison
+  - Settings modal (gear button) that holds:
+    - Net/gross toggle (Brutto/Netto)
+    - Inflation base-year input (valid pay-point years or "auto")
+    - Reference salary toggle + occupation selector
 
 - **Activity Timeline**: Recent salary additions with:
   - Vertical timeline line connecting entries
@@ -81,7 +81,7 @@ The main view showing your salary development over time with modern, polished UI
 
 3. **Viewing the Chart**:
    - **Blue line**: Your actual salary (gross or net depending on mode)
-   - **Green line**: Inflation-adjusted baseline (what your earliest salary would need to be today)
+   - **Green line**: Inflation-adjusted baseline anchored to the last significant change (promotion/new job) unless that change is in the latest year, in which case the previous significant change is used
    - **Amber dashed line** (optional): Reference salary for occupation (if enabled)
    - **X-axis**: Years (shows full range even with sparse data)
    - **Y-axis**: NOK amount
@@ -96,17 +96,15 @@ The main view showing your salary development over time with modern, polished UI
 
 **Inflation Adjustment**:
 
-- Takes your earliest salary as the baseline (year₀)
-- For each subsequent year, calculates: `adjusted = baseline × (1 + cumulative_inflation)`
-- Example: If you earned 500,000 NOK in 2020 and inflation from 2020-2024 was 15%, the inflation-adjusted line shows 575,000 NOK in 2024
-- **This represents**: What you would need to earn in 2024 to maintain the same purchasing power as 500,000 NOK in 2020
+- Baseline defaults to the most recent significant change (promotion/new job) that is not in the latest year. If the latest point is also significant, the previous significant year is used.
+- For each year, calculates: `adjusted = baseSalary × CPI_index_from_base`
+- **This represents**: What you would need to earn in a given year to preserve the purchasing power you had at that baseline event. Users can override the base year in chart settings (validated against existing pay years or "auto").
 
 **Real Annual Value**:
 
-- Converts your current salary to "2020 purchasing power" (or your earliest year)
-- Formula: `real_value = current_salary / (1 + cumulative_inflation_since_baseline)`
-- Example: 650,000 NOK in 2024 = 565,217 NOK in 2020 purchasing power (with 15% cumulative inflation)
-- **This answers**: "Is my 2024 salary actually higher than my 2020 salary in real terms?"
+- Converts your current salary to purchasing power at the chosen baseline year.
+- Formula: `real_value = current_salary / CPI_index_from_base`
+- **This answers**: "Is my current salary actually higher than my salary at the last significant change in real terms?"
 
 **vs Inflation Percentage**:
 
@@ -122,11 +120,11 @@ Users can switch between viewing salary before tax and salary after tax.
 
 #### User Workflow
 
-1. Click the toggle in the chart header
-2. Badge updates to show "Brutto" or "Netto"
-3. Chart and metrics recalculate instantly
-4. All numbers reflect the selected mode
-5. Preference saved in browser (persists on reload)
+1. Open chart settings (gear) and toggle Brutto/Netto.
+2. Badge updates to show "Brutto" or "Netto".
+3. Chart and metrics recalculate instantly (shared purchasing-power hook).
+4. All numbers reflect the selected mode.
+5. Preference saved in browser (persists on reload).
 
 #### Business Logic
 
@@ -139,12 +137,12 @@ Users can switch between viewing salary before tax and salary after tax.
 
 - Applies Norwegian tax calculation to each data point:
   - Step-tax (trinnskatt) - progressive brackets
-  - Social security (trygdeavgift) - ~8.2%
-  - Municipal tax (kommuneskatt) - ~22%
+  - Social security (trygdeavgift)
+  - Municipal tax (kommuneskatt)
   - Standard deduction (minstefradrag)
   - Personal allowance (personfradrag)
-- Uses 2024 tax rules for all years (consistent comparison)
-- Shows actual take-home pay
+- Uses the available tax tables for the given year; if a year is missing, the gross value is used as a safe fallback so the UI never crashes.
+- Shows estimated take-home pay.
 
 **Why This Matters**:
 
@@ -168,7 +166,7 @@ Compare your salary against industry benchmarks from SSB (Statistics Norway).
 
 #### User Workflow
 
-1. Enable toggle: "Vis referanselønn" (Show reference salary)
+1. Open chart settings and enable "Vis referanselønn" (Show reference salary)
 2. Amber dashed line appears on chart
 3. Badge appears in chart header: "Referanse aktiv"
 4. Line shows median/average salary for the selected occupation
@@ -220,67 +218,7 @@ Compare your salary against industry benchmarks from SSB (Statistics Norway).
 - Registry in `features/referenceSalary/occupations.ts`
 - Future: User can select occupation from dropdown
 
-### 4. Time Range Filtering
-
-Filter the chart to focus on specific time periods.
-
-#### User Workflow
-
-1. Click time range buttons: "1Y", "3Y", "ALL" (default)
-2. Chart filters to show:
-   - **1Y**: Last year of data only
-   - **3Y**: Last 3 years of data
-   - **ALL**: All your data points
-3. Metrics recalculate for filtered range
-4. Inflation baseline adjusts to earliest visible year
-
-#### Business Logic
-
-- Filter applies to both your salary data and inflation data
-- Chart x-axis range adjusts to filtered years
-- Statistics (metrics) recalculate based on visible data only
-- Example: If you filter to 3Y, "vs Inflation" shows 3-year comparison, not lifetime
-
-### 5. Activity Timeline
-
-Shows your recent salary entries in chronological order.
-
-#### User Workflow
-
-1. Scroll to right panel
-2. See list of all salary entries
-3. Each entry shows:
-   - Year badge (e.g., "2024")
-   - Salary amount (formatted: "650 000 kr")
-   - Relative time (e.g., "I år (2025)", "2 år siden")
-4. Actions:
-   - **Edit**: Pre-fills form, removes entry (re-add to save)
-   - **Delete**: Confirms, then removes entry
-
-#### Business Logic
-
-**Relative Time Calculation**:
-
-- "I år (2024)" - Current year entry
-- "I fjor (2023)" - Last year
-- "2 år siden" - 2+ years ago
-- Includes absolute year for clarity
-
-**Editing Flow**:
-
-1. User clicks edit on 2022 entry (500,000 NOK)
-2. Form populates with year=2022, salary=500000
-3. Entry removed from list
-4. User can modify values and click "Add" to re-save
-5. New entry appears with updated values
-
-**Why This Pattern**:
-
-- Simpler than in-place editing
-- Prevents duplicate year errors
-- Reuses existing form validation
-
-### 6. Negotiation Preparation
+### 4. Negotiation Preparation
 
 Generate professional negotiation materials based on your salary data and custom arguments.
 
@@ -292,34 +230,20 @@ Generate professional negotiation materials based on your salary data and custom
 2. Fill in job details:
    - Current/target job title
    - Industry
-   - Current salary (auto-filled from dashboard)
-   - Desired salary
+   - Current salary (auto-filled from dashboard pay points)
+   - Desired salary (prefilled suggestion based on purchasing-power gap + inflation estimate)
 3. Add context:
-   - Market statistics
-   - Benefits/conditions
+   - Optional market note (hidden unless no SSB match or user types)
+   - Benefits/conditions checklist (collapsible list: pension, bonus, stock, extra vacation, flexible hours, home office, insurance)
 4. Build arguments:
-   - Select argument type (Experience, Education, Performance, etc.)
-   - Enter description
-   - Add multiple arguments (up to 10)
+   - Suggested argument chips (achievements, responsibilities, skills/certs, market, other)
+   - Add up to five focused arguments
 5. Generate materials:
-   - Click "Generate Email" → Professional negotiation email
-   - Click "Generate Playbook" → Detailed negotiation strategy
+   - Click "Generate Email" → Professional negotiation email (playbook output is temporarily disabled)
 6. Use generated content:
-   - Copy as rich text (paste into Outlook/Word)
+   - Copy as rich text
    - Download as DOCX
    - Copy markdown (for inspection)
-
-#### Argument Types
-
-Available argument categories:
-
-1. **Experience** (Erfaring): Years in role, industry experience
-2. **Education** (Utdanning): Degrees, certifications, courses
-3. **Performance** (Ytelse): Achievements, KPIs, results
-4. **Responsibility** (Ansvar): Team size, budget, scope
-5. **Market** (Marked): Industry salary data, benchmarks
-6. **Unique Skills** (Unike ferdigheter): Rare skills, specializations
-7. **Other** (Annet): Custom arguments
 
 #### Generated Content
 

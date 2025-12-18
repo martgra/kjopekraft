@@ -15,10 +15,13 @@ import { ChartViewSwitcher } from './ChartViewSwitcher'
 import { ChartSettingsModal } from './ChartSettingsModal'
 import { useChartControls } from './hooks/useChartControls'
 import { createTestId } from '@/lib/testing/testIds'
+import { reasonToLabel } from '@/lib/formatters/salaryFormatting'
+import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
 
 interface ChartSectionProps {
   payPoints: PayPoint[]
   inflationData: InflationDataPoint[]
+  currentYear: number
   isNetMode: boolean
   onToggleMode: () => void
   onRequestAdd?: () => void
@@ -29,6 +32,7 @@ interface ChartSectionProps {
 function ChartSection({
   payPoints,
   inflationData,
+  currentYear,
   isNetMode,
   onToggleMode,
   onRequestAdd,
@@ -39,8 +43,6 @@ function ChartSection({
   const {
     viewMode,
     setViewMode,
-    showEventBaselines,
-    setShowEventBaselines,
     isSettingsOpen,
     openSettings,
     closeSettings,
@@ -54,6 +56,24 @@ function ChartSection({
     toggleReference,
   })
 
+  const inflationBaseOptions = useMemo(() => {
+    const options = [{ value: 'auto', label: TEXT.settings.inflationBaseAutoLabel }]
+    const sorted = [...payPoints].sort((a, b) => a.year - b.year)
+    const yearReasons = new Map<number, PayPoint['reason']>()
+    for (const point of sorted) {
+      yearReasons.set(point.year, point.reason)
+    }
+    yearReasons.forEach((reason, year) => {
+      options.push({
+        value: String(year),
+        label: TEXT.settings.inflationBaseYearOption(year, reasonToLabel(reason)),
+      })
+    })
+    return options
+  }, [payPoints])
+
+  const { baseSelection, setBaseSelection, baseYearOverride } = usePurchasingPowerBase()
+
   const {
     isLoading,
     actualSeries: rawActualSeries,
@@ -63,7 +83,7 @@ function ChartSection({
     referenceData = [],
     yearRange,
     referenceError,
-  } = usePaypointChartData(payPoints, inflationData, occupationKey)
+  } = usePaypointChartData(payPoints, inflationData, currentYear, occupationKey, baseYearOverride)
 
   useEffect(() => {
     const normalizedError =
@@ -130,7 +150,7 @@ function ChartSection({
         occupation={occupationKey}
         isLoading={isLoading}
         inflationData={inflationData}
-        showEventBaselines={showEventBaselines}
+        showEventBaselines={false}
       />
     )
   }
@@ -172,10 +192,11 @@ function ChartSection({
       <ChartSettingsModal
         isOpen={isSettingsOpen}
         isNetMode={isNetMode}
-        showEventBaselines={showEventBaselines}
+        inflationBaseValue={String(baseSelection)}
+        inflationBaseOptions={inflationBaseOptions}
         selectedOccupation={selectedOccupation}
         onToggleMode={onToggleMode}
-        onToggleEventBaselines={setShowEventBaselines}
+        onChangeInflationBase={value => setBaseSelection(value === 'auto' ? 'auto' : Number(value))}
         onOccupationChange={handleOccupationChange}
         onClose={closeSettings}
       />

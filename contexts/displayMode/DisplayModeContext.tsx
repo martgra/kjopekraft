@@ -1,8 +1,30 @@
 'use client'
 
-import React, { createContext, useContext, useMemo, useTransition, type ReactNode } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useTransition,
+  type ReactNode,
+} from 'react'
 import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import { displayModes, type DisplayMode } from '@/lib/searchParams'
+
+const STORAGE_KEY = 'salaryDisplayMode'
+
+const parseStoredMode = (value: string | null): DisplayMode | null => {
+  if (!value) return null
+  try {
+    const parsed = JSON.parse(value)
+    if (parsed === 'net' || parsed === 'gross') return parsed
+  } catch {
+    // Fallback to raw string if it wasn't JSON encoded
+    if (value === 'net' || value === 'gross') return value
+  }
+  return null
+}
 
 interface DisplayModeContextValue {
   isNetMode: boolean
@@ -19,24 +41,48 @@ const DisplayModeContext = createContext<DisplayModeContextValue | undefined>(un
 export function DisplayModeProvider({ children }: { children: ReactNode }) {
   const [displayMode, setDisplayMode] = useQueryState(
     'display',
-    parseAsStringLiteral(displayModes).withDefault('net'),
+    parseAsStringLiteral(displayModes).withDefault('gross'),
   )
   const [, startTransition] = useTransition()
+
+  const persistMode = useCallback(
+    (mode: DisplayMode) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(mode))
+      startTransition(() => {
+        void setDisplayMode(mode)
+      })
+    },
+    [setDisplayMode, startTransition],
+  )
+
+  // Hydrate from localStorage to respect previous preference
+  useEffect(() => {
+    const storedMode = parseStoredMode(localStorage.getItem(STORAGE_KEY))
+    if (storedMode && storedMode !== displayMode) {
+      persistMode(storedMode)
+    }
+  }, [displayMode, persistMode])
+
+  // Persist preference for future visits
+  useEffect(() => {
+    if (displayMode) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(displayMode))
+    }
+  }, [displayMode])
 
   // Memoize the context value to prevent unnecessary renders
   const contextValue = useMemo(() => {
     const isNetMode = displayMode === 'net'
-    const toggleMode = () =>
-      startTransition(() => {
-        void setDisplayMode(prev => (prev === 'net' ? 'gross' : 'net'))
-      })
-    const setMode = (mode: DisplayMode) =>
-      startTransition(() => {
-        void setDisplayMode(mode)
-      })
+    const toggleMode = () => {
+      const nextMode = isNetMode ? 'gross' : 'net'
+      persistMode(nextMode)
+    }
+    const setMode = (mode: DisplayMode) => {
+      persistMode(mode)
+    }
 
     return { isNetMode, displayMode, toggleMode, setDisplayMode: setMode }
-  }, [displayMode, setDisplayMode, startTransition])
+  }, [displayMode, persistMode])
 
   return <DisplayModeContext.Provider value={contextValue}>{children}</DisplayModeContext.Provider>
 }

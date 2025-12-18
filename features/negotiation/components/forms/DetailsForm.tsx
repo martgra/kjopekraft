@@ -10,18 +10,23 @@ export interface UserInfo {
   currentSalary: string
   desiredSalary: string
   marketData: string
+  benefits: string[]
   otherBenefits: string
 }
 
 export interface DetailsFormProps {
   userInfo: UserInfo
   onChange: (updates: Partial<UserInfo>) => void
+  showIsNewJobControl?: boolean
 }
 
 const inputClasses =
-  'w-full rounded-md border border-[var(--border-light)] bg-gray-50 text-[var(--text-main)] text-base py-1.5 px-3 focus:ring-1 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition-colors'
+  'w-full rounded-md border border-[var(--border-light)] bg-[var(--surface-subtle)] text-[var(--text-main)] text-base py-1.5 px-3 focus:ring-1 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition-colors'
 
-export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
+export function DetailsForm({ userInfo, onChange, showIsNewJobControl = true }: DetailsFormProps) {
+  const jobTitleSpan = showIsNewJobControl ? 'md:col-span-5' : 'md:col-span-6'
+  const industrySpan = showIsNewJobControl ? 'md:col-span-4' : 'md:col-span-6'
+
   return (
     <Card variant="default" padding="md" className="flex-shrink-0">
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--text-main)]">
@@ -31,7 +36,7 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
 
       <div className="grid grid-cols-12 gap-3 md:gap-4">
         {/* Job Title */}
-        <div className="col-span-12 space-y-1 md:col-span-5">
+        <div className={`col-span-12 space-y-1 ${jobTitleSpan}`}>
           <label className="block text-xs font-medium text-[var(--text-muted)]">
             {TEXT.negotiationForm.jobTitleLabel}
           </label>
@@ -45,7 +50,7 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
         </div>
 
         {/* Industry */}
-        <div className="col-span-12 space-y-1 md:col-span-4">
+        <div className={`col-span-12 space-y-1 ${industrySpan}`}>
           <label className="block text-xs font-medium text-[var(--text-muted)]">
             {TEXT.negotiationForm.industryLabel}
           </label>
@@ -59,19 +64,21 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
         </div>
 
         {/* Is New Job */}
-        <div className="col-span-12 space-y-1 md:col-span-3">
-          <label className="block text-xs font-medium text-[var(--text-muted)]">
-            {TEXT.negotiationForm.isNewJobLabel}
-          </label>
-          <select
-            className={inputClasses}
-            value={userInfo.isNewJob ? 'yes' : 'no'}
-            onChange={e => onChange({ isNewJob: e.target.value === 'yes' })}
-          >
-            <option value="no">{TEXT.negotiationForm.noOption}</option>
-            <option value="yes">{TEXT.negotiationForm.yesOption}</option>
-          </select>
-        </div>
+        {showIsNewJobControl && (
+          <div className="col-span-12 space-y-1 md:col-span-3">
+            <label className="block text-xs font-medium text-[var(--text-muted)]">
+              {TEXT.negotiationForm.isNewJobLabel}
+            </label>
+            <select
+              className={inputClasses}
+              value={userInfo.isNewJob ? 'yes' : 'no'}
+              onChange={e => onChange({ isNewJob: e.target.value === 'yes' })}
+            >
+              <option value="no">{TEXT.negotiationForm.noOption}</option>
+              <option value="yes">{TEXT.negotiationForm.yesOption}</option>
+            </select>
+          </div>
+        )}
 
         {/* Current Salary */}
         <div className="col-span-6 space-y-1">
@@ -86,7 +93,7 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
               value={userInfo.currentSalary}
               onChange={e => onChange({ currentSalary: e.target.value })}
             />
-            <span className="absolute top-1.5 right-3 text-xs text-gray-400">NOK</span>
+            <span className="absolute top-1.5 right-3 text-xs text-[var(--text-muted)]">NOK</span>
           </div>
         </div>
 
@@ -98,12 +105,12 @@ export function DetailsForm({ userInfo, onChange }: DetailsFormProps) {
           <div className="relative">
             <input
               type="text"
-              className={`${inputClasses} border-[var(--primary)]/50 bg-white pr-12 font-mono font-bold`}
+              className={`${inputClasses} border-[var(--primary)]/50 bg-[var(--surface-light)] pr-12 font-mono font-bold`}
               placeholder="700 000"
               value={userInfo.desiredSalary}
               onChange={e => onChange({ desiredSalary: e.target.value })}
             />
-            <span className="absolute top-1.5 right-3 text-xs text-gray-400">NOK</span>
+            <span className="absolute top-1.5 right-3 text-xs text-[var(--text-muted)]">NOK</span>
           </div>
         </div>
       </div>
