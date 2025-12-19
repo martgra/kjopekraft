@@ -32,6 +32,7 @@ export function getAuth() {
   authInstance = betterAuth({
     database: getDbPool(),
     secret,
+    trustedOrigins: ['https://kjopekraft.no'],
     plugins: [jwt()],
     session: {
       cookieCache: {
