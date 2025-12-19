@@ -37,21 +37,6 @@ jobs:
           docker build --pull -t $DOCKER_IMAGE .
           docker push $DOCKER_IMAGE
 
-      - name: Set App Settings (OAuth + Postgres)
-        run: |
-          az webapp config appsettings set \
-            --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-            --name ${{ vars.AZURE_APP_NAME }} \
-            --settings \
-              DATABASE_URL=${{ secrets.DATABASE_URL }} \
-              BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} \
-              GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-              GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-              GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }} \
-              GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }} \
-              OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} 
-              OPENAI_EMBED_MODEL=text-embedding-3-small
-
       - name: Setup Bun for migrations
         uses: oven-sh/setup-bun@v2
 
@@ -68,3 +53,18 @@ jobs:
         with:
           app-name: ${{ vars.AZURE_APP_NAME }}
           images: ${{ env.DOCKER_IMAGE }}
+
+      - name: Set App Settings (OAuth + Postgres)
+        run: |
+          az webapp config appsettings set \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --name "${{ vars.AZURE_APP_NAME }}" \
+            --settings \
+              DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              BETTER_AUTH_SECRET="${{ secrets.BETTER_AUTH_SECRET }}" \
+              GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+              GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+              GH_CLIENT_ID="${{ secrets.GH_CLIENT_ID }}" \
+              GH_CLIENT_SECRET="${{ secrets.GH_CLIENT_SECRET }}" \
+              OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+              OPENAI_EMBED_MODEL="text-embedding-3-small"
