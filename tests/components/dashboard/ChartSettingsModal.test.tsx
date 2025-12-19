@@ -33,8 +33,6 @@ describe('ChartSettingsModal', () => {
     expect(screen.getByTestId('chart-settings-mode-toggle')).toBeInTheDocument()
     expect(screen.getByTestId('chart-settings-inflation-base-select')).toBeInTheDocument()
     expect(screen.getByTestId('chart-settings-reference-search')).toBeInTheDocument()
-    expect(screen.getByTestId('theme-toggle-container')).toBeInTheDocument()
-
     fireEvent.click(screen.getByTestId('chart-settings-modal-close'))
     expect(baseProps.onClose).toHaveBeenCalled()
   })

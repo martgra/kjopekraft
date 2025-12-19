@@ -7,6 +7,7 @@ import { useDrawer } from '@/contexts/drawer/DrawerContext'
 import { useNegotiationData } from '../hooks/useNegotiationData'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { SalaryDataProvider } from '@/features/salary/providers/SalaryDataProvider'
+import { DemoModeProvider } from '@/contexts/demoMode/DemoModeContext'
 
 /**
  * Client-side wrapper that fetches inflation data and passes it to NegotiationPage
@@ -69,12 +70,14 @@ export default function NegotiationPageWrapper() {
 
   return (
     <SalaryDataProvider inflationData={inflationData} currentYear={currentYear}>
-      <NegotiationPage
-        inflationData={inflationData}
-        currentYear={currentYear}
-        isDrawerOpen={isOpen}
-        onDrawerClose={closeDrawer}
-      />
+      <DemoModeProvider>
+        <NegotiationPage
+          inflationData={inflationData}
+          currentYear={currentYear}
+          isDrawerOpen={isOpen}
+          onDrawerClose={closeDrawer}
+        />
+      </DemoModeProvider>
     </SalaryDataProvider>
   )
 }

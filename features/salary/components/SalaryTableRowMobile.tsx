@@ -67,7 +67,7 @@ export function SalaryTableRowMobile({
       onBlur={handleBlur}
       tabIndex={-1}
     >
-      <div className="absolute top-3 right-3 flex items-center gap-1">
+      <div className="absolute top-3 right-3 flex items-center gap-2">
         {hasActions && (
           <button
             type="button"
@@ -108,8 +108,8 @@ export function SalaryTableRowMobile({
           )}
         </div>
       )}
-      <div className="flex items-start gap-3">
-        <div className="w-14 pt-1 text-xs font-semibold text-[var(--text-muted)] uppercase">
+      <div className="flex items-start gap-2">
+        <div className="w-12 pt-1 text-xs font-semibold text-[var(--text-muted)] uppercase">
           <span className="tabular-nums">{formatDate(row.year)}</span>
           {row.isInterpolated && (
             <Badge className="mt-1" size="sm" variant="info">
@@ -117,19 +117,21 @@ export function SalaryTableRowMobile({
             </Badge>
           )}
         </div>
-        <div className="flex-1 space-y-2 pr-10">
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="text-lg leading-tight font-bold text-[var(--text-main)] tabular-nums">
+        <div className="min-w-0 flex-1 space-y-2 pr-20">
+          <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+            <p className="max-w-full min-w-[9ch] text-[12px] leading-snug font-bold whitespace-nowrap text-[var(--text-main)] tabular-nums sm:min-w-[10ch] sm:text-[13px]">
               {formatCurrencyWithUnit(row.salary)}
             </p>
-            <SalaryRowPower
-              row={row}
-              mode={powerMode}
-              showDescription={false}
-              showSeparator={false}
-              srDescription
-              className="text-[11px]"
-            />
+            {row.yoyAbsoluteChange !== null && (
+              <SalaryRowPower
+                row={row}
+                mode={powerMode}
+                showDescription={false}
+                showSeparator={false}
+                srDescription
+                className="min-w-[7ch] shrink-0 text-[10px]"
+              />
+            )}
           </div>
           {payPoint?.reason && isExpanded && (
             <div className="flex flex-wrap items-center gap-2 text-[11px]">

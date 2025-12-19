@@ -9,7 +9,6 @@ import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import { MetricGridSkeleton, ChartSkeleton } from '@/components/ui/skeletons'
 import MetricGrid from './MetricGrid'
 import ChartSection from './ChartSection'
-import DemoDataBanner from './DemoDataBanner'
 import StatusBanner from './StatusBanner'
 
 interface DashboardContentProps {
@@ -67,8 +66,16 @@ export default function DashboardContent({
 
       {hasData && (
         <>
-          {isDemoMode && <DemoDataBanner onClearDemo={onClearDemo} />}
-          <StatusBanner statistics={statistics} />
+          <StatusBanner
+            payPoints={payPoints}
+            statistics={statistics}
+            isDemoMode={isDemoMode}
+            onSinglePointCtaClick={onRequestAdd}
+            onDemoModeCtaClick={() => {
+              onClearDemo()
+              onRequestAdd()
+            }}
+          />
           {showMetricGrid && (
             <Suspense fallback={<MetricGridSkeleton />}>
               <MetricGrid statistics={statistics} isNetMode={isNetMode} />

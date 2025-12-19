@@ -7,23 +7,17 @@ test.describe('Negotiation argument builder', () => {
     if (testInfo.project.name === 'mobile') {
       const openDrawerButton = page.getByRole('button', { name: /åpne datapanel/i })
       await openDrawerButton.click()
-      await expect(page.getByText('Argumenter', { exact: true })).toBeVisible()
+      await expect(page.locator('[role="dialog"]')).toBeVisible()
     }
 
     const argumentText = 'Jeg leverte et prosjekt før frist.'
     const isMobile = testInfo.project.name === 'mobile'
-    const textarea = isMobile
-      ? page
-          .locator('[aria-labelledby="drawer-title"]')
-          .getByPlaceholder(/beskriv nøkkelpunktet ditt/i)
-          .first()
-      : page
-          .locator('aside')
-          .getByPlaceholder(/beskriv nøkkelpunktet ditt/i)
-          .first()
+    const container = isMobile ? page.locator('[role="dialog"]') : page.locator('aside')
+    const textarea = container.getByPlaceholder(/beskriv nøkkelpunktet ditt/i).first()
     await textarea.fill(argumentText)
 
-    const addButton = page.getByRole('button', { name: /legg til argument/i })
+    const addButton = container.locator('button', { hasText: /legg til argument/i })
+    await expect(addButton).toBeVisible()
     await addButton.click()
 
     await expect(page.getByText(argumentText)).toBeVisible()

@@ -78,6 +78,54 @@ export const TEXT = {
     addPointsTitle: '➕ Legg til lønnspunkter',
     // New dashboard header text
     annualOverview: 'Lønnsoversikt',
+    statusBanner: {
+      purchasingPowerLabel: 'Kjøpekraft:',
+      hideDetails: 'Skjul detaljer',
+      showDetails: 'Vis detaljer',
+      strongWin: {
+        badge: 'Sterk vekst',
+        headline: 'Du ligger foran inflasjonen',
+        description: 'Kjøpekraften din har økt. Du har fått mer å rutte med.',
+        cta: 'Se hva som har gjort forskjellen',
+      },
+      smallWin: {
+        badge: 'Svak fremgang',
+        headline: 'Du er så vidt foran – foreløpig',
+        description: 'Lønnen din har økt litt mer enn prisene. Dette kan raskt endre seg.',
+        cta: 'Sjekk forhandlingspotensialet ditt',
+      },
+      losing: {
+        badge: 'Advarsel',
+        headline: 'Du taper kjøpekraft',
+        description: 'Prisene stiger raskere enn lønnen din. Du får mindre igjen for pengene.',
+        cta: 'På tide å gjøre noe',
+      },
+      losingBadly: {
+        badge: 'Kritisk',
+        headline: 'Kjøpekraften din faller',
+        description: 'Inflasjonen har tatt igjen inntekten din. Å stå stille betyr å gå bakover.',
+        cta: 'Forbered neste lønnssamtale',
+      },
+      singlePoint: {
+        badge: 'Trenger mer data',
+        headline: 'Legg til minst ett lønnspunkt til',
+        description: 'Vi trenger minst to lønnspunkter for å beregne endring i kjøpekraft.',
+        cta: 'Legg til lønnspunkt',
+      },
+      singlePointNewJob: {
+        badge: 'Ny jobb',
+        headline: 'Bra start! Legg til forrige lønn',
+        description:
+          'Med én registrering ser vi ikke utviklingen ennå. Legg til lønnen før jobbskiftet.',
+        cta: 'Legg til forrige lønn',
+      },
+      demoMode: {
+        badge: 'Eksempeldata',
+        headline: 'Du ser demo-data',
+        description: 'Bytt til dine egne lønnspunkter for å få reelle innsikter.',
+        cta: 'Bruk mine data',
+      },
+    },
     annualOverviewSubtitle: 'Følg lønnen din mot prisstigningen og se hva den faktisk er verdt',
     purchasingPowerDefinition:
       'Kjøpekraft viser hva lønnen din er verdt når vi tar høyde for prisstigningen.',
@@ -129,7 +177,8 @@ export const TEXT = {
     displaySection: 'Visning',
     comparisonSection: 'Sammenligning',
     grossNetToggleTitle: 'Før / Etter skatt',
-    grossNetToggleSubtitle: 'Vis nettolønn i grafer',
+    grossNetToggleSubtitleGross: 'Vis nettolønn',
+    grossNetToggleSubtitleNet: 'Vis bruttolønn',
     themeToggleTitle: 'Mørkt modus',
     themeToggleSubtitle: 'Bytt mellom lyst og mørkt tema',
     inflationBaseTitle: 'Inflasjonsbase',
@@ -185,6 +234,7 @@ export const TEXT = {
       purchasingPowerLoss: 'Kjøpekraften falt',
       purchasingPowerFlat: 'Kjøpekraften var stabil',
       purchasingPowerDeltaLabel: 'Mot prisstigning',
+      notAvailable: '—',
       longTermLabel: 'Karriereutvikling',
       longTermSince: (year: number) => `Siden ${year}`,
       expandDetails: 'Vis utvikling',
@@ -509,8 +559,10 @@ export const TEXT = {
         description: 'Få innsikt som støtter lønnsforhandlinger.',
       },
     },
+    demoDataTitle: 'Du ser eksempeldata',
     demoDataInfo:
-      'Dette er eksempeldata. Legg til ditt første reelle lønnspunkt for å erstatte dem.',
+      'Dette er eksempeldata. Legg til dine egne lønnspunkter for å se din faktiske utvikling.',
+    demoDataCta: 'Bruk mine data',
     clearDemoData: 'Fjern eksempeldata',
   },
 

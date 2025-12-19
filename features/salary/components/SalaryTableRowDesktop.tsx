@@ -66,13 +66,15 @@ export function SalaryTableRowDesktop({
               <span className="text-base font-semibold text-[var(--text-main)] tabular-nums">
                 {formatCurrencyWithUnit(row.salary)}
               </span>
-              <SalaryRowPower
-                row={row}
-                mode={powerMode}
-                showDescription={false}
-                showSeparator={false}
-                srDescription
-              />
+              {row.yoyAbsoluteChange !== null && (
+                <SalaryRowPower
+                  row={row}
+                  mode={powerMode}
+                  showDescription={false}
+                  showSeparator={false}
+                  srDescription
+                />
+              )}
             </div>
             <button
               type="button"

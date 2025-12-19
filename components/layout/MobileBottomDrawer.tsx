@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, ReactNode } from 'react'
+import { useEffect, ReactNode, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { TEXT } from '@/lib/constants/text'
 
@@ -24,8 +24,12 @@ export default function MobileBottomDrawer({
   const pathname = usePathname()
 
   // Close drawer on route change
+  const previousPathRef = useRef(pathname)
   useEffect(() => {
-    onClose()
+    if (previousPathRef.current !== pathname) {
+      previousPathRef.current = pathname
+      onClose()
+    }
   }, [pathname, onClose])
 
   // Prevent body scroll when drawer is open
@@ -61,30 +65,27 @@ export default function MobileBottomDrawer({
       ? TEXT.drawer.negotiationTitle
       : ''
 
-  if (!content) return null
+  if (!content || !isOpen) return null
 
   return (
     <>
       {/* Backdrop - only on mobile */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 lg:hidden"
-          onClick={onClose}
-          aria-hidden="true"
-        />
-      )}
+      <div
+        className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 lg:hidden"
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
       {/* Drawer - only on mobile */}
       <div
-        className={`fixed bottom-0 z-50 flex max-h-[85vh] w-full flex-col rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
+        className={`fixed bottom-0 z-50 flex max-h-[85vh] min-h-0 w-full flex-col overflow-hidden rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
           variant === 'sheet'
-            ? 'left-1/2 max-w-md -translate-x-1/2 border-t border-gray-200 dark:border-gray-700/50'
+            ? 'left-1/2 h-[85vh] max-w-md -translate-x-1/2 border-t border-gray-200 dark:border-gray-700/50'
             : 'right-0 left-0'
-        } ${isOpen ? 'translate-y-0' : 'pointer-events-none translate-y-full'}`}
+        } translate-y-0`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
-        aria-hidden={!isOpen}
       >
         {/* Handle bar for swipe indication */}
         <div className="flex w-full items-center justify-center pt-3 pb-1">
@@ -113,7 +114,9 @@ export default function MobileBottomDrawer({
         </div>
 
         {/* Content - scrollable with bottom padding for mobile nav */}
-        <div className="flex-1 overflow-y-auto px-4 pb-24">{content}</div>
+        <div className={`min-h-0 flex-1 overflow-y-auto px-4 ${isNegotiation ? 'pb-6' : 'pb-24'}`}>
+          {content}
+        </div>
       </div>
     </>
   )

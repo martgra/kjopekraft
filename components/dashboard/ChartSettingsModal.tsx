@@ -4,7 +4,6 @@ import { createTestId } from '@/lib/testing/testIds'
 import { ChartSettingsModeToggle } from './ChartSettingsModeToggle'
 import { ChartSettingsInflationBase } from './ChartSettingsInflationBase'
 import { ChartSettingsReference } from './ChartSettingsReference'
-import { ThemeToggle } from './ThemeToggle'
 
 interface ChartSettingsModalProps {
   isOpen: boolean
@@ -76,7 +75,6 @@ export function ChartSettingsModal({
                   options={inflationBaseOptions}
                   onChange={onChangeInflationBase}
                 />
-                <ThemeToggle />
               </div>
             </div>
 

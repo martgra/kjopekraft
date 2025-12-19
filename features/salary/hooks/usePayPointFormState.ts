@@ -3,6 +3,7 @@ import { validatePayPoint } from '@/domain/salary'
 import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { TEXT } from '@/lib/constants/text'
+import { useDemoMode } from '@/contexts/demoMode/DemoModeContext'
 
 const MIN_YEAR = 1900
 
@@ -10,7 +11,6 @@ interface UsePayPointFormStateOptions {
   payPoints: PayPoint[]
   currentYear: number
   inflationData: InflationDataPoint[]
-  hasData: boolean
   addPoint: (point: PayPoint) => void
   removePoint: (year: number, pay: number) => void
 }
@@ -44,7 +44,6 @@ export function usePayPointFormState({
   payPoints,
   currentYear,
   inflationData,
-  hasData,
   addPoint,
   removePoint,
 }: UsePayPointFormStateOptions) {
@@ -53,9 +52,9 @@ export function usePayPointFormState({
   const [newReason, setNewReason] = useState<PayChangeReason | ''>('adjustment')
   const [newNote, setNewNote] = useState('')
   const [submitValidationError, setSubmitValidationError] = useState('')
-  const [isDemoMode, setIsDemoMode] = useState(false)
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [editingPoint, setEditingPoint] = useState<PayPoint | null>(null)
+  const { isDemoMode, loadDemoData: loadDemoModeData, clearDemoData } = useDemoMode()
 
   // Pre-fill the next logical year when user already has data and the field is empty
   useEffect(() => {
@@ -74,13 +73,6 @@ export function usePayPointFormState({
       setNewYear(String(candidate))
     }
   }, [payPoints, newYear, currentYear])
-
-  // Exit demo mode if the user now has real data
-  useEffect(() => {
-    if (hasData && isDemoMode) {
-      setIsDemoMode(false)
-    }
-  }, [hasData, isDemoMode])
 
   const clearEditing = useCallback(() => {
     setEditingPoint(null)
@@ -196,8 +188,7 @@ export function usePayPointFormState({
 
     // If adding real data while in demo mode, clear demo data first
     if (isDemoMode) {
-      localStorage.removeItem('salary-calculator-points')
-      setIsDemoMode(false)
+      clearDemoData()
     }
 
     // Replace original point if editing
@@ -252,18 +243,10 @@ export function usePayPointFormState({
 
   const loadDemoData = useCallback(
     (demoPoints: PayPoint[]) => {
-      localStorage.removeItem('salary-calculator-points')
-      demoPoints.forEach(point => addPoint(point))
-      setIsDemoMode(true)
+      loadDemoModeData(demoPoints)
     },
-    [addPoint],
+    [loadDemoModeData],
   )
-
-  const clearDemoData = useCallback(() => {
-    localStorage.removeItem('salary-calculator-points')
-    setIsDemoMode(false)
-    payPoints.forEach(p => removePoint(p.year, p.pay))
-  }, [payPoints, removePoint])
 
   return {
     fields: {
