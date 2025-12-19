@@ -16,8 +16,8 @@ export function getAuth() {
     throw new Error('BETTER_AUTH_SECRET is not set.')
   }
 
-  const githubClientId = process.env.GITHUB_CLIENT_ID
-  const githubClientSecret = process.env.GITHUB_CLIENT_SECRET
+  const githubClientId = process.env.GH_CLIENT_ID
+  const githubClientSecret = process.env.GH_CLIENT_SECRET
   const googleClientId = process.env.GOOGLE_CLIENT_ID
   const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET
 
