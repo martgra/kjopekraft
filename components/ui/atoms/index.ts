@@ -25,3 +25,5 @@ export type { ToggleProps } from './Toggle'
 
 export { AILoadingState } from './AILoadingState'
 export type { AILoadingStateProps } from './AILoadingState'
+export { AIButton } from './AIButton'
+export type { AIButtonProps } from './AIButton'

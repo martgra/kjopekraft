@@ -8,7 +8,7 @@ export const AI_GENERATION_QUOTES = [
   'Consulting the oracle.',
   'Running the simulation.',
   'Calculating the odds.',
-  "I don't like the sound of those odds.",
+  'I like the look of these odds.',
   'This requires thought.',
   'Engaging analysis subroutine.',
   'Simulating a dream within a dream.',

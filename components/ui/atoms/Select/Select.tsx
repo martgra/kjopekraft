@@ -24,6 +24,7 @@ export interface SelectProps {
   dataTestId?: string
   value?: string
   onChange?: (value: string) => void
+  placement?: 'auto' | 'up' | 'down'
 }
 
 export function Select({
@@ -35,8 +36,10 @@ export function Select({
   dataTestId,
   value,
   onChange,
+  placement = 'auto',
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [openDirection, setOpenDirection] = useState<'up' | 'down'>('down')
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Use controlled value from props
@@ -71,13 +74,21 @@ export function Select({
     }
 
     if (isOpen) {
+      if (placement === 'auto' && containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
+        const spaceBelow = window.innerHeight - rect.bottom
+        const spaceAbove = rect.top
+        setOpenDirection(spaceBelow < 220 && spaceAbove > spaceBelow ? 'up' : 'down')
+      } else if (placement !== 'auto') {
+        setOpenDirection(placement)
+      }
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isOpen])
+  }, [isOpen, placement])
 
   const handleSelect = (optionValue: string) => {
     setIsOpen(false)
@@ -120,7 +131,12 @@ export function Select({
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full z-50 mb-1 w-full rounded-lg border border-[var(--border-light)] bg-white shadow-lg dark:border-gray-600 dark:bg-gray-700">
+        <div
+          className={cn(
+            'absolute z-50 w-full rounded-lg border border-[var(--border-light)] bg-white shadow-lg dark:border-gray-600 dark:bg-gray-700',
+            openDirection === 'up' ? 'bottom-full mb-1' : 'top-full mt-1',
+          )}
+        >
           <div className="max-h-60 overflow-auto py-1">
             {options.map((child, index) => {
               if (!isValidElement<SelectOptionProps>(child)) return null

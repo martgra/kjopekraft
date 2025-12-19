@@ -78,6 +78,76 @@ Bruk Markdown-formatering:
 Svar med en komplett playbook i samme stil.`
 }
 
+export function buildTextValidationPrompt(
+  text: string,
+  options: {
+    language?: string
+    maxChars?: number
+    pointType?: string
+    history?: { role: 'assistant' | 'user'; content: string }[]
+    askedCount?: number
+    maxQuestions?: number
+    forceFinalize?: boolean
+  } = {},
+): string {
+  const { language, maxChars, pointType, history, askedCount, maxQuestions, forceFinalize } =
+    options
+  const categoryGuide = {
+    Achievement:
+      'Prestasjon: Fokuser på konkrete resultater og effekt. Struktur: handling -> belegg -> effekt. Eksempel: "Jeg leverte X innen Y som ga Z." Sporsmal: Hva var resultatet? Hvilke tall/effekt? Når skjedde det?',
+    Responsibility:
+      'Ansvar: Fokuser pa utvidet scope, eierskap, folk/budsjett/leveranser. Struktur: ansvar -> omfang -> konsekvens. Eksempel: "Jeg tok ansvar for X og sikret Y." Sporsmal: Hvor stort ansvar? Hvilke leveranser? Hvilken effekt?',
+    Market:
+      'Marked: Fokuser pa markedssammenligning og rolle-niva. Struktur: markedstall -> gap -> hvorfor det er relevant. Eksempel: "Markedsdata viser Y for rollen, mitt ansvar er pa niva med dette." Sporsmal: Hvilken rolle sammenlignes? Hvilke kilder/tall? Hva er gapet?',
+    Competence:
+      'Kompetanse: Fokuser pa spisskompetanse brukt i praksis. Struktur: kompetanse -> anvendelse -> effekt. Eksempel: "Jeg brukte X til Y som ga Z." Sporsmal: Hvilken kompetanse? Hvordan ble den brukt? Hvilken effekt?',
+    Other:
+      'Annet: Fokuser pa kontekst som stabilitet, kritikalitet eller risiko. Struktur: kontekst -> bidrag -> effekt. Eksempel: "I en kritisk periode gjorde jeg X som ga Y." Sporsmal: Hvilken situasjon? Hva gjorde du? Hvilken effekt?',
+  } as const
+  const categoryKey =
+    pointType && pointType in categoryGuide ? (pointType as keyof typeof categoryGuide) : null
+  const categoryText = categoryKey ? categoryGuide[categoryKey] : null
+  const instructions = [
+    'Forbedre følgende tekst uten å endre mening, fakta eller tone.',
+    language ? `Skriv på ${language}.` : 'Behold samme språk som originalen.',
+    pointType ? `Tilpass forhandlingstype: ${pointType}.` : null,
+    categoryText ? `Retningslinjer: ${categoryText}` : null,
+    maxChars ? `Hold deg under ${maxChars} tegn.` : null,
+    typeof maxQuestions === 'number'
+      ? `Du kan stille maks ${maxQuestions} oppfolgingssporsmal.`
+      : null,
+    typeof askedCount === 'number' ? `Sporsmal stilt hittil: ${askedCount}.` : null,
+    forceFinalize ? 'Avslutt na og returner forbedret tekst.' : null,
+    'Still kun ett klart sporsmal om gangen hvis du trenger mer info.',
+    'Hvis du har nok info, returner forbedret tekst.',
+    'Svar med et JSON-objekt med feltene: status ("question" eller "done"), question, improvedText.',
+    'Returner alltid improvedText, og kun ett question om gangen hvis du fortsatt trenger info.',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  const historyBlock = history?.length
+    ? `\n\nHistorikk:\n${history
+        .map(entry => `- ${entry.role === 'assistant' ? 'Assistent' : 'Bruker'}: ${entry.content}`)
+        .join('\n')}`
+    : ''
+
+  return `${instructions}\n\nTekst:\n${text}${historyBlock}`
+}
+
+export const SYSTEM_PROMPT_TEXT_VALIDATION = `
+Du er en språkassistent som forbedrer fritekst.
+- Bevar mening, fakta og tone.
+- Ikke legg til ny informasjon.
+- Sporsmal skal vaere konkrete, korte og tilpasset argumenttypen.
+- Still maks 3 sporsmal totalt, ett om gangen.
+- Hvis du har nok info, returner forbedret tekst med en gang.
+- Returner et JSON-objekt med feltene: status ("question" eller "done"), question, improvedText.
+- Returner alltid improvedText, selv om du stiller et oppfolgingssporsmal.
+- Argumenter skal være korte, konkrete og profesjonelle.
+- Bruk strukturen: påstand -> belegg -> effekt.
+`
+
 export const SYSTEM_PROMPT_EMAIL = `
 Din rolle er å lage en epost der bruker legger fram ønske om lønnsforhandlinger. Du skal hjelpe bruker å lage
 et best mulig utkast.
