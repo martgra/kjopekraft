@@ -71,6 +71,12 @@ export const TEXT = {
     navSettings: 'Innstillinger',
     comingSoon: 'Kommer snart',
   },
+  auth: {
+    signIn: 'Logg inn',
+    signOut: 'Logg ut',
+    signInWithGoogle: 'Logg inn med Google',
+    signInWithGithub: 'Logg inn med GitHub',
+  },
 
   dashboard: {
     title: 'Har kjøpekraften din økt? 💸💸',

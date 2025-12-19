@@ -26,7 +26,7 @@ They also follow GitHub’s guidance for effective `agents.md`: put commands ear
 - **Next.js:** `16.0.9` (App Router)
 - **React:** `19.2.2`
 - **TypeScript:** `5.9.3` (strict)
-- **Tailwind CSS:** `4.x` (light theme only; design tokens via CSS variables)
+- **Tailwind CSS:** `4.x` (light + dark themes; design tokens via CSS variables)
 - **Charts:** `chart.js 4.4.9`
 - **Client caching:** `swr 2.3.3`
 - **Validation:** `zod 4.1.13`
@@ -107,7 +107,7 @@ In `services/*`, use Next’s server caching primitives (e.g., `"use cache"` and
   - Context providers: `XyzProvider`
 
 - UI text: **must** come from `lib/constants/text.ts` (single source of truth).
-- Styling: Tailwind v4 + CSS variables; **no dark mode**.
+- Styling: Tailwind v4 + CSS variables; dark mode supported.
 
 ---
 
