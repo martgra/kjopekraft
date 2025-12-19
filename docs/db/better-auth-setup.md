@@ -27,6 +27,7 @@ bun run db:migrate:better-auth
 ```
 
 This script:
+
 - Reads migration files from `better-auth_migrations/`
 - Applies them to the database specified by `DATABASE_URL`
 - Handles cases where tables already exist gracefully
@@ -46,6 +47,7 @@ bunx @better-auth/cli migrate
 ## Deployment
 
 Migrations are automatically applied during deployment via the GitHub Actions workflow:
+
 - `bun run db:migrate` - Runs Drizzle migrations
 - `bun run db:migrate:better-auth` - Runs Better Auth migrations
 
