@@ -46,7 +46,9 @@ jobs:
       - name: Run database migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: bun run db:migrate
+        run: |
+          bun run db:migrate
+          bun run db:migrate:better-auth
 
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
