@@ -32,9 +32,7 @@ export function getAuth() {
   // Determine base URL for OAuth callbacks
   const baseURL =
     process.env.BETTER_AUTH_URL ||
-    (process.env.NODE_ENV === 'production'
-      ? 'https://kjopekraft.no'
-      : 'http://localhost:3000')
+    (process.env.NODE_ENV === 'production' ? 'https://kjopekraft.no' : 'http://localhost:3000')
 
   authInstance = betterAuth({
     database: getDbPool(),
