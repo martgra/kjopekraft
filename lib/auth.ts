@@ -29,9 +29,17 @@ export function getAuth() {
     throw new Error('Google OAuth env vars are not set.')
   }
 
+  // Determine base URL for OAuth callbacks
+  const baseURL =
+    process.env.BETTER_AUTH_URL ||
+    (process.env.NODE_ENV === 'production'
+      ? 'https://kjopekraft.no'
+      : 'http://localhost:3000')
+
   authInstance = betterAuth({
     database: getDbPool(),
     secret,
+    baseURL,
     trustedOrigins: ['https://kjopekraft.no'],
     plugins: [jwt()],
     session: {
