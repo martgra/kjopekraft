@@ -1,8 +1,19 @@
+// @vitest-environment happy-dom
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { act, renderHook } from '@testing-library/react'
 import { usePayPointFormState } from '@/features/salary/hooks/usePayPointFormState'
 import type { PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
+
+const demoModeState = {
+  isDemoMode: false,
+  loadDemoData: vi.fn(),
+  clearDemoData: vi.fn(),
+}
+
+vi.mock('@/contexts/demoMode/DemoModeContext', () => ({
+  useDemoMode: () => demoModeState,
+}))
 
 const payPoints: PayPoint[] = [
   { id: 'p1', year: 2020, pay: 500000, reason: 'newJob' },
@@ -16,6 +27,9 @@ describe('usePayPointFormState', () => {
   beforeEach(() => {
     addPoint.mockClear()
     removePoint.mockClear()
+    demoModeState.isDemoMode = false
+    demoModeState.loadDemoData.mockClear()
+    demoModeState.clearDemoData.mockClear()
   })
 
   const setup = (overrides?: Partial<Parameters<typeof usePayPointFormState>[0]>) =>
@@ -24,7 +38,6 @@ describe('usePayPointFormState', () => {
         payPoints,
         currentYear: 2025,
         inflationData: [],
-        hasData: true,
         addPoint,
         removePoint,
         ...overrides,
@@ -76,12 +89,8 @@ describe('usePayPointFormState', () => {
   })
 
   it('clears demo state when adding real data in demo mode', () => {
-    const demoPoints: PayPoint[] = [{ id: 'd1', year: 2019, pay: 450000, reason: 'adjustment' }]
-    const { result } = setup({ hasData: false })
-
-    // Seed demo mode
-    localStorage.setItem('salary-calculator-points', 'demo')
-    act(() => result.current.loadDemoData(demoPoints))
+    demoModeState.isDemoMode = true
+    const { result } = setup()
 
     act(() => result.current.setters.setYear('2022'))
     act(() => result.current.setters.setPay('600000'))
@@ -89,7 +98,7 @@ describe('usePayPointFormState', () => {
 
     act(() => result.current.submitPoint())
 
-    expect(localStorage.getItem('salary-calculator-points')).toBeNull()
+    expect(demoModeState.clearDemoData).toHaveBeenCalled()
   })
 
   describe('editing behavior', () => {

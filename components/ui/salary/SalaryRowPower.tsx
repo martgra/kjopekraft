@@ -36,8 +36,11 @@ export function SalaryRowPower({
 }: SalaryRowPowerProps) {
   const powerVariant =
     row.purchasingPowerDelta > 0 ? 'success' : row.purchasingPowerDelta < 0 ? 'error' : 'info'
-  const purchasingPowerText = purchasingPowerCopy(row.purchasingPowerDelta)
-  const icon = purchasingPowerSymbol(row.purchasingPowerDelta)
+  const hasPriorData = row.yoyAbsoluteChange !== null
+  const purchasingPowerText = hasPriorData
+    ? purchasingPowerCopy(row.purchasingPowerDelta)
+    : TEXT.views.table.firstYear
+  const icon = hasPriorData ? purchasingPowerSymbol(row.purchasingPowerDelta) : 'trending_flat'
   const iconColor =
     powerVariant === 'success'
       ? 'text-[var(--primary)]'
@@ -46,6 +49,7 @@ export function SalaryRowPower({
         : 'text-[var(--text-muted)]'
 
   const showAbsolute = mode === 'absolute'
+  const valueText = hasPriorData ? null : TEXT.views.table.notAvailable
 
   return (
     <div
@@ -57,10 +61,12 @@ export function SalaryRowPower({
       <span className={cn('material-symbols-outlined text-[16px]', iconColor)}>{icon}</span>
       {showAbsolute ? (
         <span className="text-[var(--text-main)] tabular-nums">
-          {`${formatSignedCurrency(row.purchasingPowerDelta)} ${TEXT.common.pts}`}
+          {valueText ?? `${formatSignedCurrency(row.purchasingPowerDelta)} ${TEXT.common.pts}`}
         </span>
       ) : (
-        <span className="tabular-nums">{formatPercent(row.purchasingPowerPercent)}</span>
+        <span className="tabular-nums">
+          {valueText ?? formatPercent(row.purchasingPowerPercent)}
+        </span>
       )}
       {showDescription && (
         <>
@@ -77,7 +83,9 @@ export function SalaryRowPower({
       )}
       {!showDescription && srDescription && (
         <span className="sr-only">
-          {purchasingPowerText} ({formatPercent(row.purchasingPowerPercent)})
+          {hasPriorData
+            ? `${purchasingPowerText} (${formatPercent(row.purchasingPowerPercent)})`
+            : purchasingPowerText}
         </span>
       )}
     </div>

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Dashboard from './Dashboard'
 import { useDrawer } from '@/contexts/drawer/DrawerContext'
 import type { InflationDataPoint } from '@/domain/inflation'
+import { DemoModeProvider } from '@/contexts/demoMode/DemoModeContext'
 import {
   SalaryDataProvider,
   useSalaryDataContext,
@@ -20,7 +21,9 @@ export default function DashboardWithDrawer({
 }: DashboardWithDrawerProps) {
   return (
     <SalaryDataProvider inflationData={inflationData} currentYear={currentYear}>
-      <DashboardWithContext inflationData={inflationData} currentYear={currentYear} />
+      <DemoModeProvider>
+        <DashboardWithContext inflationData={inflationData} currentYear={currentYear} />
+      </DemoModeProvider>
     </SalaryDataProvider>
   )
 }

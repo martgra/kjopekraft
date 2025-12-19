@@ -26,42 +26,36 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('light')
+  const [manualTheme, setManualTheme] = useState<Theme | null>(null)
   const [mounted, setMounted] = useState(false)
 
-  // Initialize theme from localStorage or system preference
-  useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as Theme | null
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    const initialTheme = storedTheme || systemTheme
-
-    setThemeState(initialTheme)
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark')
-    setMounted(true)
-  }, [])
-
-  // Listen for system theme changes
+  // Initialize theme from system preference and keep in sync
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const resolveTheme = (isDark: boolean) => (isDark ? 'dark' : 'light')
+    const applyTheme = (nextTheme: Theme) => {
+      setThemeState(nextTheme)
+      document.documentElement.classList.toggle('dark', nextTheme === 'dark')
+    }
+
+    applyTheme(manualTheme ?? resolveTheme(mediaQuery.matches))
+    setMounted(true)
 
     const handleChange = (e: MediaQueryListEvent) => {
-      // Only update if user hasn't set a preference
-      if (!localStorage.getItem('theme')) {
-        const newTheme = e.matches ? 'dark' : 'light'
-        setThemeState(newTheme)
-        document.documentElement.classList.toggle('dark', newTheme === 'dark')
-      }
+      if (manualTheme) return
+      applyTheme(resolveTheme(e.matches))
     }
 
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
+  }, [manualTheme])
 
   const contextValue = useMemo(() => {
     const isDarkMode = theme === 'dark'
 
     const setTheme = (newTheme: Theme) => {
+      setManualTheme(newTheme)
       setThemeState(newTheme)
-      localStorage.setItem('theme', newTheme)
       document.documentElement.classList.toggle('dark', newTheme === 'dark')
     }
 

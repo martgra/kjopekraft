@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { Card, Badge, Icon } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'
@@ -17,6 +18,7 @@ export interface NegotiationSummaryProps {
   desiredVsMedianPercent: number | null
   desiredVsMedianIsAbove: boolean
   suggestedRange: SuggestedRange
+  marketSelector?: ReactNode
 }
 
 function formatPercentAbsolute(value: number) {
@@ -34,6 +36,7 @@ export function NegotiationSummary({
   desiredVsMedianPercent,
   desiredVsMedianIsAbove,
   suggestedRange,
+  marketSelector,
 }: NegotiationSummaryProps) {
   const hasInflationGap =
     typeof inflationGapPercent === 'number' && !Number.isNaN(inflationGapPercent)
@@ -98,6 +101,7 @@ export function NegotiationSummary({
             {TEXT.negotiationSummary.marketLabel}
           </p>
           <p className="mt-2 text-sm text-[var(--text-main)]">{marketCopy}</p>
+          {marketSelector}
           {isApproximateMatch && occupationLabel ? (
             <p className="mt-2 text-xs text-[var(--text-muted)]">
               {TEXT.negotiationSummary.approximateMatch(occupationLabel)}

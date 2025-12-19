@@ -1,7 +1,7 @@
 'use client'
 
 import { forwardRef, useImperativeHandle, useState } from 'react'
-import { Card, Icon, Select, SelectOption } from '@/components/ui/atoms'
+import { Button, Card, Icon, Select, SelectOption } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import { NEGOTIATION_MAX_POINTS, NEGOTIATION_POINT_TYPES } from '@/lib/negotiation/pointTypes'
 import { AIAssistedField } from '@/components/ai/AIAssistedField'
@@ -44,9 +44,12 @@ export const ArgumentBuilder = forwardRef<ArgumentBuilderHandle, ArgumentBuilder
     )
 
     return (
-      <Card padding="none" className={`min-h-[420px] overflow-visible ${className ?? ''}`.trim()}>
+      <Card
+        padding="none"
+        className={`min-h-0 overflow-visible md:min-h-[420px] ${className ?? ''}`.trim()}
+      >
         {/* Header */}
-        <div className="flex-shrink-0 border-b border-[var(--border-light)] bg-[var(--surface-subtle)] px-4 py-3">
+        <div className="flex items-center justify-between gap-3 border-b border-[var(--border-light)] bg-[var(--surface-subtle)] px-4 py-3">
           <h2 className="flex items-center gap-2 text-sm font-bold text-[var(--text-main)]">
             <Icon name="lightbulb" className="text-orange-500" />
             {TEXT.negotiation.argumentBuilderTitle}
@@ -83,6 +86,18 @@ export const ArgumentBuilder = forwardRef<ArgumentBuilderHandle, ArgumentBuilder
           {maxReached ? (
             <p className="text-xs text-[var(--text-muted)]">{TEXT.negotiation.maxPointsWarning}</p>
           ) : null}
+        </div>
+
+        <div className="border-t border-[var(--border-light)] bg-[var(--surface-subtle)] p-3">
+          <Button
+            variant="success"
+            className="w-full"
+            disabled={!desc.trim() || maxReached}
+            onClick={handleAdd}
+          >
+            <Icon name="add" size="sm" />
+            {TEXT.negotiation.addArgument}
+          </Button>
         </div>
       </Card>
     )

@@ -24,10 +24,16 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
-export function useSsbMedianSalary(jobTitle: string) {
+type OccupationOverride = { code: string; label?: string }
+
+export function useSsbMedianSalary(
+  jobTitle: string,
+  occupationOverride?: OccupationOverride | null,
+) {
   const occupationMatch = useMemo(() => mapJobTitleToOccupation(jobTitle), [jobTitle])
-  const apiUrl = occupationMatch
-    ? `/api/ssb/salary?occupation=${occupationMatch.code}&stat=01&fromYear=2015`
+  const selectedOccupation = occupationOverride ?? occupationMatch
+  const apiUrl = selectedOccupation
+    ? `/api/ssb/salary?occupation=${selectedOccupation.code}&stat=01&fromYear=2015`
     : null
 
   const { data, error, isLoading } = useSWR<SalarySeriesResponse>(apiUrl, fetcher, {
@@ -46,7 +52,13 @@ export function useSsbMedianSalary(jobTitle: string) {
   }, [data])
 
   return {
-    occupationMatch,
+    occupationMatch: selectedOccupation
+      ? {
+          code: selectedOccupation.code,
+          label: selectedOccupation.label,
+          isApproximate: occupationOverride ? false : (occupationMatch?.isApproximate ?? false),
+        }
+      : null,
     medianSalary: latest?.value ?? null,
     medianYear: latest?.year ?? null,
     isLoading,

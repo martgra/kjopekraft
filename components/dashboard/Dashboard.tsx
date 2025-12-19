@@ -56,7 +56,6 @@ export default function Dashboard({
     payPoints,
     currentYear,
     inflationData,
-    hasData,
     addPoint,
     removePoint,
   })

@@ -14,12 +14,17 @@ import type { InflationDataPoint } from '@/domain/inflation'
 import { useSsbMedianSalary } from '@/features/negotiation/hooks/useSsbMedianSalary'
 import { parseSalaryInput } from '@/lib/utils/parseSalaryInput'
 import { NegotiationSummary } from './NegotiationSummary'
+import {
+  NegotiationMarketSelector,
+  type NegotiationOccupationSelection,
+} from './NegotiationMarketSelector'
 import { NegotiationArguments } from './NegotiationArguments'
 import { NegotiationTips } from './NegotiationTips'
 import { estimateDesiredGrossSalary } from '@/domain/negotiation'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'
 import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
 import { useSalaryDataContext } from '@/features/salary/providers/SalaryDataProvider'
+import type { NegotiationEmailContext } from '@/lib/models/types'
 
 interface NegotiationPageProps {
   inflationData: InflationDataPoint[]
@@ -79,13 +84,16 @@ export default function NegotiationPage({
   )
   const estimatedInflationRate = latestInflationRate ? latestInflationRate.inflation / 100 : 0
 
+  const [selectedOccupation, setSelectedOccupation] =
+    useState<NegotiationOccupationSelection | null>(null)
+
   const {
     occupationMatch,
     medianSalary,
     medianYear,
     error: medianError,
     isLoading: isMedianLoading,
-  } = useSsbMedianSalary(userInfo.jobTitle)
+  } = useSsbMedianSalary(userInfo.jobTitle, selectedOccupation)
 
   const desiredSalaryValue = parseSalaryInput(userInfo.desiredSalary)
   const currentSalaryValue = parseSalaryInput(userInfo.currentSalary)
@@ -185,10 +193,29 @@ export default function NegotiationPage({
     }
     try {
       setIsGeneratingEmail(true)
+      const salaryHistory = payPoints.map(point => ({
+        year: point.year,
+        pay: point.pay,
+        reason: point.reason,
+      }))
+      const context: NegotiationEmailContext = {
+        salaryHistory: salaryHistory.length ? salaryHistory : undefined,
+        purchasingPower: {
+          gapPercent: purchasingPowerStats?.gapPercent ?? null,
+          startingYear: purchasingPowerStats?.startingYear ?? null,
+          latestYear: purchasingPowerStats?.latestYear ?? null,
+        },
+        referenceSalary: {
+          occupationLabel: occupationMatch?.label ?? null,
+          medianSalary,
+          medianYear,
+          isApproximate: occupationMatch?.isApproximate ?? false,
+        },
+      }
       const response = await fetch('/api/generate/email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ points, userInfo }),
+        body: JSON.stringify({ points, userInfo, context }),
       })
       const data = await response.json()
       if (!response.ok) {
@@ -206,26 +233,13 @@ export default function NegotiationPage({
   const showMarketData =
     !occupationMatch || Boolean(medianError) || Boolean(userInfo.marketData.trim())
 
-  // Argument builder content (shared between desktop sidebar and mobile drawer)
   const argumentBuilderContent = (
-    <>
-      <ArgumentBuilder
-        ref={argumentBuilderRef}
-        points={points}
-        onAddPoint={addPoint}
-        className="min-h-0 flex-1 overflow-visible border-0 shadow-none"
-      />
-      <div className="sticky bottom-0 z-10 bg-[var(--surface-light)]">
-        <Button
-          variant="success"
-          className="w-full"
-          onClick={() => argumentBuilderRef.current?.addCurrent()}
-        >
-          <Icon name="add" size="sm" />
-          {TEXT.negotiation.addArgument}
-        </Button>
-      </div>
-    </>
+    <ArgumentBuilder
+      ref={argumentBuilderRef}
+      points={points}
+      onAddPoint={addPoint}
+      className="min-h-0 flex-1 overflow-visible border-0 shadow-none"
+    />
   )
 
   // Right panel content - CSS handles mobile/desktop visibility
@@ -296,6 +310,12 @@ export default function NegotiationPage({
             }
             desiredVsMedianIsAbove={desiredVsMedianIsAbove}
             suggestedRange={suggestedRange}
+            marketSelector={
+              <NegotiationMarketSelector
+                selectedOccupation={selectedOccupation}
+                onOccupationChange={setSelectedOccupation}
+              />
+            }
           />
           <NegotiationArguments points={points} onRemovePoint={removePoint} />
           <DetailsForm

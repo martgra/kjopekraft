@@ -19,7 +19,9 @@ export function ChartSettingsModeToggle({ isNetMode, onToggleMode }: ChartSettin
           {TEXT.settings.grossNetToggleTitle}
         </div>
         <div className="mt-0.5 text-xs text-[var(--text-muted)]">
-          {TEXT.settings.grossNetToggleSubtitle}
+          {isNetMode
+            ? TEXT.settings.grossNetToggleSubtitleNet
+            : TEXT.settings.grossNetToggleSubtitleGross}
         </div>
       </div>
       <input

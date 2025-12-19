@@ -157,7 +157,7 @@ body {
 
 /* Chart Mobile Optimization */
 .chart-mobile canvas {
-  touch-action: manipulation;
+  touch-action: pan-y pinch-zoom;
   user-select: none;
 }
 
@@ -185,7 +185,7 @@ body {
 /* Optimize mobile chart taps */
 @media (max-width: 768px) {
   .chart-container {
-    touch-action: pan-y;
+    touch-action: pan-y pinch-zoom;
     padding: 0;
   }
 

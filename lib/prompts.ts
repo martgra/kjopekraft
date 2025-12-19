@@ -1,11 +1,18 @@
 // promptBuilders.ts
-import { NegotiationPoint, NegotiationUserInfo } from '@/lib/models/types'
+import type {
+  NegotiationEmailContext,
+  NegotiationPoint,
+  NegotiationUserInfo,
+} from '@/lib/models/types'
 import { EMAIL_EXAMPLE, PLAYBOOK_EXAMPLE } from '@/lib/examples'
 import { formatBenefitLabels } from '@/lib/negotiation/benefitOptions'
+import { formatCurrency } from '@/lib/formatters/salaryFormatting'
+import { TEXT } from '@/lib/constants/text'
 
 export function buildEmailPrompt(
   points: NegotiationPoint[],
   userInfo?: NegotiationUserInfo,
+  context?: NegotiationEmailContext,
 ): string {
   let userSection = ''
   if (userInfo) {
@@ -24,19 +31,55 @@ export function buildEmailPrompt(
       `- Ønskede goder: ${benefits}\n` +
       `- Andre goder: ${userInfo.otherBenefits || 'Ikke oppgitt'}\n`
   }
-  return `Skriv en profesjonell, høflig og kulturtilpasset e-post på norsk til lønnsforhandling basert på følgende punkter:
 
-**VIKTIG - Bruk SSB-verktøy:**
-- Hvis stillingstittel er oppgitt, bruk getMedianSalary for å hente markedsdata
-- Hvis nåværende/ønsket lønn er oppgitt, bruk compareToMarket for å sammenligne med markedet
-- Selv om bruker ikke har oppgitt markedsdata, SKAL du hente det hvis stillingstittel er tilgjengelig
+  let contextSection = ''
+  if (context) {
+    const historyLines = context.salaryHistory?.length
+      ? context.salaryHistory
+          .map(entry => {
+            const reason = entry.reason ? ` (${entry.reason})` : ''
+            return `- ${entry.year}: ${formatCurrency(entry.pay)} ${TEXT.common.pts}${reason}`
+          })
+          .join('\n')
+      : ''
+
+    const power =
+      context.purchasingPower && typeof context.purchasingPower.gapPercent === 'number'
+        ? `${context.purchasingPower.gapPercent >= 0 ? '+' : ''}${context.purchasingPower.gapPercent.toFixed(1)}%`
+        : null
+    const powerPeriod =
+      context.purchasingPower?.startingYear && context.purchasingPower.latestYear
+        ? `${context.purchasingPower.startingYear}–${context.purchasingPower.latestYear}`
+        : null
+
+    const reference =
+      context.referenceSalary &&
+      context.referenceSalary.occupationLabel &&
+      context.referenceSalary.medianSalary !== null &&
+      context.referenceSalary.medianYear !== null
+        ? `${context.referenceSalary.occupationLabel} (${context.referenceSalary.medianYear}): ${formatCurrency(context.referenceSalary.medianSalary)} ${TEXT.common.pts}${context.referenceSalary.isApproximate ? ' (tilnærmet match)' : ''}`
+        : null
+
+    const contextLines = [
+      historyLines ? `Lønnsutvikling:\n${historyLines}` : null,
+      power ? `Kjøpekraftsgap ${powerPeriod ? `(${powerPeriod})` : ''}: ${power}` : null,
+      reference ? `Referanselønn: ${reference}` : null,
+    ]
+      .filter(Boolean)
+      .join('\n')
+
+    if (contextLines) {
+      contextSection = `\n\nTilleggsdata:\n${contextLines}\n`
+    }
+  }
+  return `Skriv en profesjonell, høflig og kulturtilpasset e-post på norsk til lønnsforhandling basert på følgende punkter:
 
 Bruk Markdown-formatering for pent oppsett:
 - Bruk **fet** for viktige punkter
 - Bruk kulepunkter (- ) for lister
 - Bruk tomme linjer mellom avsnitt
 
-${points.map(p => `- ${p.description} (${p.type})`).join('\n')}${userSection}`
+${points.map(p => `- ${p.description} (${p.type})`).join('\n')}${userSection}${contextSection}`
 }
 
 export function buildPlaybookPrompt(
@@ -152,15 +195,6 @@ export const SYSTEM_PROMPT_EMAIL = `
 Din rolle er å lage en epost der bruker legger fram ønske om lønnsforhandlinger. Du skal hjelpe bruker å lage
 et best mulig utkast.
 
-**SSB-verktøy (PROAKTIV BRUK):**
-Du har tilgang til verktøy for å hente offisiell lønnsdata fra SSB (Statistisk sentralbyrå).
-- **ALLTID** bruk getMedianSalary når du kan utlede stillingstittel fra brukers input (selv om ikke eksplisitt oppgitt)
-- Bruk compareToMarket for å sammenligne brukers nåværende/ønsket lønn med markedet
-- Vanlige SSB-koder: 2223=Sykepleiere, 2512=Programvareutviklere, 2330=Lærere, 2146=Ingeniører
-- Hvis du bruker data fra et tilnærmet yrke (confidence < 1.0), INFORMER brukeren tydelig: "Basert på SSB-data for nærmeste kategori (Programvareutviklere)..."
-- Alltid oppgi SSB som kilde når du refererer til markedsdata
-- Selv om "Markedsdata: Ikke oppgitt", SKAL du hente data hvis stillingstittel er tilgjengelig
-
 1. Sørg for at eposten er konsis og to the point.
 2. Sørg for at det er tydelig der bruker må fylle inn informasjon slik som navn på mottaker, eget navn, detaljer om egen stilling eller lignende.
 3. Sørg for at epost er tett knyttet til data bruker selv spiller inn som viktige.
@@ -170,6 +204,7 @@ E-posten skal:
 - Tydelig beskrive ønsket lønnsjustering med konkrete og saklige begrunnelser (erfaring, ansvar, resultater, markedsdata).
 - Bruke et høflig, direkte og samarbeidsorientert språk som samsvarer med norske normer for arbeidslivet.
 - Avsluttes med en positiv forventning om videre dialog.
+- Kun data du selv synes er relevant bør inkluderes i mail-forslaget og som bygger opp under ønsket lønn.
 
 **VIKTIG:** Svar med **Markdown-formatert** tekst. Bruk:
 - Tomme linjer mellom avsnitt
