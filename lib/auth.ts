@@ -4,36 +4,62 @@ import { jwt } from 'better-auth/plugins'
 import { getDbPool } from '@/services/db/pool'
 import { ensureUserProfile } from '@/services/users/userProfileService'
 
-const pool = getDbPool()
+let authInstance: ReturnType<typeof betterAuth> | null = null
 
-export const auth = betterAuth({
-  database: pool,
-  secret: process.env.BETTER_AUTH_SECRET,
-  plugins: [jwt()],
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 7 * 24 * 60 * 60,
-      strategy: 'jwt',
-      refreshCache: true,
+export function getAuth() {
+  if (authInstance) {
+    return authInstance
+  }
+
+  const secret = process.env.BETTER_AUTH_SECRET
+  if (!secret) {
+    throw new Error('BETTER_AUTH_SECRET is not set.')
+  }
+
+  const githubClientId = process.env.GITHUB_CLIENT_ID
+  const githubClientSecret = process.env.GITHUB_CLIENT_SECRET
+  const googleClientId = process.env.GOOGLE_CLIENT_ID
+  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET
+
+  if (!githubClientId || !githubClientSecret) {
+    throw new Error('GitHub OAuth env vars are not set.')
+  }
+
+  if (!googleClientId || !googleClientSecret) {
+    throw new Error('Google OAuth env vars are not set.')
+  }
+
+  authInstance = betterAuth({
+    database: getDbPool(),
+    secret,
+    plugins: [jwt()],
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 7 * 24 * 60 * 60,
+        strategy: 'jwt',
+        refreshCache: true,
+      },
     },
-  },
-  socialProviders: {
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    socialProviders: {
+      github: {
+        clientId: githubClientId,
+        clientSecret: githubClientSecret,
+      },
+      google: {
+        clientId: googleClientId,
+        clientSecret: googleClientSecret,
+      },
     },
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    hooks: {
+      after: createAuthMiddleware(async ctx => {
+        const newSession = ctx.context.newSession
+        if (newSession?.user?.id) {
+          await ensureUserProfile(newSession.user.id)
+        }
+      }),
     },
-  },
-  hooks: {
-    after: createAuthMiddleware(async ctx => {
-      const newSession = ctx.context.newSession
-      if (newSession?.user?.id) {
-        await ensureUserProfile(newSession.user.id)
-      }
-    }),
-  },
-})
+  })
+
+  return authInstance
+}
