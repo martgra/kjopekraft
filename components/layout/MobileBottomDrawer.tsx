@@ -10,6 +10,7 @@ interface MobileBottomDrawerProps {
   dashboardContent?: ReactNode
   negotiationContent?: ReactNode
   pointsCount?: number
+  variant?: 'drawer' | 'sheet'
 }
 
 export default function MobileBottomDrawer({
@@ -18,6 +19,7 @@ export default function MobileBottomDrawer({
   dashboardContent,
   negotiationContent,
   pointsCount = 0,
+  variant = 'drawer',
 }: MobileBottomDrawerProps) {
   const pathname = usePathname()
 
@@ -74,9 +76,11 @@ export default function MobileBottomDrawer({
 
       {/* Drawer - only on mobile */}
       <div
-        className={`fixed right-0 bottom-0 left-0 z-50 flex max-h-[85vh] flex-col rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
-          isOpen ? 'translate-y-0' : 'pointer-events-none translate-y-full'
-        }`}
+        className={`fixed bottom-0 z-50 flex max-h-[85vh] w-full flex-col rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
+          variant === 'sheet'
+            ? 'left-1/2 max-w-md -translate-x-1/2 border-t border-gray-200 dark:border-gray-700/50'
+            : 'right-0 left-0'
+        } ${isOpen ? 'translate-y-0' : 'pointer-events-none translate-y-full'}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"

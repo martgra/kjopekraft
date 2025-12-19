@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNegotiationData } from '../hooks/useNegotiationData'
 import { usePurchasingPower } from '@/features/salary/hooks/usePurchasingPower'
-import { DetailsForm, ContextForm, GenerateButtons, BenefitsForm, type UserInfo } from './forms'
+import { DetailsForm, ContextForm, BenefitsForm, type UserInfo } from './forms'
 import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
+import type { ArgumentBuilderHandle } from '@/components/ui/organisms/ArgumentBuilder/ArgumentBuilder'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
 import { AILoadingState, Badge, Button, Icon } from '@/components/ui/atoms'
@@ -13,7 +14,7 @@ import type { InflationDataPoint } from '@/domain/inflation'
 import { useSsbMedianSalary } from '@/features/negotiation/hooks/useSsbMedianSalary'
 import { parseSalaryInput } from '@/lib/utils/parseSalaryInput'
 import { NegotiationSummary } from './NegotiationSummary'
-import { NegotiationSuggestions } from './NegotiationSuggestions'
+import { NegotiationArguments } from './NegotiationArguments'
 import { NegotiationTips } from './NegotiationTips'
 import { estimateDesiredGrossSalary } from '@/domain/negotiation'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'
@@ -51,9 +52,9 @@ export default function NegotiationPage({
 
   // Generation states
   const [isGeneratingEmail, setIsGeneratingEmail] = useState(false)
-  const [emailError, setEmailError] = useState<string | null>(null)
   const prefilledCurrentSalary = useRef<string | null>(null)
   const prefilledDesiredSalary = useRef<number | null>(null)
+  const argumentBuilderRef = useRef<ArgumentBuilderHandle | null>(null)
 
   // Get salary statistics for pre-filling current salary
   const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear)
@@ -184,7 +185,6 @@ export default function NegotiationPage({
     }
     try {
       setIsGeneratingEmail(true)
-      setEmailError(null)
       const response = await fetch('/api/generate/email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -197,14 +197,12 @@ export default function NegotiationPage({
       setEmail(data.result, data.prompt)
     } catch (err) {
       console.error('Email generation error:', err)
-      setEmailError(TEXT.negotiation.emailErrorTitle)
     } finally {
       setIsGeneratingEmail(false)
     }
   }
 
   // Hydrate prompts from localStorage on mount (content is handled by the hook)
-  const emailRemaining = MAX_GENERATIONS - emailGenerationCount
   const showMarketData =
     !occupationMatch || Boolean(medianError) || Boolean(userInfo.marketData.trim())
 
@@ -212,20 +210,20 @@ export default function NegotiationPage({
   const argumentBuilderContent = (
     <>
       <ArgumentBuilder
+        ref={argumentBuilderRef}
         points={points}
         onAddPoint={addPoint}
-        onRemovePoint={removePoint}
-        className="min-h-0 flex-1 overflow-hidden border-0 shadow-none"
+        className="min-h-0 flex-1 overflow-visible border-0 shadow-none"
       />
       <div className="sticky bottom-0 z-10 bg-[var(--surface-light)]">
-        <GenerateButtons
-          pointsCount={points.length}
-          isGeneratingEmail={isGeneratingEmail}
-          emailRemaining={emailRemaining}
-          hasReachedEmailLimit={hasReachedEmailGenerationLimit()}
-          onGenerateEmail={handleEmailGenerate}
-          emailError={emailError}
-        />
+        <Button
+          variant="success"
+          className="w-full"
+          onClick={() => argumentBuilderRef.current?.addCurrent()}
+        >
+          <Icon name="add" size="sm" />
+          {TEXT.negotiation.addArgument}
+        </Button>
       </div>
     </>
   )
@@ -242,6 +240,7 @@ export default function NegotiationPage({
         onClose={onDrawerClose}
         negotiationContent={argumentBuilderContent}
         pointsCount={points.length}
+        variant="sheet"
       />
       <DashboardLayout rightPanel={rightPanelContent}>
         {/* Header */}
@@ -298,7 +297,7 @@ export default function NegotiationPage({
             desiredVsMedianIsAbove={desiredVsMedianIsAbove}
             suggestedRange={suggestedRange}
           />
-          <NegotiationSuggestions points={points} onAddPoint={addPoint} />
+          <NegotiationArguments points={points} onRemovePoint={removePoint} />
           <DetailsForm
             userInfo={userInfo}
             onChange={updateUserInfo}

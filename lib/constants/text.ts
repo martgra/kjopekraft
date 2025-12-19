@@ -25,6 +25,32 @@ export const TEXT = {
     legend: 'Forklaring',
     settings: 'Innstillinger',
   },
+  aiValidator: {
+    improveButton: 'Forbedre tekst',
+    overlayTitle: 'Forslag til forbedring',
+    overlayQuestionTitle: 'Forbedre argument',
+    overlayQuestionHint: 'Svar kort for et bedre forslag.',
+    overlaySuggestionTitle: 'Forslag klart',
+    overlaySuggestionHint: 'Dette legges som nytt argument når du godtar.',
+    originalLabel: 'Originaltekst',
+    suggestionLabel: 'Forslag',
+    editHint: 'Du kan redigere forslaget før du bruker det.',
+    chatTitle: 'AI-oppfolging',
+    chatInputPlaceholder: 'Skriv svaret ditt...',
+    sendAnswer: 'Send svar',
+    finishEarly: 'Avslutt og få forslag',
+    showSuggestion: 'Vis hele',
+    hideSuggestion: 'Skjul',
+    applySuggestion: 'Bruk forslag',
+    continueEditing: 'Fortsett å redigere',
+    commitHint: 'Setter teksten i feltet. Trykk "Legg til argument" for å lagre.',
+    inlineHint: 'AI-oppdatering klar. Rediger teksten og legg til argument.',
+    aiSatisfied: 'AI er fornøyd med teksten.',
+    retry: 'Prøv igjen',
+    errorTitle: 'Klarte ikke å forbedre teksten.',
+    emptyText: 'Skriv inn tekst før du forbedrer.',
+    tooLong: (max: number) => `Teksten er for lang. Maks ${max} tegn.`,
+  },
 
   // Mobile drawer
   drawer: {
@@ -321,6 +347,8 @@ export const TEXT = {
   negotiation: {
     sectionTitle: 'Forhandling',
     argumentBuilderTitle: 'Argumentbygger',
+    argumentsTitle: 'Dine argumenter',
+    addArgument: 'Legg til argument',
     showArguments: 'Vis argumenter',
     hideArguments: 'Skjul argumenter',
     guide:

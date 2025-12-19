@@ -16,6 +16,7 @@ export interface PointItemProps {
   onRemove: () => void
   onEdit?: () => void
   className?: string
+  descriptionClassName?: string
 }
 
 const DEFAULT_COLORS = {
@@ -38,6 +39,7 @@ export function PointItem({
   onRemove,
   onEdit,
   className,
+  descriptionClassName,
 }: PointItemProps) {
   const normalizedType = normalizeNegotiationPointType(type)
   const colors = TYPE_COLORS[normalizedType] ?? DEFAULT_COLORS
@@ -68,7 +70,15 @@ export function PointItem({
         <Badge variant="default" size="sm" className={cn(colors.bg, colors.text, 'mb-1')}>
           {typeLabel}
         </Badge>
-        <p className="text-sm leading-snug break-words text-[var(--text-main)]">{description}</p>
+        <p
+          className={cn(
+            'text-sm leading-snug break-words text-[var(--text-main)]',
+            descriptionClassName,
+          )}
+          title={description}
+        >
+          {description}
+        </p>
       </div>
 
       {/* Action Buttons - Always visible on mobile, hover-reveal on desktop */}
