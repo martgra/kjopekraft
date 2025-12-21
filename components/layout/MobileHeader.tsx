@@ -1,0 +1,53 @@
+'use client'
+
+import { useState } from 'react'
+import { authClient } from '@/lib/auth-client'
+import { TEXT } from '@/lib/constants/text'
+import LoginOverlay from '@/components/auth/LoginOverlay'
+
+export default function MobileHeader() {
+  const { data: session, isPending } = authClient.useSession()
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <>
+      <header className="fixed top-0 right-0 left-0 z-50 border-b border-[var(--border-light)] bg-white pt-[env(safe-area-inset-top)] shadow-sm lg:hidden dark:border-gray-800 dark:bg-gray-900">
+        <div className="flex h-14 items-center justify-between px-4">
+          {/* Brand */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)]">
+              <span className="text-lg" role="img" aria-label="Money with wings">
+                💸
+              </span>
+            </div>
+            <span className="text-base font-bold text-[var(--text-main)] dark:text-gray-100">
+              {TEXT.sidebar.brandName}
+            </span>
+          </div>
+
+          {/* Auth Button */}
+          {isPending ? (
+            <div className="h-8 w-20 animate-pulse rounded-full border border-[var(--border-light)] bg-gray-100 dark:border-gray-700 dark:bg-gray-800" />
+          ) : session?.user ? (
+            <button
+              type="button"
+              onClick={() => authClient.signOut()}
+              className="rounded-full bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold tracking-wide text-white uppercase hover:bg-[var(--primary)]/90"
+            >
+              {TEXT.auth.signOut}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsOpen(true)}
+              className="rounded-full border border-[var(--border-light)] bg-white px-4 py-1.5 text-sm font-semibold text-[var(--text-main)] hover:border-[var(--primary)]/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            >
+              {TEXT.auth.signIn}
+            </button>
+          )}
+        </div>
+      </header>
+      <LoginOverlay isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </>
+  )
+}

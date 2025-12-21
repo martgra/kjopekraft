@@ -16,8 +16,8 @@ export default function DashboardLayout({ children, rightPanel }: DashboardLayou
         <Sidebar />
       </div>
 
-      {/* Main Content - Scrollable with mobile bottom padding for nav */}
-      <div className="flex-1 overflow-y-auto p-6 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:p-10 lg:pb-10">
+      {/* Main Content - Scrollable with mobile padding for header and nav */}
+      <div className="flex-1 overflow-y-auto p-6 pt-[calc(3.5rem+env(safe-area-inset-top)+1.5rem)] pb-[calc(5rem+env(safe-area-inset-bottom))] lg:p-10 lg:pt-10 lg:pb-10">
         {children}
       </div>
 
