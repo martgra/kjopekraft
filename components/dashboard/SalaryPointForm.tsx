@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import type { PayChangeReason } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 import { Select, SelectOption } from '@/components/ui/atoms'
@@ -27,7 +26,7 @@ export default function SalaryPointForm({
   newYear,
   newPay,
   newReason,
-  newNote = '',
+  newNote: _newNote = '',
   currentYear,
   minYear,
   validationError,
@@ -35,20 +34,13 @@ export default function SalaryPointForm({
   onYearChange,
   onPayChange,
   onReasonChange,
-  onNoteChange,
+  onNoteChange: _onNoteChange,
   onAdd,
   isNetMode,
 }: SalaryPointFormProps) {
-  const [showNote, setShowNote] = useState(() => Boolean(newNote))
   const testId = createTestId('salary-form')
 
   const disabled = isSubmitDisabled
-
-  useEffect(() => {
-    if (newNote && !showNote) {
-      setShowNote(true)
-    }
-  }, [newNote, showNote])
 
   return (
     <div className="space-y-6 p-6" data-testid={testId('container')}>
@@ -149,45 +141,6 @@ export default function SalaryPointForm({
             </select>
           </div>
           <p className="text-xs text-[var(--text-muted)]">{TEXT.forms.reasonHelp}</p>
-        </div>
-
-        {/* Optional note */}
-        <div className="pt-2">
-          <button
-            type="button"
-            onClick={() => setShowNote(prev => !prev)}
-            className="group flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-left shadow-sm transition-all hover:border-[var(--primary)]/50 dark:border-gray-700 dark:bg-gray-800"
-          >
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[var(--primary)]">notes</span>
-              <span className="text-base font-medium text-[var(--text-main)]">
-                {showNote ? TEXT.forms.hideNote : TEXT.forms.addNote}
-              </span>
-            </div>
-            <span className="material-symbols-outlined text-gray-400 transition-colors group-hover:text-[var(--primary)] dark:text-gray-500">
-              {showNote ? 'expand_less' : 'expand_more'}
-            </span>
-          </button>
-          {showNote && (
-            <div className="space-y-1">
-              <label
-                htmlFor="salary-note"
-                className="text-xs font-semibold tracking-wide text-[var(--text-muted)] uppercase"
-              >
-                {TEXT.forms.noteLabel}
-              </label>
-              <textarea
-                id="salary-note"
-                data-testid={testId('note-input')}
-                value={newNote}
-                onChange={e => onNoteChange?.(e.target.value)}
-                placeholder={TEXT.forms.notePlaceholder}
-                rows={3}
-                className="w-full rounded-lg border border-gray-300 bg-[var(--background-light)] px-3 py-2.5 text-sm text-[var(--text-main)] shadow-sm focus:border-[var(--primary)] focus:ring-[var(--primary)] dark:border-gray-600"
-              />
-              <p className="text-xs text-[var(--text-muted)]">{TEXT.forms.noteHelp}</p>
-            </div>
-          )}
         </div>
 
         {/* Validation Error */}
