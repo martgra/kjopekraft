@@ -3,6 +3,7 @@
 import { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import MobileBottomNav from './MobileBottomNav'
+import MobileHeader from './MobileHeader'
 import { DrawerProvider, useDrawer } from '@/contexts/drawer/DrawerContext'
 import AuthButton from '@/components/auth/AuthButton'
 
@@ -15,6 +16,7 @@ function ClientLayoutWrapperInner({ children }: ClientLayoutWrapperProps) {
 
   return (
     <>
+      <MobileHeader />
       {children}
       <AuthButton />
       <MobileBottomNav onOpenDrawer={toggleDrawer} pointsCount={pointsCount} />

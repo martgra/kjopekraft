@@ -28,7 +28,7 @@ export default function AuthButton() {
 
   if (isPending) {
     return (
-      <div className="fixed top-4 right-4 z-40">
+      <div className="fixed top-4 right-4 z-40 hidden lg:block">
         <div className="h-9 w-28 animate-pulse rounded-full border border-[var(--border-light)] bg-white/80 shadow-sm dark:border-gray-700/70 dark:bg-gray-900/70" />
       </div>
     )
@@ -36,7 +36,7 @@ export default function AuthButton() {
 
   if (session?.user) {
     return (
-      <div className="fixed top-4 right-4 z-40 flex items-center gap-2 rounded-full border border-[var(--border-light)] bg-white/90 px-3 py-1.5 text-sm text-[var(--text-main)] shadow-sm backdrop-blur dark:border-gray-700/70 dark:bg-gray-900/80 dark:text-gray-100">
+      <div className="fixed top-4 right-4 z-40 hidden items-center gap-2 rounded-full border border-[var(--border-light)] bg-white/90 px-3 py-1.5 text-sm text-[var(--text-main)] shadow-sm backdrop-blur lg:flex dark:border-gray-700/70 dark:bg-gray-900/80 dark:text-gray-100">
         {displayName ? <span className="max-w-[160px] truncate">{displayName}</span> : null}
         <button
           type="button"
@@ -51,7 +51,7 @@ export default function AuthButton() {
 
   return (
     <>
-      <div className="fixed top-4 right-4 z-40">
+      <div className="fixed top-4 right-4 z-40 hidden lg:block">
         <button
           type="button"
           onClick={() => setIsOpen(true)}
