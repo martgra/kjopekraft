@@ -28,9 +28,7 @@ describe('OnboardingEmptyState', () => {
 
     render(<OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onOpenDrawer} />)
 
-    await user.click(
-      screen.getByRole('button', { name: new RegExp(TEXT.onboarding.loadDemoButton) }),
-    )
+    await user.click(screen.getByRole('button', { name: new RegExp(TEXT.onboarding.loadDemoLink) }))
     expect(onLoadDemo).toHaveBeenCalledTimes(1)
     expect(onOpenDrawer).not.toHaveBeenCalled()
   })
@@ -44,9 +42,7 @@ describe('OnboardingEmptyState', () => {
 
     render(<OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onOpenDrawer} />)
 
-    await user.click(
-      screen.getByRole('button', { name: new RegExp(TEXT.onboarding.addOwnDataButton) }),
-    )
+    await user.click(screen.getByRole('button', { name: new RegExp(TEXT.onboarding.primaryCta) }))
     expect(onOpenDrawer).toHaveBeenCalledTimes(1)
     expect(window.scrollTo).not.toHaveBeenCalled()
   })
@@ -60,9 +56,7 @@ describe('OnboardingEmptyState', () => {
 
     render(<OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onOpenDrawer} />)
 
-    await user.click(
-      screen.getByRole('button', { name: new RegExp(TEXT.onboarding.addOwnDataButton) }),
-    )
+    await user.click(screen.getByRole('button', { name: new RegExp(TEXT.onboarding.primaryCta) }))
     expect(onOpenDrawer).not.toHaveBeenCalled()
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
   })
