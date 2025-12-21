@@ -60,13 +60,25 @@ export default function OnboardingEmptyState({
       </p>
 
       {/* Action buttons */}
-      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
-        <Button onClick={onLoadDemo} variant="primary" icon="play_arrow" className="min-w-[180px]">
-          {TEXT.onboarding.loadDemoButton}
+      <div className="mb-6 flex flex-col items-center gap-4">
+        <Button onClick={handleAddOwnData} variant="primary" icon="add" className="min-w-[200px]">
+          {TEXT.onboarding.primaryCta}
         </Button>
-        <Button onClick={handleAddOwnData} variant="secondary" icon="add" className="min-w-[180px]">
-          {TEXT.onboarding.addOwnDataButton}
-        </Button>
+        <div className="flex flex-col items-center gap-2 text-sm sm:flex-row sm:gap-4">
+          <button
+            onClick={onLoadDemo}
+            className="text-[var(--text-muted)] underline-offset-2 hover:text-[var(--primary)] hover:underline"
+          >
+            {TEXT.onboarding.loadDemoLink}
+          </button>
+          <span className="hidden text-[var(--text-muted)] sm:inline">eller</span>
+          <button
+            onClick={handleAddOwnData}
+            className="text-[var(--text-muted)] underline-offset-2 hover:text-[var(--primary)] hover:underline"
+          >
+            {TEXT.onboarding.addOwnDataLink}
+          </button>
+        </div>
       </div>
 
       {/* Feature preview cards */}

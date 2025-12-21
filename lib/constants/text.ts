@@ -546,8 +546,11 @@ export const TEXT = {
     welcomeTitle: 'Velkommen til Kjøpekraft',
     welcomeMessage:
       'Få oversikt over hva lønnen din er verdt etter prisstigningen. Sammenlign lønnsutviklingen din med prisstigningen for å se den reelle kjøpekraften.',
+    primaryCta: 'Kom i gang',
     loadDemoButton: 'Prøv med eksempeldata',
     addOwnDataButton: 'Legg til min egen lønn',
+    loadDemoLink: 'Prøv med eksempeldata',
+    addOwnDataLink: 'Legg til min egen lønn',
     whatIsKjopekraft: 'Hva er kjøpekraft?',
     kjopekraftExplanation:
       'Kjøpekraft viser hva lønnen din er verdt når prisene øker. Selv om lønnen din øker med 10 %, kan prisstigningen spise opp mye av veksten. Vi viser forskjellen mellom lønn på papiret og hva du faktisk kan kjøpe.',

@@ -18,7 +18,10 @@ test.describe('Onboarding Experience', () => {
     // Should show welcome message
     await expect(page.getByText('Velkommen til Kjøpekraft')).toBeVisible()
 
-    // Should show both CTA buttons
+    // Should show primary CTA button
+    await expect(page.getByRole('button', { name: /kom i gang/i })).toBeVisible()
+
+    // Should show secondary links
     await expect(page.getByRole('button', { name: /prøv med eksempeldata/i })).toBeVisible()
     await expect(page.getByRole('button', { name: /legg til min egen lønn/i })).toBeVisible()
 
