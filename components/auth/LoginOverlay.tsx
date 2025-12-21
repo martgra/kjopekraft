@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { authClient } from '@/lib/auth-client'
-import { TEXT } from '@/lib/constants/text'
 
 interface LoginOverlayProps {
   isOpen: boolean
