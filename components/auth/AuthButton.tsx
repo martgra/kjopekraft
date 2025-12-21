@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { authClient } from '@/lib/auth-client'
 import { TEXT } from '@/lib/constants/text'
+import LoginOverlay from './LoginOverlay'
 
 export default function AuthButton() {
   const { data: session, isPending } = authClient.useSession()
@@ -49,32 +50,17 @@ export default function AuthButton() {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-40 flex flex-col items-end gap-2">
-      <button
-        type="button"
-        onClick={() => setIsOpen(open => !open)}
-        className="rounded-full border border-[var(--border-light)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--text-main)] shadow-sm backdrop-blur hover:border-[var(--primary)]/40 dark:border-gray-700/70 dark:bg-gray-900/80 dark:text-gray-100"
-      >
-        {TEXT.auth.signIn}
-      </button>
-      {isOpen ? (
-        <div className="flex w-44 flex-col gap-2 rounded-2xl border border-[var(--border-light)] bg-white/95 p-3 text-sm shadow-lg backdrop-blur dark:border-gray-700/70 dark:bg-gray-900/90">
-          <button
-            type="button"
-            onClick={() => authClient.signIn.social({ provider: 'google' })}
-            className="rounded-lg bg-[var(--primary)] px-3 py-2 text-left text-xs font-semibold text-white hover:bg-[var(--primary)]/90"
-          >
-            {TEXT.auth.signInWithGoogle}
-          </button>
-          <button
-            type="button"
-            onClick={() => authClient.signIn.social({ provider: 'github' })}
-            className="rounded-lg border border-[var(--border-light)] px-3 py-2 text-left text-xs font-semibold text-[var(--text-main)] hover:border-[var(--primary)]/40 dark:border-gray-700/70 dark:text-gray-100"
-          >
-            {TEXT.auth.signInWithGithub}
-          </button>
-        </div>
-      ) : null}
-    </div>
+    <>
+      <div className="fixed top-4 right-4 z-40">
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="rounded-full border border-[var(--border-light)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--text-main)] shadow-sm backdrop-blur hover:border-[var(--primary)]/40 dark:border-gray-700/70 dark:bg-gray-900/80 dark:text-gray-100"
+        >
+          {TEXT.auth.signIn}
+        </button>
+      </div>
+      <LoginOverlay isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </>
   )
 }
