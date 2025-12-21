@@ -10,8 +10,6 @@ interface LoginOverlayProps {
 
 export default function LoginOverlay({ isOpen, onClose }: LoginOverlayProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
 
   // Handle escape key to close modal
   useEffect(() => {
@@ -37,12 +35,6 @@ export default function LoginOverlay({ isOpen, onClose }: LoginOverlayProps) {
     }
   }
 
-  const handleEmailSignIn = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Email/password auth not implemented yet in Better Auth config
-    alert('E-post/passord pålogging kommer snart! Bruk Google eller GitHub for nå.')
-  }
-
   return (
     <>
       {/* Backdrop */}
@@ -66,6 +58,23 @@ export default function LoginOverlay({ isOpen, onClose }: LoginOverlayProps) {
             <div className="absolute -top-[10%] -left-[10%] h-[50%] w-[120%] rounded-full bg-[var(--primary)] opacity-5 blur-[100px] dark:opacity-10" />
             <div className="absolute -right-[10%] -bottom-[10%] h-[40%] w-[80%] rounded-full bg-blue-500 opacity-5 blur-[80px]" />
           </div>
+
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600 dark:hover:text-slate-200"
+            aria-label="Lukk"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
 
           {/* Header */}
           <header className="flex flex-col items-center px-6 pt-12 pb-6">
@@ -103,118 +112,11 @@ export default function LoginOverlay({ isOpen, onClose }: LoginOverlayProps) {
             </div>
           </header>
 
-          {/* Form */}
-          <form className="space-y-5 px-6 pb-6" onSubmit={handleEmailSignIn}>
-            {/* Email field */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="email"
-                className="ml-1 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
-              >
-                E-post
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                  <svg
-                    className="h-5 w-5 text-slate-400 dark:text-slate-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="navn@eksempel.no"
-                  disabled={isLoading}
-                  className="block w-full rounded-xl border border-slate-200 bg-white py-3.5 pr-4 pl-11 text-slate-900 placeholder-slate-400 shadow-sm transition-shadow focus:border-transparent focus:ring-2 focus:ring-[var(--primary)] focus:outline-none disabled:opacity-50 dark:border-slate-700 dark:bg-[var(--surface-dark)] dark:text-white"
-                />
-              </div>
-            </div>
-
-            {/* Password field */}
-            <div className="space-y-1.5">
-              <div className="ml-1 flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
-                >
-                  Passord
-                </label>
-                <a
-                  href="#"
-                  className="text-xs font-medium text-[var(--primary)] transition-colors hover:text-green-600 dark:hover:text-green-400"
-                  onClick={e => e.preventDefault()}
-                >
-                  Glemt?
-                </a>
-              </div>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                  <svg
-                    className="h-5 w-5 text-slate-400 dark:text-slate-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  disabled={isLoading}
-                  className="block w-full rounded-xl border border-slate-200 bg-white py-3.5 pr-4 pl-11 text-slate-900 placeholder-slate-400 shadow-sm transition-shadow focus:border-transparent focus:ring-2 focus:ring-[var(--primary)] focus:outline-none disabled:opacity-50 dark:border-slate-700 dark:bg-[var(--surface-dark)] dark:text-white"
-                />
-              </div>
-            </div>
-
-            {/* Submit button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] py-4 font-semibold text-white shadow-lg shadow-green-500/20 transition-all hover:bg-green-600 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
-            >
-              Logg inn
-              <svg
-                className="h-5 w-5 transition-transform group-hover:translate-x-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-
-            {/* Divider */}
-            <div className="relative py-4">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200 dark:border-slate-700" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-slate-500 dark:bg-[var(--surface-dark)] dark:text-slate-400">
-                  eller logg inn med
-                </span>
-              </div>
-            </div>
+          {/* Social login section */}
+          <div className="space-y-5 px-6 pb-8">
+            <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+              Logg inn med Google eller GitHub
+            </p>
 
             {/* Social login buttons */}
             <div className="grid grid-cols-2 gap-3">
@@ -272,24 +174,7 @@ export default function LoginOverlay({ isOpen, onClose }: LoginOverlayProps) {
                 </span>
               </button>
             </div>
-          </form>
-
-          {/* Footer */}
-          <footer className="mt-8 mb-4 px-6 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Har du ikke konto?{' '}
-              <a
-                href="#"
-                className="font-semibold text-[var(--primary)] hover:underline"
-                onClick={e => {
-                  e.preventDefault()
-                  alert('Registrering kommer snart!')
-                }}
-              >
-                Registrer deg
-              </a>
-            </p>
-          </footer>
+          </div>
         </div>
       </div>
     </>
