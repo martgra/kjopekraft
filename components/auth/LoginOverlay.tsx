@@ -47,7 +47,7 @@ export default function LoginOverlay({ isOpen, onClose }: LoginOverlayProps) {
       {/* Modal Container */}
       <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center p-4">
         <div
-          className="pointer-events-auto w-full max-w-sm animate-[fadeIn_0.2s_ease-out] overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[var(--surface-dark)]"
+          className="pointer-events-auto relative w-full max-w-sm animate-[fadeIn_0.2s_ease-out] overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[var(--surface-dark)]"
           role="dialog"
           aria-modal="true"
           aria-label="Logg inn"
