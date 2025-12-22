@@ -61,8 +61,8 @@ jobs:
               - 'docs/**'
               - 'LICENSE'
 
-  secret-scan:
-    name: Secret Detection
+  code-quality:
+    name: Code Quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -84,87 +84,14 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Run secretlint
+      - name: Check for secrets
         run: bun run secrets
-
-  format:
-    name: Format Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
 
       - name: Check formatting
         run: bun run format:check
 
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.code == 'true'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
       - name: Run ESLint
         run: bun run lint
-
-  typecheck:
-    name: Type Check
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.code == 'true'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
 
       - name: Run TypeScript type check
         run: bun run typecheck
@@ -302,7 +229,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [changes, secret-scan, format, lint, typecheck, unit-tests, build, e2e-tests]
+    needs: [changes, code-quality, unit-tests, build, e2e-tests]
     if: always()
     steps:
       - name: Check all jobs
@@ -322,24 +249,15 @@ jobs:
 
           failed=0
 
-          # Always-run jobs must succeed
-          if [[ "${{ needs.secret-scan.result }}" != "success" ]]; then
-            echo "✗ Secret scan failed or was cancelled"
+          # Code quality must always succeed
+          if [[ "${{ needs.code-quality.result }}" != "success" ]]; then
+            echo "✗ Code quality failed or was cancelled"
             failed=1
           else
-            echo "✓ Secret scan: success"
-          fi
-
-          if [[ "${{ needs.format.result }}" != "success" ]]; then
-            echo "✗ Format check failed or was cancelled"
-            failed=1
-          else
-            echo "✓ Format check: success"
+            echo "✓ Code quality: success"
           fi
 
           # Conditional jobs can be skipped or successful
-          check_job "${{ needs.lint.result }}" "Lint" || failed=1
-          check_job "${{ needs.typecheck.result }}" "Type Check" || failed=1
           check_job "${{ needs.unit-tests.result }}" "Unit Tests" || failed=1
           check_job "${{ needs.build.result }}" "Build" || failed=1
           check_job "${{ needs.e2e-tests.result }}" "E2E Tests" || failed=1
