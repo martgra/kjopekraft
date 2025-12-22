@@ -357,59 +357,192 @@ body {
 }
 
 /* Enhanced styling for email and playbook content */
-.email-content p,
-.playbook-content p {
-  margin-bottom: 1rem;
+
+/* Email typography - professional email appearance */
+.email-content {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #1f2937;
 }
 
-.email-content p:first-child {
-  margin-bottom: 1.5rem;
+.email-content > * {
+  margin: 0;
+  padding: 0;
+}
+
+/* Paragraphs */
+.email-content p,
+.playbook-content p {
+  margin: 0 0 1.25rem 0;
+  line-height: 1.7;
 }
 
 .email-content p:last-child {
   margin-bottom: 0;
-  margin-top: 2rem;
 }
 
+/* Subject line styling - make it prominent */
+.email-content > p:first-child {
+  margin-bottom: 1.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.email-content > p:first-child strong {
+  color: #6b7280;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+/* Lists */
 .email-content ul,
 .playbook-content ul {
   list-style-type: disc;
-  padding-left: 1.25rem;
-  margin-top: 0.5rem;
-  margin-bottom: 1.5rem;
-  space-y: 0.5rem;
+  padding-left: 1.5rem;
+  margin: 0 0 1.25rem 0;
+}
+
+.email-content ol,
+.playbook-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0 0 1.25rem 0;
 }
 
 .email-content ul li,
-.playbook-content ul li {
-  margin-top: 0.5rem;
+.email-content ol li,
+.playbook-content ul li,
+.playbook-content ol li {
+  margin: 0.375rem 0;
+  padding-left: 0.25rem;
+  line-height: 1.6;
 }
 
+.email-content ul ul,
+.email-content ol ol,
+.email-content ul ol,
+.email-content ol ul {
+  margin: 0.5rem 0;
+}
+
+/* Bold text */
 .email-content strong,
 .playbook-content strong {
   font-weight: 600;
-  color: inherit;
+  color: #111827;
+}
+
+/* Headings */
+.email-content h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 2rem 0 1.25rem 0;
+  color: #111827;
+  line-height: 1.3;
 }
 
 .email-content h2,
 .playbook-content h2 {
   font-size: 1.25rem;
   font-weight: 700;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+  margin: 1.75rem 0 1rem 0;
   color: #111827;
+  line-height: 1.4;
 }
 
 .email-content h3,
 .playbook-content h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+  margin: 1.5rem 0 0.75rem 0;
   color: #1f2937;
+  line-height: 1.4;
+}
+
+.email-content h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem 0;
+  color: #374151;
+}
+
+/* Emphasis */
+.email-content em {
+  font-style: italic;
+}
+
+/* Links */
+.email-content a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.email-content a:hover {
+  color: #1d4ed8;
+}
+
+/* Code */
+.email-content code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+.email-content pre {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+}
+
+.email-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Blockquotes */
+.email-content blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 1rem;
+  margin: 1.25rem 0;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Horizontal rules */
+.email-content hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.5rem 0;
 }
 
 /* Dark mode email and playbook content */
+.dark .email-content {
+  color: #e5e7eb;
+}
+
+.dark .email-content > p:first-child {
+  border-bottom-color: #374151;
+}
+
+.dark .email-content > p:first-child strong {
+  color: #9ca3af;
+}
+
+.dark .email-content strong,
+.dark .playbook-content strong {
+  color: #f9fafb;
+}
+
+.dark .email-content h1,
 .dark .email-content h2,
 .dark .playbook-content h2 {
   color: #f1f5f9;
@@ -420,10 +553,32 @@ body {
   color: #e2e8f0;
 }
 
-/* Style for subject line if it starts with "Emne:" */
-.email-content p:first-child strong:first-child {
-  font-weight: 600;
-  color: #6b7280;
-  user-select: none;
-  margin-right: 0.5rem;
+.dark .email-content h4 {
+  color: #d1d5db;
+}
+
+.dark .email-content a {
+  color: #60a5fa;
+}
+
+.dark .email-content a:hover {
+  color: #93c5fd;
+}
+
+.dark .email-content code {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.dark .email-content pre {
+  background-color: #1f2937;
+}
+
+.dark .email-content blockquote {
+  border-left-color: #4b5563;
+  color: #9ca3af;
+}
+
+.dark .email-content hr {
+  border-top-color: #374151;
 }
