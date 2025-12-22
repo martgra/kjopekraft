@@ -5,17 +5,37 @@ WORKDIR /app
 FROM base AS deps
 WORKDIR /app
 
+# Copy package files for dependency installation
 COPY package.json bun.lock ./
-RUN bun install
+
+# Install ALL dependencies (needed for build)
+# Use cache mount to speed up subsequent builds
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
+
+# --- Production Dependencies Stage ---
+FROM base AS prod-deps
+WORKDIR /app
+
+# Copy package files
+COPY package.json bun.lock ./
+
+# Install only production dependencies
+# This verifies production deps and can be used for validation
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile --production
 
 # --- Builder Stage ---
 FROM base AS builder
 WORKDIR /app
 
+# Copy all dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 
+# Copy application source
 COPY . .
 
+# Build the application
 RUN bun run build
 
 # --- Runner (Production) Stage ---
@@ -24,12 +44,16 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Create non-root user
 RUN addgroup -S nodejs -g 1001 && adduser -S nextjs -u 1001
 
+# Copy public assets
 COPY --from=builder /app/public ./public
 
+# Create .next directory with correct permissions
 RUN mkdir .next && chown nextjs:nodejs .next
 
+# Copy Next.js standalone output (includes only production dependencies)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
