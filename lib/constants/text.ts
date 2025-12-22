@@ -443,8 +443,6 @@ export const TEXT = {
     copyRichSuccess: 'Rik tekst kopiert!',
     copyRichError: 'Kunne ikke kopiere rik tekst',
     downloadDocx: 'Last ned som DOCX',
-    moreOptions: 'Flere valg',
-    hideOptions: 'Skjul valg',
     collapseEmail: 'Vis/skjul e-post',
     collapsePlaybook: 'Vis/skjul spillbok',
     emailSectionTitle: 'Forslag til e-post',
@@ -529,17 +527,6 @@ export const TEXT = {
       overtime: 'Overtidsavtale',
       travel: 'Reisegodtgjørelse',
     },
-  },
-
-  negotiationTips: {
-    title: 'Forhandlingstips',
-    items: [
-      'Forbered et realistisk spenn, ikke bare ett tall.',
-      'Hold tonen samarbeidsorientert og still spørsmål.',
-      'Knytt ønsket til hva arbeidsgiver får igjen for det.',
-      'Bruk statistikk og konkrete resultater som støtte.',
-      'Vurder møte/telefon i tillegg til e-post.',
-    ],
   },
 
   onboarding: {
