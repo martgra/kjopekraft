@@ -11,8 +11,9 @@ export const userProfiles = pgTable('user_profiles', {
 export const creditsDaily = pgTable('credits_daily', {
   userId: text('user_id').notNull(),
   dateKey: text('date_key').notNull(),
+  feature: text('feature').notNull().default('global'),
   used: integer('used').notNull().default(0),
-  limit: integer('limit').notNull().default(10),
+  limit: integer('limit').notNull().default(100),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 

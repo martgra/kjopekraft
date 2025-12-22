@@ -7,6 +7,7 @@ import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeCon
 import { ThemeProvider } from '@/contexts/theme/ThemeContext'
 import { PurchasingPowerBaseProvider } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
 import { LoginOverlayProvider } from '@/contexts/loginOverlay/LoginOverlayContext'
+import { ToastProvider } from '@/contexts/toast/ToastContext'
 
 interface AppProvidersProps {
   children: ReactNode
@@ -34,7 +35,9 @@ export function AppProviders({ children }: AppProvidersProps) {
         <DisplayModeProvider>
           <ReferenceModeProvider>
             <PurchasingPowerBaseProvider>
-              <LoginOverlayProvider>{children}</LoginOverlayProvider>
+              <LoginOverlayProvider>
+                <ToastProvider>{children}</ToastProvider>
+              </LoginOverlayProvider>
             </PurchasingPowerBaseProvider>
           </ReferenceModeProvider>
         </DisplayModeProvider>

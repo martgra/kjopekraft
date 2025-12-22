@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import useSWR from 'swr'
+import { useMemo, useRef, useState } from 'react'
+import useSWR, { mutate } from 'swr'
 import { Input } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import { createTestId } from '@/lib/testing/testIds'
@@ -15,6 +15,7 @@ import {
   type OccupationKey,
   presetOccupationToSelection,
 } from '@/features/referenceSalary/occupations'
+import { useToast } from '@/contexts/toast/ToastContext'
 
 export type OccupationSelection = {
   code: string
@@ -39,13 +40,27 @@ export function OccupationSearchSelect({
 }: OccupationSearchSelectProps) {
   const [query, setQuery] = useState('')
   const fuse = useMemo(() => createOccupationFuse(SSB_OCCUPATION_DOCS), [])
+  const { showToast } = useToast()
+  const hasShownCreditsToast = useRef(false)
 
   const { data, isLoading } = useSWR(
     query ? `/api/ssb/occupations?q=${encodeURIComponent(query)}` : null,
     async url => {
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to search occupations')
-      return res.json() as Promise<{ results: Array<{ code: string; label: string }> }>
+      const payload = (await res.json()) as {
+        results: Array<{ code: string; label: string }>
+        creditsExhausted?: boolean
+        spentCredits?: boolean
+      }
+      if (payload.creditsExhausted && !hasShownCreditsToast.current) {
+        hasShownCreditsToast.current = true
+        showToast(TEXT.credits.exhausted, { variant: 'error' })
+      }
+      if (payload.spentCredits) {
+        mutate('/api/credits')
+      }
+      return payload
     },
     {
       revalidateOnFocus: false,

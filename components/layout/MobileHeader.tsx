@@ -1,12 +1,26 @@
 'use client'
 
+import useSWR from 'swr'
 import { authClient } from '@/lib/auth-client'
 import { TEXT } from '@/lib/constants/text'
 import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
+import { Badge } from '@/components/ui/atoms'
 
 export default function MobileHeader() {
   const { data: session, isPending } = authClient.useSession()
   const { open: openLoginOverlay } = useLoginOverlay()
+  const shouldFetchCredits = Boolean(session?.user)
+  const { data: creditsData } = useSWR<{ credits: { remaining: number; limit: number } }>(
+    shouldFetchCredits ? '/api/credits' : null,
+    async url => {
+      const res = await fetch(url)
+      return (await res.json()) as { credits: { remaining: number; limit: number } }
+    },
+    { revalidateOnFocus: false, refreshInterval: 15000 },
+  )
+  const creditsLabel = creditsData
+    ? `${creditsData.credits.remaining}/${creditsData.credits.limit}`
+    : '—'
 
   return (
     <>
@@ -28,13 +42,19 @@ export default function MobileHeader() {
           {isPending ? (
             <div className="h-8 w-20 animate-pulse rounded-full border border-[var(--border-light)] bg-gray-100 dark:border-gray-700 dark:bg-gray-800" />
           ) : session?.user ? (
-            <button
-              type="button"
-              onClick={() => authClient.signOut()}
-              className="rounded-full bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold tracking-wide text-white uppercase hover:bg-[var(--primary)]/90"
-            >
-              {TEXT.auth.signOut}
-            </button>
+            <div className="flex items-center gap-2">
+              <Badge variant="info" className="gap-1 px-2 py-0.5 text-[10px]">
+                <span>{TEXT.credits.headerLabel}</span>
+                <span className="font-semibold text-[var(--text-main)]">{creditsLabel}</span>
+              </Badge>
+              <button
+                type="button"
+                onClick={() => authClient.signOut()}
+                className="rounded-full bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold tracking-wide text-white uppercase hover:bg-[var(--primary)]/90"
+              >
+                {TEXT.auth.signOut}
+              </button>
+            </div>
           ) : (
             <button
               type="button"

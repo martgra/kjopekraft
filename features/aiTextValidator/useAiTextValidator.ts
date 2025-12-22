@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
+import { mutate } from 'swr'
 import { TEXT } from '@/lib/constants/text'
+import { useToast } from '@/contexts/toast/ToastContext'
 import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 
 type TriggerMode = 'blur' | 'submit' | 'manual'
@@ -63,6 +65,7 @@ export function useAiTextValidator({
   onCommit,
 }: UseAiTextValidatorOptions = {}): UseAiTextValidatorResult {
   const { open: openLoginOverlay } = useLoginOverlay()
+  const { showToast } = useToast()
   const [suggestion, setSuggestion] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null)
@@ -128,7 +131,13 @@ export function useAiTextValidator({
         if (!response.ok) {
           if (response.status === 401) {
             openLoginOverlay({ variant: 'ai' })
-            throw new Error(TEXT.auth.loginRequired)
+            setError(TEXT.auth.loginRequired)
+            return null
+          }
+          if (response.status === 429) {
+            showToast(TEXT.credits.exhausted, { variant: 'error' })
+            setError(TEXT.credits.exhausted)
+            return null
           }
           throw new Error(data.error || data.details || TEXT.aiValidator.errorTitle)
         }
@@ -141,6 +150,7 @@ export function useAiTextValidator({
           setPendingQuestion(null)
         }
         setSuggestion(result.improvedText ?? '')
+        mutate('/api/credits')
         return result
       } catch (err) {
         console.error('AI text validation error:', err)
@@ -151,7 +161,7 @@ export function useAiTextValidator({
         setIsLoading(false)
       }
     },
-    [enabled, endpoint, language, maxChars, model, openLoginOverlay, systemPrompt],
+    [enabled, endpoint, language, maxChars, model, openLoginOverlay, showToast, systemPrompt],
   )
 
   const startValidation = useCallback(

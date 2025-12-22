@@ -84,6 +84,13 @@ export const TEXT = {
     aiOverlayDescription:
       'AI-verktøyene er tilgjengelige etter innlogging for å sikre stabil drift.',
   },
+  credits: {
+    headerLabel: 'AI-kreditter',
+    emailLabel: 'E-post',
+    argumentLabel: 'Argument',
+    searchLabel: 'Søk',
+    exhausted: 'Du har brukt opp dagens AI-kreditter. Prøv igjen i morgen.',
+  },
 
   dashboard: {
     title: 'Har kjøpekraften din økt? 💸💸',

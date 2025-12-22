@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { mutate } from 'swr'
 import { useNegotiationData } from '../hooks/useNegotiationData'
 import { usePurchasingPower } from '@/features/salary/hooks/usePurchasingPower'
 import { DetailsForm, ContextForm, BenefitsForm, type UserInfo } from './forms'
@@ -24,6 +25,7 @@ import { formatCurrency } from '@/lib/formatters/salaryFormatting'
 import { useSalaryDataContext } from '@/features/salary/providers/SalaryDataProvider'
 import type { NegotiationEmailContext } from '@/lib/models/types'
 import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
+import { useToast } from '@/contexts/toast/ToastContext'
 
 interface NegotiationPageProps {
   inflationData: InflationDataPoint[]
@@ -57,6 +59,7 @@ export default function NegotiationPage({
   const prefilledDesiredSalary = useRef<number | null>(null)
   const argumentBuilderRef = useRef<ArgumentBuilderHandle | null>(null)
   const { open: openLoginOverlay } = useLoginOverlay()
+  const { showToast } = useToast()
 
   // Get salary statistics for pre-filling current salary
   const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear)
@@ -219,11 +222,20 @@ export default function NegotiationPage({
       if (!response.ok) {
         if (response.status === 401) {
           openLoginOverlay({ variant: 'ai' })
-          throw new Error(TEXT.auth.loginRequired)
+          setEmailError(TEXT.auth.loginRequired)
+          return
         }
-        throw new Error(data.error || TEXT.negotiation.emailErrorTitle)
+        if (response.status === 429) {
+          showToast(TEXT.credits.exhausted, { variant: 'error' })
+          setEmailError(TEXT.credits.exhausted)
+          return
+        }
+        const message = data.error || TEXT.negotiation.emailErrorTitle
+        setEmailError(message)
+        return
       }
       setEmail(data.result, data.prompt)
+      mutate('/api/credits')
     } catch (err) {
       console.error('Email generation error:', err)
       const message = err instanceof Error ? err.message : TEXT.negotiation.emailErrorTitle

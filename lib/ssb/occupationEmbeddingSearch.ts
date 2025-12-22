@@ -137,6 +137,12 @@ export type HybridResult = {
   finalScore: number // higher is better
 }
 
+export type HybridSearchResponse = {
+  results: HybridResult[]
+  usedEmbedding: boolean
+  usedCachedEmbedding: boolean
+}
+
 export type HybridSearchOptions = {
   allowEmbedding?: boolean
   allowCachedEmbedding?: boolean
@@ -146,8 +152,10 @@ export async function hybridOccupationSearch(
   query: string,
   limit = 8,
   options: HybridSearchOptions = {},
-): Promise<HybridResult[]> {
-  if (!query.trim()) return []
+): Promise<HybridSearchResponse> {
+  if (!query.trim()) {
+    return { results: [], usedEmbedding: false, usedCachedEmbedding: false }
+  }
 
   // 1) Get Fuse results (precision on code/label)
   const fuseResults = searchSsbOccupations(fuse, query, Math.max(limit, 20)).map(r => ({
@@ -162,9 +170,12 @@ export async function hybridOccupationSearch(
 
   // 2) Get embedding results (semantic recall) with graceful fallback
   let embeddingResults: EmbeddingResult[] = []
+  let usedEmbedding = false
+  let usedCachedEmbedding = false
   if (allowEmbedding && hasOpenAiKey) {
     try {
       embeddingResults = await searchOccupationsByEmbedding(query, Math.max(limit, 20))
+      usedEmbedding = embeddingResults.length > 0
     } catch (error) {
       console.warn('Embedding search failed, falling back to Fuse only:', error)
     }
@@ -172,6 +183,7 @@ export async function hybridOccupationSearch(
 
   if (!embeddingResults.length && allowCachedEmbedding) {
     embeddingResults = searchOccupationsByCachedEmbedding(query, Math.max(limit, 20))
+    usedCachedEmbedding = embeddingResults.length > 0
   }
 
   if (!hasOpenAiKey && allowEmbedding && process.env.NODE_ENV !== 'production') {
@@ -216,5 +228,5 @@ export async function hybridOccupationSearch(
   }
 
   scored.sort((a, b) => b.finalScore - a.finalScore)
-  return scored.slice(0, limit)
+  return { results: scored.slice(0, limit), usedEmbedding, usedCachedEmbedding }
 }

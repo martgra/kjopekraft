@@ -24,7 +24,7 @@ export function createCreditsRepository(db: DbClient): CreditsRepository {
       const result = await db.query<DailyCredits>(
         `SELECT date_key AS "dateKey", used, "limit"
          FROM credits_daily
-         WHERE user_id = $1 AND date_key = $2
+         WHERE user_id = $1 AND date_key = $2 AND feature = 'global'
          LIMIT 1`,
         [userId, dateKey],
       )
@@ -32,10 +32,10 @@ export function createCreditsRepository(db: DbClient): CreditsRepository {
     },
     async trySpendCredits(userId, dateKey, cost, limit) {
       const result = await db.query<DailyCredits>(
-        `INSERT INTO credits_daily (user_id, date_key, used, "limit")
-         SELECT $1, $2, $3, $4
-         WHERE $3 <= $4
-         ON CONFLICT (user_id, date_key)
+        `INSERT INTO credits_daily (user_id, date_key, feature, used, "limit")
+         SELECT $1, $2, 'global', $3::int, $4::int
+         WHERE $3::int <= $4::int
+         ON CONFLICT (user_id, date_key, feature)
          DO UPDATE SET used = credits_daily.used + EXCLUDED.used
          WHERE credits_daily.used + EXCLUDED.used <= credits_daily."limit"
          RETURNING date_key AS "dateKey", used, "limit"`,

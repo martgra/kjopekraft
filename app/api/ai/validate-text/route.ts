@@ -5,13 +5,31 @@ import { z } from 'zod'
 import { buildTextValidationPrompt, SYSTEM_PROMPT_TEXT_VALIDATION } from '@/lib/prompts'
 import { AI_TEXT_COMPLETION_MODELS } from '@/lib/ai/models'
 import { requireLogin } from '@/services/auth/requireLogin'
+import { checkAndSpendCredits } from '@/services/credits/creditsService'
+import { getUserProfile } from '@/services/users/userProfileService'
+import { TEXT } from '@/lib/constants/text'
 
 export const maxDuration = 30 // Allow responses up to 30 seconds
 
 export async function POST(req: Request) {
   try {
-    const { response } = await requireLogin(req)
+    const { session, response } = await requireLogin(req)
     if (response) return response
+    const userId = session?.user?.id
+    if (!userId) {
+      return NextResponse.json({ error: TEXT.auth.loginRequired }, { status: 401 })
+    }
+
+    const profile = await getUserProfile(userId)
+    const timezone = profile?.timezone ?? 'UTC'
+    const creditCheck = await checkAndSpendCredits({
+      userId,
+      timezone,
+      feature: 'argument_improver',
+    })
+    if (!creditCheck.allowed) {
+      return NextResponse.json({ error: TEXT.credits.exhausted }, { status: 429 })
+    }
 
     const { text, language, maxChars, systemPrompt, pointType, history, forceFinalize, model } =
       (await req.json()) as {

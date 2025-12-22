@@ -1,11 +1,11 @@
 import type { CreditFeature, CreditSpendResult } from './creditsTypes'
 
-export const DEFAULT_DAILY_LIMIT = 10
+export const DEFAULT_DAILY_LIMIT = 100
 
 export const DEFAULT_CREDIT_COSTS: Record<CreditFeature, number> = {
+  email_generator: 10,
+  argument_improver: 10,
   embedding_search: 1,
-  argument_improver: 1,
-  email_generator: 1,
 }
 
 export function getLocalDateKey(timezone: string, now: Date = new Date()): string {
