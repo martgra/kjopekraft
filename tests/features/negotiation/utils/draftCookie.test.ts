@@ -33,11 +33,11 @@ describe('draftCookie utils', () => {
   it('handles double-encoded cookies gracefully', () => {
     const serialized = serializeDraft({
       ...defaultNegotiationDraft,
-      playbookPrompt: 'double',
+      emailPrompt: 'double',
     })
     const doubleEncoded = encodeURIComponent(serialized)
     const parsed = parseDraft(doubleEncoded)
-    expect(parsed.playbookPrompt).toBe('double')
+    expect(parsed.emailPrompt).toBe('double')
   })
 
   it('reads draft from document cookie when present', () => {

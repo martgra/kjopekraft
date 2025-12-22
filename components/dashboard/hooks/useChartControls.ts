@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import type { PayPoint } from '@/domain/salary'
 import type { ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'

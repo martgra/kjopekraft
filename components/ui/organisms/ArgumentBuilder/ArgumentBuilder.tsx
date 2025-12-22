@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, useImperativeHandle, useState } from 'react'
+import { forwardRef, useCallback, useImperativeHandle, useState } from 'react'
 import { Button, Card, Icon, Select, SelectOption } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import { NEGOTIATION_MAX_POINTS, NEGOTIATION_POINT_TYPES } from '@/lib/negotiation/pointTypes'
@@ -28,12 +28,12 @@ export const ArgumentBuilder = forwardRef<ArgumentBuilderHandle, ArgumentBuilder
     const [resetCounter, setResetCounter] = useState(0)
     const maxReached = points.length >= NEGOTIATION_MAX_POINTS
 
-    const handleAdd = () => {
+    const handleAdd = useCallback(() => {
       if (!desc.trim() || maxReached) return
       onAddPoint({ description: desc.trim(), type })
       setDesc('')
       setResetCounter(prev => prev + 1)
-    }
+    }, [desc, maxReached, onAddPoint, type])
 
     useImperativeHandle(
       ref,

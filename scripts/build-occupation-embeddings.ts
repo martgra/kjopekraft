@@ -15,7 +15,6 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import dotenv from 'dotenv'
 import { embedMany } from 'ai'
-import { openai } from '@ai-sdk/openai'
 import { SSB_OCCUPATION_MAP } from '../lib/ssb/occupationSearch'
 
 type EmbeddedOccupation = {

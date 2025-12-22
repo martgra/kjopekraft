@@ -7,11 +7,15 @@ import type {
   NegotiationPoint,
   NegotiationUserInfo,
 } from '@/lib/models/types'
+import { requireLogin } from '@/services/auth/requireLogin'
 
 export const maxDuration = 30 // Allow responses up to 30 seconds
 
 export async function POST(req: Request) {
   try {
+    const { response } = await requireLogin(req)
+    if (response) return response
+
     const { points, userInfo, context } = (await req.json()) as {
       points: NegotiationPoint[]
       userInfo: NegotiationUserInfo

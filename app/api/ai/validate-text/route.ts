@@ -4,11 +4,15 @@ import { generateObject } from 'ai'
 import { z } from 'zod'
 import { buildTextValidationPrompt, SYSTEM_PROMPT_TEXT_VALIDATION } from '@/lib/prompts'
 import { AI_TEXT_COMPLETION_MODELS } from '@/lib/ai/models'
+import { requireLogin } from '@/services/auth/requireLogin'
 
 export const maxDuration = 30 // Allow responses up to 30 seconds
 
 export async function POST(req: Request) {
   try {
+    const { response } = await requireLogin(req)
+    if (response) return response
+
     const { text, language, maxChars, systemPrompt, pointType, history, forceFinalize, model } =
       (await req.json()) as {
         text?: string

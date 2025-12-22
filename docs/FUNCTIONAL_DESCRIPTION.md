@@ -222,7 +222,7 @@ Compare your salary against industry benchmarks from SSB (Statistics Norway).
 
 Generate professional negotiation materials based on your salary data and custom arguments.
 
-**Note**: Requires OpenAI API key to use this feature.
+**Note**: Requires OpenAI API key + login for AI generation.
 
 #### User Workflow
 
@@ -239,7 +239,7 @@ Generate professional negotiation materials based on your salary data and custom
    - Suggested argument chips (achievements, responsibilities, skills/certs, market, other)
    - Add up to five focused arguments
 5. Generate materials:
-   - Click "Generate Email" → Professional negotiation email (playbook output is temporarily disabled)
+   - Click "Generate Email" → Professional negotiation email
 6. Use generated content:
    - Copy as rich text
    - Download as DOCX
@@ -257,18 +257,6 @@ Generate professional negotiation materials based on your salary data and custom
 - Call to action (meeting request)
 - Professional closing
 - ~200-300 words, ready to send
-
-**Negotiation Playbook**:
-
-- Executive summary
-- Detailed argument breakdown
-- **[NEW] Market position analysis** (when job title provided): SSB salary trends and positioning
-- Anticipate objections and counters
-- Market context and benchmarks
-- Negotiation strategy and tactics
-- Walk-away scenarios
-- Next steps checklist
-- ~800-1200 words, comprehensive guide
 
 #### Dynamic Market Data (AI-Powered SSB Integration)
 
@@ -292,11 +280,6 @@ When you fill in your job title (e.g., "Senior Developer", "Sykepleier"), the AI
    - Calculates gap: "Your 900k request is 9.8% above market median"
    - Position indicator: "above market", "at market", "below market"
    - Justifies increase/decrease based on market position
-
-4. **Analyzes Salary Trends** (in playbook)
-   - Historical growth rates
-   - Example: "Median salary grew 4.2% annually 2020-2024"
-   - Context for timing your negotiation
 
 **Transparency & Notifications**:
 
@@ -339,7 +322,6 @@ _Without AI tools, generic response_:
 **Generation Limits**:
 
 - Email: 3 generations per session
-- Playbook: 3 generations per session
 - Prevents excessive OpenAI API usage
 - Resets on page reload
 
@@ -467,7 +449,7 @@ Allows users to explore the app with sample data before entering their own.
 ### Client-Side Only
 
 - **No server storage**: All user data stored in browser localStorage
-- **No account required**: Anonymous usage, no login
+- **No account required**: Core features are anonymous; AI generation requires login
 - **No tracking**: No analytics or user tracking
 - **GDPR friendly**: User controls their data completely
 
@@ -479,7 +461,6 @@ Allows users to explore the app with sample data before entering their own.
 - `salary-onboarding-v1`: Onboarding completion flag
 - `negotiation_data_points`: Negotiation arguments
 - `negotiation_data_email`: Generated email content
-- `negotiation_data_playbook`: Generated playbook content
 - `salary-last-tab`: Last active tab (Dashboard/Negotiation)
 
 ### Data Portability
@@ -652,10 +633,9 @@ Uses CSS variables for theming:
 5. **Arguments**: Adds 5 arguments (experience, education, performance)
 6. **Generation**: Clicks "Generate Email"
 7. **Review**: Reads generated email, makes mental notes
-8. **Playbook**: Clicks "Generate Playbook"
-9. **Study**: Downloads DOCX, reads strategy overnight
-10. **Interview**: Uses talking points from playbook
-11. **Success**: Negotiates 12% higher offer than initial
+8. **Study**: Downloads DOCX, reads strategy overnight
+9. **Interview**: Uses talking points from the email
+10. **Success**: Negotiates 12% higher offer than initial
 
 ### Journey 4: Annual Salary Review
 
@@ -702,7 +682,6 @@ Uses CSS variables for theming:
 ### Generation Limits
 
 - **Email**: 3 per session
-- **Playbook**: 3 per session
 - **Rationale**: Prevent API abuse, encourage thoughtful use
 - **Reset**: Page reload resets counters
 

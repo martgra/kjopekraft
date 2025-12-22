@@ -4,7 +4,6 @@ import {
   OccupationSearchSelect,
   type OccupationSelection,
 } from '@/components/ui/occupation/OccupationSearchSelect'
-import { TEXT } from '@/lib/constants/text'
 import { type ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
 
 interface ChartSettingsReferenceProps {

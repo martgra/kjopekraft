@@ -3,13 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { adjustSalaries, calculateYearRange, validatePayPoint } from '@/domain/salary'
 import { calculateNetIncome } from '@/domain/tax'
-import type {
-  PayChangeReason,
-  PayPoint,
-  SalaryDataPoint,
-  SalaryStatistics,
-  ValidationResult,
-} from '@/domain/salary'
+import type { PayChangeReason, PayPoint, SalaryDataPoint, ValidationResult } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { ChartPoint } from '@/lib/models/types'
 

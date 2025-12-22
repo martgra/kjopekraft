@@ -231,6 +231,7 @@ export function usePayPointFormState({
     isDemoMode,
     addPoint,
     removePoint,
+    clearDemoData,
     isFormModalOpen,
   ])
 

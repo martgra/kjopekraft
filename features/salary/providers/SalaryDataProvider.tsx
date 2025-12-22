@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { useSalaryData } from '@/features/salary/hooks/useSalaryData'
-import type { PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 
 interface SalaryDataContextValue {

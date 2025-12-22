@@ -1,4 +1,4 @@
-import Fuse from 'fuse.js'
+import Fuse, { type Expression } from 'fuse.js'
 
 export type SsbOccupationDoc = {
   code: string
@@ -200,11 +200,11 @@ export function searchSsbOccupations(
   const digits = q.replace(/\s+/g, '')
   const isCodeQuery = /^\d+$/.test(digits)
 
-  const fuseQuery = isCodeQuery
+  const fuseQuery: string | Expression = isCodeQuery
     ? { $or: [{ code: `=${digits}` }, { aliases: `=${digits}` }, { code: digits }] }
     : normalize(q)
 
-  return fuse.search(fuseQuery as any, { limit }).map(r => ({
+  return fuse.search(fuseQuery, { limit }).map(r => ({
     ...r.item,
     score: r.score ?? 1,
   }))

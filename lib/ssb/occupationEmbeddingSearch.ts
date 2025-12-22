@@ -64,16 +64,22 @@ async function embedQueryOpenAI(query: string): Promise<number[]> {
   return normalize(embedding)
 }
 
-async function getCachedQueryEmbedding(query: string): Promise<number[]> {
+function getCachedQueryEmbedding(query: string): number[] | null {
   const key = query.trim().toLowerCase()
   const cached = queryEmbeddingCache.get(key)
-  if (cached) {
-    // Refresh LRU position
-    queryEmbeddingCache.delete(key)
-    queryEmbeddingCache.set(key, cached)
-    return cached
-  }
+  if (!cached) return null
 
+  // Refresh LRU position
+  queryEmbeddingCache.delete(key)
+  queryEmbeddingCache.set(key, cached)
+  return cached
+}
+
+async function getOrCreateQueryEmbedding(query: string): Promise<number[]> {
+  const cached = getCachedQueryEmbedding(query)
+  if (cached) return cached
+
+  const key = query.trim().toLowerCase()
   const vec = await embedQueryOpenAI(query)
   queryEmbeddingCache.set(key, vec)
   if (queryEmbeddingCache.size > MAX_CACHE) {
@@ -90,7 +96,7 @@ export async function searchOccupationsByEmbedding(
   if (!query.trim()) return []
   if (!EMBEDDINGS.items.length || !EMBEDDINGS.dim) return []
 
-  const qVec = await getCachedQueryEmbedding(query)
+  const qVec = await getOrCreateQueryEmbedding(query)
   if (qVec.length !== EMBEDDINGS.dim) {
     throw new Error(`Query dim ${qVec.length} != db dim ${EMBEDDINGS.dim}`)
   }
@@ -105,6 +111,24 @@ export async function searchOccupationsByEmbedding(
   return scored.slice(0, limit)
 }
 
+export function searchOccupationsByCachedEmbedding(query: string, limit = 8): EmbeddingResult[] {
+  if (!query.trim()) return []
+  if (!EMBEDDINGS.items.length || !EMBEDDINGS.dim) return []
+
+  const qVec = getCachedQueryEmbedding(query)
+  if (!qVec) return []
+  if (qVec.length !== EMBEDDINGS.dim) return []
+
+  const scored = EMBEDDINGS.items.map(item => ({
+    code: item.code,
+    label: item.label,
+    score: dot(qVec, item.embedding),
+  }))
+
+  scored.sort((a, b) => b.score - a.score)
+  return scored.slice(0, limit)
+}
+
 export type HybridResult = {
   code: string
   label: string
@@ -113,7 +137,16 @@ export type HybridResult = {
   finalScore: number // higher is better
 }
 
-export async function hybridOccupationSearch(query: string, limit = 8): Promise<HybridResult[]> {
+export type HybridSearchOptions = {
+  allowEmbedding?: boolean
+  allowCachedEmbedding?: boolean
+}
+
+export async function hybridOccupationSearch(
+  query: string,
+  limit = 8,
+  options: HybridSearchOptions = {},
+): Promise<HybridResult[]> {
   if (!query.trim()) return []
 
   // 1) Get Fuse results (precision on code/label)
@@ -124,20 +157,25 @@ export async function hybridOccupationSearch(query: string, limit = 8): Promise<
   }))
 
   const hasOpenAiKey = Boolean(process.env.OPENAI_API_KEY)
+  const allowEmbedding = options.allowEmbedding ?? true
+  const allowCachedEmbedding = options.allowCachedEmbedding ?? true
 
   // 2) Get embedding results (semantic recall) with graceful fallback
   let embeddingResults: EmbeddingResult[] = []
-  if (hasOpenAiKey) {
+  if (allowEmbedding && hasOpenAiKey) {
     try {
       embeddingResults = await searchOccupationsByEmbedding(query, Math.max(limit, 20))
     } catch (error) {
       console.warn('Embedding search failed, falling back to Fuse only:', error)
     }
-  } else {
-    // No keys configured; silently rely on Fuse to avoid noisy logs in local/dev.
-    if (process.env.NODE_ENV !== 'production') {
-      console.info('Embedding search disabled (missing OPENAI_API_KEY); using Fuse fallback only.')
-    }
+  }
+
+  if (!embeddingResults.length && allowCachedEmbedding) {
+    embeddingResults = searchOccupationsByCachedEmbedding(query, Math.max(limit, 20))
+  }
+
+  if (!hasOpenAiKey && allowEmbedding && process.env.NODE_ENV !== 'production') {
+    console.info('Embedding search disabled (missing OPENAI_API_KEY); using Fuse fallback only.')
   }
 
   // 3) Merge by code

@@ -21,7 +21,6 @@ import {
 import { NegotiationArguments } from './NegotiationArguments'
 import { estimateDesiredGrossSalary } from '@/domain/negotiation'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'
-import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
 import { useSalaryDataContext } from '@/features/salary/providers/SalaryDataProvider'
 import type { NegotiationEmailContext } from '@/lib/models/types'
 
@@ -38,7 +37,6 @@ export default function NegotiationPage({
   isDrawerOpen,
   onDrawerClose,
 }: NegotiationPageProps) {
-  const { baseYearOverride } = usePurchasingPowerBase()
   const { payPoints } = useSalaryDataContext()
   const {
     points,
@@ -47,15 +45,13 @@ export default function NegotiationPage({
     emailContent,
     setEmail,
     hasReachedEmailGenerationLimit,
-    MAX_GENERATIONS,
-    emailGenerationCount,
     userInfo,
     updateUserInfo: persistUserInfo,
-    emailPrompt,
   } = useNegotiationData()
 
   // Generation states
   const [isGeneratingEmail, setIsGeneratingEmail] = useState(false)
+  const [emailError, setEmailError] = useState<string | null>(null)
   const prefilledCurrentSalary = useRef<string | null>(null)
   const prefilledDesiredSalary = useRef<number | null>(null)
   const argumentBuilderRef = useRef<ArgumentBuilderHandle | null>(null)
@@ -192,6 +188,7 @@ export default function NegotiationPage({
     }
     try {
       setIsGeneratingEmail(true)
+      setEmailError(null)
       const salaryHistory = payPoints.map(point => ({
         year: point.year,
         pay: point.pay,
@@ -223,6 +220,8 @@ export default function NegotiationPage({
       setEmail(data.result, data.prompt)
     } catch (err) {
       console.error('Email generation error:', err)
+      const message = err instanceof Error ? err.message : TEXT.negotiation.emailErrorTitle
+      setEmailError(message)
     } finally {
       setIsGeneratingEmail(false)
     }
@@ -288,6 +287,9 @@ export default function NegotiationPage({
                   />
                 </div>
               )}
+              {emailError ? (
+                <p className="max-w-[220px] text-xs text-red-600 dark:text-red-400">{emailError}</p>
+              ) : null}
             </div>
           </div>
         </div>

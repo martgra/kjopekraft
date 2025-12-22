@@ -53,15 +53,12 @@ export function SalaryTableDesktop({
                 key={row.year}
                 row={row}
                 payPoint={payPoint}
-                isNetMode={isNetMode}
                 baselineYear={baselineYear}
                 isExpanded={expandedYear === row.year}
                 onToggle={() => onToggleExpansion(row.year)}
                 powerMode={powerMode}
                 positivePowerYears={positivePowerYears}
                 totalYears={totalYears}
-                onEditPayPoint={onEditPayPoint}
-                onRemovePayPoint={onRemovePayPoint}
               />
             )
           })}

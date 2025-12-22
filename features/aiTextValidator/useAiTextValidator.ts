@@ -138,13 +138,14 @@ export function useAiTextValidator({
         return result
       } catch (err) {
         console.error('AI text validation error:', err)
-        setError(TEXT.aiValidator.errorTitle)
+        const message = err instanceof Error ? err.message : TEXT.aiValidator.errorTitle
+        setError(message)
         return null
       } finally {
         setIsLoading(false)
       }
     },
-    [enabled, endpoint, language, maxChars, systemPrompt],
+    [enabled, endpoint, language, maxChars, model, systemPrompt],
   )
 
   const startValidation = useCallback(

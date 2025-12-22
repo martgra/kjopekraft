@@ -5,6 +5,7 @@ import {
   searchSsbOccupations,
   SSB_OCCUPATION_DOCS,
 } from '@/lib/ssb/occupationSearch'
+import { getServerSession } from '@/services/auth/getSession'
 
 const fuse = createOccupationFuse(SSB_OCCUPATION_DOCS)
 
@@ -17,7 +18,12 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const results = await hybridOccupationSearch(q, limit)
+    const session = await getServerSession(req.headers)
+    const allowEmbeddings = Boolean(session?.user?.id)
+    const results = await hybridOccupationSearch(q, limit, {
+      allowEmbedding: allowEmbeddings,
+      allowCachedEmbedding: true,
+    })
     return NextResponse.json({ results })
   } catch (error) {
     console.warn('Occupation search fallback (Fuse only):', error)
