@@ -331,10 +331,7 @@ export default function NegotiationPage({
         </div>
 
         {/* Generated Content */}
-        <GeneratedContent
-          emailContent={emailContent || undefined}
-          emailPrompt={emailPrompt || undefined}
-        />
+        <GeneratedContent emailContent={emailContent || undefined} />
       </DashboardLayout>
     </>
   )

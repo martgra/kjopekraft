@@ -6,17 +6,15 @@ import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import { Card } from '@/components/ui/atoms'
 import CollapsibleSection from '@/features/negotiation/components/CollapsibleSection'
-import { CopyPromptButton } from '@/features/negotiation/components/CopyPromptButton'
 import { CopyRichButton } from '@/features/negotiation/components/CopyRichButton'
 import { DownloadDocxButton } from '@/features/negotiation/components/DownloadDocxButton'
 import { TEXT } from '@/lib/constants/text'
 
 export interface GeneratedContentProps {
   emailContent?: string
-  emailPrompt?: string
 }
 
-export function GeneratedContent({ emailContent, emailPrompt }: GeneratedContentProps) {
+export function GeneratedContent({ emailContent }: GeneratedContentProps) {
   const emailHtmlRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -29,10 +27,7 @@ export function GeneratedContent({ emailContent, emailPrompt }: GeneratedContent
           defaultCollapsed={false}
           icon="mail_outline"
           actions={
-            <div className="flex flex-wrap items-center gap-2">
-              {emailPrompt && (
-                <CopyPromptButton content={emailPrompt} label={TEXT.negotiation.copyPrompt} />
-              )}
+            <div className="flex items-center gap-2">
               <CopyRichButton
                 containerRef={emailHtmlRef as React.RefObject<HTMLDivElement>}
                 label={TEXT.negotiation.copyRich}
