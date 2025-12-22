@@ -42,10 +42,31 @@ export function GeneratedContent({ emailContent }: GeneratedContentProps) {
         >
           <Card variant="outlined" padding="none">
             <div
-              className="email-content overflow-x-auto rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-4 text-base leading-relaxed text-[var(--text-main)] shadow-inner sm:p-8"
+              className="email-content overflow-x-auto rounded-lg border border-[var(--border-light)] bg-white p-6 text-base leading-relaxed text-[var(--text-main)] shadow-sm sm:p-10 dark:bg-[var(--surface-light)]"
               ref={emailHtmlRef}
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  // Ensure proper rendering of markdown elements
+                  p: ({ children, ...props }) => <p {...props}>{children}</p>,
+                  ul: ({ children, ...props }) => <ul {...props}>{children}</ul>,
+                  ol: ({ children, ...props }) => <ol {...props}>{children}</ol>,
+                  li: ({ children, ...props }) => <li {...props}>{children}</li>,
+                  strong: ({ children, ...props }) => <strong {...props}>{children}</strong>,
+                  em: ({ children, ...props }) => <em {...props}>{children}</em>,
+                  a: ({ children, ...props }) => (
+                    <a {...props} target="_blank" rel="noopener noreferrer">
+                      {children}
+                    </a>
+                  ),
+                  h1: ({ children, ...props }) => <h1 {...props}>{children}</h1>,
+                  h2: ({ children, ...props }) => <h2 {...props}>{children}</h2>,
+                  h3: ({ children, ...props }) => <h3 {...props}>{children}</h3>,
+                  h4: ({ children, ...props }) => <h4 {...props}>{children}</h4>,
+                }}
+              >
                 {emailContent}
               </ReactMarkdown>
             </div>
