@@ -8,6 +8,13 @@
       "when": 1766157583053,
       "tag": "0000_certain_risque",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766438484654,
+      "tag": "0001_global_credits",
+      "breakpoints": true
     }
   ]
 }

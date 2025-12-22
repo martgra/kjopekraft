@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { ChartSettingsModal } from '@/components/dashboard/ChartSettingsModal'
 import { ThemeProvider } from '@/contexts/theme/ThemeContext'
+import { ToastProvider } from '@/contexts/toast/ToastContext'
 
 const baseProps = {
   isNetMode: false,
@@ -18,7 +19,11 @@ const baseProps = {
 }
 
 const renderWithTheme = (ui: React.ReactElement) => {
-  return render(<ThemeProvider>{ui}</ThemeProvider>)
+  return render(
+    <ThemeProvider>
+      <ToastProvider>{ui}</ToastProvider>
+    </ThemeProvider>,
+  )
 }
 
 describe('ChartSettingsModal', () => {
@@ -39,6 +44,6 @@ describe('ChartSettingsModal', () => {
 
   it('does not render when closed', () => {
     const { container } = renderWithTheme(<ChartSettingsModal {...baseProps} isOpen={false} />)
-    expect(container.firstChild).toBeNull()
+    expect(screen.queryByTestId('chart-settings-modal-container')).toBeNull()
   })
 })

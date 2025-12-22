@@ -14,8 +14,8 @@ interface SalaryTableDesktopProps {
   powerMode?: 'absolute' | 'percent'
   positivePowerYears?: number
   totalYears?: number
-  onEditPayPoint?: (point: PayPoint) => void
-  onRemovePayPoint?: (year: number, pay: number) => void
+  _onEditPayPoint?: (point: PayPoint) => void
+  _onRemovePayPoint?: (year: number, pay: number) => void
 }
 
 export function SalaryTableDesktop({
@@ -28,8 +28,8 @@ export function SalaryTableDesktop({
   powerMode = 'percent',
   positivePowerYears,
   totalYears,
-  onEditPayPoint,
-  onRemovePayPoint,
+  _onEditPayPoint,
+  _onRemovePayPoint,
 }: SalaryTableDesktopProps) {
   const displayRows = useMemo(() => [...rows].sort((a, b) => b.year - a.year), [rows])
 
@@ -53,15 +53,12 @@ export function SalaryTableDesktop({
                 key={row.year}
                 row={row}
                 payPoint={payPoint}
-                isNetMode={isNetMode}
                 baselineYear={baselineYear}
                 isExpanded={expandedYear === row.year}
                 onToggle={() => onToggleExpansion(row.year)}
                 powerMode={powerMode}
                 positivePowerYears={positivePowerYears}
                 totalYears={totalYears}
-                onEditPayPoint={onEditPayPoint}
-                onRemovePayPoint={onRemovePayPoint}
               />
             )
           })}

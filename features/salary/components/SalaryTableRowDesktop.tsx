@@ -5,39 +5,30 @@ import {
   formatCurrencyWithUnit,
   formatDate,
   formatRelativeYear,
-  reasonToLabel,
-  reasonVariant,
 } from '@/lib/formatters/salaryFormatting'
 import { SalaryRowExpansion } from '@/components/ui/salary/SalaryRowExpansion'
 import { SalaryRowPower } from '@/components/ui/salary/SalaryRowPower'
-import { SalaryRowActionButtons } from './SalaryRowActionButtons'
 
 interface SalaryTableRowDesktopProps {
   row: SalaryTableRow
   payPoint?: PayPoint
-  isNetMode: boolean
   baselineYear: number | null
   isExpanded: boolean
   onToggle: () => void
   powerMode?: 'absolute' | 'percent'
   positivePowerYears?: number
   totalYears?: number
-  onEditPayPoint?: (point: PayPoint) => void
-  onRemovePayPoint?: (year: number, pay: number) => void
 }
 
 export function SalaryTableRowDesktop({
   row,
   payPoint,
-  isNetMode,
   baselineYear,
   isExpanded,
   onToggle,
   powerMode = 'percent',
   positivePowerYears,
   totalYears,
-  onEditPayPoint,
-  onRemovePayPoint,
 }: SalaryTableRowDesktopProps) {
   return (
     <tr className="hover:bg-[var(--color-gray-50)]/60">

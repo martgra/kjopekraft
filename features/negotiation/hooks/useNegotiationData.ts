@@ -88,20 +88,6 @@ export function useNegotiationData() {
     })
   }
 
-  function setPlaybook(content: string) {
-    persistDraft(prev => {
-      const validPrev =
-        typeof prev.playbookGenerationCount === 'number' && !isNaN(prev.playbookGenerationCount)
-          ? prev.playbookGenerationCount
-          : 0
-      return {
-        ...prev,
-        playbookContent: content,
-        playbookGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
-      }
-    })
-  }
-
   // Generation counter management
   function incrementEmailGenerationCount() {
     persistDraft(prev => {
@@ -116,30 +102,12 @@ export function useNegotiationData() {
     })
   }
 
-  function incrementPlaybookGenerationCount() {
-    persistDraft(prev => {
-      const validPrev =
-        typeof prev.playbookGenerationCount === 'number' && !isNaN(prev.playbookGenerationCount)
-          ? prev.playbookGenerationCount
-          : 0
-      return {
-        ...prev,
-        playbookGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
-      }
-    })
-  }
-
   function resetGenerationCounts() {
-    persistDraft(prev => ({ ...prev, emailGenerationCount: 0, playbookGenerationCount: 0 }))
+    persistDraft(prev => ({ ...prev, emailGenerationCount: 0 }))
   }
 
   function hasReachedEmailGenerationLimit() {
     const value = currentDraft.emailGenerationCount
-    return typeof value === 'number' && !isNaN(value) && value >= MAX_GENERATIONS
-  }
-
-  function hasReachedPlaybookGenerationLimit() {
-    const value = currentDraft.playbookGenerationCount
     return typeof value === 'number' && !isNaN(value) && value >= MAX_GENERATIONS
   }
 
@@ -164,22 +132,14 @@ export function useNegotiationData() {
 
     // Generated content
     emailContent: currentDraft.emailContent,
-    playbookContent: currentDraft.playbookContent,
     setEmail,
-    setPlaybook,
 
     // Prompts
     emailPrompt: currentDraft.emailPrompt,
-    playbookPrompt: currentDraft.playbookPrompt,
     setEmailPrompt: (prompt: string) =>
       persistDraft(prev => ({
         ...prev,
         emailPrompt: prompt,
-      })),
-    setPlaybookPrompt: (prompt: string) =>
-      persistDraft(prev => ({
-        ...prev,
-        playbookPrompt: prompt,
       })),
 
     // User info
@@ -188,12 +148,9 @@ export function useNegotiationData() {
 
     // Generation counts
     emailGenerationCount: currentDraft.emailGenerationCount,
-    playbookGenerationCount: currentDraft.playbookGenerationCount,
     incrementEmailGenerationCount,
-    incrementPlaybookGenerationCount,
     resetGenerationCounts,
     hasReachedEmailGenerationLimit,
-    hasReachedPlaybookGenerationLimit,
 
     // Emergency reset for corrupted data
     forceResetAllData,

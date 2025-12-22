@@ -76,7 +76,7 @@ docs/                    # Documentation set
 
 - `app/negotiation/page.tsx` is client-only to allow `localStorage`.
 - Negotiation UI consumes pay points from the shared `SalaryDataProvider` and purchasing-power statistics from `usePurchasingPower`.
-- AI endpoint in use: `app/api/generate/email/route.ts` (the playbook output is currently disabled in the UI). Prompts/schemas live in `lib/prompts.ts` and `lib/schemas`.
+- AI endpoint in use: `app/api/generate/email/route.ts` (login required). Prompts/schemas live in `lib/prompts.ts` and `lib/schemas`.
 
 ## UI conventions
 

@@ -50,14 +50,16 @@ export function AIAssistedField({
     },
   })
 
+  const { suggestion } = validator
+
   useEffect(() => {
     if (!aiActive) return
-    if (validator.suggestion.trim()) {
-      const nextValue = validator.suggestion.trim()
+    if (suggestion.trim()) {
+      const nextValue = suggestion.trim()
       setHasAiUpdate(true)
       onChange(nextValue)
     }
-  }, [aiActive, onChange, validator.suggestion])
+  }, [aiActive, onChange, suggestion, validator])
 
   useEffect(() => {
     if (!aiActive) {
@@ -80,6 +82,7 @@ export function AIAssistedField({
 
   const handleRevert = () => {
     setHasAiUpdate(false)
+    setAiActive(false)
     validator.reset()
     onChange(previousManualValueRef.current)
   }
@@ -120,6 +123,9 @@ export function AIAssistedField({
         onClick={handleImprove}
         disabled={disabled || !validator.canValidate(value)}
       />
+      {validator.error ? (
+        <p className="text-xs text-red-600 dark:text-red-400">{validator.error}</p>
+      ) : null}
       {(aiActive ||
         validator.pendingQuestion ||
         validator.isLoading ||

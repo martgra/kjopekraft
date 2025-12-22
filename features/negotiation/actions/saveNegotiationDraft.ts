@@ -12,11 +12,8 @@ import { NegotiationPointArraySchema, NegotiationUserInfoSchema } from '@/lib/sc
 const DraftInputSchema = z.object({
   points: NegotiationPointArraySchema.default([]),
   emailContent: z.string().default(''),
-  playbookContent: z.string().default(''),
   emailPrompt: z.string().default(''),
-  playbookPrompt: z.string().default(''),
   emailGenerationCount: z.number().int().min(0).default(0),
-  playbookGenerationCount: z.number().int().min(0).default(0),
   userInfo: NegotiationUserInfoSchema.default(NegotiationUserInfoSchema.parse({})),
 })
 

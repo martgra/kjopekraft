@@ -1,7 +1,10 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
+import { mutate } from 'swr'
 import { TEXT } from '@/lib/constants/text'
+import { useToast } from '@/contexts/toast/ToastContext'
+import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 
 type TriggerMode = 'blur' | 'submit' | 'manual'
 type TriggerConfig = TriggerMode | TriggerMode[]
@@ -61,6 +64,8 @@ export function useAiTextValidator({
   model,
   onCommit,
 }: UseAiTextValidatorOptions = {}): UseAiTextValidatorResult {
+  const { open: openLoginOverlay } = useLoginOverlay()
+  const { showToast } = useToast()
   const [suggestion, setSuggestion] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null)
@@ -122,8 +127,18 @@ export function useAiTextValidator({
             forceFinalize,
           }),
         })
-        const data = await response.json()
+        const data = await response.json().catch(() => ({}))
         if (!response.ok) {
+          if (response.status === 401) {
+            openLoginOverlay({ variant: 'ai' })
+            setError(TEXT.auth.loginRequired)
+            return null
+          }
+          if (response.status === 429) {
+            showToast(TEXT.credits.exhausted, { variant: 'error' })
+            setError(TEXT.credits.exhausted)
+            return null
+          }
           throw new Error(data.error || data.details || TEXT.aiValidator.errorTitle)
         }
         const result = data as ValidationResponse
@@ -135,16 +150,18 @@ export function useAiTextValidator({
           setPendingQuestion(null)
         }
         setSuggestion(result.improvedText ?? '')
+        mutate('/api/credits')
         return result
       } catch (err) {
         console.error('AI text validation error:', err)
-        setError(TEXT.aiValidator.errorTitle)
+        const message = err instanceof Error ? err.message : TEXT.aiValidator.errorTitle
+        setError(message)
         return null
       } finally {
         setIsLoading(false)
       }
     },
-    [enabled, endpoint, language, maxChars, systemPrompt],
+    [enabled, endpoint, language, maxChars, model, openLoginOverlay, showToast, systemPrompt],
   )
 
   const startValidation = useCallback(

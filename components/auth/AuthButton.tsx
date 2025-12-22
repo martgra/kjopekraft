@@ -3,11 +3,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { authClient } from '@/lib/auth-client'
 import { TEXT } from '@/lib/constants/text'
-import LoginOverlay from './LoginOverlay'
+import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 
 export default function AuthButton() {
   const { data: session, isPending } = authClient.useSession()
-  const [isOpen, setIsOpen] = useState(false)
+  const { open: openLoginOverlay } = useLoginOverlay()
   const [timezoneSent, setTimezoneSent] = useState(false)
 
   const displayName = useMemo(() => session?.user?.name ?? session?.user?.email ?? '', [session])
@@ -54,13 +54,12 @@ export default function AuthButton() {
       <div className="fixed top-4 right-4 z-40 hidden lg:block">
         <button
           type="button"
-          onClick={() => setIsOpen(true)}
+          onClick={() => openLoginOverlay()}
           className="rounded-full border border-[var(--border-light)] bg-white/90 px-4 py-2 text-sm font-semibold text-[var(--text-main)] shadow-sm backdrop-blur hover:border-[var(--primary)]/40 dark:border-gray-700/70 dark:bg-gray-900/80 dark:text-gray-100"
         >
           {TEXT.auth.signIn}
         </button>
       </div>
-      <LoginOverlay isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   )
 }

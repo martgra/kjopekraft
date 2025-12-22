@@ -58,7 +58,7 @@ touch .env.local
 echo "OPENAI_API_KEY=your_openai_api_key_here" >> .env.local
 ```
 
-**Note**: The app will work without this, but negotiation email/playbook generation will be disabled.
+**Note**: The app will work without this, but negotiation email generation will be disabled.
 
 ### 4. Start Development Server
 
@@ -193,12 +193,11 @@ The chart will update immediately showing:
 - View detailed metrics (real annual value, inflation impact)
 - Filter time ranges (1Y, 3Y, ALL)
 
-**Negotiation Tab** (requires OpenAI API key):
+**Negotiation Tab** (requires OpenAI API key + login for AI generation):
 
 - Add negotiation arguments
 - Enter job details and context
 - Generate professional email
-- Generate negotiation playbook
 - Download as DOCX or copy as rich text
 
 ## Configuration

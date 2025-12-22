@@ -98,8 +98,8 @@ export function SalaryTableView({
         powerMode={powerMode}
         positivePowerYears={positivePowerYears}
         totalYears={totalYears}
-        onEditPayPoint={onEditPayPoint}
-        onRemovePayPoint={onRemovePayPoint}
+        _onEditPayPoint={onEditPayPoint}
+        _onRemovePayPoint={onRemovePayPoint}
       />
       <SalaryTableMobile
         rows={rows}
