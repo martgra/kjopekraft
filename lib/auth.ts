@@ -52,6 +52,7 @@ export function getAuth() {
       github: {
         clientId: githubClientId,
         clientSecret: githubClientSecret,
+        scope: ['user:email'],
       },
       google: {
         clientId: googleClientId,
