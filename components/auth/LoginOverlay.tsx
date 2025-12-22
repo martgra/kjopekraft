@@ -2,14 +2,20 @@
 
 import { useEffect, useState } from 'react'
 import { authClient } from '@/lib/auth-client'
+import { TEXT } from '@/lib/constants/text'
 
 interface LoginOverlayProps {
   isOpen: boolean
   onClose: () => void
+  variant?: 'default' | 'ai'
 }
 
-export default function LoginOverlay({ isOpen, onClose }: LoginOverlayProps) {
+export default function LoginOverlay({ isOpen, onClose, variant = 'default' }: LoginOverlayProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const title = variant === 'ai' ? TEXT.auth.aiOverlayTitle : TEXT.auth.overlayTitle
+  const description =
+    variant === 'ai' ? TEXT.auth.aiOverlayDescription : TEXT.auth.overlayDescription
+  const prompt = TEXT.auth.overlayPrompt
 
   // Handle escape key to close modal
   useEffect(() => {
@@ -104,19 +110,17 @@ export default function LoginOverlay({ isOpen, onClose }: LoginOverlayProps) {
             {/* Title and description */}
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Kjøpekraft
+                {title}
               </h1>
               <p className="mx-auto max-w-[240px] text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                Hold oversikt over din reelle lønnsvekst og inflasjon.
+                {description}
               </p>
             </div>
           </header>
 
           {/* Social login section */}
           <div className="space-y-5 px-6 pb-8">
-            <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-              Logg inn med Google eller GitHub
-            </p>
+            <p className="text-center text-sm text-slate-600 dark:text-slate-400">{prompt}</p>
 
             {/* Social login buttons */}
             <div className="grid grid-cols-2 gap-3">

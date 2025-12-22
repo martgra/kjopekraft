@@ -77,6 +77,12 @@ export const TEXT = {
     signInWithGoogle: 'Logg inn med Google',
     signInWithGithub: 'Logg inn med GitHub',
     loginRequired: 'Logg inn for å bruke AI-funksjoner.',
+    overlayTitle: 'Kjøpekraft',
+    overlayDescription: 'Hold oversikt over din reelle lønnsvekst og inflasjon.',
+    overlayPrompt: 'Logg inn med Google eller GitHub',
+    aiOverlayTitle: 'Logg inn for AI-funksjoner',
+    aiOverlayDescription:
+      'AI-verktøyene er tilgjengelige etter innlogging for å sikre stabil drift.',
   },
 
   dashboard: {

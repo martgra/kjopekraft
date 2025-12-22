@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { TEXT } from '@/lib/constants/text'
+import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 
 type TriggerMode = 'blur' | 'submit' | 'manual'
 type TriggerConfig = TriggerMode | TriggerMode[]
@@ -61,6 +62,7 @@ export function useAiTextValidator({
   model,
   onCommit,
 }: UseAiTextValidatorOptions = {}): UseAiTextValidatorResult {
+  const { open: openLoginOverlay } = useLoginOverlay()
   const [suggestion, setSuggestion] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null)
@@ -122,8 +124,12 @@ export function useAiTextValidator({
             forceFinalize,
           }),
         })
-        const data = await response.json()
+        const data = await response.json().catch(() => ({}))
         if (!response.ok) {
+          if (response.status === 401) {
+            openLoginOverlay({ variant: 'ai' })
+            throw new Error(TEXT.auth.loginRequired)
+          }
           throw new Error(data.error || data.details || TEXT.aiValidator.errorTitle)
         }
         const result = data as ValidationResponse
@@ -145,7 +151,7 @@ export function useAiTextValidator({
         setIsLoading(false)
       }
     },
-    [enabled, endpoint, language, maxChars, model, systemPrompt],
+    [enabled, endpoint, language, maxChars, model, openLoginOverlay, systemPrompt],
   )
 
   const startValidation = useCallback(

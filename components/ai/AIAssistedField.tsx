@@ -50,7 +50,7 @@ export function AIAssistedField({
     },
   })
 
-  const suggestion = validator.suggestion
+  const { suggestion } = validator
 
   useEffect(() => {
     if (!aiActive) return
@@ -59,7 +59,7 @@ export function AIAssistedField({
       setHasAiUpdate(true)
       onChange(nextValue)
     }
-  }, [aiActive, onChange, suggestion])
+  }, [aiActive, onChange, suggestion, validator])
 
   useEffect(() => {
     if (!aiActive) {

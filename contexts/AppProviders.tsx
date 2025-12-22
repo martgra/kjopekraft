@@ -6,6 +6,7 @@ import { DisplayModeProvider } from '@/contexts/displayMode/DisplayModeContext'
 import { ReferenceModeProvider } from '@/contexts/referenceMode/ReferenceModeContext'
 import { ThemeProvider } from '@/contexts/theme/ThemeContext'
 import { PurchasingPowerBaseProvider } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
+import { LoginOverlayProvider } from '@/contexts/loginOverlay/LoginOverlayContext'
 
 interface AppProvidersProps {
   children: ReactNode
@@ -32,7 +33,9 @@ export function AppProviders({ children }: AppProvidersProps) {
       <NuqsAdapter>
         <DisplayModeProvider>
           <ReferenceModeProvider>
-            <PurchasingPowerBaseProvider>{children}</PurchasingPowerBaseProvider>
+            <PurchasingPowerBaseProvider>
+              <LoginOverlayProvider>{children}</LoginOverlayProvider>
+            </PurchasingPowerBaseProvider>
           </ReferenceModeProvider>
         </DisplayModeProvider>
       </NuqsAdapter>

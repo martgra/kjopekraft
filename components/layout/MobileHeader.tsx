@@ -1,13 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { authClient } from '@/lib/auth-client'
 import { TEXT } from '@/lib/constants/text'
-import LoginOverlay from '@/components/auth/LoginOverlay'
+import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 
 export default function MobileHeader() {
   const { data: session, isPending } = authClient.useSession()
-  const [isOpen, setIsOpen] = useState(false)
+  const { open: openLoginOverlay } = useLoginOverlay()
 
   return (
     <>
@@ -39,7 +38,7 @@ export default function MobileHeader() {
           ) : (
             <button
               type="button"
-              onClick={() => setIsOpen(true)}
+              onClick={() => openLoginOverlay()}
               className="rounded-full border border-[var(--border-light)] bg-white px-4 py-1.5 text-sm font-semibold text-[var(--text-main)] hover:border-[var(--primary)]/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
             >
               {TEXT.auth.signIn}
@@ -47,7 +46,6 @@ export default function MobileHeader() {
           )}
         </div>
       </header>
-      <LoginOverlay isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   )
 }

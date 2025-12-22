@@ -23,6 +23,7 @@ import { estimateDesiredGrossSalary } from '@/domain/negotiation'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'
 import { useSalaryDataContext } from '@/features/salary/providers/SalaryDataProvider'
 import type { NegotiationEmailContext } from '@/lib/models/types'
+import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 
 interface NegotiationPageProps {
   inflationData: InflationDataPoint[]
@@ -55,6 +56,7 @@ export default function NegotiationPage({
   const prefilledCurrentSalary = useRef<string | null>(null)
   const prefilledDesiredSalary = useRef<number | null>(null)
   const argumentBuilderRef = useRef<ArgumentBuilderHandle | null>(null)
+  const { open: openLoginOverlay } = useLoginOverlay()
 
   // Get salary statistics for pre-filling current salary
   const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear)
@@ -213,8 +215,12 @@ export default function NegotiationPage({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ points, userInfo, context }),
       })
-      const data = await response.json()
+      const data = await response.json().catch(() => ({}))
       if (!response.ok) {
+        if (response.status === 401) {
+          openLoginOverlay({ variant: 'ai' })
+          throw new Error(TEXT.auth.loginRequired)
+        }
         throw new Error(data.error || TEXT.negotiation.emailErrorTitle)
       }
       setEmail(data.result, data.prompt)
