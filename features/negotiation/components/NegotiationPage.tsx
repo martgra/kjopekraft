@@ -19,7 +19,6 @@ import {
   type NegotiationOccupationSelection,
 } from './NegotiationMarketSelector'
 import { NegotiationArguments } from './NegotiationArguments'
-import { NegotiationTips } from './NegotiationTips'
 import { estimateDesiredGrossSalary } from '@/domain/negotiation'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'
 import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
@@ -329,7 +328,6 @@ export default function NegotiationPage({
             showMarketData={showMarketData}
           />
           <BenefitsForm userInfo={userInfo} onChange={updateUserInfo} />
-          <NegotiationTips />
         </div>
 
         {/* Generated Content */}

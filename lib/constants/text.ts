@@ -531,17 +531,6 @@ export const TEXT = {
     },
   },
 
-  negotiationTips: {
-    title: 'Forhandlingstips',
-    items: [
-      'Forbered et realistisk spenn, ikke bare ett tall.',
-      'Hold tonen samarbeidsorientert og still spørsmål.',
-      'Knytt ønsket til hva arbeidsgiver får igjen for det.',
-      'Bruk statistikk og konkrete resultater som støtte.',
-      'Vurder møte/telefon i tillegg til e-post.',
-    ],
-  },
-
   onboarding: {
     welcomeTitle: 'Velkommen til Kjøpekraft',
     welcomeMessage:
