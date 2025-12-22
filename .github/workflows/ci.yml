@@ -90,14 +90,9 @@ jobs:
   format:
     name: Format Check
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -116,30 +111,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Check formatting
-        id: format-check
-        run: |
-          if ! bun run format:check; then
-            echo "needs_formatting=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          echo "needs_formatting=false" >> $GITHUB_OUTPUT
-
-      - name: Auto-fix formatting
-        if: steps.format-check.outputs.needs_formatting == 'true'
-        run: bun run format
-
-      - name: Commit formatting changes
-        if: steps.format-check.outputs.needs_formatting == 'true'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add -A
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "style: auto-fix formatting issues"
-            git push
-          fi
+        run: bun run format:check
 
   lint:
     name: Lint

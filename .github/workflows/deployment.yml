@@ -6,27 +6,27 @@ on:
       - main
     paths:
       # Application code
-      - "app/**"
-      - "components/**"
-      - "features/**"
-      - "lib/**"
-      - "services/**"
-      - "domain/**"
-      - "contexts/**"
-      - "public/**"
+      - 'app/**'
+      - 'components/**'
+      - 'features/**'
+      - 'lib/**'
+      - 'services/**'
+      - 'domain/**'
+      - 'contexts/**'
+      - 'public/**'
       # Configuration
-      - "package.json"
-      - "bun.lock"
-      - "next.config.*"
-      - "tsconfig.json"
-      - "tailwind.config.*"
-      - "postcss.config.*"
+      - 'package.json'
+      - 'bun.lock'
+      - 'next.config.*'
+      - 'tsconfig.json'
+      - 'tailwind.config.*'
+      - 'postcss.config.*'
       # Docker
-      - "Dockerfile"
-      - ".dockerignore"
+      - 'Dockerfile'
+      - '.dockerignore'
       # Database migrations
-      - "drizzle/**"
-      - "migrations/**"
+      - 'drizzle/**'
+      - 'migrations/**'
   workflow_dispatch:
 
 jobs:
