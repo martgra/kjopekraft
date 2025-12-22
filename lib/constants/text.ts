@@ -443,8 +443,6 @@ export const TEXT = {
     copyRichSuccess: 'Rik tekst kopiert!',
     copyRichError: 'Kunne ikke kopiere rik tekst',
     downloadDocx: 'Last ned som DOCX',
-    moreOptions: 'Flere valg',
-    hideOptions: 'Skjul valg',
     collapseEmail: 'Vis/skjul e-post',
     collapsePlaybook: 'Vis/skjul spillbok',
     emailSectionTitle: 'Forslag til e-post',

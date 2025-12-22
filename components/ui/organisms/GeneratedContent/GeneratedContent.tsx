@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
@@ -18,7 +18,6 @@ export interface GeneratedContentProps {
 
 export function GeneratedContent({ emailContent, emailPrompt }: GeneratedContentProps) {
   const emailHtmlRef = useRef<HTMLDivElement>(null)
-  const [showActions, setShowActions] = useState(false)
 
   return (
     <div className="space-y-4">
@@ -32,36 +31,23 @@ export function GeneratedContent({ emailContent, emailPrompt }: GeneratedContent
           actions={
             <div className="flex flex-wrap items-center gap-2">
               {emailPrompt && (
-                <button
-                  type="button"
-                  className="rounded-md border border-[var(--border-light)] bg-[var(--surface-light)] px-3 py-2 text-sm font-medium text-[var(--text-main)] shadow-sm transition-colors hover:bg-[var(--surface-subtle)]"
-                  onClick={() => setShowActions(current => !current)}
-                >
-                  {showActions ? TEXT.negotiation.hideOptions : TEXT.negotiation.moreOptions}
-                </button>
-              )}
-              {showActions && emailPrompt && (
                 <CopyPromptButton content={emailPrompt} label={TEXT.negotiation.copyPrompt} />
               )}
-              {showActions && (
-                <>
-                  <CopyRichButton
-                    containerRef={emailHtmlRef as React.RefObject<HTMLDivElement>}
-                    label={TEXT.negotiation.copyRich}
-                  />
-                  <DownloadDocxButton
-                    content={emailContent}
-                    filename="forhandling-epost.docx"
-                    label={TEXT.negotiation.downloadDocx}
-                  />
-                </>
-              )}
+              <CopyRichButton
+                containerRef={emailHtmlRef as React.RefObject<HTMLDivElement>}
+                label={TEXT.negotiation.copyRich}
+              />
+              <DownloadDocxButton
+                content={emailContent}
+                filename="forhandling-epost.docx"
+                label={TEXT.negotiation.downloadDocx}
+              />
             </div>
           }
         >
           <Card variant="outlined" padding="none">
             <div
-              className="email-content rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-8 text-base leading-relaxed text-[var(--text-main)] shadow-inner"
+              className="email-content overflow-x-auto rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-4 text-base leading-relaxed text-[var(--text-main)] shadow-inner sm:p-8"
               ref={emailHtmlRef}
             >
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
