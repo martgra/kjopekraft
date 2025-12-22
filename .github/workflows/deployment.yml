@@ -4,6 +4,29 @@ on:
   push:
     branches:
       - main
+    paths:
+      # Application code
+      - 'app/**'
+      - 'components/**'
+      - 'features/**'
+      - 'lib/**'
+      - 'services/**'
+      - 'domain/**'
+      - 'contexts/**'
+      - 'public/**'
+      # Configuration
+      - 'package.json'
+      - 'bun.lock'
+      - 'next.config.*'
+      - 'tsconfig.json'
+      - 'tailwind.config.*'
+      - 'postcss.config.*'
+      # Docker
+      - 'Dockerfile'
+      - '.dockerignore'
+      # Database migrations
+      - 'drizzle/**'
+      - 'migrations/**'
   workflow_dispatch:
 
 jobs:

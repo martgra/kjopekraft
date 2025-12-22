@@ -13,18 +13,6 @@ COPY package.json bun.lock ./
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 
-# --- Production Dependencies Stage ---
-FROM base AS prod-deps
-WORKDIR /app
-
-# Copy package files
-COPY package.json bun.lock ./
-
-# Install only production dependencies
-# This verifies production deps and can be used for validation
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile --production
-
 # --- Builder Stage ---
 FROM base AS builder
 WORKDIR /app
