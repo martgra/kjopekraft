@@ -21,13 +21,11 @@ describe('draftCookie utils', () => {
       ...defaultNegotiationDraft,
       points: [{ description: 'I delivered X', type: 'custom' }],
       emailContent: 'hello',
-      emailGenerationCount: 2,
     }
     const serialized = serializeDraft(draft)
     const parsed = parseDraft(serialized)
     expect(parsed.points[0]?.description).toBe('I delivered X')
     expect(parsed.emailContent).toBe('hello')
-    expect(parsed.emailGenerationCount).toBe(2)
   })
 
   it('handles double-encoded cookies gracefully', () => {

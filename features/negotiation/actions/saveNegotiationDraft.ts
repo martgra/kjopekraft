@@ -13,7 +13,6 @@ const DraftInputSchema = z.object({
   points: NegotiationPointArraySchema.default([]),
   emailContent: z.string().default(''),
   emailPrompt: z.string().default(''),
-  emailGenerationCount: z.number().int().min(0).default(0),
   userInfo: NegotiationUserInfoSchema.default(NegotiationUserInfoSchema.parse({})),
 })
 

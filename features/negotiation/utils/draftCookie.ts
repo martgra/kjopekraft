@@ -11,7 +11,6 @@ const NegotiationDraftSchema = z.object({
   points: NegotiationPointArraySchema.default([]),
   emailContent: z.string().default(''),
   emailPrompt: z.string().default(''),
-  emailGenerationCount: z.number().int().min(0).default(0),
   userInfo: NegotiationUserInfoSchema.default(NegotiationUserInfoSchema.parse({})),
 })
 
@@ -65,7 +64,6 @@ export function serializeDraft(draft: NegotiationDraft): string {
     points: draft.points.map(p => NegotiationPointSchema.parse(p)),
     emailContent: draft.emailContent || '',
     emailPrompt: draft.emailPrompt || '',
-    emailGenerationCount: draft.emailGenerationCount ?? 0,
     userInfo: NegotiationUserInfoSchema.parse(draft.userInfo),
   }
   return encodeURIComponent(JSON.stringify(payload))

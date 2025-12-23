@@ -47,7 +47,6 @@ export default function NegotiationPage({
     removePoint,
     emailContent,
     setEmail,
-    hasReachedEmailGenerationLimit,
     userInfo,
     updateUserInfo: persistUserInfo,
   } = useNegotiationData()
@@ -188,7 +187,7 @@ export default function NegotiationPage({
 
   // Email generation handler
   async function handleEmailGenerate() {
-    if (isGeneratingEmail || hasReachedEmailGenerationLimit()) {
+    if (isGeneratingEmail) {
       return
     }
     try {
@@ -288,7 +287,7 @@ export default function NegotiationPage({
                 variant="primary"
                 size="sm"
                 onClick={handleEmailGenerate}
-                disabled={isGeneratingEmail || hasReachedEmailGenerationLimit()}
+                disabled={isGeneratingEmail}
                 className="inline-flex"
               >
                 <span className="flex items-center gap-1 text-sm">
