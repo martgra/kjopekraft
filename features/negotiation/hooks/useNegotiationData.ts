@@ -9,8 +9,6 @@ import {
 import { saveNegotiationDraft } from '@/features/negotiation/actions/saveNegotiationDraft'
 import { NegotiationUserInfoSchema } from '@/lib/schemas/negotiation'
 
-const MAX_GENERATIONS = process.env.NODE_ENV === 'development' ? Infinity : 2
-
 type SaveState =
   | { status: 'idle' }
   | { status: 'saving' }
@@ -74,41 +72,11 @@ export function useNegotiationData() {
 
   // Content management
   function setEmail(content: string, prompt?: string) {
-    persistDraft(prev => {
-      const validPrev =
-        typeof prev.emailGenerationCount === 'number' && !isNaN(prev.emailGenerationCount)
-          ? prev.emailGenerationCount
-          : 0
-      return {
-        ...prev,
-        emailContent: content,
-        emailPrompt: prompt ?? prev.emailPrompt,
-        emailGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
-      }
-    })
-  }
-
-  // Generation counter management
-  function incrementEmailGenerationCount() {
-    persistDraft(prev => {
-      const validPrev =
-        typeof prev.emailGenerationCount === 'number' && !isNaN(prev.emailGenerationCount)
-          ? prev.emailGenerationCount
-          : 0
-      return {
-        ...prev,
-        emailGenerationCount: Math.min(validPrev + 1, MAX_GENERATIONS),
-      }
-    })
-  }
-
-  function resetGenerationCounts() {
-    persistDraft(prev => ({ ...prev, emailGenerationCount: 0 }))
-  }
-
-  function hasReachedEmailGenerationLimit() {
-    const value = currentDraft.emailGenerationCount
-    return typeof value === 'number' && !isNaN(value) && value >= MAX_GENERATIONS
+    persistDraft(prev => ({
+      ...prev,
+      emailContent: content,
+      emailPrompt: prompt ?? prev.emailPrompt,
+    }))
   }
 
   function updateUserInfo(updates: Partial<NegotiationDraft['userInfo']>) {
@@ -146,18 +114,9 @@ export function useNegotiationData() {
     userInfo: currentDraft.userInfo,
     updateUserInfo,
 
-    // Generation counts
-    emailGenerationCount: currentDraft.emailGenerationCount,
-    incrementEmailGenerationCount,
-    resetGenerationCounts,
-    hasReachedEmailGenerationLimit,
-
     // Emergency reset for corrupted data
     forceResetAllData,
     saveState,
     isSaving,
-
-    // Constants
-    MAX_GENERATIONS,
   }
 }
