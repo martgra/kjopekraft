@@ -45,7 +45,7 @@
 
 /* Dark Mode Theme */
 .dark {
-  --background: #0f172a;
+  --background: #0f1523;
   --foreground: #f1f5f9;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -57,13 +57,13 @@
   --secondary-hover: #2563eb;
   --accent: #fbbf24;
   --accent-hover: #f59e0b;
-  --background-light: #1e293b;
-  --surface-light: #1e293b;
-  --surface-dark: #0f172a;
-  --surface-subtle: #1e293b;
+  --background-light: #0f1523;
+  --surface-light: #1e2433;
+  --surface-dark: #0f1523;
+  --surface-subtle: #141a2b;
   --text-main: #f1f5f9;
   --text-muted: #94a3b8;
-  --border-light: #334155;
+  --border-light: #2a3346;
 
   /* Dark mode semantic colors */
   --color-green-500: #4ade80;
@@ -76,13 +76,15 @@
   --color-orange-500: #f97316;
   --color-emerald-500: #34d399;
   --color-indigo-500: #818cf8;
-  --color-gray-50: #374151;
+  --color-gray-50: #1d2535;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif);
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Material Symbols Icons */

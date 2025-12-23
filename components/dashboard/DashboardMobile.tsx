@@ -120,7 +120,7 @@ export default function DashboardMobile({
           onRequestAdd={onDrawerOpen}
           showHeader={false}
           showMetricGrid={false}
-          chartWrapperClassName="mb-8"
+          chartWrapperClassName="mb-4"
         />
       </DashboardLayout>
     </>

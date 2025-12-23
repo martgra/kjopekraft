@@ -165,11 +165,11 @@ function ChartSection({
 
   return (
     <div
-      className="flex w-full flex-1 flex-col rounded-xl border border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
+      className="flex w-full flex-1 flex-col rounded-3xl border border-[var(--border-light)]/70 bg-[var(--surface-light)] shadow-[0_18px_30px_-24px_rgba(15,23,42,0.45)]"
       data-testid={testId()}
     >
-      <div className="border-b border-[var(--border-light)] px-3 py-2.5 md:px-6 md:py-4">
-        <div className="flex flex-col gap-3">
+      <div className="border-b border-[var(--border-light)]/70 px-4 py-2.5 md:px-6 md:py-4">
+        <div className="flex flex-col gap-2">
           {/* Header row */}
           <div className="flex items-center justify-between">
             <h2 className="text-base leading-tight font-semibold text-[var(--text-main)] md:text-lg">
@@ -179,12 +179,10 @@ function ChartSection({
             <button
               type="button"
               onClick={openSettings}
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-[var(--text-main)] transition hover:bg-[var(--color-gray-50)] dark:bg-gray-800 dark:hover:bg-gray-700"
+              className="inline-flex items-center justify-center rounded-lg p-2 text-[var(--text-muted)] transition hover:bg-[var(--color-gray-50)] hover:text-[var(--text-main)] dark:hover:bg-white/5"
               data-testid={testId('open-settings')}
             >
-              <span className="material-symbols-outlined text-[18px] text-[var(--text-muted)]">
-                tune
-              </span>
+              <span className="material-symbols-outlined text-[18px]">tune</span>
             </button>
           </div>
 
