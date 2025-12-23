@@ -52,7 +52,7 @@ export default function DashboardContent({
   const chartWrapperClasses = `flex min-h-[350px] flex-1 ${chartWrapperClassName}`.trim()
 
   return (
-    <div className="flex min-h-full flex-col gap-6" data-testid={dashboardTestId('root')}>
+    <div className="flex min-h-full flex-col gap-3 md:gap-6" data-testid={dashboardTestId('root')}>
       {showHeader && (
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold text-[var(--text-main)] md:text-3xl">

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createTestId } from '@/lib/testing/testIds'
 import type { PayPoint, SalaryStatistics } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
+import { useIsMobile } from '@/lib/hooks/useIsMobile'
 
 export type BannerState =
   | 'strongWin'
@@ -115,6 +116,7 @@ export default function StatusBanner({
   const testId = createTestId('status-banner')
   const isSinglePoint = payPoints.length === 1
   const isNewJob = isSinglePoint && payPoints[0]?.reason === 'newJob'
+  const isMobile = useIsMobile()
   const state: BannerState = isDemoMode
     ? 'demoMode'
     : isSinglePoint
@@ -126,6 +128,18 @@ export default function StatusBanner({
   const [isExpanded, setIsExpanded] = useState(true)
   const bannerText = TEXT.dashboard.statusBanner[state]
   const showIndicator = config.showIndicator !== false
+  const isLightBanner = ['smallWin', 'singlePoint', 'singlePointNewJob', 'demoMode'].includes(state)
+  const borderClass = isLightBanner ? 'border border-slate-200/80' : 'border border-white/10'
+  const shadowClass = isLightBanner
+    ? 'shadow-[0_18px_30px_-22px_rgba(15,23,42,0.25)]'
+    : 'shadow-[0_18px_30px_-22px_rgba(0,0,0,0.55)]'
+  const ctaClass = isLightBanner ? 'text-slate-900' : 'text-white'
+
+  useEffect(() => {
+    if (isMobile) {
+      setIsExpanded(false)
+    }
+  }, [isMobile])
 
   const handleCtaClick = () => {
     if (isDemoMode) {
@@ -141,7 +155,7 @@ export default function StatusBanner({
 
   return (
     <div
-      className={`${config.bgColor} ${config.textColor} relative overflow-hidden rounded-2xl p-5 shadow-lg`}
+      className={`${config.bgColor} ${config.textColor} ${borderClass} ${shadowClass} relative overflow-hidden rounded-3xl p-4`}
       data-testid={testId('container')}
       data-state={state}
     >
@@ -151,11 +165,11 @@ export default function StatusBanner({
       {/* Header with icon, badge, indicator, and expand/collapse button */}
       <div className="mb-3 flex items-start justify-between">
         <div className="flex items-center space-x-2">
-          <span className={`material-symbols-outlined text-2xl ${config.iconColor}`}>
+          <span className={`material-symbols-outlined text-xl ${config.iconColor}`}>
             {config.icon}
           </span>
           <span
-            className={`${config.badgeBg} rounded-full px-2 py-0.5 text-xs font-bold tracking-wider uppercase`}
+            className={`${config.badgeBg} rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase`}
           >
             {bannerText.badge}
           </span>
@@ -167,10 +181,10 @@ export default function StatusBanner({
             <div
               className={`${config.indicatorBg} flex items-center space-x-1 rounded-lg px-2 py-1 backdrop-blur-sm`}
             >
-              <span className="text-xs font-medium opacity-90">
+              <span className="text-[11px] font-medium opacity-90">
                 {TEXT.dashboard.statusBanner.purchasingPowerLabel}
               </span>
-              <span className="text-xs font-bold">
+              <span className="text-[11px] font-bold">
                 {statistics.gapPercent > 0 ? '+' : ''}
                 {statistics.gapPercent.toFixed(1)} %
               </span>
@@ -189,7 +203,7 @@ export default function StatusBanner({
             }
             data-testid={testId('toggle')}
           >
-            <span className={`material-symbols-outlined text-xl ${config.iconColor}`}>
+            <span className={`material-symbols-outlined text-lg ${config.iconColor}`}>
               {isExpanded ? 'expand_less' : 'expand_more'}
             </span>
           </button>
@@ -197,27 +211,24 @@ export default function StatusBanner({
       </div>
 
       {/* Headline */}
-      <h2 className="mb-2 text-2xl leading-tight font-bold">{bannerText.headline}</h2>
+      <h2 className="mb-1 text-xl leading-tight font-bold">{bannerText.headline}</h2>
 
-      {/* Expandable content */}
+      {/* Supporting text */}
       {isExpanded && (
-        <>
-          {/* Supporting text */}
-          <p className="mb-5 text-sm leading-relaxed opacity-90">{bannerText.description}</p>
-
-          {/* CTA */}
-          <button
-            onClick={handleCtaClick}
-            className="group flex items-center text-sm font-semibold transition-all hover:translate-x-1"
-            data-testid={testId('cta')}
-          >
-            {bannerText.cta}
-            <span className="material-symbols-outlined ml-1 text-base transition-transform group-hover:translate-x-1">
-              arrow_forward
-            </span>
-          </button>
-        </>
+        <p className="mb-4 text-xs leading-relaxed opacity-90">{bannerText.description}</p>
       )}
+
+      {/* CTA (always visible) */}
+      <button
+        onClick={handleCtaClick}
+        className={`group flex items-center text-xs font-semibold transition-all hover:translate-x-1 ${ctaClass}`}
+        data-testid={testId('cta')}
+      >
+        {bannerText.cta}
+        <span className="material-symbols-outlined ml-1 text-sm transition-transform group-hover:translate-x-1">
+          arrow_forward
+        </span>
+      </button>
     </div>
   )
 }

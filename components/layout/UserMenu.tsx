@@ -72,7 +72,7 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
       <button
         type="button"
         onClick={() => setIsOpen(prev => !prev)}
-        className="group relative flex size-10 items-center justify-center rounded-full border border-gray-200 bg-gray-100 transition-colors hover:bg-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="group relative flex size-10 items-center justify-center rounded-full border-2 border-gray-200/80 bg-gray-100 transition-colors hover:bg-gray-200 dark:border-gray-700/80 dark:bg-gray-800 dark:hover:bg-gray-700"
         aria-label={TEXT.auth.signOut}
         aria-expanded={isOpen}
         aria-controls={menuId}
@@ -88,7 +88,7 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
             person
           </span>
         )}
-        <span className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-gray-900" />
+        <span className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500 dark:border-[var(--background)]" />
       </button>
 
       {isOpen ? (
