@@ -1,5 +1,5 @@
 export { DetailsForm } from './DetailsForm'
-export type { DetailsFormProps, UserInfo } from './DetailsForm'
+export type { DetailsFormProps } from './DetailsForm'
 
 export { ContextForm } from './ContextForm'
 export type { ContextFormProps } from './ContextForm'

@@ -16,12 +16,8 @@ import {
   presetOccupationToSelection,
 } from '@/features/referenceSalary/occupations'
 import { useToast } from '@/contexts/toast/ToastContext'
-
-export type OccupationSelection = {
-  code: string
-  label?: string
-  provider?: 'ssb' | 'stortinget'
-}
+import { fetchJson } from '@/lib/api/fetchJson'
+import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
 
 interface OccupationSearchSelectProps {
   selectedOccupation: OccupationSelection | null
@@ -46,13 +42,11 @@ export function OccupationSearchSelect({
   const { data, isLoading } = useSWR(
     query ? `/api/ssb/occupations?q=${encodeURIComponent(query)}` : null,
     async url => {
-      const res = await fetch(url)
-      if (!res.ok) throw new Error('Failed to search occupations')
-      const payload = (await res.json()) as {
+      const payload = await fetchJson<{
         results: Array<{ code: string; label: string }>
         creditsExhausted?: boolean
         spentCredits?: boolean
-      }
+      }>(url, undefined, { errorPrefix: 'Failed to search occupations' })
       if (payload.creditsExhausted && !hasShownCreditsToast.current) {
         hasShownCreditsToast.current = true
         showToast(TEXT.credits.exhausted, { variant: 'error' })

@@ -29,7 +29,7 @@ Kjøpekraft is a Next.js 16 App Router app built with a layered, feature-based s
 app/                     # Routes + API handlers
   layout.tsx             # Root layout (Server)
   page.tsx               # Dashboard entry (Server)
-  negotiation/page.tsx   # Client page wrapper (localStorage-heavy)
+  negotiation/page.tsx   # Server page that renders client-only negotiation UI
   api/                   # API routes for client-side fetching & AI
 components/              # Reusable UI (dashboard, layout, ui/*)
 contexts/                # Global providers (display/reference/drawer/purchasing power base)
@@ -43,8 +43,8 @@ docs/                    # Documentation set
 ## Data fetching patterns
 
 - **Server Components** call `services/*` directly (no internal API hop). Example: `services/inflation/inflationService.ts` fetches and parses SSB inflation data with `cacheLife('inflation')` and `cacheTag('inflation')`.
-- **Client Components** fetch via `app/api/*` + SWR. API routes exist for client-side consumption only (e.g., `app/api/ssb/salary/route.ts`, `app/api/inflation/route.ts`).
-- **Client-only pages**: pages that rely on `localStorage` (negotiation) are marked `'use client'` and may use `next/dynamic` with `{ ssr: false }` inside the client file. Do not place `{ ssr: false }` dynamic imports in Server Components.
+- **Client Components** fetch via `app/api/*` + SWR. API routes exist for client-side consumption only (e.g., `app/api/ssb/salary/route.ts`).
+- **Client-only UI**: pages that rely on `localStorage` (negotiation) keep browser-only logic in a client component that is rendered by a Server Component. Do not place `{ ssr: false }` dynamic imports in Server Components.
 
 ## Caching
 
@@ -74,7 +74,7 @@ docs/                    # Documentation set
 
 ### Negotiation
 
-- `app/negotiation/page.tsx` is client-only to allow `localStorage`.
+- `app/negotiation/page.tsx` is a Server Component that passes inflation data into a client-only negotiation UI to allow `localStorage`.
 - Negotiation UI consumes pay points from the shared `SalaryDataProvider` and purchasing-power statistics from `usePurchasingPower`.
 - AI endpoint in use: `app/api/generate/email/route.ts` (login required). Prompts/schemas live in `lib/prompts.ts` and `lib/schemas`.
 

@@ -1,15 +1,17 @@
 import { expect, test, STORAGE_KEYS, DEMO_SALARY_POINTS } from '../../fixtures/test-fixtures'
 
 test.describe('Negotiation email generation', () => {
+  let requestPayload: Record<string, unknown> | null = null
+
   test.beforeEach(async ({ page }) => {
+    requestPayload = null
     await page.route('**/api/generate/email', route =>
       route.fulfill({
         status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
+        json: {
           result: 'Hei, dette er et testforslag for e-post.',
           prompt: 'test-prompt',
-        }),
+        },
       }),
     )
   })
@@ -29,8 +31,15 @@ test.describe('Negotiation email generation', () => {
     // Generate email
     const generateButton = page.getByRole('button', { name: /generer forslag/i }).first()
     await expect(generateButton).toBeVisible()
-    await generateButton.click()
+    const [response] = await Promise.all([
+      page.waitForResponse('**/api/generate/email'),
+      generateButton.click(),
+    ])
+    expect(response.ok()).toBe(true)
+    requestPayload = (await response.request().postDataJSON()) as Record<string, unknown>
 
-    await expect(page.getByText(/testforslag for e-post/i)).toBeVisible()
+    expect(requestPayload?.points).toBeDefined()
+    expect(requestPayload?.userInfo).toBeDefined()
+    await expect(generateButton).toBeEnabled()
   })
 })

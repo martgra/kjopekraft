@@ -1,14 +1,7 @@
-'use client'
+import NegotiationClientPage from '@/features/negotiation/components/NegotiationClientPage'
+import { getInflationData } from '@/services/inflation'
 
-import dynamic from 'next/dynamic'
-
-// Dynamically import the wrapper with SSR disabled
-// This prevents hydration issues with localStorage-dependent components
-const NegotiationPageWrapper = dynamic(
-  () => import('@/features/negotiation/components/NegotiationPageWrapper'),
-  { ssr: false },
-)
-
-export default function Page() {
-  return <NegotiationPageWrapper />
+export default async function Page() {
+  const inflationData = await getInflationData()
+  return <NegotiationClientPage inflationData={inflationData} />
 }
