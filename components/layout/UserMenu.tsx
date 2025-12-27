@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useId, useRef, useState } from 'react'
+import Image from 'next/image'
 import { TEXT } from '@/lib/constants/text'
 import { useTheme } from '@/contexts/theme/ThemeContext'
 
@@ -78,9 +79,11 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
         aria-controls={menuId}
       >
         {session.user.image ? (
-          <img
+          <Image
             alt={TEXT.sidebar.brandName}
             src={session.user.image}
+            width={40}
+            height={40}
             className="h-full w-full rounded-full object-cover p-0.5 opacity-90 transition-opacity group-hover:opacity-100"
           />
         ) : (

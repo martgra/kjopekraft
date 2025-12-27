@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import type { PayPoint } from '@/domain/salary'
-import type { ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
+import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
 import { viewModes, type ViewMode } from '@/lib/searchParams'
 
 interface UseChartControlsParams {
@@ -16,9 +16,7 @@ export function useChartControls({
   toggleReference,
 }: UseChartControlsParams) {
   void _payPoints
-  const [selectedOccupation, setSelectedOccupation] = useState<ReferenceOccupationSelection | null>(
-    null,
-  )
+  const [selectedOccupation, setSelectedOccupation] = useState<OccupationSelection | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [viewMode, setViewMode] = useQueryState<ViewMode>(
@@ -26,7 +24,7 @@ export function useChartControls({
     parseAsStringLiteral(viewModes).withDefault('graph'),
   )
 
-  const handleOccupationChange = (value: ReferenceOccupationSelection | null) => {
+  const handleOccupationChange = (value: OccupationSelection | null) => {
     setSelectedOccupation(value)
     setApiError(null)
     if (!value && isReferenceEnabled) {

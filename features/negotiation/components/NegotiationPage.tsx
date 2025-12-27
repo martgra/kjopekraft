@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { mutate } from 'swr'
 import { useNegotiationData } from '../hooks/useNegotiationData'
-import { usePurchasingPower } from '@/features/salary/hooks/usePurchasingPower'
-import { DetailsForm, ContextForm, BenefitsForm, type UserInfo } from './forms'
+import { useNegotiationInsights } from '../hooks/useNegotiationInsights'
+import { DetailsForm, ContextForm, BenefitsForm } from './forms'
 import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
 import type { ArgumentBuilderHandle } from '@/components/ui/organisms/ArgumentBuilder/ArgumentBuilder'
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -13,19 +13,18 @@ import { AILoadingState, Badge, Button, Icon } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { useSsbMedianSalary } from '@/features/negotiation/hooks/useSsbMedianSalary'
-import { parseSalaryInput } from '@/lib/utils/parseSalaryInput'
 import { NegotiationSummary } from './NegotiationSummary'
 import {
   NegotiationMarketSelector,
   type NegotiationOccupationSelection,
 } from './NegotiationMarketSelector'
 import { NegotiationArguments } from './NegotiationArguments'
-import { estimateDesiredGrossSalary } from '@/domain/negotiation'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'
 import { useSalaryDataContext } from '@/features/salary/providers/SalaryDataProvider'
 import type { NegotiationEmailContext } from '@/lib/models/types'
 import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 import { useToast } from '@/contexts/toast/ToastContext'
+import type { NegotiationUserInfo } from '@/lib/schemas/negotiation'
 
 interface NegotiationPageProps {
   inflationData: InflationDataPoint[]
@@ -61,28 +60,6 @@ export default function NegotiationPage({
   const { showToast } = useToast()
 
   // Get salary statistics for pre-filling current salary
-  const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear)
-  const grossStats = purchasingPower.statistics
-  const netStats = purchasingPower.net?.statistics
-  const purchasingPowerStats = netStats ?? grossStats
-  const derivedCurrentSalary = grossStats.latestPay ? String(grossStats.latestPay) : ''
-  const hasSalaryHistory = payPoints.length > 0
-  const derivedIsNewJob = payPoints[payPoints.length - 1]?.reason === 'newJob'
-  const inflationGapPercent =
-    typeof purchasingPowerStats?.gapPercent === 'number' &&
-    !Number.isNaN(purchasingPowerStats.gapPercent)
-      ? purchasingPowerStats.gapPercent
-      : null
-  const taxYear =
-    typeof grossStats?.latestYear === 'number' && Number.isFinite(grossStats.latestYear)
-      ? grossStats.latestYear
-      : currentYear
-  const latestInflationRate = inflationData.reduce<InflationDataPoint | null>(
-    (acc, point) => (!acc || point.year > acc.year ? point : acc),
-    null,
-  )
-  const estimatedInflationRate = latestInflationRate ? latestInflationRate.inflation / 100 : 0
-
   const [selectedOccupation, setSelectedOccupation] =
     useState<NegotiationOccupationSelection | null>(null)
 
@@ -94,60 +71,23 @@ export default function NegotiationPage({
     isLoading: isMedianLoading,
   } = useSsbMedianSalary(userInfo.jobTitle, selectedOccupation)
 
-  const desiredSalaryValue = parseSalaryInput(userInfo.desiredSalary)
-  const currentSalaryValue = parseSalaryInput(userInfo.currentSalary)
-  const currentGrossValue = currentSalaryValue ?? purchasingPower.statistics?.latestPay ?? null
-  const desiredVsMedianPercent =
-    medianSalary !== null && desiredSalaryValue !== null
-      ? ((desiredSalaryValue - medianSalary) / medianSalary) * 100
-      : null
-  const desiredVsMedianIsAbove =
-    desiredVsMedianPercent !== null ? desiredVsMedianPercent >= 0 : false
-
-  const suggestedRange = (() => {
-    if (currentGrossValue === null) return null
-    const catchUp =
-      inflationGapPercent !== null && Number.isFinite(inflationGapPercent)
-        ? Math.max(0, -inflationGapPercent)
-        : 0
-    const desiredRaise =
-      desiredSalaryValue !== null
-        ? ((desiredSalaryValue - currentGrossValue) / currentGrossValue) * 100
-        : null
-    const marketRaise =
-      medianSalary !== null ? ((medianSalary - currentGrossValue) / currentGrossValue) * 100 : null
-    const hasSignal = inflationGapPercent !== null || desiredRaise !== null || marketRaise !== null
-    if (!hasSignal) return null
-    const candidates = [catchUp]
-    if (desiredRaise !== null && Number.isFinite(desiredRaise)) candidates.push(desiredRaise)
-    if (marketRaise !== null && Number.isFinite(marketRaise)) candidates.push(marketRaise)
-    const upper = Math.max(...candidates)
-    if (!Number.isFinite(upper) || upper <= 0) return null
-    const min = Math.max(0, Math.min(catchUp, upper))
-    return {
-      min: Math.round(min * 10) / 10,
-      max: Math.round(Math.max(min, upper) * 10) / 10,
-    }
-  })()
-
-  const desiredSalaryEstimate = (() => {
-    if (
-      currentGrossValue === null ||
-      !Number.isFinite(currentGrossValue) ||
-      grossStats?.inflationAdjustedPay == null ||
-      !Number.isFinite(grossStats.inflationAdjustedPay)
-    ) {
-      return null
-    }
-
-    return estimateDesiredGrossSalary({
-      currentGross: currentGrossValue,
-      inflationAdjustedGross: grossStats.inflationAdjustedPay,
-      latestInflationRate: estimatedInflationRate,
-      taxYear,
-      bufferPercent: 0.5,
-    })
-  })()
+  const {
+    purchasingPowerStats,
+    derivedCurrentSalary,
+    hasSalaryHistory,
+    derivedIsNewJob,
+    inflationGapPercent,
+    desiredVsMedianPercent,
+    desiredVsMedianIsAbove,
+    suggestedRange,
+    desiredSalaryEstimate,
+  } = useNegotiationInsights({
+    payPoints,
+    inflationData,
+    currentYear,
+    userInfo,
+    medianSalary,
+  })
 
   // Update current salary when derived value changes
   useEffect(() => {
@@ -181,7 +121,7 @@ export default function NegotiationPage({
   }, [derivedIsNewJob, hasSalaryHistory, persistUserInfo, userInfo.isNewJob])
 
   // Handler for updating user info
-  const updateUserInfo = (updates: Partial<UserInfo>) => {
+  const updateUserInfo = (updates: Partial<NegotiationUserInfo>) => {
     persistUserInfo(updates)
   }
 

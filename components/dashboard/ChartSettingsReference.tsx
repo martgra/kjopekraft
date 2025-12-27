@@ -1,14 +1,11 @@
 'use client'
 
-import {
-  OccupationSearchSelect,
-  type OccupationSelection,
-} from '@/components/ui/occupation/OccupationSearchSelect'
-import { type ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
+import { OccupationSearchSelect } from '@/components/ui/occupation/OccupationSearchSelect'
+import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
 
 interface ChartSettingsReferenceProps {
-  selectedOccupation: ReferenceOccupationSelection | null
-  onOccupationChange: (value: ReferenceOccupationSelection | null) => void
+  selectedOccupation: OccupationSelection | null
+  onOccupationChange: (value: OccupationSelection | null) => void
 }
 
 export function ChartSettingsReference({
@@ -18,8 +15,8 @@ export function ChartSettingsReference({
   return (
     <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
       <OccupationSearchSelect
-        selectedOccupation={selectedOccupation as OccupationSelection | null}
-        onOccupationChange={value => onOccupationChange(value as ReferenceOccupationSelection)}
+        selectedOccupation={selectedOccupation}
+        onOccupationChange={onOccupationChange}
         testIdBase="chart-settings-reference"
         compact
       />
