@@ -1,7 +1,5 @@
-import {
-  OccupationSearchSelect,
-  type OccupationSelection,
-} from '@/components/ui/occupation/OccupationSearchSelect'
+import { OccupationSearchSelect } from '@/components/ui/occupation/OccupationSearchSelect'
+import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
 
 export type NegotiationOccupationSelection = OccupationSelection
 

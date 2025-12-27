@@ -1,26 +1,15 @@
 'use client'
 
-import useSWR from 'swr'
 import { authClient } from '@/lib/auth-client'
 import { TEXT } from '@/lib/constants/text'
 import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 import { UserMenu } from '@/components/layout/UserMenu'
+import { useCredits } from '@/features/credits/hooks/useCredits'
 
 export default function MobileHeader() {
   const { data: session, isPending } = authClient.useSession()
   const { open: openLoginOverlay } = useLoginOverlay()
-  const shouldFetchCredits = Boolean(session?.user)
-  const { data: creditsData } = useSWR<{ credits: { remaining: number; limit: number } }>(
-    shouldFetchCredits ? '/api/credits' : null,
-    async url => {
-      const res = await fetch(url)
-      return (await res.json()) as { credits: { remaining: number; limit: number } }
-    },
-    { revalidateOnFocus: false, refreshInterval: 15000 },
-  )
-  const creditsLabel = creditsData
-    ? `${creditsData.credits.remaining}/${creditsData.credits.limit}`
-    : '—'
+  const { label: creditsLabel } = useCredits({ enabled: Boolean(session?.user) })
 
   return (
     <>

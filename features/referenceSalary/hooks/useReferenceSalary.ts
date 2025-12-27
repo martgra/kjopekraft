@@ -4,24 +4,17 @@
 
 import useSWR from 'swr'
 import type { ReferenceSalaryResponse, ReferenceDataPoint, OccupationDefinition } from '../types'
-import {
-  DEFAULT_OCCUPATION,
-  OCCUPATIONS,
-  type OccupationKey,
-  type ReferenceOccupationSelection,
-} from '../occupations'
+import { DEFAULT_OCCUPATION, OCCUPATIONS, type OccupationKey } from '../occupations'
+import { fetchJson } from '@/lib/api/fetchJson'
+import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url)
-  if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    throw new Error(`Reference salary request failed (${res.status}): ${text}`)
-  }
-  return res.json()
-}
+const fetcher = (url: string) =>
+  fetchJson<ReferenceSalaryResponse>(url, undefined, {
+    errorPrefix: 'Reference salary request failed',
+  })
 
 export type UseReferenceSalaryOptions = {
-  occupation?: ReferenceOccupationSelection | OccupationKey | null
+  occupation?: OccupationSelection | OccupationKey | null
   fromYear?: number
   enabled?: boolean // Allow conditional fetching
 }
@@ -29,20 +22,20 @@ export type UseReferenceSalaryOptions = {
 export function useReferenceSalary(options: UseReferenceSalaryOptions = {}) {
   const { occupation = DEFAULT_OCCUPATION, fromYear = 2015, enabled = true } = options
 
-  const occupationDef: OccupationDefinition | ReferenceOccupationSelection | null =
+  const occupationDef: OccupationDefinition | OccupationSelection | null =
     occupation && typeof occupation === 'string'
       ? (OCCUPATIONS[occupation] as OccupationDefinition)
       : occupation
 
   const occupationCode = occupationDef?.code
   const occupationLabel =
-    (occupationDef as ReferenceOccupationSelection | undefined)?.label ??
+    (occupationDef as OccupationSelection | undefined)?.label ??
     (occupationDef && 'label' in occupationDef ? occupationDef.label : undefined)
   const sector =
     (occupationDef as { sector?: string } | undefined)?.sector !== undefined
       ? (occupationDef as { sector?: string }).sector
       : undefined // Optional sector filter
-  const provider = (occupationDef as ReferenceOccupationSelection | undefined)?.provider ?? 'ssb'
+  const provider = (occupationDef as OccupationSelection | undefined)?.provider ?? 'ssb'
   const effectiveFromYear =
     occupationDef && 'availableFromYear' in occupationDef && occupationDef.availableFromYear
       ? occupationDef.availableFromYear > fromYear

@@ -1,5 +1,5 @@
 import { TEXT } from '@/lib/constants/text'
-import type { ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
+import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
 import { createTestId } from '@/lib/testing/testIds'
 import { ChartSettingsModeToggle } from './ChartSettingsModeToggle'
 import { ChartSettingsInflationBase } from './ChartSettingsInflationBase'
@@ -10,10 +10,10 @@ interface ChartSettingsModalProps {
   isNetMode: boolean
   inflationBaseValue: string
   inflationBaseOptions: { value: string; label: string }[]
-  selectedOccupation: ReferenceOccupationSelection | null
+  selectedOccupation: OccupationSelection | null
   onToggleMode: () => void
   onChangeInflationBase: (value: string) => void
-  onOccupationChange: (value: ReferenceOccupationSelection | null) => void
+  onOccupationChange: (value: OccupationSelection | null) => void
   onClose: () => void
 }
 

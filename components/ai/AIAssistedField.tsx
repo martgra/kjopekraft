@@ -92,7 +92,7 @@ export function AIAssistedField({
     setAiAnswer('')
     setHasAiUpdate(false)
     validator.reset()
-  }, [resetSignal])
+  }, [resetSignal, validator])
 
   return (
     <div className="space-y-2">

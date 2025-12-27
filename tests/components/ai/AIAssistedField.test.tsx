@@ -92,7 +92,7 @@ describe('AIAssistedField', () => {
       expect(onChange).toHaveBeenCalledWith('AI forslag')
     })
 
-    const revertButton = screen.getByTitle(TEXT.common.reset)
+    const revertButton = await screen.findByLabelText(TEXT.common.reset)
     fireEvent.click(revertButton)
 
     expect(reset).toHaveBeenCalled()
