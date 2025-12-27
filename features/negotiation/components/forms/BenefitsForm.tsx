@@ -3,11 +3,11 @@
 import { Card, Icon } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import { NEGOTIATION_BENEFIT_OPTIONS } from '@/lib/negotiation/benefitOptions'
-import type { UserInfo } from './DetailsForm'
+import type { NegotiationUserInfo } from '@/lib/schemas/negotiation'
 
 export interface BenefitsFormProps {
-  userInfo: UserInfo
-  onChange: (updates: Partial<UserInfo>) => void
+  userInfo: NegotiationUserInfo
+  onChange: (updates: Partial<NegotiationUserInfo>) => void
 }
 
 const inputClasses =

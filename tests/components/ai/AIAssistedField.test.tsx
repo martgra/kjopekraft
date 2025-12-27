@@ -14,25 +14,27 @@ let mockPendingQuestion: string | null = null
 let mockIsLoading = false
 let mockStatus: 'question' | 'done' | null = null
 
+const mockValidator = {
+  suggestion: '',
+  messages: [] as unknown[],
+  pendingQuestion: null as string | null,
+  status: null as 'question' | 'done' | null,
+  isOpen: false,
+  isLoading: false,
+  error: null as string | null,
+  canValidate: () => mockCanValidate,
+  startValidation,
+  answerQuestion,
+  finalizeEarly,
+  handleTrigger: vi.fn(),
+  openOverlay: vi.fn(),
+  closeOverlay: vi.fn(),
+  commitSuggestion: vi.fn(),
+  reset,
+}
+
 vi.mock('@/features/aiTextValidator/useAiTextValidator', () => ({
-  useAiTextValidator: () => ({
-    suggestion: mockSuggestion,
-    messages: [],
-    pendingQuestion: mockPendingQuestion,
-    status: mockStatus,
-    isOpen: false,
-    isLoading: mockIsLoading,
-    error: null,
-    canValidate: () => mockCanValidate,
-    startValidation,
-    answerQuestion,
-    finalizeEarly,
-    handleTrigger: vi.fn(),
-    openOverlay: vi.fn(),
-    closeOverlay: vi.fn(),
-    commitSuggestion: vi.fn(),
-    reset,
-  }),
+  useAiTextValidator: () => mockValidator,
 }))
 
 describe('AIAssistedField', () => {
@@ -46,10 +48,15 @@ describe('AIAssistedField', () => {
     mockIsLoading = false
     mockCanValidate = true
     mockStatus = null
+    mockValidator.suggestion = ''
+    mockValidator.pendingQuestion = null
+    mockValidator.isLoading = false
+    mockValidator.status = null
   })
 
   it('triggers AI validation and applies suggestion to the field', async () => {
     mockSuggestion = 'AI forbedret tekst'
+    mockValidator.suggestion = mockSuggestion
     const onChange = vi.fn()
 
     render(
@@ -75,6 +82,7 @@ describe('AIAssistedField', () => {
 
   it('shows revert after AI update and restores the previous value', async () => {
     mockSuggestion = 'AI forslag'
+    mockValidator.suggestion = mockSuggestion
     const onChange = vi.fn()
 
     render(
@@ -92,7 +100,7 @@ describe('AIAssistedField', () => {
       expect(onChange).toHaveBeenCalledWith('AI forslag')
     })
 
-    const revertButton = screen.getByTitle(TEXT.common.reset)
+    const revertButton = await screen.findByLabelText(TEXT.common.reset)
     fireEvent.click(revertButton)
 
     expect(reset).toHaveBeenCalled()

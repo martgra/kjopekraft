@@ -2,21 +2,11 @@
 
 import { Card, Icon } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
-
-export interface UserInfo {
-  jobTitle: string
-  industry: string
-  isNewJob: boolean
-  currentSalary: string
-  desiredSalary: string
-  marketData: string
-  benefits: string[]
-  otherBenefits: string
-}
+import type { NegotiationUserInfo } from '@/lib/schemas/negotiation'
 
 export interface DetailsFormProps {
-  userInfo: UserInfo
-  onChange: (updates: Partial<UserInfo>) => void
+  userInfo: NegotiationUserInfo
+  onChange: (updates: Partial<NegotiationUserInfo>) => void
   showIsNewJobControl?: boolean
 }
 

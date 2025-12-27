@@ -17,7 +17,6 @@ import { useChartControls } from './hooks/useChartControls'
 import { createTestId } from '@/lib/testing/testIds'
 import { reasonToLabel } from '@/lib/formatters/salaryFormatting'
 import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
-import type { ReferenceOccupationSelection } from '@/features/referenceSalary/occupations'
 
 interface ChartSectionProps {
   payPoints: PayPoint[]
@@ -87,7 +86,7 @@ function ChartSection({
     payPoints,
     inflationData,
     currentYear,
-    selectedOccupation as ReferenceOccupationSelection | null,
+    selectedOccupation,
     baseYearOverride,
   )
 

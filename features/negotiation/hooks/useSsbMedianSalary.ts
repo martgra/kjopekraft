@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import { mapJobTitleToOccupation } from '@/lib/ssb/occupationMapper'
+import { fetchJson } from '@/lib/api/fetchJson'
 
 type SalarySeriesPoint = {
   year: number
@@ -15,14 +16,8 @@ type SalarySeriesResponse = {
   derived?: { yearlyNok?: SalarySeriesPoint[] }
 }
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url)
-  if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    throw new Error(`SSB request failed (${res.status}): ${text}`)
-  }
-  return res.json()
-}
+const fetcher = (url: string) =>
+  fetchJson<SalarySeriesResponse>(url, undefined, { errorPrefix: 'SSB request failed' })
 
 type OccupationOverride = { code: string; label?: string }
 
