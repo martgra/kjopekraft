@@ -8,7 +8,7 @@ Kjøpekraft is a Next.js 16 App Router app built with a layered, feature-based s
 - **React** 19.2.2
 - **TypeScript** 5.9 (strict)
 - **Bun** (runtime + package manager)
-- **Tailwind CSS** 4 (CSS variables, light theme only)
+- **Tailwind CSS** 4 (CSS variables, light + dark themes)
 - **Charting**: Chart.js 4.4
 - **Client caching**: SWR 2.3
 - **AI**: `ai` + `@ai-sdk/openai`
@@ -61,7 +61,7 @@ docs/                    # Documentation set
 - `components/dashboard/DashboardWithDrawer` wraps `Dashboard` in the shared `SalaryDataProvider`, making pay points the single source of truth for dashboard + negotiation.
 - Purchasing-power series and summary stats (gross + net) come from `features/salary/hooks/usePurchasingPower`, which also respects the base-year override from `PurchasingPowerBaseContext`.
 - Calculations and validation are delegated to `domain/salary` and `domain/inflation`.
-- Chart data prep lives in `features/visualization` hooks/components; Chart.js config is shared from `lib/chartjs.ts`.
+- Chart data prep lives in `features/visualization` hooks/components; Chart.js config is shared from `features/visualization/utils/payChartConfig.ts` and Chart.js is loaded lazily in `features/visualization/components/PayChart.tsx`.
 - Inflation baseline: `resolvePurchasingPowerBaseYear` picks the most recent significant change (promotion/new job) that is not in the latest year; if the latest pay point is also significant, it falls back to the previous significant year. Users can override via the chart settings base-year input (validated against available pay-point years).
 
 ### Reference salary (SSB)
@@ -81,7 +81,7 @@ docs/                    # Documentation set
 ## UI conventions
 
 - Text comes from `lib/constants/text.ts` (single source of truth).
-- Styling: Tailwind CSS v4 with CSS variables; light mode only.
+- Styling: Tailwind CSS v4 with CSS variables; light + dark mode.
 - Atomic UI under `components/ui/*`; dashboard/layout composites live in `components/dashboard` and `components/layout`.
 
 ## Testing pointers

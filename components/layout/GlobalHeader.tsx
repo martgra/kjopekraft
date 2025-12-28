@@ -5,6 +5,7 @@ import { TEXT } from '@/lib/constants/text'
 import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 import { UserMenu } from '@/components/layout/UserMenu'
 import { useCredits } from '@/features/credits/hooks/useCredits'
+import { Cluster } from '@/components/ui/layout'
 
 export default function GlobalHeader() {
   const { data: session, isPending } = authClient.useSession()
@@ -12,9 +13,9 @@ export default function GlobalHeader() {
   const { label: creditsLabel } = useCredits({ enabled: Boolean(session?.user) })
 
   return (
-    <header className="sticky top-0 z-40 hidden border-b border-[var(--border-light)] bg-white/90 backdrop-blur lg:block dark:border-gray-800 dark:bg-gray-900/90">
+    <header className="sticky top-0 z-40 hidden border-b border-[var(--border-light)] bg-[var(--surface-light)]/90 backdrop-blur lg:block">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3">
+        <Cluster gap="md" align="center">
           <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-400 shadow-md">
             <span className="material-symbols-outlined text-xl text-white">
               account_balance_wallet
@@ -32,7 +33,7 @@ export default function GlobalHeader() {
               </div>
             ) : null}
           </div>
-        </div>
+        </Cluster>
 
         <div className="flex items-center gap-3">
           <UserMenu

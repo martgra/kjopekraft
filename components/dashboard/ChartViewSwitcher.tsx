@@ -19,7 +19,7 @@ export function ChartViewSwitcher({ viewMode, options, onChange }: ChartViewSwit
 
   return (
     <div
-      className="grid grid-cols-3 gap-1 rounded-xl border border-[var(--border-light)]/70 bg-[var(--color-gray-50)] p-1 md:inline-flex md:w-fit md:gap-0 dark:bg-white/5"
+      className="grid grid-cols-3 gap-1 rounded-xl border border-[var(--border-light)]/70 bg-[var(--surface-subtle)] p-1 md:inline-flex md:w-fit md:gap-0"
       data-testid={testId('container')}
     >
       {options.map(option => (
@@ -29,7 +29,7 @@ export function ChartViewSwitcher({ viewMode, options, onChange }: ChartViewSwit
           className={cn(
             'w-full rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition md:w-auto md:px-3 md:py-1.5',
             viewMode === option.value
-              ? 'bg-white text-[var(--text-main)] shadow-sm dark:bg-slate-700'
+              ? 'bg-[var(--surface-light)] text-[var(--text-main)] shadow-sm'
               : 'text-[var(--text-muted)] hover:text-[var(--text-main)]',
           )}
           aria-pressed={viewMode === option.value}

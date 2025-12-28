@@ -1,5 +1,5 @@
 import { useActionState, useMemo, useOptimistic, useState, startTransition } from 'react'
-import type { NegotiationPoint } from '@/lib/models/types'
+import type { NegotiationPoint } from '@/lib/schemas/negotiation'
 import {
   defaultNegotiationDraft,
   readDraftFromDocument,

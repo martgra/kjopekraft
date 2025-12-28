@@ -1,15 +1,16 @@
 import { forwardRef, type HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils/cn'
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'elevated' | 'outlined' | 'flat'
   padding?: 'none' | 'sm' | 'md' | 'lg'
   interactive?: boolean
 }
 
 const variants = {
-  default: 'bg-[var(--surface-light)] border border-[var(--border-light)] shadow-sm',
-  elevated: 'bg-[var(--surface-light)] shadow-md',
+  default:
+    'bg-[var(--surface-light)] border border-[var(--border-light)] shadow-[var(--shadow-soft)]',
+  elevated: 'bg-[var(--surface-light)] shadow-[var(--shadow-strong)]',
   outlined: 'bg-transparent border border-[var(--border-light)]',
   flat: 'bg-[var(--surface-light)]',
 }
@@ -27,7 +28,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-xl',
+          'rounded-[var(--radius-card)]',
           variants[variant],
           paddings[padding],
           interactive && 'cursor-pointer transition-shadow duration-150 hover:shadow-lg',

@@ -3,6 +3,7 @@ import type { SalaryStatistics } from '@/domain/salary'
 import { calculateNetIncome } from '@/domain/tax'
 import { TEXT } from '@/lib/constants/text'
 import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
+import { Grid } from '@/components/ui/layout'
 
 interface MetricGridProps {
   statistics: SalaryStatistics
@@ -25,12 +26,13 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
     }
   }
 
+  const displayPay = (year: number, grossPay: number) =>
+    isNetMode ? safeNetIncome(year, grossPay) : grossPay
+
   // Calculate display values based on mode (gross or net)
-  const displayLatestPay = isNetMode ? safeNetIncome(latestYear, latestPay) : latestPay
-  const displayStartingPay = isNetMode ? safeNetIncome(startingYear, startingPay) : startingPay
-  const displayInflationAdjustedPay = isNetMode
-    ? safeNetIncome(latestYear, inflationAdjustedPay)
-    : inflationAdjustedPay
+  const displayLatestPay = displayPay(latestYear, latestPay)
+  const displayStartingPay = displayPay(startingYear, startingPay)
+  const displayInflationAdjustedPay = displayPay(latestYear, inflationAdjustedPay)
 
   // Calculate year-over-year change based on display values
   const yearlyChange = displayLatestPay - displayStartingPay
@@ -45,7 +47,7 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
     : gapPercent
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+    <Grid columns={3} gap="sm" className="grid-cols-2 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
       {/* Total Annual Salary */}
       <MetricCard
         title={isNetMode ? TEXT.metrics.totalAnnualNetSalary : TEXT.metrics.totalAnnualSalary}
@@ -95,6 +97,6 @@ export default function MetricGrid({ statistics, isNetMode = false }: MetricGrid
           isPositive: yearlyChange >= 0,
         }}
       />
-    </div>
+    </Grid>
   )
 }

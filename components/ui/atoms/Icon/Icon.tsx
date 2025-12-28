@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils/cn'
 
-export interface IconProps {
+interface IconProps {
   name: string
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   className?: string

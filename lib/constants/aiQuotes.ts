@@ -2,7 +2,7 @@
  * Quotes to display while AI is generating content
  * Inspired by movie references and sci-fi themes
  */
-export const AI_GENERATION_QUOTES = [
+const AI_GENERATION_QUOTES = [
   'Contemplating the ifs.',
   'Checking all 14,000,605 outcomes.',
   'Consulting the oracle.',

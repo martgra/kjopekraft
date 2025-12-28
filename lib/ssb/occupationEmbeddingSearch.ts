@@ -15,7 +15,7 @@ type EmbeddingFile = {
   items: EmbeddedOccupation[]
 }
 
-export type EmbeddingResult = {
+type EmbeddingResult = {
   code: string
   label: string
   score: number // cosine similarity (0..1)
@@ -89,10 +89,7 @@ async function getOrCreateQueryEmbedding(query: string): Promise<number[]> {
   return vec
 }
 
-export async function searchOccupationsByEmbedding(
-  query: string,
-  limit = 8,
-): Promise<EmbeddingResult[]> {
+async function searchOccupationsByEmbedding(query: string, limit = 8): Promise<EmbeddingResult[]> {
   if (!query.trim()) return []
   if (!EMBEDDINGS.items.length || !EMBEDDINGS.dim) return []
 
@@ -111,7 +108,7 @@ export async function searchOccupationsByEmbedding(
   return scored.slice(0, limit)
 }
 
-export function searchOccupationsByCachedEmbedding(query: string, limit = 8): EmbeddingResult[] {
+function searchOccupationsByCachedEmbedding(query: string, limit = 8): EmbeddingResult[] {
   if (!query.trim()) return []
   if (!EMBEDDINGS.items.length || !EMBEDDINGS.dim) return []
 
@@ -129,7 +126,7 @@ export function searchOccupationsByCachedEmbedding(query: string, limit = 8): Em
   return scored.slice(0, limit)
 }
 
-export type HybridResult = {
+type HybridResult = {
   code: string
   label: string
   fuseScore?: number // lower is better in Fuse
@@ -137,13 +134,13 @@ export type HybridResult = {
   finalScore: number // higher is better
 }
 
-export type HybridSearchResponse = {
+type HybridSearchResponse = {
   results: HybridResult[]
   usedEmbedding: boolean
   usedCachedEmbedding: boolean
 }
 
-export type HybridSearchOptions = {
+type HybridSearchOptions = {
   allowEmbedding?: boolean
   allowCachedEmbedding?: boolean
 }

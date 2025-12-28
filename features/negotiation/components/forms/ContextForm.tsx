@@ -4,7 +4,7 @@ import { Card, Icon } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import type { NegotiationUserInfo } from '@/lib/schemas/negotiation'
 
-export interface ContextFormProps {
+interface ContextFormProps {
   userInfo: NegotiationUserInfo
   onChange: (updates: Partial<NegotiationUserInfo>) => void
   showMarketData?: boolean

@@ -1,8 +1,6 @@
 'use client'
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { resolvePurchasingPowerBaseYear } from '@/domain/salary'
-import type { PayPoint } from '@/domain/salary'
 
 type BaseSelection = 'auto' | number
 
@@ -69,15 +67,4 @@ export function usePurchasingPowerBase() {
   if (!ctx)
     throw new Error('usePurchasingPowerBase must be used within PurchasingPowerBaseProvider')
   return ctx
-}
-
-export function useResolvedPurchasingPowerBase(
-  payPoints: PayPoint[],
-  currentYear: number,
-): number | null {
-  const { baseYearOverride } = usePurchasingPowerBase()
-  return useMemo(
-    () => resolvePurchasingPowerBaseYear(payPoints, currentYear, baseYearOverride),
-    [payPoints, currentYear, baseYearOverride],
-  )
 }

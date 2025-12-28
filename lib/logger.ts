@@ -137,5 +137,6 @@ class ChildLogger {
 // Singleton instance
 export const logger = new Logger()
 
-// Export types for external use
-export type { LogLevel, LogContext, LogEntry }
+export function logServiceError(service: string, error: unknown, context: LogContext = {}) {
+  logger.error(`${service} error`, error, context)
+}

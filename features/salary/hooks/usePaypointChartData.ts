@@ -34,6 +34,7 @@ export function usePaypointChartData(
     data: referenceData,
     isLoading: isReferenceLoading,
     error: referenceError,
+    metadata: referenceMetadata,
   } = useReferenceSalary({
     occupation,
     fromYear: 2015,
@@ -41,10 +42,14 @@ export function usePaypointChartData(
   })
 
   // Build series from actual data points only (no interpolation)
-  const actualSeries: ScatterDataPoint[] = payPoints.map(p => ({
-    x: p.year,
-    y: p.pay,
-  }))
+  const actualSeries: ScatterDataPoint[] = useMemo(
+    () =>
+      payPoints.map(p => ({
+        x: p.year,
+        y: p.pay,
+      })),
+    [payPoints],
+  )
 
   const chartBaseYear = useMemo(
     () => resolvePurchasingPowerBaseYear(payPoints, currentYear, baseYearOverride),
@@ -63,20 +68,22 @@ export function usePaypointChartData(
   }, [chartBaseYear, payPoints, inflationData, currentYear])
 
   // Build reference series (pre-calculated yearly, filtered to user's year range)
-  const referenceSeries: ScatterDataPoint[] =
-    isReferenceEnabled && referenceData.length > 0 && yearRange
-      ? filterReferenceByYearRange(referenceData, yearRange.minYear, yearRange.maxYear).map(
-          point => ({
-            x: point.year,
-            y:
-              point.value === null
-                ? null
-                : isNetMode
-                  ? calculateNetIncome(point.value, point.year)
-                  : point.value,
-          }),
-        )
-      : []
+  const referenceSeries: ScatterDataPoint[] = useMemo(() => {
+    if (!isReferenceEnabled || referenceData.length === 0 || !yearRange) {
+      return []
+    }
+    return filterReferenceByYearRange(referenceData, yearRange.minYear, yearRange.maxYear).map(
+      point => ({
+        x: point.year,
+        y:
+          point.value === null
+            ? null
+            : isNetMode
+              ? calculateNetIncome(point.value, point.year)
+              : point.value,
+      }),
+    )
+  }, [isReferenceEnabled, referenceData, yearRange, isNetMode])
 
   return {
     isLoading: isLoading || (isReferenceEnabled && isReferenceLoading),
@@ -85,6 +92,7 @@ export function usePaypointChartData(
     referenceSeries,
     salaryData: adjustedPayData,
     referenceData,
+    referenceMetadata,
     yearRange,
     referenceError,
   }

@@ -19,7 +19,7 @@ type ValidationResponse =
   | { status: 'question'; question: string; improvedText: string }
   | { status: 'done'; improvedText: string }
 
-export interface UseAiTextValidatorOptions {
+interface UseAiTextValidatorOptions {
   endpoint?: string
   enabled?: boolean
   trigger?: TriggerConfig
@@ -30,7 +30,7 @@ export interface UseAiTextValidatorOptions {
   onCommit?: (value: string) => void
 }
 
-export interface UseAiTextValidatorResult {
+interface UseAiTextValidatorResult {
   suggestion: string
   messages: ChatMessage[]
   pendingQuestion: string | null

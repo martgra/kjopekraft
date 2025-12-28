@@ -12,19 +12,7 @@ export function buildInflationIndex(
   baseYear: number,
   endYear: number,
 ): Map<number, number> {
-  const rateMap = new Map<number, number>(inflation.map(d => [d.year, d.inflation / 100]))
-  const indexMap = new Map<number, number>()
-
-  let idx = 1
-  indexMap.set(baseYear, idx)
-
-  for (let y = baseYear + 1; y <= endYear; y++) {
-    const r = rateMap.get(y) ?? 0
-    idx *= 1 + r
-    indexMap.set(y, idx)
-  }
-
-  return indexMap
+  return buildInflationIndexRange(inflation, baseYear, baseYear, endYear)
 }
 
 /**
@@ -44,7 +32,9 @@ export function adjustForInflation(
 ): number {
   if (fromYear === toYear) return value
 
-  const indexMap = buildInflationIndex(inflation, fromYear, toYear)
+  const startYear = Math.min(fromYear, toYear)
+  const endYear = Math.max(fromYear, toYear)
+  const indexMap = buildInflationIndexRange(inflation, fromYear, startYear, endYear)
   const factor = indexMap.get(toYear) ?? 1
 
   return Math.round(value * factor)
@@ -56,4 +46,37 @@ export function adjustForInflation(
 export function getInflationRate(year: number, inflation: InflationDataPoint[]): number {
   const dataPoint = inflation.find(d => d.year === year)
   return dataPoint ? dataPoint.inflation : 0
+}
+
+/**
+ * Build cumulative inflation index across a full year range around a base year
+ */
+export function buildInflationIndexRange(
+  inflation: InflationDataPoint[],
+  baseYear: number,
+  startYear: number,
+  endYear: number,
+): Map<number, number> {
+  const normalizedStart = Math.min(startYear, endYear)
+  const normalizedEnd = Math.max(startYear, endYear)
+  const rateMap = new Map<number, number>(inflation.map(d => [d.year, d.inflation / 100]))
+  const indexMap = new Map<number, number>()
+
+  let idx = 1
+  indexMap.set(baseYear, idx)
+
+  for (let y = baseYear + 1; y <= normalizedEnd; y++) {
+    const r = rateMap.get(y) ?? 0
+    idx *= 1 + r
+    indexMap.set(y, idx)
+  }
+
+  idx = 1
+  for (let y = baseYear - 1; y >= normalizedStart; y--) {
+    const r = rateMap.get(y + 1) ?? 0
+    idx /= 1 + r
+    indexMap.set(y, idx)
+  }
+
+  return indexMap
 }

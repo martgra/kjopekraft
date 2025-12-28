@@ -8,15 +8,18 @@ import {
 import { getServerSession } from '@/services/auth/getSession'
 import { getDailyCreditsForUser, checkAndSpendCredits } from '@/services/credits/creditsService'
 import { getUserProfile } from '@/services/users/userProfileService'
+import { attachRequestId, getRequestId } from '@/lib/api/requestId'
+import { logServiceError } from '@/lib/logger'
 
 const fuse = createOccupationFuse(SSB_OCCUPATION_DOCS)
 
 export async function GET(req: NextRequest) {
+  const requestId = getRequestId(req)
   const q = req.nextUrl.searchParams.get('q')?.trim() ?? ''
   const limit = Number(req.nextUrl.searchParams.get('limit') ?? 8)
 
   if (!q) {
-    return NextResponse.json({ results: [] })
+    return attachRequestId(NextResponse.json({ results: [] }), requestId)
   }
 
   try {
@@ -56,20 +59,26 @@ export async function GET(req: NextRequest) {
           fuseScore: r.score,
           finalScore: 1 - (r.score ?? 1),
         }))
-        return NextResponse.json({ results: fallback, fallback: true, creditsExhausted: true })
+        return attachRequestId(
+          NextResponse.json({ results: fallback, fallback: true, creditsExhausted: true }),
+          requestId,
+        )
       }
       spentCredits = true
     }
 
-    return NextResponse.json({ results: search.results, creditsExhausted, spentCredits })
+    return attachRequestId(
+      NextResponse.json({ results: search.results, creditsExhausted, spentCredits }),
+      requestId,
+    )
   } catch (error) {
-    console.warn('Occupation search fallback (Fuse only):', error)
+    logServiceError('ssbOccupationsRoute', error, { q, limit, requestId })
     const fallback = searchSsbOccupations(fuse, q, limit).map(r => ({
       code: r.code,
       label: r.label,
       fuseScore: r.score,
       finalScore: 1 - (r.score ?? 1),
     }))
-    return NextResponse.json({ results: fallback, fallback: true })
+    return attachRequestId(NextResponse.json({ results: fallback, fallback: true }), requestId)
   }
 }

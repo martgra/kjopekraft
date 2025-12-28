@@ -21,6 +21,12 @@ const navItems: NavItem[] = [
   { href: '/settings', labelKey: 'navSettings', icon: 'settings', disabled: true },
 ]
 
+function getNavItemClass(isActive: boolean, isDisabled: boolean) {
+  if (isDisabled) return 'cursor-not-allowed opacity-50'
+  if (isActive) return 'bg-[var(--primary)]/10 text-[var(--primary)]'
+  return 'text-[var(--text-main)] hover:bg-[var(--surface-subtle)]'
+}
+
 export default function Sidebar() {
   const pathname = usePathname()
 
@@ -49,13 +55,10 @@ export default function Sidebar() {
           {navItems.map(item => {
             const isActive = pathname === item.href
             const label = TEXT.sidebar[item.labelKey]
-            const baseClassName = `flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
-              item.disabled
-                ? 'cursor-not-allowed opacity-50'
-                : isActive
-                  ? 'bg-[var(--primary)]/10 text-[var(--primary)]'
-                  : 'text-[var(--text-main)] hover:bg-gray-100'
-            }`
+            const baseClassName = `flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${getNavItemClass(
+              isActive,
+              Boolean(item.disabled),
+            )}`
 
             if (item.disabled) {
               return (
@@ -63,7 +66,7 @@ export default function Sidebar() {
                   <div className={baseClassName}>
                     <span className="material-symbols-outlined">{item.icon}</span>
                     <p className="text-sm font-medium">{label}</p>
-                    <span className="ml-auto rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
+                    <span className="ml-auto rounded bg-[var(--surface-subtle)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
                       {TEXT.sidebar.comingSoon}
                     </span>
                   </div>

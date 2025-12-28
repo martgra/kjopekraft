@@ -591,5 +591,8 @@ export const TEXT = {
     estimated: 'Estimert',
     official: 'Offisiell',
     estimatedNote: 'Estimert basert på SSB lønnsindeks',
+    fallbackNotice: 'Kunne ikke hente ferske SSB-data. Viser sist kjente tall.',
+    stortingFallbackNotice: 'Kunne ikke hente ferske data fra Stortinget. Viser sist kjente tall.',
+    fetchError: 'Kunne ikke hente referansedata akkurat nå.',
   },
 }

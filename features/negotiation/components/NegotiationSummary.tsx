@@ -7,7 +7,7 @@ import { formatCurrency } from '@/lib/formatters/salaryFormatting'
 
 type SuggestedRange = { min: number; max: number } | null
 
-export interface NegotiationSummaryProps {
+interface NegotiationSummaryProps {
   inflationGapPercent: number | null
   medianSalary: number | null
   medianYear: number | null

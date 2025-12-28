@@ -1,6 +1,5 @@
 /// <reference types="vitest" />
 
-import { getStortingReferenceSalary } from '@/services/storting/stortingSalaryService'
 import { cacheLife, cacheTag } from 'next/cache'
 
 vi.mock('next/cache', () => ({
@@ -26,11 +25,13 @@ const sampleHtml = `
 describe('stortingSalaryService', () => {
   beforeEach(() => {
     mockFetch.mockReset()
+    vi.resetModules()
   })
 
   it('parses HTML table into reference salary response', async () => {
     mockFetch.mockResolvedValue({ ok: true, text: async () => sampleHtml })
 
+    const { getStortingReferenceSalary } = await import('@/services/storting/stortingSalaryService')
     const result = await getStortingReferenceSalary(2020)
     expect(mockFetch).toHaveBeenCalled()
     expect(cacheLife).toHaveBeenCalledWith('ssb')
@@ -45,6 +46,7 @@ describe('stortingSalaryService', () => {
 
   it('throws on non-200 response', async () => {
     mockFetch.mockResolvedValue({ ok: false, status: 500 })
+    const { getStortingReferenceSalary } = await import('@/services/storting/stortingSalaryService')
     await expect(getStortingReferenceSalary(2020)).rejects.toThrow(
       'Stortinget request failed (500)',
     )
@@ -55,6 +57,7 @@ describe('stortingSalaryService', () => {
       ok: true,
       text: async () => '<html><body>No table</body></html>',
     })
+    const { getStortingReferenceSalary } = await import('@/services/storting/stortingSalaryService')
     await expect(getStortingReferenceSalary(2020)).rejects.toThrow(
       'Stortinget table not found in HTML',
     )

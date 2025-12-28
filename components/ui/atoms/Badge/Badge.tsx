@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils/cn'
 
-export interface BadgeProps {
+interface BadgeProps {
   children: React.ReactNode
   variant?: 'default' | 'success' | 'warning' | 'error' | 'info' | 'primary'
   size?: 'sm' | 'md'
@@ -9,21 +9,21 @@ export interface BadgeProps {
 }
 
 const variants = {
-  default: 'bg-[var(--surface-subtle)] text-[var(--text-main)]',
-  success: 'bg-[var(--color-green-100)] text-[var(--primary)]',
-  warning: 'bg-[var(--color-yellow-100)] text-[var(--accent)]',
-  error: 'bg-red-500/10 text-red-400',
-  info: 'bg-[var(--color-blue-100)] text-[var(--secondary)]',
-  primary: 'bg-[var(--primary)]/10 text-[var(--primary)]',
+  default: 'bg-[var(--badge-default-bg)] text-[var(--badge-default-text)]',
+  success: 'bg-[var(--badge-success-bg)] text-[var(--badge-success-text)]',
+  warning: 'bg-[var(--badge-warning-bg)] text-[var(--badge-warning-text)]',
+  error: 'bg-[var(--badge-error-bg)] text-[var(--badge-error-text)]',
+  info: 'bg-[var(--badge-info-bg)] text-[var(--badge-info-text)]',
+  primary: 'bg-[var(--badge-primary-bg)] text-[var(--badge-primary-text)]',
 }
 
 const ringVariants = {
-  default: 'ring-1 ring-inset ring-[var(--border-light)]',
-  success: 'ring-1 ring-inset ring-[var(--primary)]/20',
-  warning: 'ring-1 ring-inset ring-[var(--accent)]/20',
-  error: 'ring-1 ring-inset ring-red-500/20',
-  info: 'ring-1 ring-inset ring-[var(--secondary)]/20',
-  primary: 'ring-1 ring-inset ring-[var(--primary)]/20',
+  default: 'ring-1 ring-inset ring-[var(--badge-default-ring)]',
+  success: 'ring-1 ring-inset ring-[var(--badge-success-ring)]',
+  warning: 'ring-1 ring-inset ring-[var(--badge-warning-ring)]',
+  error: 'ring-1 ring-inset ring-[var(--badge-error-ring)]',
+  info: 'ring-1 ring-inset ring-[var(--badge-info-ring)]',
+  primary: 'ring-1 ring-inset ring-[var(--badge-primary-ring)]',
 }
 
 const sizes = {

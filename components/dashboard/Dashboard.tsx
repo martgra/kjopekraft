@@ -60,6 +60,10 @@ export default function Dashboard({
     removePoint,
   })
 
+  const displayStatistics = isNetMode
+    ? (purchasingPower.net?.statistics ?? purchasingPower.statistics)
+    : purchasingPower.statistics
+
   // Clear editing state when overlays are closed
   useEffect(() => {
     if (!isDrawerOpen && !isFormModalOpen) {
@@ -105,11 +109,6 @@ export default function Dashboard({
       </div>
     )
   }
-
-  // Shared props for both mobile and desktop
-  const displayStatistics = isNetMode
-    ? (purchasingPower.net?.statistics ?? purchasingPower.statistics)
-    : purchasingPower.statistics
 
   const commonProps = {
     payPoints,

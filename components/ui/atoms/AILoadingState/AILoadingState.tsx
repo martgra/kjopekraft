@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Spinner } from '@/components/ui/atoms'
 import { getRandomAIQuote } from '@/lib/constants/aiQuotes'
 
-export interface AILoadingStateProps {
+interface AILoadingStateProps {
   /** Size of the spinner */
   size?: 'sm' | 'md' | 'lg'
   /** Custom class name */

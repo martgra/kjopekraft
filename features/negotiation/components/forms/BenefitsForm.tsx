@@ -5,7 +5,7 @@ import { TEXT } from '@/lib/constants/text'
 import { NEGOTIATION_BENEFIT_OPTIONS } from '@/lib/negotiation/benefitOptions'
 import type { NegotiationUserInfo } from '@/lib/schemas/negotiation'
 
-export interface BenefitsFormProps {
+interface BenefitsFormProps {
   userInfo: NegotiationUserInfo
   onChange: (updates: Partial<NegotiationUserInfo>) => void
 }

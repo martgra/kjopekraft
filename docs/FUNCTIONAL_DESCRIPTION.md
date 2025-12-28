@@ -534,7 +534,7 @@ Allows users to explore the app with sample data before entering their own.
 
 ### Color System
 
-Uses CSS variables for theming:
+Uses CSS variables for theming (light and dark):
 
 - **Primary**: Green (#10b981) - actions, success
 - **Secondary**: Purple (#8b5cf6) - secondary actions

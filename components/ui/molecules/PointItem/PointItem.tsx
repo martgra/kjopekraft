@@ -9,7 +9,7 @@ import {
 } from '@/lib/negotiation/pointTypes'
 import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
 
-export interface PointItemProps {
+interface PointItemProps {
   index: number
   type: string
   description: string

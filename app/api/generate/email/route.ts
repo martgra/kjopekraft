@@ -2,25 +2,28 @@ import { NextResponse } from 'next/server'
 import { openai } from '@ai-sdk/openai'
 import { generateText } from 'ai'
 import { buildEmailPrompt, SYSTEM_PROMPT_EMAIL } from '@/lib/prompts'
-import type {
-  NegotiationEmailContext,
-  NegotiationPoint,
-  NegotiationUserInfo,
-} from '@/lib/models/types'
+import type { NegotiationEmailContext } from '@/domain/contracts'
+import type { NegotiationPoint, NegotiationUserInfo } from '@/lib/schemas/negotiation'
 import { requireLogin } from '@/services/auth/requireLogin'
 import { checkAndSpendCredits } from '@/services/credits/creditsService'
 import { getUserProfile } from '@/services/users/userProfileService'
 import { TEXT } from '@/lib/constants/text'
+import { errorResponse } from '@/lib/api/errors'
+import { attachRequestId, getRequestId } from '@/lib/api/requestId'
 
 export const maxDuration = 30 // Allow responses up to 30 seconds
 
 export async function POST(req: Request) {
+  const requestId = getRequestId(req)
   try {
     const { session, response } = await requireLogin(req)
-    if (response) return response
+    if (response) return attachRequestId(response, requestId)
     const userId = session?.user?.id
     if (!userId) {
-      return NextResponse.json({ error: TEXT.auth.loginRequired }, { status: 401 })
+      return attachRequestId(
+        NextResponse.json({ error: TEXT.auth.loginRequired }, { status: 401 }),
+        requestId,
+      )
     }
 
     const profile = await getUserProfile(userId)
@@ -31,7 +34,10 @@ export async function POST(req: Request) {
       feature: 'email_generator',
     })
     if (!creditCheck.allowed) {
-      return NextResponse.json({ error: TEXT.credits.exhausted }, { status: 429 })
+      return attachRequestId(
+        NextResponse.json({ error: TEXT.credits.exhausted }, { status: 429 }),
+        requestId,
+      )
     }
 
     const { points, userInfo, context } = (await req.json()) as {
@@ -47,15 +53,15 @@ export async function POST(req: Request) {
       system: SYSTEM_PROMPT_EMAIL,
       prompt,
     })
-    return NextResponse.json({ result: text, prompt: prompt })
+    return attachRequestId(NextResponse.json({ result: text, prompt: prompt }), requestId)
   } catch (error) {
-    console.error('Email generation error:', error)
-    return NextResponse.json(
-      {
-        error: 'Failed to generate email',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 },
+    return errorResponse(
+      'emailGenerationRoute',
+      error,
+      { error: 'Failed to generate email' },
+      500,
+      {},
+      requestId,
     )
   }
 }

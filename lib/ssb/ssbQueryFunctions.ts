@@ -11,7 +11,7 @@ type SalarySeriesPoint = {
 }
 
 type SalarySeriesResponse = {
-  source: { provider: 'SSB'; table: string }
+  source: { provider: 'SSB'; table: '11418' }
   occupation: { code: string; label?: string }
   unit: 'NOK/month'
   series: SalarySeriesPoint[]

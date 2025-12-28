@@ -5,13 +5,9 @@ import { Button, Card, Icon, Select, SelectOption } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 import { NEGOTIATION_MAX_POINTS, NEGOTIATION_POINT_TYPES } from '@/lib/negotiation/pointTypes'
 import { AIAssistedField } from '@/components/ai/AIAssistedField'
+import type { NegotiationPoint } from '@/lib/schemas/negotiation'
 
-export interface NegotiationPoint {
-  description: string
-  type: string
-}
-
-export interface ArgumentBuilderProps {
+interface ArgumentBuilderProps {
   points: NegotiationPoint[]
   onAddPoint: (point: NegotiationPoint) => void
   className?: string

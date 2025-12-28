@@ -3,7 +3,7 @@
  * Each occupation can have different business logic/filters in the future
  */
 
-import type { OccupationDefinition } from './types'
+import type { OccupationDefinition } from '@/domain/reference'
 import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
 
 export const OCCUPATIONS = {

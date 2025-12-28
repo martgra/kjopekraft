@@ -6,7 +6,7 @@ import type { PayPoint, SalaryStatistics } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 import { useIsMobile } from '@/lib/hooks/useIsMobile'
 
-export type BannerState =
+type BannerState =
   | 'strongWin'
   | 'smallWin'
   | 'losing'
@@ -32,6 +32,13 @@ function determineBannerState(gapPercent: number): BannerState {
   return 'losingBadly'
 }
 
+const LIGHT_BANNER_STATES = new Set<BannerState>([
+  'smallWin',
+  'singlePoint',
+  'singlePointNewJob',
+  'demoMode',
+])
+
 const BANNER_CONFIG: Record<
   BannerState,
   {
@@ -49,60 +56,78 @@ const BANNER_CONFIG: Record<
     bgColor: 'bg-[#1F7A4D]',
     textColor: 'text-white',
     iconColor: 'text-white',
-    badgeBg: 'bg-white/20',
-    indicatorBg: 'bg-white/10',
+    badgeBg: 'bg-[color:var(--surface-light)]/20',
+    indicatorBg: 'bg-[color:var(--surface-light)]/10',
   },
   smallWin: {
     icon: 'trending_up',
     bgColor: 'bg-[#E6F0C9]',
-    textColor: 'text-slate-800',
-    iconColor: 'text-slate-700',
-    badgeBg: 'bg-slate-700/10',
-    indicatorBg: 'bg-slate-700/10',
+    textColor: 'text-[var(--text-on-light)]',
+    iconColor: 'text-[var(--text-on-light)]',
+    badgeBg: 'bg-[color:var(--text-on-light)]/10',
+    indicatorBg: 'bg-[color:var(--text-on-light)]/10',
   },
   losing: {
     icon: 'warning',
     bgColor: 'bg-[#F4A261]',
-    textColor: 'text-slate-900',
-    iconColor: 'text-slate-900',
-    badgeBg: 'bg-slate-900/10',
-    indicatorBg: 'bg-slate-900/10',
+    textColor: 'text-[var(--text-on-light)]',
+    iconColor: 'text-[var(--text-on-light)]',
+    badgeBg: 'bg-[color:var(--text-on-light)]/10',
+    indicatorBg: 'bg-[color:var(--text-on-light)]/10',
   },
   losingBadly: {
     icon: 'local_fire_department',
     bgColor: 'bg-[#8B1E1E]',
     textColor: 'text-white',
     iconColor: 'text-white',
-    badgeBg: 'bg-white/20',
-    indicatorBg: 'bg-white/10',
+    badgeBg: 'bg-[color:var(--surface-light)]/20',
+    indicatorBg: 'bg-[color:var(--surface-light)]/10',
   },
   singlePoint: {
     icon: 'add_circle',
     bgColor: 'bg-[#E8F0FE]',
-    textColor: 'text-slate-900',
-    iconColor: 'text-slate-900',
-    badgeBg: 'bg-slate-900/10',
-    indicatorBg: 'bg-slate-900/10',
+    textColor: 'text-[var(--text-on-light)]',
+    iconColor: 'text-[var(--text-on-light)]',
+    badgeBg: 'bg-[color:var(--text-on-light)]/10',
+    indicatorBg: 'bg-[color:var(--text-on-light)]/10',
     showIndicator: false,
   },
   singlePointNewJob: {
     icon: 'workspace_premium',
     bgColor: 'bg-[#EEF4EA]',
-    textColor: 'text-slate-900',
-    iconColor: 'text-slate-900',
-    badgeBg: 'bg-slate-900/10',
-    indicatorBg: 'bg-slate-900/10',
+    textColor: 'text-[var(--text-on-light)]',
+    iconColor: 'text-[var(--text-on-light)]',
+    badgeBg: 'bg-[color:var(--text-on-light)]/10',
+    indicatorBg: 'bg-[color:var(--text-on-light)]/10',
     showIndicator: false,
   },
   demoMode: {
     icon: 'science',
     bgColor: 'bg-[#E9F2FF]',
-    textColor: 'text-slate-900',
-    iconColor: 'text-slate-900',
-    badgeBg: 'bg-slate-900/10',
-    indicatorBg: 'bg-slate-900/10',
+    textColor: 'text-[var(--text-on-light)]',
+    iconColor: 'text-[var(--text-on-light)]',
+    badgeBg: 'bg-[color:var(--text-on-light)]/10',
+    indicatorBg: 'bg-[color:var(--text-on-light)]/10',
     showIndicator: false,
   },
+}
+
+function resolveBannerState({
+  gapPercent,
+  isDemoMode,
+  isSinglePoint,
+  isNewJob,
+}: {
+  gapPercent: number
+  isDemoMode: boolean
+  isSinglePoint: boolean
+  isNewJob: boolean
+}): BannerState {
+  if (isDemoMode) return 'demoMode'
+  if (isSinglePoint) {
+    return isNewJob ? 'singlePointNewJob' : 'singlePoint'
+  }
+  return determineBannerState(gapPercent)
 }
 
 export default function StatusBanner({
@@ -117,28 +142,29 @@ export default function StatusBanner({
   const isSinglePoint = payPoints.length === 1
   const isNewJob = isSinglePoint && payPoints[0]?.reason === 'newJob'
   const isMobile = useIsMobile()
-  const state: BannerState = isDemoMode
-    ? 'demoMode'
-    : isSinglePoint
-      ? isNewJob
-        ? 'singlePointNewJob'
-        : 'singlePoint'
-      : determineBannerState(statistics.gapPercent)
+  const state = resolveBannerState({
+    gapPercent: statistics.gapPercent,
+    isDemoMode,
+    isSinglePoint,
+    isNewJob,
+  })
   const config = BANNER_CONFIG[state]
   const [isExpanded, setIsExpanded] = useState(true)
   const bannerText = TEXT.dashboard.statusBanner[state]
   const showIndicator = config.showIndicator !== false
-  const isLightBanner = ['smallWin', 'singlePoint', 'singlePointNewJob', 'demoMode'].includes(state)
+  const isLightBanner = LIGHT_BANNER_STATES.has(state)
   const borderClass = isLightBanner ? 'border border-slate-200/80' : 'border border-white/10'
   const shadowClass = isLightBanner
     ? 'shadow-[0_18px_30px_-22px_rgba(15,23,42,0.25)]'
     : 'shadow-[0_18px_30px_-22px_rgba(0,0,0,0.55)]'
-  const ctaClass = isLightBanner ? 'text-slate-900' : 'text-white'
+  const ctaClass = isLightBanner ? 'text-[var(--text-on-light)]' : 'text-white'
+  const isExpandedLabel = isExpanded
+    ? TEXT.dashboard.statusBanner.hideDetails
+    : TEXT.dashboard.statusBanner.showDetails
+  const indicatorPrefix = statistics.gapPercent > 0 ? '+' : ''
 
   useEffect(() => {
-    if (isMobile) {
-      setIsExpanded(false)
-    }
+    if (isMobile) setIsExpanded(false)
   }, [isMobile])
 
   const handleCtaClick = () => {
@@ -160,7 +186,7 @@ export default function StatusBanner({
       data-state={state}
     >
       {/* Decorative blur element */}
-      <div className="pointer-events-none absolute top-0 right-0 -mt-10 -mr-10 h-32 w-32 rounded-full bg-white/10 opacity-20 blur-3xl"></div>
+      <div className="pointer-events-none absolute top-0 right-0 -mt-10 -mr-10 h-32 w-32 rounded-full bg-[color:var(--surface-light)]/10 opacity-20 blur-3xl"></div>
 
       {/* Header with icon, badge, indicator, and expand/collapse button */}
       <div className="mb-3 flex items-start justify-between">
@@ -185,7 +211,7 @@ export default function StatusBanner({
                 {TEXT.dashboard.statusBanner.purchasingPowerLabel}
               </span>
               <span className="text-[11px] font-bold">
-                {statistics.gapPercent > 0 ? '+' : ''}
+                {indicatorPrefix}
                 {statistics.gapPercent.toFixed(1)} %
               </span>
             </div>
@@ -196,11 +222,7 @@ export default function StatusBanner({
             onClick={() => setIsExpanded(!isExpanded)}
             className="transition-transform hover:scale-110"
             aria-expanded={isExpanded}
-            aria-label={
-              isExpanded
-                ? TEXT.dashboard.statusBanner.hideDetails
-                : TEXT.dashboard.statusBanner.showDetails
-            }
+            aria-label={isExpandedLabel}
             data-testid={testId('toggle')}
           >
             <span className={`material-symbols-outlined text-lg ${config.iconColor}`}>

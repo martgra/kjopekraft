@@ -12,15 +12,6 @@ export const STORAGE_KEYS = {
 } as const
 
 /**
- * Test data: standard salary points for testing
- */
-export const TEST_SALARY_POINTS = [
-  { year: 2020, pay: 500000, reason: 'newJob' },
-  { year: 2022, pay: 550000, reason: 'adjustment' },
-  { year: 2024, pay: 600000, reason: 'promotion' },
-]
-
-/**
  * Demo data matching the application's demo mode
  */
 export const DEMO_SALARY_POINTS = [

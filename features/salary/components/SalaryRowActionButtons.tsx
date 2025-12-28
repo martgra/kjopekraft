@@ -22,11 +22,11 @@ export function SalaryRowActionButtons({
 
   const isDesktop = variant === 'desktop'
   const editClassName = isDesktop
-    ? 'inline-flex items-center gap-1 rounded-full bg-[var(--color-gray-50)] px-2 py-1 text-[var(--primary)] transition hover:bg-white hover:shadow-sm'
-    : 'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-semibold text-[var(--text-main)] hover:bg-[var(--color-gray-50)]'
+    ? 'inline-flex items-center gap-1 rounded-full bg-[var(--color-gray-50)] px-2 py-1 text-[var(--primary)] transition hover:bg-[var(--surface-light)] hover:shadow-sm'
+    : 'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-semibold text-[var(--text-main)] hover:bg-[var(--surface-subtle)]'
   const removeClassName = isDesktop
-    ? 'inline-flex items-center gap-1 rounded-full bg-[var(--color-gray-50)] px-2 py-1 text-red-600 transition hover:bg-white hover:shadow-sm'
-    : 'mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-semibold text-red-600 hover:bg-[var(--color-gray-50)]'
+    ? 'inline-flex items-center gap-1 rounded-full bg-[var(--color-gray-50)] px-2 py-1 text-red-600 transition hover:bg-[var(--surface-light)] hover:shadow-sm'
+    : 'mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-semibold text-red-600 hover:bg-[var(--surface-subtle)]'
   const editIconSize = isDesktop ? 'text-[16px]' : 'text-[18px]'
   const removeIconSize = isDesktop ? 'text-[16px]' : 'text-[18px]'
 

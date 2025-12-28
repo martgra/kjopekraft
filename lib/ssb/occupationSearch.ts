@@ -1,6 +1,6 @@
 import Fuse, { type Expression } from 'fuse.js'
 
-export type SsbOccupationDoc = {
+type SsbOccupationDoc = {
   code: string
   label: string
   aliases: string[]
@@ -167,7 +167,7 @@ function buildAliases(code: string, label: string): string[] {
   return Array.from(new Set([...base, code, codeSpaced]))
 }
 
-export function toOccupationDocs(map: Record<string, string>): SsbOccupationDoc[] {
+function toOccupationDocs(map: Record<string, string>): SsbOccupationDoc[] {
   return Object.entries(map).map(([code, label]) => ({
     code,
     label,
@@ -210,7 +210,7 @@ export function searchSsbOccupations(
   }))
 }
 
-export const SSB_OCCUPATION_MAP: Record<string, string> = {
+const SSB_OCCUPATION_MAP: Record<string, string> = {
   '0000': 'Uoppgitt / yrker som ikke kan identifiseres',
   '0110': 'Offiserer fra fenrik og høyere grad',
   '0210': 'Befal med sersjant grad',

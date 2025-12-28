@@ -95,7 +95,7 @@ export function SalaryTableRowMobile({
       {hasActions && isActionMenuOpen && (
         <div
           ref={menuRef}
-          className="absolute top-10 right-2 z-10 w-36 rounded-lg border border-[var(--border-light)] bg-white p-2 shadow-lg dark:bg-gray-800"
+          className="absolute top-10 right-2 z-10 w-36 rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-2 shadow-lg"
         >
           {payPoint && (
             <SalaryRowActionButtons

@@ -5,7 +5,7 @@ import type {
   SalaryStatistics,
   YearRange,
 } from './salaryTypes'
-import type { InflationDataPoint } from '@/domain/inflation'
+import { buildInflationIndexRange, type InflationDataPoint } from '@/domain/inflation'
 
 const SIGNIFICANT_REASONS: PayChangeReason[] = ['promotion', 'newJob']
 
@@ -72,8 +72,7 @@ export function adjustSalaries(
     const { year: y0, pay: p0 } = pt0
     const { year: y1, pay: p1 } = pt1
     for (let y = y0; y <= y1; y++) {
-      const t = (y - y0) / (y1 - y0)
-      salaryMap.set(y, p0 + t * (p1 - p0))
+      salaryMap.set(y, interpolateSalary(y, y0, p0, y1, p1))
     }
   }
 
@@ -83,20 +82,7 @@ export function adjustSalaries(
 
   // Build a map of year → CPI cumulative index relative to baseYear
   const rateMap = new Map<number, number>(cpi.map(d => [d.year, d.inflation / 100]))
-  const indexMap = new Map<number, number>()
-  let idx = 1
-  indexMap.set(baseYear, idx)
-  for (let y = baseYear + 1; y <= endYear; y++) {
-    const r = rateMap.get(y) ?? 0
-    idx *= 1 + r
-    indexMap.set(y, idx)
-  }
-  idx = 1
-  for (let y = baseYear - 1; y >= startYear; y--) {
-    const r = rateMap.get(y + 1) ?? 0
-    idx /= 1 + r
-    indexMap.set(y, idx)
-  }
+  const indexMap = buildInflationIndexRange(cpi, baseYear, startYear, endYear)
 
   // Build output series: actual (interpolated) vs. inflation growth of baseSalary
   const result: SalaryDataPoint[] = []

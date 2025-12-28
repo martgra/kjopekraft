@@ -4,13 +4,7 @@
  * Pure functions for reference salary calculations
  */
 
-export {
-  filterReferenceByYearRange,
-  convertMonthlyToYearly,
-  getEarliestValue,
-  hasValidCoverage,
-  calculateReferenceGrowth,
-} from './referenceCalculator'
+export { filterReferenceByYearRange } from './referenceCalculator'
 export type {
   ReferenceDataPoint,
   ReferenceSalaryResponse,

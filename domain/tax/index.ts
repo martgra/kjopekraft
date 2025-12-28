@@ -4,16 +4,4 @@
  * Pure functions for Norwegian tax calculations
  */
 
-export {
-  calculateNetIncome,
-  calculateTaxBreakdown,
-  estimateGrossIncomeFromNet,
-} from './taxCalculator'
-export type {
-  TaxBreakdown,
-  YearlyTaxConfig,
-  TrygdeConfig,
-  TaxBracket,
-  StandardDeductionConfig,
-} from './taxTypes'
-export { YEARLY_TAX_CONFIG, TRYGDE_CONFIG } from './taxConfig'
+export { calculateNetIncome, estimateGrossIncomeFromNet } from './taxCalculator'

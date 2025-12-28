@@ -25,18 +25,20 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
   const menuId = useId()
   const menuRef = useRef<HTMLDivElement>(null)
 
+  const handleClose = () => setIsOpen(false)
+
   useEffect(() => {
     if (!isOpen) return
 
     const handlePointerDown = (event: PointerEvent) => {
       if (!menuRef.current?.contains(event.target as Node)) {
-        setIsOpen(false)
+        handleClose()
       }
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsOpen(false)
+        handleClose()
       }
     }
 
@@ -51,7 +53,7 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
   if (isPending) {
     return (
       <div
-        className={`h-10 w-10 animate-pulse rounded-full border border-[var(--border-light)] bg-gray-100 dark:border-gray-700 dark:bg-gray-800 ${className ?? ''}`}
+        className={`h-10 w-10 animate-pulse rounded-full border border-[var(--border-light)] bg-[var(--surface-subtle)] ${className ?? ''}`}
       />
     )
   }
@@ -61,7 +63,7 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
       <button
         type="button"
         onClick={() => onOpenLogin()}
-        className={`rounded-full border border-[var(--border-light)] bg-white px-4 py-2 text-sm font-semibold text-[var(--text-main)] shadow-sm transition-colors hover:border-[var(--primary)]/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 ${className ?? ''}`}
+        className={`rounded-full border border-[var(--border-light)] bg-[var(--surface-light)] px-4 py-2 text-sm font-semibold text-[var(--text-main)] shadow-sm transition-colors hover:border-[var(--primary)]/40 ${className ?? ''}`}
       >
         {TEXT.auth.signIn}
       </button>
@@ -73,7 +75,7 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
       <button
         type="button"
         onClick={() => setIsOpen(prev => !prev)}
-        className="group relative flex size-10 items-center justify-center rounded-full border-2 border-gray-200/80 bg-gray-100 transition-colors hover:bg-gray-200 dark:border-gray-700/80 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="group relative flex size-10 items-center justify-center rounded-full border-2 border-[var(--border-light)] bg-[var(--surface-subtle)] transition-colors hover:bg-[var(--surface-light)]"
         aria-label={TEXT.auth.signOut}
         aria-expanded={isOpen}
         aria-controls={menuId}
@@ -97,10 +99,10 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
       {isOpen ? (
         <div
           id={menuId}
-          className="absolute right-0 mt-3 w-64 rounded-2xl border border-gray-200 bg-white p-3 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+          className="absolute right-0 mt-3 w-64 rounded-2xl border border-[var(--border-light)] bg-[var(--surface-light)] p-3 shadow-xl"
           role="menu"
         >
-          <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-800/60">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-subtle)] px-3 py-2">
             <div>
               <div className="text-sm font-semibold text-[var(--text-main)]">
                 {TEXT.settings.themeToggleTitle}
@@ -113,7 +115,7 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
               type="checkbox"
               checked={isDarkMode}
               onChange={toggleTheme}
-              className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-gray-200 transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-white before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 dark:bg-gray-700 dark:before:bg-gray-300"
+              className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-[var(--surface-subtle)] transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-[var(--surface-light)] before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:ring-offset-[var(--surface-light)]"
               aria-label={TEXT.settings.themeToggleTitle}
             />
           </div>
@@ -121,7 +123,7 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
           <button
             type="button"
             onClick={() => {
-              setIsOpen(false)
+              handleClose()
               onSignOut()
             }}
             className="mt-3 flex w-full items-center justify-between rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-900/40"

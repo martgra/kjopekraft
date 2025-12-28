@@ -37,10 +37,14 @@ export default function PaypointChart({
   showEventBaselines = false,
 }: PaypointChartProps) {
   // 1) Build the displayed actual series (gross or net):
-  const actualSeries: ScatterDataPoint[] = grossActualSeries.map(pt => ({
-    x: pt.x,
-    y: displayNet ? calculateNetIncome(pt.y as number, pt.x as number) : (pt.y as number),
-  }))
+  const actualSeries: ScatterDataPoint[] = useMemo(
+    () =>
+      grossActualSeries.map(pt => ({
+        x: pt.x,
+        y: displayNet ? calculateNetIncome(pt.y as number, pt.x as number) : (pt.y as number),
+      })),
+    [grossActualSeries, displayNet],
+  )
 
   // 2) Rescale the rawInflSeries so it starts at the *display* base pay:
   //    multiplier = rawInflAtYear / rawActualAtBaseYear

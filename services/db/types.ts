@@ -1,4 +1,4 @@
-export interface DbQueryResult<T> {
+interface DbQueryResult<T> {
   rows: T[]
 }
 

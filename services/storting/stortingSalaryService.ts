@@ -2,11 +2,18 @@ import { cache } from 'react'
 import { cacheLife, cacheTag } from 'next/cache'
 import type { ReferenceDataPoint, ReferenceSalaryResponse } from '@/domain/reference'
 import { filterReferenceByYearRange } from '@/domain/reference'
+import { logServiceError } from '@/lib/logger'
 
 const STORTING_URL =
   'https://www.stortinget.no/no/Stortinget-og-demokratiet/Representantene/Okonomiske-rettigheter/Lonnsutvikling/'
 
 type ParsedRow = { year: number; value: number | null; effectiveFrom?: string }
+
+const SERVICE_NAME = 'stortingSalaryService'
+
+function createServiceError(message: string): Error {
+  return new Error(`${SERVICE_NAME}: ${message}`)
+}
 
 function stripHtml(input: string): string {
   return input
@@ -30,7 +37,7 @@ function parseDateYear(dateStr: string): { year: number; effectiveFrom?: string 
 
 function extractReferenceSeries(html: string): ParsedRow[] {
   const tables = [...html.matchAll(/<table[^>]*>([\s\S]*?)<\/table>/gi)]
-  if (tables.length === 0) throw new Error('Stortinget table not found in HTML')
+  if (tables.length === 0) throw createServiceError('Stortinget table not found in HTML')
 
   const normalize = (value: string) =>
     value
@@ -88,7 +95,7 @@ function extractReferenceSeries(html: string): ParsedRow[] {
     if (dataRows.length > 0) return dataRows
   }
 
-  throw new Error('Stortingsrepresentant column not found')
+  throw createServiceError('Stortingsrepresentant column not found')
 }
 
 async function fetchStortingHtml(): Promise<string> {
@@ -98,7 +105,7 @@ async function fetchStortingHtml(): Promise<string> {
     },
   })
   if (!res.ok) {
-    throw new Error(`Stortinget request failed (${res.status})`)
+    throw createServiceError(`Stortinget request failed (${res.status})`)
   }
   return res.text()
 }
@@ -122,27 +129,69 @@ const buildResponse = (
   }
 }
 
+let cachedFallback: {
+  series: ReferenceDataPoint[]
+  effectiveFrom?: string
+  cachedAt: string
+} | null = null
+
 const loadStortingSeries = cache(async (fromYear: number): Promise<ReferenceSalaryResponse> => {
   'use cache'
   cacheLife('ssb') // reuse long-lived cache profile (annual updates)
   cacheTag('storting-salary')
 
-  const html = await fetchStortingHtml()
-  const parsed = extractReferenceSeries(html).sort((a, b) => a.year - b.year)
-  const mapped: ReferenceDataPoint[] = parsed.map(item => ({
-    year: item.year,
-    value: item.value,
-    status: null,
-    type: 'official',
-  }))
-  const filtered = filterReferenceByYearRange(mapped, fromYear, new Date().getFullYear())
-  if (filtered.length === 0) {
-    throw new Error('No rows parsed from Stortinget table')
+  try {
+    const html = await fetchStortingHtml()
+    const parsed = extractReferenceSeries(html).sort((a, b) => a.year - b.year)
+    const mapped: ReferenceDataPoint[] = parsed.map(item => ({
+      year: item.year,
+      value: item.value,
+      status: null,
+      type: 'official',
+    }))
+    const filtered = filterReferenceByYearRange(mapped, fromYear, new Date().getFullYear())
+    if (filtered.length === 0) {
+      throw createServiceError('No rows parsed from Stortinget table')
+    }
+
+    cachedFallback = {
+      series: mapped,
+      effectiveFrom: parsed[parsed.length - 1]?.effectiveFrom,
+      cachedAt: new Date().toISOString(),
+    }
+
+    return buildResponse(filtered, {
+      note: 'Live-scraped from Stortinget historical compensation table.',
+      effectiveFrom: parsed[parsed.length - 1]?.effectiveFrom,
+    })
+  } catch (error) {
+    logServiceError(SERVICE_NAME, error, { fromYear })
+    if (cachedFallback) {
+      const fallbackFiltered = filterReferenceByYearRange(
+        cachedFallback.series,
+        fromYear,
+        new Date().getFullYear(),
+      )
+      if (fallbackFiltered.length === 0) {
+        throw createServiceError('Fallback data is empty for requested year range')
+      }
+      return {
+        ...buildResponse(fallbackFiltered, {
+          note: 'Fallback cache used due to Stortinget parsing failure.',
+          effectiveFrom: cachedFallback.effectiveFrom,
+        }),
+        alerts: [
+          {
+            code: 'fallback',
+            source: 'Stortinget',
+            cachedAt: cachedFallback.cachedAt,
+            reason: error instanceof Error ? error.message : 'Unknown error',
+          },
+        ],
+      }
+    }
+    throw error
   }
-  return buildResponse(filtered, {
-    note: 'Live-scraped from Stortinget historical compensation table.',
-    effectiveFrom: parsed[parsed.length - 1]?.effectiveFrom,
-  })
 })
 
 export async function getStortingReferenceSalary(

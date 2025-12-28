@@ -5,7 +5,7 @@ import { adjustSalaries, calculateYearRange, validatePayPoint } from '@/domain/s
 import { calculateNetIncome } from '@/domain/tax'
 import type { PayChangeReason, PayPoint, SalaryDataPoint, ValidationResult } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
-import type { ChartPoint } from '@/lib/models/types'
+import type { ChartPoint } from '@/domain/contracts'
 
 const STORAGE_KEY = 'salary-calculator-points'
 const DEFAULT_REASON: PayChangeReason = 'adjustment'

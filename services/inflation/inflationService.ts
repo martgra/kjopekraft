@@ -3,7 +3,13 @@ import { cacheLife, cacheTag } from 'next/cache'
 import { parseJsonInflation } from '@/domain/inflation'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { SsbInflationResponseSchema } from '@/lib/schemas'
-import { logger } from '@/lib/logger'
+import { logServiceError } from '@/lib/logger'
+
+const SERVICE_NAME = 'inflationService'
+
+function createServiceError(message: string): Error {
+  return new Error(`${SERVICE_NAME}: ${message}`)
+}
 
 /**
  * Fetch and cache inflation data from SSB
@@ -16,17 +22,18 @@ const fetchInflation = async (): Promise<InflationDataPoint[]> => {
   cacheTag('inflation')
 
   const res = await fetch('https://data.ssb.no/api/v0/dataset/1086.json?lang=no')
-  if (!res.ok) throw new Error(`SSB fetch failed (${res.status})`)
+  if (!res.ok) throw createServiceError(`SSB fetch failed (${res.status})`)
 
   const rawJson = await res.json()
 
   // Validate response structure with Zod
   const parseResult = SsbInflationResponseSchema.safeParse(rawJson)
   if (!parseResult.success) {
-    logger.error('SSB inflation response validation failed', parseResult.error, {
-      component: 'inflationService',
+    logServiceError(SERVICE_NAME, parseResult.error, {
+      component: SERVICE_NAME,
+      action: 'validateResponse',
     })
-    throw new Error('Invalid SSB response format')
+    throw createServiceError('Invalid SSB response format')
   }
 
   return parseJsonInflation(parseResult.data.dataset)

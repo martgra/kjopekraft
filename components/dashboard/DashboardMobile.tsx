@@ -73,25 +73,27 @@ export default function DashboardMobile({
   onNoteChange,
   onSubmitPoint,
 }: DashboardMobileProps) {
+  const formProps = {
+    newYear,
+    newPay,
+    newReason,
+    newNote,
+    currentYear,
+    minYear,
+    validationError,
+    isSubmitDisabled,
+    isNetMode,
+    onYearChange,
+    onPayChange,
+    onReasonChange,
+    onNoteChange,
+    onAdd: onSubmitPoint,
+  }
+
   // Drawer content for mobile
   const drawerContent = (
     <div className="flex flex-col">
-      <SalaryPointForm
-        newYear={newYear}
-        newPay={newPay}
-        newReason={newReason}
-        newNote={newNote}
-        currentYear={currentYear}
-        minYear={minYear}
-        validationError={validationError}
-        isSubmitDisabled={isSubmitDisabled}
-        isNetMode={isNetMode}
-        onYearChange={onYearChange}
-        onPayChange={onPayChange}
-        onReasonChange={onReasonChange}
-        onNoteChange={onNoteChange}
-        onAdd={onSubmitPoint}
-      />
+      <SalaryPointForm {...formProps} />
     </div>
   )
 

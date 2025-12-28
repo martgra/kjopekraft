@@ -10,7 +10,7 @@ import { CopyRichButton } from '@/features/negotiation/components/CopyRichButton
 import { DownloadDocxButton } from '@/features/negotiation/components/DownloadDocxButton'
 import { TEXT } from '@/lib/constants/text'
 
-export interface GeneratedContentProps {
+interface GeneratedContentProps {
   emailContent?: string
 }
 
@@ -42,7 +42,7 @@ export function GeneratedContent({ emailContent }: GeneratedContentProps) {
         >
           <Card variant="outlined" padding="none">
             <div
-              className="email-content overflow-x-auto rounded-lg border border-[var(--border-light)] bg-white p-6 text-base leading-relaxed text-[var(--text-main)] shadow-sm sm:p-10 dark:bg-[var(--surface-light)]"
+              className="email-content overflow-x-auto rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-6 text-base leading-relaxed text-[var(--text-main)] shadow-sm sm:p-10"
               ref={emailHtmlRef}
             >
               <ReactMarkdown

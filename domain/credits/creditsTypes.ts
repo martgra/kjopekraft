@@ -5,10 +5,3 @@ export interface DailyCredits {
   used: number
   limit: number
 }
-
-export interface CreditSpendResult {
-  allowed: boolean
-  used: number
-  remaining: number
-  limit: number
-}
