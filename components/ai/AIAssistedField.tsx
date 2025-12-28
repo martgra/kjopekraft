@@ -50,7 +50,17 @@ export function AIAssistedField({
     },
   })
 
-  const { suggestion } = validator
+  const {
+    suggestion,
+    pendingQuestion,
+    status,
+    isLoading,
+    error,
+    canValidate,
+    startValidation,
+    answerQuestion,
+    reset,
+  } = validator
 
   useEffect(() => {
     if (!aiActive) return
@@ -59,7 +69,7 @@ export function AIAssistedField({
       setHasAiUpdate(true)
       onChange(nextValue)
     }
-  }, [aiActive, onChange, suggestion, validator])
+  }, [aiActive, onChange, suggestion])
 
   useEffect(() => {
     if (!aiActive) {
@@ -70,20 +80,20 @@ export function AIAssistedField({
   const handleImprove = () => {
     previousManualValueRef.current = value
     setAiActive(true)
-    validator.startValidation(value, { pointType })
+    startValidation(value, { pointType })
   }
 
   const handleSendAnswer = async () => {
     if (!aiAnswer.trim()) return
     setAiActive(true)
-    await validator.answerQuestion(aiAnswer.trim())
+    await answerQuestion(aiAnswer.trim())
     setAiAnswer('')
   }
 
   const handleRevert = () => {
     setHasAiUpdate(false)
     setAiActive(false)
-    validator.reset()
+    reset()
     onChange(previousManualValueRef.current)
   }
 
@@ -91,8 +101,8 @@ export function AIAssistedField({
     setAiActive(false)
     setAiAnswer('')
     setHasAiUpdate(false)
-    validator.reset()
-  }, [resetSignal, validator])
+    reset()
+  }, [resetSignal, reset])
 
   return (
     <div className="space-y-2">
@@ -121,26 +131,21 @@ export function AIAssistedField({
       <AIButton
         label={TEXT.aiValidator.improveButton}
         onClick={handleImprove}
-        disabled={disabled || !validator.canValidate(value)}
+        disabled={disabled || !canValidate(value)}
       />
-      {validator.error ? (
-        <p className="text-xs text-red-600 dark:text-red-400">{validator.error}</p>
-      ) : null}
-      {(aiActive ||
-        validator.pendingQuestion ||
-        validator.isLoading ||
-        validator.status === 'done') &&
-        !(!validator.isLoading && validator.status === 'done' && !validator.pendingQuestion) && (
+      {error ? <p className="text-xs text-red-600 dark:text-red-400">{error}</p> : null}
+      {(aiActive || pendingQuestion || isLoading || status === 'done') &&
+        !(!isLoading && status === 'done' && !pendingQuestion) && (
           <div className="space-y-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-subtle)] p-3">
-            {validator.isLoading ? (
+            {isLoading ? (
               <div className="text-xs text-[var(--text-muted)]">
                 <AILoadingState showQuote />
               </div>
-            ) : validator.pendingQuestion ? (
+            ) : pendingQuestion ? (
               <div className="rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 text-sm text-[var(--text-main)] dark:bg-gray-900">
-                {validator.pendingQuestion}
+                {pendingQuestion}
               </div>
-            ) : validator.status === 'done' ? (
+            ) : status === 'done' ? (
               <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-900/20 dark:text-emerald-200">
                 {TEXT.aiValidator.aiSatisfied}
               </div>
@@ -154,13 +159,13 @@ export function AIAssistedField({
               value={aiAnswer}
               onChange={event => setAiAnswer(event.target.value)}
               placeholder={TEXT.aiValidator.chatInputPlaceholder}
-              disabled={validator.isLoading || !validator.pendingQuestion}
+              disabled={isLoading || !pendingQuestion}
             />
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Button
                 size="sm"
                 onClick={handleSendAnswer}
-                disabled={!aiAnswer.trim() || !validator.pendingQuestion || validator.isLoading}
+                disabled={!aiAnswer.trim() || !pendingQuestion || isLoading}
               >
                 {TEXT.aiValidator.sendAnswer}
               </Button>
