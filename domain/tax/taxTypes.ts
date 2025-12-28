@@ -2,12 +2,12 @@
  * Tax domain types
  */
 
-export interface TaxBracket {
+interface TaxBracket {
   threshold: number // lower bound of bracket
   rate: number // marginal rate for income above threshold
 }
 
-export interface StandardDeductionConfig {
+interface StandardDeductionConfig {
   rate: number // minstefradrag percentage
   floor: number // minimum deduction
   cap: number // maximum deduction

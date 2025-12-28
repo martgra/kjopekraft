@@ -9,7 +9,6 @@ export {
   resolvePurchasingPowerBaseYear,
   computeStatistics,
   calculateYearRange,
-  interpolateSalary,
 } from './salaryCalculator'
 export { buildSalaryTableRows, buildSalaryInsights } from './salaryInsights'
 export { validatePayPoint } from './salaryValidator'
@@ -21,5 +20,4 @@ export type {
   ValidationResult,
   YearRange,
   SalaryTableRow,
-  SalaryInsight,
 } from './salaryTypes'

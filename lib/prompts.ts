@@ -1,9 +1,6 @@
 // promptBuilders.ts
-import type {
-  NegotiationEmailContext,
-  NegotiationPoint,
-  NegotiationUserInfo,
-} from '@/lib/models/types'
+import type { NegotiationEmailContext } from '@/domain/contracts'
+import type { NegotiationPoint, NegotiationUserInfo } from '@/lib/schemas/negotiation'
 import { EMAIL_EXAMPLE } from '@/lib/examples'
 import { formatBenefitLabels } from '@/lib/negotiation/benefitOptions'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'

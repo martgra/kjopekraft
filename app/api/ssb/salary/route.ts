@@ -1,42 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cacheLife, cacheTag } from 'next/cache'
 import { cache } from 'react'
-import { SsbSalaryResponseSchema } from '@/lib/schemas'
+import { JsonStat2Schema, SsbSalaryResponseSchema } from '@/lib/schemas'
+import type { JsonStat2 } from '@/lib/schemas'
+import { logServiceError } from '@/lib/logger'
+import { errorResponse } from '@/lib/api/errors'
+import { attachRequestId, getRequestId } from '@/lib/api/requestId'
+import type { ReferenceDataPoint, ReferenceSalaryResponse } from '@/domain/reference'
 
-type SalarySeriesPoint = {
-  year: number
-  value: number | null
-  status?: string | null
-  type: 'official' | 'estimated'
-  method?: string
-  confidence?: 'high' | 'medium' | 'low'
-}
-type SalarySeriesResponse = {
-  source: { provider: 'SSB'; table: '11418' }
-  occupation: { code: string; label?: string }
-  filters: { contents: string; stat: string; sector: string; sex: string; hours: string }
-  unit: 'NOK/month'
-  reference: { month: 'November' }
-  series: SalarySeriesPoint[]
-  derived?: { yearlyNok?: SalarySeriesPoint[] }
-  notes?: string[]
+type SalarySeriesPoint = ReferenceDataPoint
+type SalarySeriesResponse = ReferenceSalaryResponse
+
+type FallbackEntry = {
+  data: SalarySeriesResponse
+  cachedAt: string
 }
 
-// Minimal JSON-stat2 typing (enough to parse)
-type JsonStat2 = {
-  id?: string[]
-  size?: number[]
-  dimension: Record<
-    string,
-    {
-      category: {
-        index?: string[] | Record<string, number>
-        label?: Record<string, string>
-      }
-    }
-  >
-  value: Array<number | null>
-  status?: Array<string | null>
+const fallbackCache = new Map<string, FallbackEntry>()
+
+function buildFallbackKey(params: {
+  occupation: string
+  contents: string
+  stat: string
+  sector: string
+  sex: string
+  hours: string
+  fromYear: string
+}) {
+  return [
+    params.occupation,
+    params.contents,
+    params.stat,
+    params.sector,
+    params.sex,
+    params.hours,
+    params.fromYear,
+  ].join('|')
+}
+
+function withFallbackAlert(
+  data: SalarySeriesResponse,
+  cachedAt: string,
+  reason?: string,
+): SalarySeriesResponse {
+  return {
+    ...data,
+    alerts: [
+      ...(data.alerts ?? []),
+      {
+        code: 'fallback',
+        source: 'SSB',
+        cachedAt,
+        reason,
+      },
+    ],
+  }
 }
 
 function getCategoryKeysInOrder(dim: JsonStat2['dimension'][string]): string[] {
@@ -132,11 +150,17 @@ const fetchSsbSalaryData = cache(
 
     if (!res.ok) {
       const text = await res.text().catch(() => '')
-      console.error('SSB API Error:', { status: res.status, url, response: text })
+      logServiceError('ssbSalaryRoute', { status: res.status, url, response: text }, { url })
       throw new Error(`SSB request failed (${res.status}): ${text}`)
     }
 
-    const json = (await res.json()) as JsonStat2
+    const rawJson = await res.json()
+    const parsed = JsonStat2Schema.safeParse(rawJson)
+    if (!parsed.success) {
+      logServiceError('ssbSalaryRoute', parsed.error, { url })
+      throw new Error('Invalid SSB response format')
+    }
+    const json = parsed.data
     const series = parseSingleTimeSeries(json, 'Tid')
 
     const response: SalarySeriesResponse = {
@@ -184,8 +208,10 @@ const fetchWageIndexGrowth = cache(
 
       if (!res.ok) return null
 
-      const json = (await res.json()) as JsonStat2
-      const values = json.value
+      const rawJson = await res.json()
+      const parsed = JsonStat2Schema.safeParse(rawJson)
+      if (!parsed.success) return null
+      const values = parsed.data.value
 
       const value0 = values[0]
       const value1 = values[1]
@@ -259,7 +285,7 @@ async function getCachedSalaryData(
   // Validate the assembled payload before returning
   const parsed = SsbSalaryResponseSchema.safeParse(baseData)
   if (!parsed.success) {
-    console.error('Invalid SSB salary response shape', parsed.error)
+    logServiceError('ssbSalaryRoute', parsed.error, { action: 'validateResponse' })
     throw new Error('Invalid SSB salary response shape')
   }
 
@@ -286,6 +312,7 @@ async function getCachedSalaryData(
 }
 
 export async function GET(req: NextRequest) {
+  const requestId = getRequestId(req)
   const sp = req.nextUrl.searchParams
 
   const occupation = sp.get('occupation') ?? '2223' // Nurses
@@ -295,18 +322,37 @@ export async function GET(req: NextRequest) {
   const sex = sp.get('sex') ?? '0' // Both sexes
   const hours = sp.get('hours') ?? '0' // All employees
   const fromYear = sp.get('fromYear') ?? '2015'
+  const fallbackKey = buildFallbackKey({
+    occupation,
+    contents,
+    stat,
+    sector,
+    sex,
+    hours,
+    fromYear,
+  })
 
   try {
     const data = await getCachedSalaryData(occupation, contents, stat, sector, sex, hours, fromYear)
-    return NextResponse.json(data)
+    fallbackCache.set(fallbackKey, { data, cachedAt: new Date().toISOString() })
+    return attachRequestId(NextResponse.json(data), requestId)
   } catch (error) {
-    console.error('Failed to fetch SSB salary data:', error)
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch SSB salary data',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 502 },
+    const fallback = fallbackCache.get(fallbackKey)
+    if (fallback) {
+      const response = withFallbackAlert(
+        fallback.data,
+        fallback.cachedAt,
+        error instanceof Error ? error.message : 'Unknown error',
+      )
+      return attachRequestId(NextResponse.json(response), requestId)
+    }
+    return errorResponse(
+      'ssbSalaryRoute',
+      error,
+      { error: 'Failed to fetch SSB salary data' },
+      502,
+      { occupation, contents, stat, sector, sex, hours },
+      requestId,
     )
   }
 }

@@ -7,7 +7,7 @@ import type { PayPoint, SalaryDataPoint, SalaryStatistics } from '@/domain/salar
 import type { InflationDataPoint } from '@/domain/inflation'
 import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
 
-export interface PurchasingPowerSummary {
+interface PurchasingPowerSummary {
   statistics: SalaryStatistics
   salaryData: SalaryDataPoint[]
   baseYearOverride?: number

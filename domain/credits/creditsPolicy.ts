@@ -1,4 +1,4 @@
-import type { CreditFeature, CreditSpendResult } from './creditsTypes'
+import type { CreditFeature } from './creditsTypes'
 
 export const DEFAULT_DAILY_LIMIT = 100
 
@@ -21,21 +21,6 @@ export function getLocalDateKey(timezone: string, now: Date = new Date()): strin
 
 export function getRemainingCredits(used: number, limit: number): number {
   return Math.max(0, limit - used)
-}
-
-export function canSpendCredits(used: number, cost: number, limit: number): boolean {
-  return used + cost <= limit
-}
-
-export function spendCredits(used: number, cost: number, limit: number): CreditSpendResult {
-  const allowed = canSpendCredits(used, cost, limit)
-  const nextUsed = allowed ? used + cost : used
-  return {
-    allowed,
-    used: nextUsed,
-    remaining: getRemainingCredits(nextUsed, limit),
-    limit,
-  }
 }
 
 function resolveTimezone(timezone: string): string {

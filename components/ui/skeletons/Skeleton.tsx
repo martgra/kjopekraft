@@ -9,10 +9,10 @@ interface SkeletonProps {
 /**
  * Base skeleton component for loading states
  */
-export function Skeleton({ className, style }: SkeletonProps) {
+function Skeleton({ className, style }: SkeletonProps) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-gray-200 dark:bg-gray-700', className)}
+      className={cn('animate-pulse rounded-md bg-[var(--surface-subtle)]', className)}
       style={style}
       role="status"
       aria-label="Loading"
@@ -56,7 +56,7 @@ export function ChartSkeleton({ className }: SkeletonProps) {
 /**
  * Skeleton for metric cards
  */
-export function MetricSkeleton({ className }: SkeletonProps) {
+function MetricSkeleton({ className }: SkeletonProps) {
   return (
     <div className={cn('rounded-xl bg-[var(--surface-light)] p-4 shadow-sm', className)}>
       <Skeleton className="mb-2 h-4 w-1/2" />
@@ -82,7 +82,7 @@ export function MetricGridSkeleton({ className }: SkeletonProps) {
 /**
  * Skeleton for table rows
  */
-export function TableRowSkeleton({ className }: SkeletonProps) {
+function TableRowSkeleton({ className }: SkeletonProps) {
   return (
     <div className={cn('flex items-center gap-4 py-3', className)}>
       <Skeleton className="h-4 w-16" />
@@ -95,7 +95,7 @@ export function TableRowSkeleton({ className }: SkeletonProps) {
 /**
  * Skeleton for table
  */
-export function TableSkeleton({ rows = 5, className }: SkeletonProps & { rows?: number }) {
+function TableSkeleton({ rows = 5, className }: SkeletonProps & { rows?: number }) {
   return (
     <div className={cn('space-y-2 p-4', className)}>
       <div className="flex items-center gap-4 border-b pb-2">

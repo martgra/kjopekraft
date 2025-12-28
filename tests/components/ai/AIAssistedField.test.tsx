@@ -10,9 +10,6 @@ const reset = vi.fn()
 
 let mockSuggestion = ''
 let mockCanValidate = true
-let mockPendingQuestion: string | null = null
-let mockIsLoading = false
-let mockStatus: 'question' | 'done' | null = null
 
 const mockValidator = {
   suggestion: '',
@@ -44,10 +41,7 @@ describe('AIAssistedField', () => {
     finalizeEarly.mockClear()
     reset.mockClear()
     mockSuggestion = ''
-    mockPendingQuestion = null
-    mockIsLoading = false
     mockCanValidate = true
-    mockStatus = null
     mockValidator.suggestion = ''
     mockValidator.pendingQuestion = null
     mockValidator.isLoading = false

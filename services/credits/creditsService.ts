@@ -8,12 +8,12 @@ import {
 import type { CreditsRepository } from './creditsRepository'
 import { getCreditsRepository } from './repositoryFactory'
 
-export interface DailyCreditsSnapshot {
+interface DailyCreditsSnapshot {
   credits: DailyCredits
   remaining: number
 }
 
-export interface SpendCreditsInput {
+interface SpendCreditsInput {
   userId: string
   timezone: string
   feature: CreditFeature
@@ -21,8 +21,20 @@ export interface SpendCreditsInput {
   requestId?: string
 }
 
-export interface SpendCreditsResult extends DailyCreditsSnapshot {
+interface SpendCreditsResult extends DailyCreditsSnapshot {
   allowed: boolean
+}
+
+function buildCreditsSnapshot(
+  dateKey: string,
+  existing: DailyCredits | null,
+  dailyLimit: number,
+): DailyCreditsSnapshot {
+  const credits = existing ?? { dateKey, used: 0, limit: dailyLimit }
+  return {
+    credits,
+    remaining: getRemainingCredits(credits.used, credits.limit),
+  }
 }
 
 export async function getDailyCreditsForUser(
@@ -33,11 +45,7 @@ export async function getDailyCreditsForUser(
 ): Promise<DailyCreditsSnapshot> {
   const dateKey = getLocalDateKey(timezone)
   const existing = await repository.getDailyCredits(userId, dateKey)
-  const credits = existing ?? { dateKey, used: 0, limit: dailyLimit }
-  return {
-    credits,
-    remaining: getRemainingCredits(credits.used, credits.limit),
-  }
+  return buildCreditsSnapshot(dateKey, existing, dailyLimit)
 }
 
 export async function checkAndSpendCredits(
@@ -60,10 +68,8 @@ export async function checkAndSpendCredits(
   }
 
   const existing = await repository.getDailyCredits(userId, dateKey)
-  const credits = existing ?? { dateKey, used: 0, limit: dailyLimit }
   return {
     allowed: false,
-    credits,
-    remaining: getRemainingCredits(credits.used, credits.limit),
+    ...buildCreditsSnapshot(dateKey, existing, dailyLimit),
   }
 }

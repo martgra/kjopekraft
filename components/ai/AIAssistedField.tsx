@@ -6,7 +6,7 @@ import { TEXT } from '@/lib/constants/text'
 import { useAiTextValidator } from '@/features/aiTextValidator/useAiTextValidator'
 import type { AiTextCompletionModel } from '@/lib/ai/models'
 
-export interface AIAssistedFieldProps {
+interface AIAssistedFieldProps {
   value: string
   onChange: (value: string) => void
   placeholder?: string
@@ -62,14 +62,21 @@ export function AIAssistedField({
     reset,
   } = validator
 
+  const trimmedSuggestion = suggestion.trim()
+  const trimmedAnswer = aiAnswer.trim()
+  const isDone = status === 'done'
+  const showPanel =
+    (aiActive || pendingQuestion || isLoading || isDone) &&
+    !(!isLoading && isDone && !pendingQuestion)
+
   useEffect(() => {
     if (!aiActive) return
-    if (suggestion.trim()) {
-      const nextValue = suggestion.trim()
+    if (trimmedSuggestion) {
+      const nextValue = trimmedSuggestion
       setHasAiUpdate(true)
       onChange(nextValue)
     }
-  }, [aiActive, onChange, suggestion])
+  }, [aiActive, onChange, trimmedSuggestion])
 
   useEffect(() => {
     if (!aiActive) {
@@ -84,9 +91,9 @@ export function AIAssistedField({
   }
 
   const handleSendAnswer = async () => {
-    if (!aiAnswer.trim()) return
+    if (!trimmedAnswer) return
     setAiActive(true)
-    await answerQuestion(aiAnswer.trim())
+    await answerQuestion(trimmedAnswer)
     setAiAnswer('')
   }
 
@@ -111,14 +118,14 @@ export function AIAssistedField({
           value={value}
           onChange={event => onChange(event.target.value)}
           placeholder={placeholder}
-          className="min-h-[120px] w-full resize-y rounded-xl border border-[var(--border-light)] bg-gray-50 px-3 py-2 pr-20 text-base text-[var(--text-main)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] focus:outline-none"
+          className="min-h-[120px] w-full resize-y rounded-xl border border-[var(--border-light)] bg-[var(--surface-subtle)] px-3 py-2 pr-20 text-base text-[var(--text-main)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] focus:outline-none"
           disabled={disabled}
         />
         {hasAiUpdate && !disabled ? (
           <div className="absolute right-2 bottom-2 flex items-center">
             <button
               type="button"
-              className="rounded-full border border-white/60 bg-white/80 p-1.5 text-[var(--text-muted)] shadow-sm backdrop-blur transition-all hover:border-[var(--primary)]/40 hover:text-[var(--text-main)] hover:shadow-md dark:border-gray-700/70 dark:bg-gray-900/70"
+              className="rounded-full border border-[color:var(--border-light)]/60 bg-[color:var(--surface-light)]/80 p-1.5 text-[var(--text-muted)] shadow-sm backdrop-blur transition-all hover:border-[var(--primary)]/40 hover:text-[var(--text-main)] hover:shadow-md"
               onClick={handleRevert}
               aria-label={TEXT.common.reset}
               title={TEXT.common.reset}
@@ -134,44 +141,43 @@ export function AIAssistedField({
         disabled={disabled || !canValidate(value)}
       />
       {error ? <p className="text-xs text-red-600 dark:text-red-400">{error}</p> : null}
-      {(aiActive || pendingQuestion || isLoading || status === 'done') &&
-        !(!isLoading && status === 'done' && !pendingQuestion) && (
-          <div className="space-y-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-subtle)] p-3">
-            {isLoading ? (
-              <div className="text-xs text-[var(--text-muted)]">
-                <AILoadingState showQuote />
-              </div>
-            ) : pendingQuestion ? (
-              <div className="rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 text-sm text-[var(--text-main)] dark:bg-gray-900">
-                {pendingQuestion}
-              </div>
-            ) : status === 'done' ? (
-              <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-900/20 dark:text-emerald-200">
-                {TEXT.aiValidator.aiSatisfied}
-              </div>
-            ) : (
-              <div className="rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 text-xs text-[var(--text-muted)] dark:bg-gray-900">
-                {TEXT.aiValidator.inlineHint}
-              </div>
-            )}
-            <textarea
-              className="min-h-[96px] w-full resize-none rounded-lg border border-[var(--border-light)] bg-white px-3 py-2 text-sm text-[var(--text-main)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] focus:outline-none dark:bg-gray-900"
-              value={aiAnswer}
-              onChange={event => setAiAnswer(event.target.value)}
-              placeholder={TEXT.aiValidator.chatInputPlaceholder}
-              disabled={isLoading || !pendingQuestion}
-            />
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <Button
-                size="sm"
-                onClick={handleSendAnswer}
-                disabled={!aiAnswer.trim() || !pendingQuestion || isLoading}
-              >
-                {TEXT.aiValidator.sendAnswer}
-              </Button>
+      {showPanel && (
+        <div className="space-y-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-subtle)] p-3">
+          {isLoading ? (
+            <div className="text-xs text-[var(--text-muted)]">
+              <AILoadingState showQuote />
             </div>
+          ) : pendingQuestion ? (
+            <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] px-3 py-2 text-sm text-[var(--text-main)]">
+              {pendingQuestion}
+            </div>
+          ) : isDone ? (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-900/20 dark:text-emerald-200">
+              {TEXT.aiValidator.aiSatisfied}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] px-3 py-2 text-xs text-[var(--text-muted)]">
+              {TEXT.aiValidator.inlineHint}
+            </div>
+          )}
+          <textarea
+            className="min-h-[96px] w-full resize-none rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] px-3 py-2 text-sm text-[var(--text-main)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] focus:outline-none"
+            value={aiAnswer}
+            onChange={event => setAiAnswer(event.target.value)}
+            placeholder={TEXT.aiValidator.chatInputPlaceholder}
+            disabled={isLoading || !pendingQuestion}
+          />
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button
+              size="sm"
+              onClick={handleSendAnswer}
+              disabled={!trimmedAnswer || !pendingQuestion || isLoading}
+            >
+              {TEXT.aiValidator.sendAnswer}
+            </Button>
           </div>
-        )}
+        </div>
+      )}
     </div>
   )
 }

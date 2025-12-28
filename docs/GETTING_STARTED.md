@@ -459,7 +459,7 @@ Before deploying:
 2. **Make your first change**:
    - Update text in `lib/constants/text.ts`
    - Add a new metric in `MetricGrid.tsx`
-   - Modify chart colors in `lib/chartjs.ts`
+   - Modify chart colors in `features/visualization/utils/payChartConfig.ts`
 
 3. **Follow the principles**:
    - Review [copilot-instructions.md](../.github/copilot-instructions.md)

@@ -22,7 +22,7 @@ export const JsonStat2Schema = z.object({
 })
 
 // Salary series point as returned by our API
-export const SsbSalarySeriesPointSchema = z.object({
+const SsbSalarySeriesPointSchema = z.object({
   year: z.number(),
   value: z.number().nullable(),
   status: z.string().nullable().optional(),
@@ -54,6 +54,16 @@ export const SsbSalaryResponseSchema = z.object({
     .object({
       yearlyNok: z.array(SsbSalarySeriesPointSchema).optional(),
     })
+    .optional(),
+  alerts: z
+    .array(
+      z.object({
+        code: z.literal('fallback'),
+        source: z.enum(['SSB', 'Stortinget']),
+        cachedAt: z.string().optional(),
+        reason: z.string().optional(),
+      }),
+    )
     .optional(),
   notes: z.array(z.string()).optional(),
 })

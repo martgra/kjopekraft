@@ -22,6 +22,15 @@ export default function MobileBottomDrawer({
   variant = 'drawer',
 }: MobileBottomDrawerProps) {
   const pathname = usePathname()
+  const isDashboard = pathname === '/'
+  const isNegotiation = pathname === '/negotiation'
+  const content = isDashboard ? dashboardContent : isNegotiation ? negotiationContent : null
+  const title = isDashboard
+    ? TEXT.drawer.dashboardTitle
+    : isNegotiation
+      ? TEXT.drawer.negotiationTitle
+      : ''
+  const isSheet = variant === 'sheet'
 
   // Close drawer on route change
   const previousPathRef = useRef(pathname)
@@ -46,24 +55,15 @@ export default function MobileBottomDrawer({
 
   // Handle escape key
   useEffect(() => {
+    if (!isOpen) return
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === 'Escape') {
         onClose()
       }
     }
     window.addEventListener('keydown', handleEscape)
     return () => window.removeEventListener('keydown', handleEscape)
   }, [isOpen, onClose])
-
-  // Determine content based on route
-  const isDashboard = pathname === '/'
-  const isNegotiation = pathname === '/negotiation'
-  const content = isDashboard ? dashboardContent : isNegotiation ? negotiationContent : null
-  const title = isDashboard
-    ? TEXT.drawer.dashboardTitle
-    : isNegotiation
-      ? TEXT.drawer.negotiationTitle
-      : ''
 
   if (!content || !isOpen) return null
 
@@ -78,9 +78,9 @@ export default function MobileBottomDrawer({
 
       {/* Drawer - only on mobile */}
       <div
-        className={`fixed bottom-0 z-50 flex max-h-[85vh] min-h-0 w-full flex-col overflow-hidden rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-gray-900 ${
-          variant === 'sheet'
-            ? 'left-1/2 h-[85vh] max-w-md -translate-x-1/2 border-t border-gray-200 dark:border-gray-700/50'
+        className={`fixed bottom-0 z-50 flex max-h-[85vh] min-h-0 w-full flex-col overflow-hidden rounded-t-3xl bg-[var(--surface-light)] pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden ${
+          isSheet
+            ? 'left-1/2 h-[85vh] max-w-md -translate-x-1/2 border-t border-[var(--border-light)]'
             : 'right-0 left-0'
         } translate-y-0`}
         role="dialog"
@@ -93,7 +93,7 @@ export default function MobileBottomDrawer({
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 pb-4 dark:border-gray-700">
+        <div className="flex items-center justify-between border-b border-[var(--border-light)] px-6 pb-4">
           <div className="flex items-center gap-2">
             <h2 id="drawer-title" className="text-xl font-bold text-[var(--text-main)]">
               {title}

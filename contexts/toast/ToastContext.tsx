@@ -63,10 +63,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={toast.id}
             className={`pointer-events-auto rounded-xl border px-4 py-3 text-sm shadow-lg backdrop-blur ${
               toast.variant === 'error'
-                ? 'border-red-200 bg-red-50 text-red-700'
+                ? 'border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200'
                 : toast.variant === 'success'
-                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                  : 'border-[var(--border-light)] bg-white text-[var(--text-main)]'
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200'
+                  : 'border-[var(--border-light)] bg-white text-[var(--text-main)] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100'
             }`}
             role="status"
             aria-live="polite"

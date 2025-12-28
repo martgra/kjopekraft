@@ -7,6 +7,8 @@ import { TEXT } from '@/lib/constants/text'
 import { createTestId } from '@/lib/testing/testIds'
 import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
 import { MetricGridSkeleton, ChartSkeleton } from '@/components/ui/skeletons'
+import { Notice, SectionHeader } from '@/components/ui/atoms'
+import { PageShell } from '@/components/ui/layout'
 import MetricGrid from './MetricGrid'
 import ChartSection from './ChartSection'
 import StatusBanner from './StatusBanner'
@@ -50,19 +52,28 @@ export default function DashboardContent({
 }: DashboardContentProps) {
   const dashboardTestId = createTestId('dashboard')
   const chartWrapperClasses = `flex min-h-[350px] flex-1 ${chartWrapperClassName}`.trim()
+  const shouldShowMetrics = hasData && showMetricGrid
+
+  const handleDemoCta = () => {
+    onClearDemo()
+    onRequestAdd()
+  }
 
   return (
-    <div className="flex min-h-full flex-col gap-3 md:gap-6" data-testid={dashboardTestId('root')}>
+    <PageShell className="gap-3 md:gap-6" data-testid={dashboardTestId('root')}>
       {showHeader && (
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-[var(--text-main)] md:text-3xl">
-            {TEXT.dashboard.annualOverview}
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] md:mt-1">
-            {TEXT.dashboard.annualOverviewSubtitle}
-          </p>
-        </div>
+        <SectionHeader
+          title={TEXT.dashboard.annualOverview}
+          subtitle={TEXT.dashboard.annualOverviewSubtitle}
+        />
       )}
+
+      {!inflationData.length ? (
+        <Notice variant="warning" className="rounded-2xl px-4 py-3">
+          <div className="font-semibold">{TEXT.inflation.noDataTitle}</div>
+          <p className="mt-1 text-[11px]">{TEXT.inflation.noDataMessage}</p>
+        </Notice>
+      ) : null}
 
       {hasData && (
         <>
@@ -71,12 +82,9 @@ export default function DashboardContent({
             statistics={statistics}
             isDemoMode={isDemoMode}
             onSinglePointCtaClick={onRequestAdd}
-            onDemoModeCtaClick={() => {
-              onClearDemo()
-              onRequestAdd()
-            }}
+            onDemoModeCtaClick={handleDemoCta}
           />
-          {showMetricGrid && (
+          {shouldShowMetrics && (
             <Suspense fallback={<MetricGridSkeleton />}>
               <MetricGrid statistics={statistics} isNetMode={isNetMode} />
             </Suspense>
@@ -86,7 +94,7 @@ export default function DashboardContent({
 
       {hasData ? (
         <div className={chartWrapperClasses}>
-          <Suspense fallback={<ChartSkeleton className="w-full rounded-xl bg-white shadow-sm" />}>
+          <Suspense fallback={<ChartSkeleton className="ui-surface w-full rounded-xl shadow-sm" />}>
             <ChartSection
               payPoints={payPoints}
               inflationData={inflationData}
@@ -102,6 +110,6 @@ export default function DashboardContent({
       ) : (
         <OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onRequestAdd} />
       )}
-    </div>
+    </PageShell>
   )
 }

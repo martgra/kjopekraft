@@ -1,6 +1,7 @@
 'use client'
 
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import { ModalShell } from '@/components/ui/atoms'
 import SalaryPointForm from './SalaryPointForm'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint, PayChangeReason, SalaryStatistics } from '@/domain/salary'
@@ -76,25 +77,29 @@ export default function DashboardDesktop({
 }: DashboardDesktopProps) {
   const dashboardTestId = createTestId('dashboard')
 
+  const formProps = {
+    newYear,
+    newPay,
+    newReason,
+    newNote,
+    currentYear,
+    minYear,
+    validationError,
+    isSubmitDisabled,
+    isNetMode,
+    onYearChange,
+    onPayChange,
+    onReasonChange,
+    onNoteChange,
+    onAdd: onSubmitPoint,
+  }
+
+  const renderForm = () => <SalaryPointForm {...formProps} />
+
   // Right panel content for desktop sidebar
   const rightPanelContent = (
     <div className="flex h-full flex-col" data-testid={dashboardTestId('right-panel')}>
-      <SalaryPointForm
-        newYear={newYear}
-        newPay={newPay}
-        newReason={newReason}
-        newNote={newNote}
-        currentYear={currentYear}
-        minYear={minYear}
-        validationError={validationError}
-        isSubmitDisabled={isSubmitDisabled}
-        isNetMode={isNetMode}
-        onYearChange={onYearChange}
-        onPayChange={onPayChange}
-        onReasonChange={onReasonChange}
-        onNoteChange={onNoteChange}
-        onAdd={onSubmitPoint}
-      />
+      {renderForm()}
     </div>
   )
 
@@ -120,43 +125,29 @@ export default function DashboardDesktop({
 
       {/* Desktop Modal Overlay */}
       {isFormModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[var(--border-light)] px-5 py-4">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[var(--primary)]">add_circle</span>
-                <h3 className="text-base font-bold text-[var(--text-main)]">
-                  {TEXT.forms.logSalaryPoint}
-                </h3>
-              </div>
-              <button
-                onClick={onCloseFormModal}
-                className="rounded-full p-2 text-[var(--text-muted)] hover:bg-gray-100"
-                aria-label={TEXT.common.close}
-              >
-                <span className="material-symbols-outlined text-[20px]">close</span>
-              </button>
+        <ModalShell
+          onClose={onCloseFormModal}
+          className="w-full max-w-lg overflow-hidden rounded-2xl"
+          backdropClassName="z-50"
+          wrapperClassName="z-[60]"
+        >
+          <div className="flex items-center justify-between border-b border-[var(--border-light)] px-5 py-4">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[var(--primary)]">add_circle</span>
+              <h3 className="text-base font-bold text-[var(--text-main)]">
+                {TEXT.forms.logSalaryPoint}
+              </h3>
             </div>
-            <div className="max-h-[80vh] overflow-y-auto">
-              <SalaryPointForm
-                newYear={newYear}
-                newPay={newPay}
-                newReason={newReason}
-                newNote={newNote}
-                currentYear={currentYear}
-                minYear={minYear}
-                validationError={validationError}
-                isSubmitDisabled={isSubmitDisabled}
-                isNetMode={isNetMode}
-                onYearChange={onYearChange}
-                onPayChange={onPayChange}
-                onReasonChange={onReasonChange}
-                onNoteChange={onNoteChange}
-                onAdd={onSubmitPoint}
-              />
-            </div>
+            <button
+              onClick={onCloseFormModal}
+              className="rounded-full p-2 text-[var(--text-muted)] hover:bg-[var(--surface-subtle)]"
+              aria-label={TEXT.common.close}
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
           </div>
-        </div>
+          <div className="max-h-[80vh] overflow-y-auto">{renderForm()}</div>
+        </ModalShell>
       )}
     </>
   )

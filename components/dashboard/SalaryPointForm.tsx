@@ -41,6 +41,15 @@ export default function SalaryPointForm({
   const testId = createTestId('salary-form')
 
   const disabled = isSubmitDisabled
+  const amountLabel = isNetMode ? TEXT.forms.netAmount : TEXT.forms.grossAmount
+  const amountHelp = isNetMode ? TEXT.forms.netAmountHelp : TEXT.forms.grossAmountHelp
+  const yearRangeLabel = TEXT.forms.yearRange
+    .replace('{min}', String(minYear))
+    .replace('{max}', String(currentYear))
+
+  const handleYearInput = (value: string) => {
+    onYearChange(value.replace(/\D/g, ''))
+  }
 
   return (
     <div className="space-y-6 p-6" data-testid={testId('container')}>
@@ -60,7 +69,7 @@ export default function SalaryPointForm({
             htmlFor="salary-amount"
             className="block text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase"
           >
-            {isNetMode ? TEXT.forms.netAmount : TEXT.forms.grossAmount}
+            {amountLabel}
           </label>
           <div className="group relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -77,9 +86,7 @@ export default function SalaryPointForm({
               className="block w-full rounded-xl border border-transparent bg-[var(--background-light)] py-3.5 pr-4 pl-12 text-lg font-medium text-[var(--text-main)] placeholder-gray-400 shadow-sm transition-all focus:border-[var(--primary)] focus:ring-0"
             />
           </div>
-          <p className="text-xs text-[var(--text-muted)]">
-            {isNetMode ? TEXT.forms.netAmountHelp : TEXT.forms.grossAmountHelp}
-          </p>
+          <p className="text-xs text-[var(--text-muted)]">{amountHelp}</p>
         </div>
 
         {/* Year Field */}
@@ -88,9 +95,7 @@ export default function SalaryPointForm({
             htmlFor="salary-year"
             className="block text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase"
           >
-            {TEXT.forms.yearRange
-              .replace('{min}', String(minYear))
-              .replace('{max}', String(currentYear))}
+            {yearRangeLabel}
           </label>
           <input
             id="salary-year"
@@ -99,7 +104,7 @@ export default function SalaryPointForm({
             inputMode="numeric"
             pattern="[0-9]*"
             value={newYear}
-            onChange={e => onYearChange(e.target.value.replace(/\D/g, ''))}
+            onChange={e => handleYearInput(e.target.value)}
             placeholder={String(currentYear)}
             className="block w-full rounded-xl border border-transparent bg-[var(--background-light)] px-4 py-3.5 text-lg font-medium text-[var(--text-main)] shadow-sm transition-all focus:border-[var(--primary)] focus:ring-0"
           />

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils/cn'
 import { useState, useRef, useEffect } from 'react'
 import { Children, isValidElement } from 'react'
 
-export interface SelectOptionProps {
+interface SelectOptionProps {
   value: string
   children: React.ReactNode
 }
@@ -15,7 +15,7 @@ export function SelectOption(_: SelectOptionProps) {
   return null
 }
 
-export interface SelectProps {
+interface SelectProps {
   children: React.ReactNode
   className?: string
   leftIcon?: string
@@ -47,29 +47,26 @@ export function Select({
 
   // Extract options from children - support both SelectOption and native option elements
   const childrenArray = Children.toArray(children)
-  const options = childrenArray.filter(child => {
-    // Accept both our SelectOption component and native option elements
-    if (isValidElement(child)) {
-      return child.type === SelectOption || child.type === 'option'
-    }
-    return false
-  })
+  const options = childrenArray.filter(
+    child => isValidElement(child) && (child.type === SelectOption || child.type === 'option'),
+  )
 
-  const selectedOption = options.find(child => {
-    if (isValidElement<SelectOptionProps>(child)) {
-      return child.props.value === selectedValue
-    }
-    return false
-  })
+  const selectedOption = options.find(
+    child => isValidElement<SelectOptionProps>(child) && child.props.value === selectedValue,
+  )
 
   const selectedLabel = isValidElement<SelectOptionProps>(selectedOption)
     ? selectedOption.props.children
     : 'Select...'
 
+  const openDirectionClass = openDirection === 'up' ? 'bottom-full mb-1' : 'top-full mt-1'
+
+  const setOpen = (next: boolean) => setIsOpen(next)
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+        setOpen(false)
       }
     }
 
@@ -91,7 +88,7 @@ export function Select({
   }, [isOpen, placement])
 
   const handleSelect = (optionValue: string) => {
-    setIsOpen(false)
+    setOpen(false)
     onChange?.(optionValue)
   }
 
@@ -100,13 +97,12 @@ export function Select({
       <button
         type="button"
         id={id}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setOpen(!isOpen)}
         data-testid={dataTestId}
         className={cn(
-          'flex w-full items-center justify-between rounded-lg border border-[var(--border-light)] bg-white py-2.5 text-base font-medium text-gray-900',
-          'dark:border-gray-600 dark:bg-gray-700 dark:text-white',
+          'flex w-full items-center justify-between rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] py-2.5 text-base font-medium text-[var(--text-main)]',
           'shadow-sm transition-all',
-          'hover:border-gray-400 hover:shadow dark:hover:border-gray-500',
+          'hover:border-gray-400 hover:shadow',
           'focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 focus:outline-none',
           'active:scale-[0.99]',
           leftIcon ? 'pl-10' : 'pl-3',
@@ -115,14 +111,14 @@ export function Select({
         )}
       >
         {leftIcon && (
-          <span className="material-symbols-outlined absolute left-3 text-lg text-gray-500 dark:text-gray-400">
+          <span className="material-symbols-outlined absolute left-3 text-lg text-[var(--text-muted)]">
             {leftIcon}
           </span>
         )}
         <span className="flex-1 text-left">{selectedLabel}</span>
         <span
           className={cn(
-            'material-symbols-outlined text-xl text-gray-400 transition-transform dark:text-gray-300',
+            'material-symbols-outlined text-xl text-[var(--text-muted)] transition-transform',
             isOpen && 'rotate-180',
           )}
         >
@@ -133,8 +129,8 @@ export function Select({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 w-full rounded-lg border border-[var(--border-light)] bg-white shadow-lg dark:border-gray-600 dark:bg-gray-700',
-            openDirection === 'up' ? 'bottom-full mb-1' : 'top-full mt-1',
+            'absolute z-50 w-full rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] shadow-lg',
+            openDirectionClass,
           )}
         >
           <div className="max-h-60 overflow-auto py-1">
@@ -154,7 +150,7 @@ export function Select({
                     'w-full px-3 py-2.5 text-left text-base transition-colors',
                     isSelected
                       ? 'bg-[var(--primary)]/10 font-medium text-[var(--primary)]'
-                      : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-600',
+                      : 'text-[var(--text-main)] hover:bg-[var(--surface-subtle)]',
                   )}
                 >
                   {optionLabel}

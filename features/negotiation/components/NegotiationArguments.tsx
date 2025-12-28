@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle, Icon } from '@/components/ui/atoms'
 import { PointItem } from '@/components/ui/molecules'
 import { TEXT } from '@/lib/constants/text'
-import type { NegotiationPoint } from '@/components/ui/organisms/ArgumentBuilder/ArgumentBuilder'
+import type { NegotiationPoint } from '@/lib/schemas/negotiation'
 
 interface NegotiationArgumentsProps {
   points: NegotiationPoint[]

@@ -28,6 +28,39 @@
   --text-muted-dark: #9ca3af;
   --border-light: #e5e7eb;
   --border-dark: #374151;
+  --text-on-light: #0f172a;
+
+  /* Badge tokens */
+  --badge-default-bg: var(--surface-subtle);
+  --badge-default-text: var(--text-main);
+  --badge-default-ring: var(--border-light);
+  --badge-success-bg: var(--color-green-100);
+  --badge-success-text: var(--primary);
+  --badge-success-ring: rgba(76, 175, 80, 0.2);
+  --badge-warning-bg: var(--color-yellow-100);
+  --badge-warning-text: var(--accent);
+  --badge-warning-ring: rgba(255, 207, 88, 0.2);
+  --badge-error-bg: rgba(239, 68, 68, 0.12);
+  --badge-error-text: #f87171;
+  --badge-error-ring: rgba(239, 68, 68, 0.2);
+  --badge-info-bg: var(--color-blue-100);
+  --badge-info-text: var(--secondary);
+  --badge-info-ring: rgba(34, 116, 165, 0.2);
+  --badge-primary-bg: rgba(76, 175, 80, 0.12);
+  --badge-primary-text: var(--primary);
+  --badge-primary-ring: rgba(76, 175, 80, 0.2);
+
+  /* Layout tokens */
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-panel: 12px;
+  --radius-card: 16px;
+  --radius-modal: 24px;
+  --shadow-soft: 0 8px 24px -16px rgba(15, 23, 42, 0.4);
+  --shadow-strong: 0 18px 40px -24px rgba(15, 23, 42, 0.55);
 
   /* Semantic colors */
   --color-green-500: #4caf50;
@@ -41,6 +74,26 @@
   --color-emerald-500: #10b981;
   --color-indigo-500: #6366f1;
   --color-gray-50: #f9fafb;
+}
+
+.ui-surface {
+  background-color: var(--surface-light);
+}
+
+.ui-surface-subtle {
+  background-color: var(--surface-subtle);
+}
+
+.ui-border {
+  border-color: var(--border-light);
+}
+
+.ui-text-main {
+  color: var(--text-main);
+}
+
+.ui-text-muted {
+  color: var(--text-muted);
 }
 
 /* Dark Mode Theme */
@@ -64,6 +117,39 @@
   --text-main: #f1f5f9;
   --text-muted: #94a3b8;
   --border-light: #2a3346;
+  --text-on-light: #0f172a;
+
+  /* Badge tokens (dark) */
+  --badge-default-bg: var(--surface-subtle);
+  --badge-default-text: var(--text-main);
+  --badge-default-ring: var(--border-light);
+  --badge-success-bg: rgba(16, 185, 129, 0.18);
+  --badge-success-text: #a7f3d0;
+  --badge-success-ring: rgba(16, 185, 129, 0.25);
+  --badge-warning-bg: rgba(251, 191, 36, 0.18);
+  --badge-warning-text: #fde68a;
+  --badge-warning-ring: rgba(251, 191, 36, 0.25);
+  --badge-error-bg: rgba(239, 68, 68, 0.18);
+  --badge-error-text: #fca5a5;
+  --badge-error-ring: rgba(239, 68, 68, 0.25);
+  --badge-info-bg: rgba(59, 130, 246, 0.18);
+  --badge-info-text: #bfdbfe;
+  --badge-info-ring: rgba(59, 130, 246, 0.25);
+  --badge-primary-bg: rgba(74, 222, 128, 0.2);
+  --badge-primary-text: #bbf7d0;
+  --badge-primary-ring: rgba(74, 222, 128, 0.25);
+
+  /* Layout tokens */
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-panel: 12px;
+  --radius-card: 16px;
+  --radius-modal: 24px;
+  --shadow-soft: 0 8px 24px -16px rgba(15, 23, 42, 0.6);
+  --shadow-strong: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
 
   /* Dark mode semantic colors */
   --color-green-500: #4ade80;
@@ -108,6 +194,18 @@ body {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes aiShimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  60% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(120%);
   }
 }
 

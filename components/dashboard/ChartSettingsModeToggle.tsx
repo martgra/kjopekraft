@@ -11,7 +11,7 @@ export function ChartSettingsModeToggle({ isNetMode, onToggleMode }: ChartSettin
 
   return (
     <div
-      className="flex items-center justify-between gap-4 border-b border-gray-100 p-4"
+      className="flex items-center justify-between gap-4 border-b border-[var(--border-light)] p-4"
       data-testid={testId('container')}
     >
       <div>
@@ -28,7 +28,7 @@ export function ChartSettingsModeToggle({ isNetMode, onToggleMode }: ChartSettin
         type="checkbox"
         checked={isNetMode}
         onChange={onToggleMode}
-        className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-gray-200 transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-white before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2"
+        className="relative h-6 w-11 cursor-pointer appearance-none rounded-full bg-[var(--surface-subtle)] transition before:absolute before:top-0.5 before:left-0.5 before:h-5 before:w-5 before:rounded-full before:bg-[var(--surface-light)] before:shadow before:transition before:content-[''] checked:bg-[var(--primary)] checked:before:translate-x-5 focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:ring-offset-[var(--surface-light)]"
         aria-label={TEXT.settings.grossNetToggleTitle}
         data-testid={testId('toggle')}
       />

@@ -31,7 +31,7 @@ export function SalaryRowExpansion({
 
   return (
     <div className="mt-2 space-y-3 text-xs">
-      <section className="rounded-lg border border-[var(--border-light)] bg-white p-3">
+      <section className="ui-surface rounded-lg border border-[var(--border-light)] p-3">
         <div className="text-[11px] font-semibold tracking-wide text-[var(--text-muted)] uppercase">
           {TEXT.views.table.explanationTitle}
         </div>
@@ -52,7 +52,7 @@ export function SalaryRowExpansion({
       </section>
 
       {hasReference && row.reference?.value !== null && row.reference && (
-        <section className="rounded-lg border border-[var(--border-light)] bg-white p-3">
+        <section className="ui-surface rounded-lg border border-[var(--border-light)] p-3">
           <div className="flex items-center justify-between">
             <div className="text-[11px] font-semibold tracking-wide text-[var(--text-muted)] uppercase">
               {TEXT.views.table.referenceTitle}
@@ -94,7 +94,7 @@ export function SalaryRowExpansion({
         </section>
       )}
 
-      <section className="rounded-lg border border-[var(--border-light)] bg-white p-3">
+      <section className="ui-surface rounded-lg border border-[var(--border-light)] p-3">
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-semibold tracking-wide text-[var(--text-muted)] uppercase">
             {TEXT.views.table.longTermLabel}

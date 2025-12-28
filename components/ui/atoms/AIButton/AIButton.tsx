@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils/cn'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
 
-export interface AIButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface AIButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   label: string
 }
 
@@ -40,19 +40,6 @@ export function AIButton({ label, className, ...props }: AIButtonProps) {
         </span>
         <span>{label}</span>
       </span>
-      <style jsx>{`
-        @keyframes aiShimmer {
-          0% {
-            transform: translateX(-120%);
-          }
-          60% {
-            transform: translateX(120%);
-          }
-          100% {
-            transform: translateX(120%);
-          }
-        }
-      `}</style>
     </Button>
   )
 }

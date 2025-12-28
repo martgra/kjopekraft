@@ -27,6 +27,10 @@ describe('adjustForInflation', () => {
     expect(adjustForInflation(1000, 2020, 2022, sampleInflation)).toBe(1155)
   })
 
+  it('deflates a value when adjusting backwards in time', () => {
+    expect(adjustForInflation(1155, 2022, 2020, sampleInflation)).toBe(1000)
+  })
+
   it('returns the same value when years match', () => {
     expect(adjustForInflation(500, 2021, 2021, sampleInflation)).toBe(500)
   })

@@ -8,16 +8,22 @@ import { requireLogin } from '@/services/auth/requireLogin'
 import { checkAndSpendCredits } from '@/services/credits/creditsService'
 import { getUserProfile } from '@/services/users/userProfileService'
 import { TEXT } from '@/lib/constants/text'
+import { errorResponse } from '@/lib/api/errors'
+import { attachRequestId, getRequestId } from '@/lib/api/requestId'
 
 export const maxDuration = 30 // Allow responses up to 30 seconds
 
 export async function POST(req: Request) {
+  const requestId = getRequestId(req)
   try {
     const { session, response } = await requireLogin(req)
-    if (response) return response
+    if (response) return attachRequestId(response, requestId)
     const userId = session?.user?.id
     if (!userId) {
-      return NextResponse.json({ error: TEXT.auth.loginRequired }, { status: 401 })
+      return attachRequestId(
+        NextResponse.json({ error: TEXT.auth.loginRequired }, { status: 401 }),
+        requestId,
+      )
     }
 
     const profile = await getUserProfile(userId)
@@ -28,7 +34,10 @@ export async function POST(req: Request) {
       feature: 'argument_improver',
     })
     if (!creditCheck.allowed) {
-      return NextResponse.json({ error: TEXT.credits.exhausted }, { status: 429 })
+      return attachRequestId(
+        NextResponse.json({ error: TEXT.credits.exhausted }, { status: 429 }),
+        requestId,
+      )
     }
 
     const { text, language, maxChars, systemPrompt, pointType, history, forceFinalize, model } =
@@ -44,11 +53,17 @@ export async function POST(req: Request) {
       }
 
     if (!text || typeof text !== 'string') {
-      return NextResponse.json({ error: 'Missing text' }, { status: 400 })
+      return attachRequestId(
+        NextResponse.json({ error: 'Missing text' }, { status: 400 }),
+        requestId,
+      )
     }
 
     if (typeof maxChars === 'number' && text.length > maxChars) {
-      return NextResponse.json({ error: 'Text too long' }, { status: 400 })
+      return attachRequestId(
+        NextResponse.json({ error: 'Text too long' }, { status: 400 }),
+        requestId,
+      )
     }
 
     const askedCount =
@@ -85,21 +100,24 @@ export async function POST(req: Request) {
     })
 
     if (object.status === 'question' && !object.question) {
-      return NextResponse.json(
-        { error: 'Missing question in response', details: object },
-        { status: 500 },
+      return attachRequestId(
+        NextResponse.json(
+          { error: 'Missing question in response', details: object },
+          { status: 500 },
+        ),
+        requestId,
       )
     }
 
-    return NextResponse.json(object)
+    return attachRequestId(NextResponse.json(object), requestId)
   } catch (error) {
-    console.error('Text validation error:', error)
-    return NextResponse.json(
-      {
-        error: 'Failed to validate text',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 },
+    return errorResponse(
+      'aiTextValidationRoute',
+      error,
+      { error: 'Failed to validate text' },
+      500,
+      {},
+      requestId,
     )
   }
 }

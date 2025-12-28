@@ -82,7 +82,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="nb" className="h-full">
+    <html lang="nb" className="h-full" suppressHydrationWarning>
       <head>
         <meta
           name="viewport"

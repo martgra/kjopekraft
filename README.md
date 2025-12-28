@@ -23,7 +23,7 @@ The app loads with onboarding; try demo data or add your own.
 
 - **Next.js** 16 (App Router, RSC) with React 19
 - **TypeScript** 5.9, **Bun** runtime/PM
-- **Tailwind CSS** 4 (CSS variables, light theme)
+- **Tailwind CSS** 4 (CSS variables, light + dark themes)
 - **Chart.js** 4.4, **SWR** 2 for client caching
 - **AI**: `ai` SDK + `@ai-sdk/openai`
 

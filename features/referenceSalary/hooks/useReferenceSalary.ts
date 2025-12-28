@@ -3,17 +3,24 @@
  */
 
 import useSWR from 'swr'
-import type { ReferenceSalaryResponse, ReferenceDataPoint, OccupationDefinition } from '../types'
+import { useEffect, useRef } from 'react'
+import type {
+  ReferenceSalaryResponse,
+  ReferenceDataPoint,
+  OccupationDefinition,
+} from '@/domain/reference'
 import { DEFAULT_OCCUPATION, OCCUPATIONS, type OccupationKey } from '../occupations'
 import { fetchJson } from '@/lib/api/fetchJson'
 import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
+import { useToast } from '@/contexts/toast/ToastContext'
+import { TEXT } from '@/lib/constants/text'
 
 const fetcher = (url: string) =>
   fetchJson<ReferenceSalaryResponse>(url, undefined, {
     errorPrefix: 'Reference salary request failed',
   })
 
-export type UseReferenceSalaryOptions = {
+type UseReferenceSalaryOptions = {
   occupation?: OccupationSelection | OccupationKey | null
   fromYear?: number
   enabled?: boolean // Allow conditional fetching
@@ -21,6 +28,8 @@ export type UseReferenceSalaryOptions = {
 
 export function useReferenceSalary(options: UseReferenceSalaryOptions = {}) {
   const { occupation = DEFAULT_OCCUPATION, fromYear = 2015, enabled = true } = options
+  const { showToast } = useToast()
+  const lastAlertKeyRef = useRef<string | null>(null)
 
   const occupationDef: OccupationDefinition | OccupationSelection | null =
     occupation && typeof occupation === 'string'
@@ -64,6 +73,22 @@ export function useReferenceSalary(options: UseReferenceSalaryOptions = {}) {
     yearlyData = data.unit === 'NOK/year' ? data.series : (data.derived?.yearlyNok ?? [])
   }
 
+  useEffect(() => {
+    if (!data?.alerts?.length) return
+    const fallbackAlert = data.alerts.find(alert => alert.code === 'fallback')
+    if (!fallbackAlert) return
+    const alertKey = `${fallbackAlert.source}-${fallbackAlert.cachedAt ?? 'unknown'}`
+    if (lastAlertKeyRef.current === alertKey) return
+
+    lastAlertKeyRef.current = alertKey
+    showToast(
+      fallbackAlert.source === 'Stortinget'
+        ? TEXT.referenceSalary.stortingFallbackNotice
+        : TEXT.referenceSalary.fallbackNotice,
+      { variant: 'error' },
+    )
+  }, [data, showToast])
+
   return {
     data: yearlyData,
     isLoading,
@@ -74,6 +99,7 @@ export function useReferenceSalary(options: UseReferenceSalaryOptions = {}) {
           unit: data.unit,
           source: data.source,
           filters: data.filters,
+          alerts: data.alerts ?? [],
         }
       : null,
   }

@@ -9,7 +9,8 @@ import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
 import type { ArgumentBuilderHandle } from '@/components/ui/organisms/ArgumentBuilder/ArgumentBuilder'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
-import { AILoadingState, Badge, Button, Icon } from '@/components/ui/atoms'
+import { AILoadingState, Badge, Button, Icon, SectionHeader } from '@/components/ui/atoms'
+import { PageShell, Stack } from '@/components/ui/layout'
 import { TEXT } from '@/lib/constants/text'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { useSsbMedianSalary } from '@/features/negotiation/hooks/useSsbMedianSalary'
@@ -21,7 +22,7 @@ import {
 import { NegotiationArguments } from './NegotiationArguments'
 import { formatCurrency } from '@/lib/formatters/salaryFormatting'
 import { useSalaryDataContext } from '@/features/salary/providers/SalaryDataProvider'
-import type { NegotiationEmailContext } from '@/lib/models/types'
+import type { NegotiationEmailContext } from '@/domain/contracts'
 import { useLoginOverlay } from '@/contexts/loginOverlay/LoginOverlayContext'
 import { useToast } from '@/contexts/toast/ToastContext'
 import type { NegotiationUserInfo } from '@/lib/schemas/negotiation'
@@ -213,84 +214,88 @@ export default function NegotiationPage({
       />
       <DashboardLayout rightPanel={rightPanelContent}>
         {/* Header */}
-        <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--text-main)]">
-              {TEXT.negotiationPage.title}
-            </h1>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">{TEXT.negotiationPage.subtitle}</p>
-          </div>
-          <div className="flex items-start gap-2">
-            <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
-            <div className="flex flex-col items-start gap-1">
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleEmailGenerate}
-                disabled={isGeneratingEmail}
-                className="inline-flex"
-              >
-                <span className="flex items-center gap-1 text-sm">
-                  <Icon name="mail" size="sm" />
-                  {isGeneratingEmail ? TEXT.negotiation.generating : TEXT.negotiation.emailButton}
-                </span>
-              </Button>
-              {isGeneratingEmail && (
-                <div className="flex min-w-0">
-                  <AILoadingState
+        <PageShell gap="md">
+          <SectionHeader
+            title={TEXT.negotiationPage.title}
+            subtitle={TEXT.negotiationPage.subtitle}
+            actions={
+              <div className="flex items-start gap-2">
+                <Badge variant="info">{TEXT.sidebar.planLabel}</Badge>
+                <div className="flex flex-col items-start gap-1">
+                  <Button
+                    variant="primary"
                     size="sm"
-                    className="gap-1.5 truncate text-[11px] text-[var(--text-muted)] italic"
-                    spinnerClassName="border-[var(--primary)] border-t-transparent"
-                  />
+                    onClick={handleEmailGenerate}
+                    disabled={isGeneratingEmail}
+                    className="inline-flex"
+                  >
+                    <span className="flex items-center gap-1 text-sm">
+                      <Icon name="mail" size="sm" />
+                      {isGeneratingEmail
+                        ? TEXT.negotiation.generating
+                        : TEXT.negotiation.emailButton}
+                    </span>
+                  </Button>
+                  {isGeneratingEmail && (
+                    <div className="flex min-w-0">
+                      <AILoadingState
+                        size="sm"
+                        className="gap-1.5 truncate text-[11px] text-[var(--text-muted)] italic"
+                        spinnerClassName="border-[var(--primary)] border-t-transparent"
+                      />
+                    </div>
+                  )}
+                  {emailError ? (
+                    <p className="max-w-[220px] text-xs text-red-600 dark:text-red-400">
+                      {emailError}
+                    </p>
+                  ) : null}
                 </div>
-              )}
-              {emailError ? (
-                <p className="max-w-[220px] text-xs text-red-600 dark:text-red-400">{emailError}</p>
-              ) : null}
-            </div>
-          </div>
-        </div>
-
-        {/* Forms */}
-        <div className="flex flex-col gap-4">
-          <NegotiationSummary
-            inflationGapPercent={inflationGapPercent}
-            medianSalary={medianSalary}
-            medianYear={medianYear}
-            occupationLabel={occupationMatch?.label ?? null}
-            isApproximateMatch={occupationMatch?.isApproximate ?? false}
-            isMarketLoading={isMedianLoading}
-            hasMarketError={Boolean(medianError)}
-            desiredVsMedianPercent={
-              desiredVsMedianPercent !== null
-                ? Math.round(Math.abs(desiredVsMedianPercent) * 10) / 10
-                : null
-            }
-            desiredVsMedianIsAbove={desiredVsMedianIsAbove}
-            suggestedRange={suggestedRange}
-            marketSelector={
-              <NegotiationMarketSelector
-                selectedOccupation={selectedOccupation}
-                onOccupationChange={setSelectedOccupation}
-              />
+              </div>
             }
           />
-          <NegotiationArguments points={points} onRemovePoint={removePoint} />
-          <DetailsForm
-            userInfo={userInfo}
-            onChange={updateUserInfo}
-            showIsNewJobControl={!hasSalaryHistory}
-          />
-          <ContextForm
-            userInfo={userInfo}
-            onChange={updateUserInfo}
-            showMarketData={showMarketData}
-          />
-          <BenefitsForm userInfo={userInfo} onChange={updateUserInfo} />
-        </div>
 
-        {/* Generated Content */}
-        <GeneratedContent emailContent={emailContent || undefined} />
+          {/* Forms */}
+          <Stack gap="md">
+            <NegotiationSummary
+              inflationGapPercent={inflationGapPercent}
+              medianSalary={medianSalary}
+              medianYear={medianYear}
+              occupationLabel={occupationMatch?.label ?? null}
+              isApproximateMatch={occupationMatch?.isApproximate ?? false}
+              isMarketLoading={isMedianLoading}
+              hasMarketError={Boolean(medianError)}
+              desiredVsMedianPercent={
+                desiredVsMedianPercent !== null
+                  ? Math.round(Math.abs(desiredVsMedianPercent) * 10) / 10
+                  : null
+              }
+              desiredVsMedianIsAbove={desiredVsMedianIsAbove}
+              suggestedRange={suggestedRange}
+              marketSelector={
+                <NegotiationMarketSelector
+                  selectedOccupation={selectedOccupation}
+                  onOccupationChange={setSelectedOccupation}
+                />
+              }
+            />
+            <NegotiationArguments points={points} onRemovePoint={removePoint} />
+            <DetailsForm
+              userInfo={userInfo}
+              onChange={updateUserInfo}
+              showIsNewJobControl={!hasSalaryHistory}
+            />
+            <ContextForm
+              userInfo={userInfo}
+              onChange={updateUserInfo}
+              showMarketData={showMarketData}
+            />
+            <BenefitsForm userInfo={userInfo} onChange={updateUserInfo} />
+          </Stack>
+
+          {/* Generated Content */}
+          <GeneratedContent emailContent={emailContent || undefined} />
+        </PageShell>
       </DashboardLayout>
     </>
   )

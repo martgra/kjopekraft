@@ -1,8 +1,9 @@
 import { renderHook } from '@testing-library/react'
 import type { MockedFunction } from 'vitest'
 import useSWR, { type SWRResponse } from 'swr'
-import type { ReferenceSalaryResponse } from '@/features/referenceSalary/types'
+import type { ReferenceSalaryResponse } from '@/domain/reference'
 import { useReferenceSalary } from '@/features/referenceSalary/hooks/useReferenceSalary'
+import { ToastProvider } from '@/contexts/toast/ToastContext'
 
 vi.mock('swr', () => ({
   __esModule: true,
@@ -37,7 +38,9 @@ describe('useReferenceSalary', () => {
   it('returns empty data when disabled and does not request', () => {
     useSWRMock.mockReturnValue(createSWRMockResponse())
 
-    const { result } = renderHook(() => useReferenceSalary({ enabled: false }))
+    const { result } = renderHook(() => useReferenceSalary({ enabled: false }), {
+      wrapper: ({ children }) => <ToastProvider>{children}</ToastProvider>,
+    })
 
     expect(useSWRMock).toHaveBeenCalledWith(null, expect.any(Function), expect.any(Object))
     expect(result.current.data).toEqual([])
@@ -55,8 +58,11 @@ describe('useReferenceSalary', () => {
     }
     useSWRMock.mockReturnValue(createSWRMockResponse({ data: response }))
 
-    const { result } = renderHook(() =>
-      useReferenceSalary({ occupation: 'managersMunicipal', fromYear: 2010 }),
+    const { result } = renderHook(
+      () => useReferenceSalary({ occupation: 'managersMunicipal', fromYear: 2010 }),
+      {
+        wrapper: ({ children }) => <ToastProvider>{children}</ToastProvider>,
+      },
     )
 
     expect(useSWRMock).toHaveBeenCalledTimes(1)
@@ -68,6 +74,7 @@ describe('useReferenceSalary', () => {
       unit: response.unit,
       source: response.source,
       filters: response.filters,
+      alerts: [],
     })
   })
 
@@ -83,7 +90,9 @@ describe('useReferenceSalary', () => {
     }
     useSWRMock.mockReturnValue(createSWRMockResponse({ data: response }))
 
-    renderHook(() => useReferenceSalary({ occupation: 'stortingsrepresentant', fromYear: 1990 }))
+    renderHook(() => useReferenceSalary({ occupation: 'stortingsrepresentant', fromYear: 1990 }), {
+      wrapper: ({ children }) => <ToastProvider>{children}</ToastProvider>,
+    })
 
     const [apiUrl] = useSWRMock.mock.calls[0] as [string, unknown, unknown]
     expect(apiUrl).toBe('/api/reference/storting?fromYear=2001')

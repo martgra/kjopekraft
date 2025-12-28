@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils/cn'
 type TooltipSide = 'top' | 'bottom' | 'left' | 'right'
 type TooltipAlign = 'start' | 'center' | 'end'
 
-export interface InfoTooltipProps {
+interface InfoTooltipProps {
   label: React.ReactNode
   className?: string
   iconName?: 'info' | 'help'
@@ -49,7 +49,7 @@ function getPositionClasses(side: TooltipSide, align: TooltipAlign) {
   return cn('absolute z-50', base, alignment)
 }
 
-export function InfoTooltip({
+function InfoTooltip({
   label,
   className,
   iconName = 'info',
@@ -62,14 +62,14 @@ export function InfoTooltip({
   const tooltipId = useId()
   const [open, setOpen] = useState(false)
 
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  const openTooltip = () => setOpen(true)
+  const closeTooltip = () => setOpen(false)
 
   const triggerProps = {
-    onMouseEnter: handleOpen,
-    onMouseLeave: handleClose,
-    onFocus: handleOpen,
-    onBlur: handleClose,
+    onMouseEnter: openTooltip,
+    onMouseLeave: closeTooltip,
+    onFocus: openTooltip,
+    onBlur: closeTooltip,
     'aria-describedby': open ? tooltipId : undefined,
   }
 
@@ -100,7 +100,7 @@ export function InfoTooltip({
     trigger = (
       <button
         type="button"
-        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"
         {...triggerProps}
       >
         <span className="material-symbols-outlined text-[16px]">{iconName}</span>
@@ -115,7 +115,7 @@ export function InfoTooltip({
         role="tooltip"
         id={tooltipId}
         className={cn(
-          'pointer-events-none rounded-md border border-[var(--border-light)] bg-white px-3 py-2 text-xs text-[var(--text-main)] shadow-lg transition-all duration-150 ease-out select-none',
+          'pointer-events-none rounded-md border border-[var(--border-light)] bg-[var(--surface-light)] px-3 py-2 text-xs text-[var(--text-main)] shadow-lg transition-all duration-150 ease-out select-none',
           open ? 'blur-0 opacity-100' : 'translate-y-1 opacity-0 blur-[1px]',
           getPositionClasses(side, align),
         )}

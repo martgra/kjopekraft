@@ -27,6 +27,10 @@ interface OccupationSearchSelectProps {
   compact?: boolean
 }
 
+const MIN_QUERY_LENGTH = 2
+const RESULTS_LIMIT = 8
+const OCCUPATION_ENDPOINT = '/api/ssb/occupations'
+
 export function OccupationSearchSelect({
   selectedOccupation,
   onOccupationChange,
@@ -35,12 +39,19 @@ export function OccupationSearchSelect({
   compact = false,
 }: OccupationSearchSelectProps) {
   const [query, setQuery] = useState('')
+  const normalizedQuery = query.trim()
+  const loweredQuery = normalizedQuery.toLowerCase()
+  const hasQuery = normalizedQuery.length >= MIN_QUERY_LENGTH
   const fuse = useMemo(() => createOccupationFuse(SSB_OCCUPATION_DOCS), [])
   const { showToast } = useToast()
   const hasShownCreditsToast = useRef(false)
 
+  const queryKey = hasQuery
+    ? `${OCCUPATION_ENDPOINT}?q=${encodeURIComponent(normalizedQuery)}`
+    : null
+
   const { data, isLoading } = useSWR(
-    query ? `/api/ssb/occupations?q=${encodeURIComponent(query)}` : null,
+    queryKey,
     async url => {
       const payload = await fetchJson<{
         results: Array<{ code: string; label: string }>
@@ -58,21 +69,19 @@ export function OccupationSearchSelect({
     },
     {
       revalidateOnFocus: false,
-      fallbackData:
-        query && query.length >= 2
-          ? {
-              results: searchSsbOccupations(fuse, query, 8).map(r => ({
-                code: r.code,
-                label: r.label,
-              })),
-            }
-          : undefined,
+      fallbackData: hasQuery
+        ? {
+            results: searchSsbOccupations(fuse, normalizedQuery, RESULTS_LIMIT).map(r => ({
+              code: r.code,
+              label: r.label,
+            })),
+          }
+        : undefined,
     },
   )
 
   const presetMatches: OccupationSelection[] = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (q.length < 2) return []
+    if (!hasQuery) return []
 
     return (Object.keys(OCCUPATIONS) as OccupationKey[])
       .filter(key => {
@@ -82,9 +91,9 @@ export function OccupationSearchSelect({
       .map(key => presetOccupationToSelection(key))
       .filter(selection => {
         const haystack = `${selection.code} ${selection.label ?? ''}`.toLowerCase()
-        return haystack.includes(q)
+        return haystack.includes(loweredQuery)
       })
-  }, [query])
+  }, [hasQuery, loweredQuery])
 
   const results: OccupationSelection[] = useMemo(() => {
     const apiResults =
@@ -97,9 +106,9 @@ export function OccupationSearchSelect({
     const merged = [...presetMatches, ...apiResults]
     const seen = new Set<string>()
     return merged.filter(item => {
-      const key = `${item.provider ?? 'ssb'}-${item.code}`
-      if (seen.has(key)) return false
-      seen.add(key)
+      const dedupeKey = `${item.provider ?? 'ssb'}-${item.code}`
+      if (seen.has(dedupeKey)) return false
+      seen.add(dedupeKey)
       return true
     })
   }, [data?.results, presetMatches])
@@ -128,9 +137,9 @@ export function OccupationSearchSelect({
           className={inputClassName}
         />
 
-        {query && (
+        {hasQuery && (
           <div
-            className="max-h-56 overflow-auto rounded-lg border border-[var(--border-light)] bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:shadow-none"
+            className="max-h-56 overflow-auto rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] shadow-sm"
             data-testid={testId('results')}
           >
             {isLoading && (
@@ -148,7 +157,7 @@ export function OccupationSearchSelect({
                 key={`${result.provider ?? 'ssb'}-${result.code}`}
                 type="button"
                 onClick={() => handleSelect(result)}
-                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800"
+                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-[var(--surface-subtle)]"
                 data-testid={testId(`result-${result.code}`)}
               >
                 <span className="font-medium text-[var(--text-main)]">{result.label}</span>
@@ -159,7 +168,7 @@ export function OccupationSearchSelect({
 
         {selectedOccupation && (
           <div
-            className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm text-[var(--text-main)] shadow-sm dark:bg-gray-800"
+            className="flex items-center justify-between rounded-lg bg-[var(--surface-light)] px-3 py-2 text-sm text-[var(--text-main)] shadow-sm"
             data-testid={testId('selected')}
           >
             <div className="flex flex-col">

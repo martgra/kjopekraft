@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils/cn'
 import { Icon } from '../Icon'
 import { Spinner } from '../Spinner'
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean

@@ -180,7 +180,7 @@ estimated2025 = 56710 * 1.0441 = 59,211 NOK/month (rounded to 59,210)
 
 ## Step 3: Code Implementation
 
-### A. Type Definitions (`features/referenceSalary/types.ts`)
+### A. Type Definitions (`domain/reference/referenceTypes.ts`)
 
 ```typescript
 export type ReferenceDataPoint = {

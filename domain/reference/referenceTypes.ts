@@ -12,8 +12,8 @@ export type ReferenceDataPoint = {
 }
 
 export type ReferenceSource =
-  | { provider: 'SSB'; table: string }
-  | { provider: 'Stortinget'; table: string }
+  | { provider: 'SSB'; table: '11418' }
+  | { provider: 'Stortinget'; table: 'Lonnsutvikling' }
 
 export type ReferenceFilters =
   | {
@@ -35,6 +35,12 @@ export type ReferenceSalaryResponse = {
   derived?: {
     yearlyNok?: ReferenceDataPoint[] // value*12 when value != null
   }
+  alerts?: {
+    code: 'fallback'
+    source: 'SSB' | 'Stortinget'
+    cachedAt?: string
+    reason?: string
+  }[]
   notes?: string[] // warnings/caveats about data
 }
 

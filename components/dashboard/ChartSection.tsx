@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useEffect, useMemo } from 'react'
+import { memo, useEffect, useMemo, useRef } from 'react'
 import PaypointChart from '@/features/visualization/components/PaypointChart'
 import { SalaryTableView } from '@/features/salary/components/SalaryTableView'
 import { SalaryAnalysisView } from '@/features/salary/components/SalaryAnalysisView'
@@ -17,6 +17,8 @@ import { useChartControls } from './hooks/useChartControls'
 import { createTestId } from '@/lib/testing/testIds'
 import { reasonToLabel } from '@/lib/formatters/salaryFormatting'
 import { usePurchasingPowerBase } from '@/contexts/purchasingPower/PurchasingPowerBaseContext'
+import { useToast } from '@/contexts/toast/ToastContext'
+import { Card } from '@/components/ui/atoms'
 
 interface ChartSectionProps {
   payPoints: PayPoint[]
@@ -27,6 +29,39 @@ interface ChartSectionProps {
   onRequestAdd?: () => void
   onEditPayPoint?: (point: PayPoint) => void
   onRemovePayPoint?: (year: number, pay: number) => void
+}
+
+const VIEW_OPTIONS: { value: ViewMode; label: string; description: string }[] = [
+  { value: 'graph', label: TEXT.views.graphLabel, description: TEXT.views.graphDescription },
+  { value: 'table', label: TEXT.views.tableLabel, description: TEXT.views.tableDescription },
+  {
+    value: 'analysis',
+    label: TEXT.views.analysisLabel,
+    description: TEXT.views.analysisDescription,
+  },
+]
+
+function buildInflationBaseOptions(payPoints: PayPoint[]) {
+  const options = [{ value: 'auto', label: TEXT.settings.inflationBaseAutoLabel }]
+  const sorted = [...payPoints].sort((a, b) => a.year - b.year)
+  const yearReasons = new Map<number, PayPoint['reason']>()
+  for (const point of sorted) {
+    yearReasons.set(point.year, point.reason)
+  }
+  yearReasons.forEach((reason, year) => {
+    options.push({
+      value: String(year),
+      label: TEXT.settings.inflationBaseYearOption(year, reasonToLabel(reason)),
+    })
+  })
+  return options
+}
+
+function normalizeReferenceError(referenceError: unknown): string | null {
+  if (referenceError instanceof Error) return referenceError.message
+  if (typeof referenceError === 'string') return referenceError
+  if (referenceError == null) return null
+  return String(referenceError)
 }
 
 function ChartSection({
@@ -40,6 +75,8 @@ function ChartSection({
   onRemovePayPoint,
 }: ChartSectionProps) {
   const { isReferenceEnabled, toggleReference } = useReferenceMode()
+  const { showToast } = useToast()
+  const lastReferenceErrorRef = useRef<string | null>(null)
   const {
     viewMode,
     setViewMode,
@@ -49,27 +86,14 @@ function ChartSection({
     selectedOccupation,
     handleOccupationChange,
     handleReferenceError,
+    apiError,
   } = useChartControls({
     payPoints,
     isReferenceEnabled,
     toggleReference,
   })
 
-  const inflationBaseOptions = useMemo(() => {
-    const options = [{ value: 'auto', label: TEXT.settings.inflationBaseAutoLabel }]
-    const sorted = [...payPoints].sort((a, b) => a.year - b.year)
-    const yearReasons = new Map<number, PayPoint['reason']>()
-    for (const point of sorted) {
-      yearReasons.set(point.year, point.reason)
-    }
-    yearReasons.forEach((reason, year) => {
-      options.push({
-        value: String(year),
-        label: TEXT.settings.inflationBaseYearOption(year, reasonToLabel(reason)),
-      })
-    })
-    return options
-  }, [payPoints])
+  const inflationBaseOptions = useMemo(() => buildInflationBaseOptions(payPoints), [payPoints])
 
   const { baseSelection, setBaseSelection, baseYearOverride } = usePurchasingPowerBase()
 
@@ -80,6 +104,7 @@ function ChartSection({
     referenceSeries,
     salaryData = [],
     referenceData = [],
+    referenceMetadata,
     yearRange,
     referenceError,
   } = usePaypointChartData(
@@ -91,10 +116,16 @@ function ChartSection({
   )
 
   useEffect(() => {
-    const normalizedError =
-      referenceError instanceof Error ? referenceError.message : (referenceError ?? null)
-    handleReferenceError(normalizedError)
+    handleReferenceError(normalizeReferenceError(referenceError))
   }, [handleReferenceError, referenceError])
+
+  useEffect(() => {
+    const normalized = normalizeReferenceError(referenceError)
+    if (!normalized) return
+    if (lastReferenceErrorRef.current === normalized) return
+    lastReferenceErrorRef.current = normalized
+    showToast(TEXT.referenceSalary.fetchError, { variant: 'error' })
+  }, [referenceError, showToast])
 
   // Filter reference data to the user's salary range
   const filteredReferenceData = useMemo(
@@ -104,67 +135,73 @@ function ChartSection({
         : [],
     [referenceData, yearRange],
   )
+  const referenceDataForView = isReferenceEnabled ? filteredReferenceData : []
 
-  const viewOptions: { value: ViewMode; label: string; description: string }[] = [
-    { value: 'graph', label: TEXT.views.graphLabel, description: TEXT.views.graphDescription },
-    { value: 'table', label: TEXT.views.tableLabel, description: TEXT.views.tableDescription },
-    {
-      value: 'analysis',
-      label: TEXT.views.analysisLabel,
-      description: TEXT.views.analysisDescription,
-    },
-  ]
+  const renderTable = () => (
+    <SalaryTableView
+      salaryData={salaryData}
+      payPoints={payPoints}
+      referenceData={referenceDataForView}
+      isNetMode={isNetMode}
+      isLoading={isLoading}
+      onRequestAdd={onRequestAdd}
+      onEditPayPoint={onEditPayPoint}
+      onRemovePayPoint={onRemovePayPoint}
+    />
+  )
+
+  const renderAnalysis = () => (
+    <SalaryAnalysisView
+      salaryData={salaryData}
+      referenceData={referenceDataForView}
+      isNetMode={isNetMode}
+      isLoading={isLoading}
+    />
+  )
+
+  const renderChart = () => (
+    <PaypointChart
+      payPoints={payPoints}
+      displayNet={isNetMode}
+      grossActualSeries={rawActualSeries}
+      grossInflationSeries={rawInflSeries}
+      referenceSeries={referenceSeries}
+      yearRange={yearRange}
+      referenceLabel={selectedOccupation?.label ?? selectedOccupation?.code}
+      isLoading={isLoading}
+      inflationData={inflationData}
+      showEventBaselines={false}
+    />
+  )
 
   const renderContent = () => {
     if (!yearRange) return null
 
     if (viewMode === 'table') {
-      return (
-        <SalaryTableView
-          salaryData={salaryData}
-          payPoints={payPoints}
-          referenceData={isReferenceEnabled ? filteredReferenceData : []}
-          isNetMode={isNetMode}
-          isLoading={isLoading}
-          onRequestAdd={onRequestAdd}
-          onEditPayPoint={onEditPayPoint}
-          onRemovePayPoint={onRemovePayPoint}
-        />
-      )
+      return renderTable()
     }
 
     if (viewMode === 'analysis') {
-      return (
-        <SalaryAnalysisView
-          salaryData={salaryData}
-          referenceData={isReferenceEnabled ? filteredReferenceData : []}
-          isNetMode={isNetMode}
-          isLoading={isLoading}
-        />
-      )
+      return renderAnalysis()
     }
 
-    return (
-      <PaypointChart
-        payPoints={payPoints}
-        displayNet={isNetMode}
-        grossActualSeries={rawActualSeries}
-        grossInflationSeries={rawInflSeries}
-        referenceSeries={referenceSeries}
-        yearRange={yearRange}
-        referenceLabel={selectedOccupation?.label ?? selectedOccupation?.code}
-        isLoading={isLoading}
-        inflationData={inflationData}
-        showEventBaselines={false}
-      />
-    )
+    return renderChart()
   }
 
   const testId = createTestId('chart-section')
+  const referenceAlertMessage = useMemo(() => {
+    const fallbackAlert = referenceMetadata?.alerts?.find(alert => alert.code === 'fallback')
+    if (!fallbackAlert) return undefined
+    return fallbackAlert.source === 'Stortinget'
+      ? TEXT.referenceSalary.stortingFallbackNotice
+      : TEXT.referenceSalary.fallbackNotice
+  }, [referenceMetadata])
 
   return (
-    <div
-      className="flex w-full flex-1 flex-col rounded-3xl border border-[var(--border-light)]/70 bg-[var(--surface-light)] shadow-[0_18px_30px_-24px_rgba(15,23,42,0.45)]"
+    <Card
+      variant="default"
+      padding="none"
+      className="flex w-full flex-1 flex-col rounded-3xl border border-[var(--border-light)]/70 shadow-[0_18px_30px_-24px_rgba(15,23,42,0.45)]"
       data-testid={testId()}
     >
       <div className="border-b border-[var(--border-light)]/70 px-4 py-2.5 md:px-6 md:py-4">
@@ -178,7 +215,7 @@ function ChartSection({
             <button
               type="button"
               onClick={openSettings}
-              className="inline-flex items-center justify-center rounded-lg p-2 text-[var(--text-muted)] transition hover:bg-[var(--color-gray-50)] hover:text-[var(--text-main)] dark:hover:bg-white/5"
+              className="inline-flex items-center justify-center rounded-lg p-2 text-[var(--text-muted)] transition hover:bg-[var(--surface-subtle)] hover:text-[var(--text-main)]"
               data-testid={testId('open-settings')}
             >
               <span className="material-symbols-outlined text-[18px]">tune</span>
@@ -186,7 +223,7 @@ function ChartSection({
           </div>
 
           {/* View selector below */}
-          <ChartViewSwitcher viewMode={viewMode} options={viewOptions} onChange={setViewMode} />
+          <ChartViewSwitcher viewMode={viewMode} options={VIEW_OPTIONS} onChange={setViewMode} />
         </div>
       </div>
 
@@ -198,12 +235,14 @@ function ChartSection({
         inflationBaseValue={String(baseSelection)}
         inflationBaseOptions={inflationBaseOptions}
         selectedOccupation={selectedOccupation}
+        referenceAlertMessage={referenceAlertMessage}
+        referenceErrorMessage={apiError}
         onToggleMode={onToggleMode}
         onChangeInflationBase={value => setBaseSelection(value === 'auto' ? 'auto' : Number(value))}
         onOccupationChange={handleOccupationChange}
         onClose={closeSettings}
       />
-    </div>
+    </Card>
   )
 }
 
