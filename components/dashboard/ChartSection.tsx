@@ -77,6 +77,7 @@ function ChartSection({
   const { isReferenceEnabled, toggleReference } = useReferenceMode()
   const { showToast } = useToast()
   const lastReferenceErrorRef = useRef<string | null>(null)
+  const contentRef = useRef<HTMLDivElement | null>(null)
   const {
     viewMode,
     setViewMode,
@@ -126,6 +127,35 @@ function ChartSection({
     lastReferenceErrorRef.current = normalized
     showToast(TEXT.referenceSalary.fetchError, { variant: 'error' })
   }, [referenceError, showToast])
+
+  useEffect(() => {
+    const target = contentRef.current
+    if (!target) return
+
+    const updateHeight = () => {
+      const rect = target.getBoundingClientRect()
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight
+      const bottomNav = document.querySelector('.mobile-bottom-nav') as HTMLElement | null
+      const bottomNavHeight = bottomNav?.offsetHeight ?? 0
+      const available = Math.max(0, Math.floor(viewportHeight - rect.top - bottomNavHeight - 12))
+      target.style.setProperty('--chart-dynamic-height', `${available}px`)
+      target.style.height = `${available}px`
+    }
+
+    updateHeight()
+
+    window.addEventListener('scroll', updateHeight, { passive: true })
+    window.addEventListener('resize', updateHeight)
+    window.visualViewport?.addEventListener('resize', updateHeight)
+    window.visualViewport?.addEventListener('scroll', updateHeight)
+
+    return () => {
+      window.removeEventListener('scroll', updateHeight)
+      window.removeEventListener('resize', updateHeight)
+      window.visualViewport?.removeEventListener('resize', updateHeight)
+      window.visualViewport?.removeEventListener('scroll', updateHeight)
+    }
+  }, [])
 
   // Filter reference data to the user's salary range
   const filteredReferenceData = useMemo(
@@ -227,7 +257,9 @@ function ChartSection({
         </div>
       </div>
 
-      <div className="relative min-h-0 w-full flex-1 p-2 md:p-6">{renderContent()}</div>
+      <div ref={contentRef} className="relative min-h-0 w-full flex-1 p-2 md:p-6">
+        {renderContent()}
+      </div>
 
       <ChartSettingsModal
         isOpen={isSettingsOpen}
