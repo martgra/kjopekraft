@@ -119,8 +119,14 @@ export default function PayChart({
   ])
 
   return (
-    <div className="relative">
-      <canvas ref={canvasRef} className={className} style={{ touchAction: 'manipulation' }} />
+    <div
+      className={`chart-container relative ${variant === 'mobile' ? 'chart-mobile mobile-chart-container' : ''}`.trim()}
+    >
+      <canvas
+        ref={canvasRef}
+        className={`h-full w-full ${className}`.trim()}
+        style={{ touchAction: 'manipulation' }}
+      />
       {!isChartReady && (
         <div className="absolute inset-0 flex items-center justify-center">
           <LoadingSpinner size="large" text={TEXT.common.loadingChart} />
