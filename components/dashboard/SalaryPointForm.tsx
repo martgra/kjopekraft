@@ -51,7 +51,7 @@ export default function SalaryPointForm({
   }
 
   return (
-    <div className="space-y-4 px-2 pt-2" data-testid={testId('container')}>
+    <div className="space-y-4 px-2 pt-40" data-testid={testId('container')}>
       <form className="space-y-4" onSubmit={e => e.preventDefault()} data-testid={testId()}>
         {/* Amount Field */}
         <div className="space-y-1.5">
@@ -115,6 +115,7 @@ export default function SalaryPointForm({
                 value={newReason}
                 onChange={value => onReasonChange(value as PayChangeReason | '')}
                 className="text-sm font-medium"
+                placement="up"
               >
                 <SelectOption value="">{TEXT.forms.reasonPlaceholder}</SelectOption>
                 <SelectOption value="adjustment">
