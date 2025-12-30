@@ -12,14 +12,18 @@ interface ClientLayoutWrapperProps {
 }
 
 function ClientLayoutWrapperInner({ children }: ClientLayoutWrapperProps) {
-  const { toggleDrawer, pointsCount } = useDrawer()
+  const { toggleDrawer, pointsCount, isOpen } = useDrawer()
 
   return (
     <>
       <GlobalHeader />
       <MobileHeader />
       {children}
-      <MobileBottomNav onOpenDrawer={toggleDrawer} pointsCount={pointsCount} />
+      <MobileBottomNav
+        onOpenDrawer={toggleDrawer}
+        pointsCount={pointsCount}
+        isDrawerOpen={isOpen}
+      />
     </>
   )
 }
