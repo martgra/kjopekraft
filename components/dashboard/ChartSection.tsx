@@ -137,7 +137,7 @@ function ChartSection({
       const viewportHeight = window.visualViewport?.height ?? window.innerHeight
       const bottomNavHeight =
         parseInt(
-          getComputedStyle(document.documentElement).getPropertyValue('--mobile-bottom-nav-height')
+          getComputedStyle(document.documentElement).getPropertyValue('--mobile-bottom-nav-height'),
         ) || 0
       const available = Math.max(0, Math.floor(viewportHeight - rect.top - bottomNavHeight - 12))
       target.style.setProperty('--chart-dynamic-height', `${available}px`)
