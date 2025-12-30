@@ -147,7 +147,7 @@ export function Select({
                   type="button"
                   onClick={() => handleSelect(optionValue)}
                   className={cn(
-                    'w-full px-3 py-2.5 text-left text-base transition-colors',
+                    'w-full px-3 py-2 text-left text-sm transition-colors',
                     isSelected
                       ? 'bg-[var(--primary)]/10 font-medium text-[var(--primary)]'
                       : 'text-[var(--text-main)] hover:bg-[var(--surface-subtle)]',
