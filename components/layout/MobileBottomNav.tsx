@@ -8,9 +8,14 @@ import { TEXT } from '@/lib/constants/text'
 interface MobileBottomNavProps {
   onOpenDrawer?: () => void
   pointsCount?: number
+  isDrawerOpen?: boolean
 }
 
-export default function MobileBottomNav({ onOpenDrawer, pointsCount = 0 }: MobileBottomNavProps) {
+export default function MobileBottomNav({
+  onOpenDrawer,
+  pointsCount = 0,
+  isDrawerOpen = false,
+}: MobileBottomNavProps) {
   const pathname = usePathname()
   const navRef = useRef<HTMLElement>(null)
 
@@ -47,7 +52,9 @@ export default function MobileBottomNav({ onOpenDrawer, pointsCount = 0 }: Mobil
   return (
     <nav
       ref={navRef}
-      className="mobile-bottom-nav fixed right-0 bottom-0 left-0 z-50 border-t border-[var(--border-light)]/70 bg-[var(--surface-light)]/95 pt-1 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-12px_30px_-24px_rgba(15,23,42,0.5)] lg:hidden"
+      className={`mobile-bottom-nav fixed right-0 bottom-0 left-0 z-50 border-t border-[var(--border-light)]/70 bg-[var(--surface-light)]/95 pt-1 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-12px_30px_-24px_rgba(15,23,42,0.5)] transition-opacity duration-200 lg:hidden ${
+        isDrawerOpen ? 'pointer-events-none opacity-0' : 'opacity-100'
+      }`}
     >
       <div className="relative flex items-center justify-around">
         {navItems.map((item, index) => {

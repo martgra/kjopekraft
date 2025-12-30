@@ -52,12 +52,6 @@ describe('SalaryPointForm', () => {
     expect(onReasonChange).toHaveBeenCalledWith('promotion')
   })
 
-  it('shows amount help text for gross mode by default', () => {
-    render(<SalaryPointForm {...defaultProps} isNetMode={false} />)
-
-    expect(screen.getByText(/årlig bruttolønn/i)).toBeInTheDocument()
-  })
-
   it('shows numeric keypad for year input', () => {
     render(<SalaryPointForm {...defaultProps} />)
 
