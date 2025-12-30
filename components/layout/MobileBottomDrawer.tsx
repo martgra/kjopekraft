@@ -114,7 +114,7 @@ export default function MobileBottomDrawer({
         </div>
 
         {/* Content - scrollable with bottom padding for mobile nav */}
-        <div className={`min-h-0 flex-1 overflow-y-auto px-4 ${isNegotiation ? 'pb-6' : 'pb-24'}`}>
+        <div className={`min-h-0 flex-1 overflow-y-auto px-4 ${isNegotiation ? 'pb-6' : 'pb-8'}`}>
           {content}
         </div>
       </div>
