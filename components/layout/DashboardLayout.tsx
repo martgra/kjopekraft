@@ -17,7 +17,7 @@ export default function DashboardLayout({ children, rightPanel }: DashboardLayou
       </div>
 
       {/* Main Content - Scrollable with mobile padding for header and nav */}
-      <div className="flex-1 overflow-y-auto px-4 pt-[calc(4.5rem+env(safe-area-inset-top))] pb-[calc(6rem+env(safe-area-inset-bottom))] lg:p-10 lg:pt-10 lg:pb-10">
+      <div className="flex-1 overflow-y-auto px-4 pt-[calc(4.5rem+env(safe-area-inset-top))] pb-[calc(var(--mobile-bottom-nav-height,4.5rem)+env(safe-area-inset-bottom))] lg:p-10 lg:pt-10 lg:pb-10">
         {children}
       </div>
 
