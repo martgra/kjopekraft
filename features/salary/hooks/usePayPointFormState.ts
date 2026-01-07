@@ -3,7 +3,6 @@ import { validatePayPoint } from '@/domain/salary'
 import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { TEXT } from '@/lib/constants/text'
-import { useDemoMode } from '@/contexts/demoMode/DemoModeContext'
 
 const MIN_YEAR = 1900
 
@@ -54,7 +53,6 @@ export function usePayPointFormState({
   const [submitValidationError, setSubmitValidationError] = useState('')
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [editingPoint, setEditingPoint] = useState<PayPoint | null>(null)
-  const { isDemoMode, loadDemoData: loadDemoModeData, clearDemoData } = useDemoMode()
 
   // Pre-fill the next logical year when user already has data and the field is empty
   useEffect(() => {
@@ -186,11 +184,6 @@ export function usePayPointFormState({
       return false
     }
 
-    // If adding real data while in demo mode, clear demo data first
-    if (isDemoMode) {
-      clearDemoData()
-    }
-
     // Replace original point if editing
     if (editingPoint) {
       removePoint(editingPoint.year, editingPoint.pay)
@@ -228,10 +221,8 @@ export function usePayPointFormState({
     payPoints,
     inflationData,
     currentYear,
-    isDemoMode,
     addPoint,
     removePoint,
-    clearDemoData,
     isFormModalOpen,
   ])
 
@@ -240,13 +231,6 @@ export function usePayPointFormState({
       removePoint(year, pay)
     },
     [removePoint],
-  )
-
-  const loadDemoData = useCallback(
-    (demoPoints: PayPoint[]) => {
-      loadDemoModeData(demoPoints)
-    },
-    [loadDemoModeData],
   )
 
   return {
@@ -266,7 +250,6 @@ export function usePayPointFormState({
     minYear: MIN_YEAR,
     validationError: submitValidationError || liveValidationError,
     isSubmitDisabled,
-    isDemoMode,
     isFormModalOpen,
     editingPoint,
     openFormModal,
@@ -275,7 +258,5 @@ export function usePayPointFormState({
     beginEditing,
     submitPoint,
     removePayPoint,
-    loadDemoData,
-    clearDemoData,
   }
 }

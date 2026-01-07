@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { ModalShell } from '@/components/ui/atoms'
 import { authClient } from '@/lib/auth-client'
 import { TEXT } from '@/lib/constants/text'
+import { STORAGE_KEYS } from '@/lib/constants/storage'
 
 interface LoginOverlayProps {
   isOpen: boolean
@@ -13,6 +15,8 @@ interface LoginOverlayProps {
 
 export default function LoginOverlay({ isOpen, onClose, variant = 'default' }: LoginOverlayProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const title = variant === 'ai' ? TEXT.auth.aiOverlayTitle : TEXT.auth.overlayTitle
   const description =
     variant === 'ai' ? TEXT.auth.aiOverlayDescription : TEXT.auth.overlayDescription
@@ -38,8 +42,22 @@ export default function LoginOverlay({ isOpen, onClose, variant = 'default' }: L
   const handleSocialSignIn = async (provider: 'google' | 'github') => {
     if (isLoading) return
     setIsLoading(true)
+    const search = searchParams?.toString()
+    const basePath = search ? `${pathname}?${search}` : pathname
+    const returnTo = `${basePath}${window.location.hash || ''}`
     try {
-      await authClient.signIn.social({ provider })
+      if (pathname === '/negotiation') {
+        const drawerState = window.localStorage.getItem(STORAGE_KEYS.negotiationDrawerState)
+        if (drawerState === 'true') {
+          window.localStorage.setItem(STORAGE_KEYS.negotiationDrawerRestore, 'true')
+        }
+      }
+      await authClient.signIn.social({
+        provider,
+        callbackURL: returnTo,
+        newUserCallbackURL: returnTo,
+        errorCallbackURL: returnTo,
+      })
     } catch (error) {
       console.error('Sign in error:', error)
     } finally {

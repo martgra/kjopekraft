@@ -54,7 +54,10 @@ describe('inflationService', () => {
       { year: 2022, inflation: 2.2 },
       { year: 2023, inflation: 4.4 },
     ])
-    expect(mockFetch).toHaveBeenCalledWith('https://data.ssb.no/api/v0/dataset/1086.json?lang=no')
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://data.ssb.no/api/v0/dataset/1086.json?lang=no',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    )
   })
 
   it('throws when fetch fails', async () => {

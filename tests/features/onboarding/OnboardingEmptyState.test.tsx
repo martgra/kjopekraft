@@ -21,26 +21,13 @@ describe('OnboardingEmptyState', () => {
     })
   })
 
-  it('invokes load demo handler', async () => {
-    const user = userEvent.setup()
-    const onLoadDemo = vi.fn()
-    const onOpenDrawer = vi.fn()
-
-    render(<OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onOpenDrawer} />)
-
-    await user.click(screen.getByRole('button', { name: new RegExp(TEXT.onboarding.loadDemoLink) }))
-    expect(onLoadDemo).toHaveBeenCalledTimes(1)
-    expect(onOpenDrawer).not.toHaveBeenCalled()
-  })
-
   it('opens drawer on mobile width and does not scroll', async () => {
     const user = userEvent.setup()
     Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 })
     window.scrollTo = vi.fn()
-    const onLoadDemo = vi.fn()
     const onOpenDrawer = vi.fn()
 
-    render(<OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onOpenDrawer} />)
+    render(<OnboardingEmptyState onOpenDrawer={onOpenDrawer} />)
 
     await user.click(screen.getByRole('button', { name: new RegExp(TEXT.onboarding.primaryCta) }))
     expect(onOpenDrawer).toHaveBeenCalledTimes(1)
@@ -50,11 +37,10 @@ describe('OnboardingEmptyState', () => {
   it('scrolls to top on desktop when adding own data', async () => {
     const user = userEvent.setup()
     Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1024 })
-    const onLoadDemo = vi.fn()
     const onOpenDrawer = vi.fn()
     window.scrollTo = vi.fn()
 
-    render(<OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onOpenDrawer} />)
+    render(<OnboardingEmptyState onOpenDrawer={onOpenDrawer} />)
 
     await user.click(screen.getByRole('button', { name: new RegExp(TEXT.onboarding.primaryCta) }))
     expect(onOpenDrawer).not.toHaveBeenCalled()

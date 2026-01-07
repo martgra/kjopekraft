@@ -112,8 +112,8 @@ import StatusBanner from '@/components/dashboard/StatusBanner'
 
 The banner is integrated into both:
 
-- `DashboardMobile.tsx`: Below demo banner, above metrics summary
-- `DashboardDesktop.tsx`: Below demo banner, above metrics grid
+- `DashboardMobile.tsx`: Below the header, above metrics summary
+- `DashboardDesktop.tsx`: Below the header, above metrics grid
 
 Only displayed when `hasData` is true (user has salary data points).
 

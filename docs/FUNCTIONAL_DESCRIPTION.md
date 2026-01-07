@@ -68,12 +68,10 @@ The main view showing your salary development over time with modern, polished UI
 
 1. **First Visit (Onboarding)**:
    - User sees welcome screen with explanation of the app
-   - Two options:
-     - "Try Demo Data" (Prøv med eksempeldata) - loads example data to explore
-     - "Add My Own Salary" (Legg til min egen lønn) - scrolls to form
+   - Primary CTA: "Kom i gang" to add salary data
 
 2. **Adding Salary Data**:
-   - User clicks "Add My Own Salary" or scrolls to right panel
+   - User clicks "Kom i gang" or scrolls to right panel
    - Enters year (e.g., 2024)
    - Enters annual gross salary in NOK (e.g., 650000)
    - Clicks "Add Salary" (Legg til lønn)
@@ -394,55 +392,6 @@ _Without AI tools, generic response_:
      - Last active tab
    - Page reloads
    - User sees onboarding screen again
-
-### 8. Demo Mode
-
-Allows users to explore the app with sample data before entering their own.
-
-#### User Workflow
-
-1. On first visit, user sees onboarding screen
-2. Clicks "Try Demo Data"
-3. Chart populates with 5 sample salary entries (2020-2024)
-4. Blue info banner appears: "You are viewing demo data"
-5. User can explore all features with sample data
-6. When ready, clicks "Add My Own Salary"
-7. Page reloads, demo data cleared
-8. User enters first real salary
-9. Demo mode exits automatically
-
-#### Demo Data
-
-**Sample Progression** (Nurse example):
-
-- 2020: 550,000 NOK
-- 2021: 570,000 NOK
-- 2022: 595,000 NOK
-- 2023: 635,000 NOK
-- 2024: 680,000 NOK
-
-**Characteristics**:
-
-- Realistic salary progression (~5% annual growth)
-- Aligned with Norwegian salary levels
-- Demonstrates inflation impact clearly
-- Shows both gains ahead of inflation and losses
-
-#### Business Logic
-
-**Ephemeral Nature**:
-
-- Demo data NOT saved to localStorage
-- Held only in component state
-- Page reload clears demo data
-- First real salary entry triggers reload, clearing demo
-
-**Why This Approach**:
-
-- Users can experiment risk-free
-- No mixing of demo and real data
-- Clear exit from demo mode
-- Forces intentional transition to real data
 
 ## Data Privacy & Storage
 

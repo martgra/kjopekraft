@@ -14,7 +14,6 @@ interface DashboardMobileProps {
   inflationData: InflationDataPoint[]
   currentYear: number
   hasData: boolean
-  isDemoMode: boolean
 
   // Display state
   isNetMode: boolean
@@ -33,8 +32,6 @@ interface DashboardMobileProps {
   onDrawerOpen: () => void
   onDrawerClose: () => void
   onToggleMode: () => void
-  onLoadDemo: () => void
-  onClearDemo: () => void
   onEditPoint: (point: PayPoint) => void
   onRemovePoint: (year: number, pay: number) => void
   onYearChange: (year: string) => void
@@ -50,7 +47,6 @@ export default function DashboardMobile({
   statistics,
   currentYear,
   hasData,
-  isDemoMode,
   isNetMode,
   isDrawerOpen,
   newYear,
@@ -63,8 +59,6 @@ export default function DashboardMobile({
   onDrawerOpen,
   onDrawerClose,
   onToggleMode,
-  onLoadDemo,
-  onClearDemo,
   onEditPoint,
   onRemovePoint,
   onYearChange,
@@ -112,11 +106,8 @@ export default function DashboardMobile({
           inflationData={inflationData}
           currentYear={currentYear}
           hasData={hasData}
-          isDemoMode={isDemoMode}
           isNetMode={isNetMode}
           onToggleMode={onToggleMode}
-          onLoadDemo={onLoadDemo}
-          onClearDemo={onClearDemo}
           onEditPoint={onEditPoint}
           onRemovePoint={onRemovePoint}
           onRequestAdd={onDrawerOpen}

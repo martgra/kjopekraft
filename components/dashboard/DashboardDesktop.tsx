@@ -16,7 +16,6 @@ interface DashboardDesktopProps {
   inflationData: InflationDataPoint[]
   currentYear: number
   hasData: boolean
-  isDemoMode: boolean
 
   // Display state
   isNetMode: boolean
@@ -35,8 +34,6 @@ interface DashboardDesktopProps {
   onOpenFormModal: () => void
   onCloseFormModal: () => void
   onToggleMode: () => void
-  onLoadDemo: () => void
-  onClearDemo: () => void
   onEditPoint: (point: PayPoint) => void
   onRemovePoint: (year: number, pay: number) => void
   onYearChange: (year: string) => void
@@ -52,7 +49,6 @@ export default function DashboardDesktop({
   statistics,
   currentYear,
   hasData,
-  isDemoMode,
   isNetMode,
   isFormModalOpen,
   newYear,
@@ -65,8 +61,6 @@ export default function DashboardDesktop({
   onOpenFormModal,
   onCloseFormModal,
   onToggleMode,
-  onLoadDemo,
-  onClearDemo,
   onEditPoint,
   onRemovePoint,
   onYearChange,
@@ -112,11 +106,8 @@ export default function DashboardDesktop({
           inflationData={inflationData}
           currentYear={currentYear}
           hasData={hasData}
-          isDemoMode={isDemoMode}
           isNetMode={isNetMode}
           onToggleMode={onToggleMode}
-          onLoadDemo={onLoadDemo}
-          onClearDemo={onClearDemo}
           onEditPoint={onEditPoint}
           onRemovePoint={onRemovePoint}
           onRequestAdd={onOpenFormModal}

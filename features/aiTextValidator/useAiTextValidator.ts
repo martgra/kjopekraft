@@ -154,7 +154,12 @@ export function useAiTextValidator({
         return result
       } catch (err) {
         console.error('AI text validation error:', err)
-        const message = err instanceof Error ? err.message : TEXT.aiValidator.errorTitle
+        const message =
+          err instanceof TypeError || (err instanceof Error && err.message === 'Failed to fetch')
+            ? TEXT.aiValidator.networkError
+            : err instanceof Error
+              ? err.message
+              : TEXT.aiValidator.errorTitle
         setError(message)
         return null
       } finally {

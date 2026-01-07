@@ -13,15 +13,12 @@ type BannerState =
   | 'losingBadly'
   | 'singlePoint'
   | 'singlePointNewJob'
-  | 'demoMode'
 
 interface StatusBannerProps {
   payPoints?: PayPoint[]
   statistics: SalaryStatistics
-  isDemoMode?: boolean
   onCtaClick?: () => void
   onSinglePointCtaClick?: () => void
-  onDemoModeCtaClick?: () => void
 }
 
 function determineBannerState(gapPercent: number): BannerState {
@@ -32,12 +29,7 @@ function determineBannerState(gapPercent: number): BannerState {
   return 'losingBadly'
 }
 
-const LIGHT_BANNER_STATES = new Set<BannerState>([
-  'smallWin',
-  'singlePoint',
-  'singlePointNewJob',
-  'demoMode',
-])
+const LIGHT_BANNER_STATES = new Set<BannerState>(['smallWin', 'singlePoint', 'singlePointNewJob'])
 
 const BANNER_CONFIG: Record<
   BannerState,
@@ -101,29 +93,17 @@ const BANNER_CONFIG: Record<
     indicatorBg: 'bg-[color:var(--text-on-light)]/10',
     showIndicator: false,
   },
-  demoMode: {
-    icon: 'science',
-    bgColor: 'bg-[#E9F2FF]',
-    textColor: 'text-[var(--text-on-light)]',
-    iconColor: 'text-[var(--text-on-light)]',
-    badgeBg: 'bg-[color:var(--text-on-light)]/10',
-    indicatorBg: 'bg-[color:var(--text-on-light)]/10',
-    showIndicator: false,
-  },
 }
 
 function resolveBannerState({
   gapPercent,
-  isDemoMode,
   isSinglePoint,
   isNewJob,
 }: {
   gapPercent: number
-  isDemoMode: boolean
   isSinglePoint: boolean
   isNewJob: boolean
 }): BannerState {
-  if (isDemoMode) return 'demoMode'
   if (isSinglePoint) {
     return isNewJob ? 'singlePointNewJob' : 'singlePoint'
   }
@@ -133,10 +113,8 @@ function resolveBannerState({
 export default function StatusBanner({
   payPoints = [],
   statistics,
-  isDemoMode = false,
   onCtaClick,
   onSinglePointCtaClick,
-  onDemoModeCtaClick,
 }: StatusBannerProps) {
   const testId = createTestId('status-banner')
   const isSinglePoint = payPoints.length === 1
@@ -144,7 +122,6 @@ export default function StatusBanner({
   const isMobile = useIsMobile()
   const state = resolveBannerState({
     gapPercent: statistics.gapPercent,
-    isDemoMode,
     isSinglePoint,
     isNewJob,
   })
@@ -168,10 +145,6 @@ export default function StatusBanner({
   }, [isMobile])
 
   const handleCtaClick = () => {
-    if (isDemoMode) {
-      onDemoModeCtaClick?.()
-      return
-    }
     if (isSinglePoint) {
       onSinglePointCtaClick?.()
       return

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, createContext, useContext, ReactNode } from 'react'
+import { useEffect, useState, createContext, useContext, ReactNode } from 'react'
+import { STORAGE_KEYS } from '@/lib/constants/storage'
 
 interface DrawerContextType {
   isOpen: boolean
@@ -44,6 +45,27 @@ export function DrawerProvider({ children, pathname }: DrawerProviderProps) {
     : isNegotiation
       ? negotiationPointsCount
       : 0
+
+  useEffect(() => {
+    if (!isNegotiation) return
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.negotiationDrawerState, String(isOpen))
+    } catch (error) {
+      console.warn('Failed to persist negotiation drawer state', error)
+    }
+  }, [isNegotiation, isOpen])
+
+  useEffect(() => {
+    if (!isNegotiation) return
+    try {
+      const restore = window.localStorage.getItem(STORAGE_KEYS.negotiationDrawerRestore)
+      if (restore !== 'true') return
+      window.localStorage.removeItem(STORAGE_KEYS.negotiationDrawerRestore)
+      setIsOpen(true)
+    } catch (error) {
+      console.warn('Failed to restore negotiation drawer state', error)
+    }
+  }, [isNegotiation])
 
   return (
     <DrawerContext.Provider

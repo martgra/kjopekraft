@@ -12,9 +12,9 @@ export const STORAGE_KEYS = {
 } as const
 
 /**
- * Demo data matching the application's demo mode
+ * Sample data for seeded dashboard tests
  */
-export const DEMO_SALARY_POINTS = [
+export const SAMPLE_SALARY_POINTS = [
   { year: 2020, pay: 550000, reason: 'newJob' },
   { year: 2021, pay: 580000, reason: 'adjustment' },
   { year: 2022, pay: 600000, reason: 'promotion' },
@@ -30,7 +30,7 @@ export class DashboardPage {
 
   // Navigation
   async goto() {
-    await this.page.goto('/')
+    await this.page.goto('/', { waitUntil: 'domcontentloaded' })
   }
 
   // Onboarding elements
@@ -38,12 +38,8 @@ export class DashboardPage {
     return this.page.locator('text=Velkommen til Kjøpekraft')
   }
 
-  get tryDemoButton() {
-    return this.page.getByRole('button', { name: /prøv med eksempeldata/i })
-  }
-
-  get addOwnDataButton() {
-    return this.page.getByRole('button', { name: /legg til min egen lønn/i })
+  get primaryCtaButton() {
+    return this.page.getByRole('button', { name: /kom i gang/i })
   }
 
   // Chart elements
@@ -88,6 +84,7 @@ export class DashboardPage {
 
   async openChartSettings() {
     if (await this.settingsModal.isVisible().catch(() => false)) return
+    await expect(this.settingsButton).toBeVisible()
     await this.settingsButton.click()
     await expect(this.settingsModal).toBeVisible()
   }
@@ -154,11 +151,6 @@ export class DashboardPage {
 
   get analysisViewContent() {
     return this.page.getByTestId('salary-analysis-view')
-  }
-
-  // Demo mode indicator
-  get demoBanner() {
-    return this.page.locator('text=eksempeldata').or(this.page.locator('text=demo'))
   }
 
   // Mobile elements
@@ -252,8 +244,15 @@ export class DashboardPage {
     await formContainer.getByTestId('salary-form-submit-button').click()
   }
 
-  async loadDemoData() {
-    await this.tryDemoButton.click()
+  async seedSalaryPoints(points = SAMPLE_SALARY_POINTS) {
+    await this.page.addInitScript(
+      ({ key, seededPoints }) => {
+        localStorage.setItem(key, JSON.stringify(seededPoints))
+      },
+      { key: STORAGE_KEYS.SALARY_POINTS, seededPoints: points },
+    )
+    await this.page.goto('/', { waitUntil: 'domcontentloaded' })
+    await this.page.getByTestId('chart-section').waitFor({ state: 'attached' })
   }
 
   async switchView(mode: 'graph' | 'table' | 'analysis') {

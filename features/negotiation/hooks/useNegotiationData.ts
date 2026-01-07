@@ -1,4 +1,4 @@
-import { useActionState, useMemo, useOptimistic, useState, startTransition } from 'react'
+import { useActionState, useEffect, useOptimistic, useState, startTransition } from 'react'
 import type { NegotiationPoint } from '@/lib/schemas/negotiation'
 import {
   defaultNegotiationDraft,
@@ -8,6 +8,7 @@ import {
 } from '@/features/negotiation/utils/draftCookie'
 import { saveNegotiationDraft } from '@/features/negotiation/actions/saveNegotiationDraft'
 import { NegotiationUserInfoSchema } from '@/lib/schemas/negotiation'
+import { STORAGE_KEYS } from '@/lib/constants/storage'
 
 type SaveState =
   | { status: 'idle' }
@@ -20,15 +21,57 @@ type SaveState =
  * Uses a lightweight cookie + server action to survive refreshes
  */
 export function useNegotiationData() {
-  const initialDraft = useMemo(readDraftFromDocument, [])
-
-  const [draft, setDraft] = useState<NegotiationDraft>(initialDraft)
+  const [draft, setDraft] = useState<NegotiationDraft>(defaultNegotiationDraft)
   const [optimisticDraft, setOptimisticDraft] = useOptimistic<NegotiationDraft>(draft)
   const [saveState, saveDraftAction, isSaving] = useActionState<SaveState, FormData>(
     saveNegotiationDraft,
     { status: 'idle' },
   )
   const currentDraft = optimisticDraft ?? draft ?? defaultNegotiationDraft
+
+  useEffect(() => {
+    const storedDraft = readDraftFromDocument()
+    let resolvedDraft = storedDraft
+
+    try {
+      const storedLocalDraft = window.localStorage.getItem(STORAGE_KEYS.negotiationDraft)
+      if (storedLocalDraft) {
+        const localDraft = JSON.parse(storedLocalDraft) as NegotiationDraft
+        const hasLocalDraft =
+          localDraft.points.length > 0 ||
+          localDraft.emailContent.trim().length > 0 ||
+          localDraft.emailPrompt.trim().length > 0 ||
+          localDraft.userInfo.jobTitle.trim().length > 0 ||
+          localDraft.userInfo.industry.trim().length > 0 ||
+          localDraft.userInfo.currentSalary.trim().length > 0 ||
+          localDraft.userInfo.desiredSalary.trim().length > 0 ||
+          localDraft.userInfo.achievements.trim().length > 0 ||
+          localDraft.userInfo.marketData.trim().length > 0 ||
+          localDraft.userInfo.benefits.length > 0 ||
+          localDraft.userInfo.otherBenefits.trim().length > 0
+        const hasCookieDraft =
+          storedDraft.points.length > 0 ||
+          storedDraft.emailContent.trim().length > 0 ||
+          storedDraft.emailPrompt.trim().length > 0 ||
+          storedDraft.userInfo.jobTitle.trim().length > 0 ||
+          storedDraft.userInfo.industry.trim().length > 0 ||
+          storedDraft.userInfo.currentSalary.trim().length > 0 ||
+          storedDraft.userInfo.desiredSalary.trim().length > 0 ||
+          storedDraft.userInfo.achievements.trim().length > 0 ||
+          storedDraft.userInfo.marketData.trim().length > 0 ||
+          storedDraft.userInfo.benefits.length > 0 ||
+          storedDraft.userInfo.otherBenefits.trim().length > 0
+        resolvedDraft = hasCookieDraft ? storedDraft : hasLocalDraft ? localDraft : storedDraft
+      }
+    } catch (error) {
+      console.warn('Failed to restore negotiation draft from storage', error)
+    }
+
+    setDraft(resolvedDraft)
+    startTransition(() => {
+      setOptimisticDraft(resolvedDraft)
+    })
+  }, [setOptimisticDraft])
 
   const persistDraft = (
     nextDraft: NegotiationDraft | ((prev: NegotiationDraft) => NegotiationDraft),
@@ -46,6 +89,11 @@ export function useNegotiationData() {
 
       // Immediately write to client-side cookie for instant persistence
       writeDraftToDocument(payload)
+      try {
+        window.localStorage.setItem(STORAGE_KEYS.negotiationDraft, JSON.stringify(payload))
+      } catch (error) {
+        console.warn('Failed to persist negotiation draft to storage', error)
+      }
 
       // Also save via server action for server-side synchronization
       const formData = new FormData()

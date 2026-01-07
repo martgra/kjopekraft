@@ -48,6 +48,7 @@ export const TEXT = {
     aiSatisfied: 'AI er fornøyd med teksten.',
     retry: 'Prøv igjen',
     errorTitle: 'Klarte ikke å forbedre teksten.',
+    networkError: 'Kunne ikke kontakte AI-tjenesten. Sjekk nettverket og prøv igjen.',
     emptyText: 'Skriv inn tekst før du forbedrer.',
     tooLong: (max: number) => `Teksten er for lang. Maks ${max} tegn.`,
   },
@@ -139,12 +140,6 @@ export const TEXT = {
           'Med én registrering ser vi ikke utviklingen ennå. Legg til lønnen før jobbskiftet.',
         cta: 'Legg til forrige lønn',
       },
-      demoMode: {
-        badge: 'Eksempeldata',
-        headline: 'Du ser demo-data',
-        description: 'Bytt til dine egne lønnspunkter for å få reelle innsikter.',
-        cta: 'Bruk mine data',
-      },
     },
     annualOverviewSubtitle: 'Følg lønnen din mot prisstigningen og se hva den faktisk er verdt',
     purchasingPowerDefinition:
@@ -201,6 +196,12 @@ export const TEXT = {
     grossNetToggleSubtitleNet: 'Vis bruttolønn',
     themeToggleTitle: 'Mørkt modus',
     themeToggleSubtitle: 'Bytt mellom lyst og mørkt tema',
+    dataResetTitle: 'Slett brukerdata',
+    dataResetDescription: 'Fjerner lagrede lønns- og forhandlingsdata. AI-bruk blir værende.',
+    dataResetButton: 'Slett alle data',
+    dataResetConfirmLabel: 'Er du helt sikker på at du vil slette alle data?',
+    dataResetCancel: 'Nei, behold',
+    dataResetConfirmButton: 'Ja, slett',
     inflationBaseTitle: 'Inflasjonsbase',
     inflationBaseSubtitle: 'Velg året kjøpekraften regnes fra',
     inflationBaseAutoLabel: 'Automatisk (siste betydelige endring)',
@@ -337,12 +338,12 @@ export const TEXT = {
     grossAmountHelp: 'Oppgi årlig bruttolønn i kroner (NOK).',
     netAmountHelp: 'Oppgi årlig nettolønn i kroner (NOK) etter skatt.',
     yearRange: 'År ({min}-{max})',
-    saveLog: 'Lagre logg',
+    saveLog: 'Lagre lønn',
     reasonLabel: 'Hvorfor økte lønnen?',
     reasonPlaceholder: 'Velg årsak',
     reasonHelp: 'Brukes til å analysere lønnslinjer etter type endring.',
     reasonOptions: {
-      adjustment: 'Ordinær justering',
+      adjustment: 'Justering',
       promotion: 'Forfremmelse',
       newJob: 'Ny jobb',
     },
@@ -542,32 +543,9 @@ export const TEXT = {
     welcomeMessage:
       'Få oversikt over hva lønnen din er verdt etter prisstigningen. Sammenlign lønnsutviklingen din med prisstigningen for å se den reelle kjøpekraften.',
     primaryCta: 'Kom i gang',
-    loadDemoButton: 'Prøv med eksempeldata',
-    addOwnDataButton: 'Legg til min egen lønn',
-    loadDemoLink: 'Prøv med eksempeldata',
-    addOwnDataLink: 'Legg til min egen lønn',
     whatIsKjopekraft: 'Hva er kjøpekraft?',
     kjopekraftExplanation:
       'Kjøpekraft viser hva lønnen din er verdt når prisene øker. Selv om lønnen din øker med 10 %, kan prisstigningen spise opp mye av veksten. Vi viser forskjellen mellom lønn på papiret og hva du faktisk kan kjøpe.',
-    features: {
-      trackSalary: {
-        title: 'Spor lønnsutvikling',
-        description: 'Se hvordan lønnen din endrer seg over tid.',
-      },
-      compareInflation: {
-        title: 'Sammenlign med prisstigning',
-        description: 'Forstå kjøpekraften din, ikke bare tallene.',
-      },
-      negotiate: {
-        title: 'Forhandle smartere',
-        description: 'Få innsikt som støtter lønnsforhandlinger.',
-      },
-    },
-    demoDataTitle: 'Du ser eksempeldata',
-    demoDataInfo:
-      'Dette er eksempeldata. Legg til dine egne lønnspunkter for å se din faktiske utvikling.',
-    demoDataCta: 'Bruk mine data',
-    clearDemoData: 'Fjern eksempeldata',
   },
 
   help: {
