@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { TEXT } from '@/lib/constants/text'
-import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
 
 interface NavItem {
   href: string
@@ -53,26 +52,13 @@ export default function Sidebar() {
         {/* Navigation */}
         <nav className="flex flex-1 flex-col gap-2 px-4 py-4">
           {navItems.map(item => {
+            if (item.disabled) return null
             const isActive = pathname === item.href
             const label = TEXT.sidebar[item.labelKey]
             const baseClassName = `flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${getNavItemClass(
               isActive,
               Boolean(item.disabled),
             )}`
-
-            if (item.disabled) {
-              return (
-                <InfoTooltip key={item.href} label={TEXT.sidebar.comingSoon} asChild>
-                  <div className={baseClassName}>
-                    <span className="material-symbols-outlined">{item.icon}</span>
-                    <p className="text-sm font-medium">{label}</p>
-                    <span className="ml-auto rounded bg-[var(--surface-subtle)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
-                      {TEXT.sidebar.comingSoon}
-                    </span>
-                  </div>
-                </InfoTooltip>
-              )
-            }
 
             return (
               <Link key={item.href} href={item.href} className={baseClassName}>

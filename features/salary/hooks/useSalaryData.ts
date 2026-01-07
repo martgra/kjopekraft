@@ -28,8 +28,6 @@ export function useSalaryData(
 
   // Initialize from localStorage
   useEffect(() => {
-    if (!inflationData.length) return
-
     let initial: PayPoint[] = []
     try {
       const stored = localStorage.getItem(STORAGE_KEY)

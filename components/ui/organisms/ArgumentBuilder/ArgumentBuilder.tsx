@@ -1,8 +1,9 @@
 'use client'
 
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 import { Button, Card, Icon, Select, SelectOption } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
+import { STORAGE_KEYS } from '@/lib/constants/storage'
 import { NEGOTIATION_MAX_POINTS, NEGOTIATION_POINT_TYPES } from '@/lib/negotiation/pointTypes'
 import { AIAssistedField } from '@/components/ai/AIAssistedField'
 import type { NegotiationPoint } from '@/lib/schemas/negotiation'
@@ -24,6 +25,40 @@ export const ArgumentBuilder = forwardRef<ArgumentBuilderHandle, ArgumentBuilder
     const [resetCounter, setResetCounter] = useState(0)
     const maxReached = points.length >= NEGOTIATION_MAX_POINTS
 
+    useEffect(() => {
+      try {
+        const stored = window.localStorage.getItem(STORAGE_KEYS.negotiationArgumentDraft)
+        if (!stored) return
+        const parsed = JSON.parse(stored) as { description?: string; type?: string }
+        if (typeof parsed.description === 'string') {
+          setDesc(parsed.description)
+        }
+        if (typeof parsed.type === 'string' && parsed.type !== type) {
+          setType(parsed.type)
+          setResetCounter(prev => prev + 1)
+        }
+      } catch (error) {
+        console.warn('Failed to restore argument draft', error)
+      }
+      // Runs once to avoid overwriting user input on re-renders.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+      try {
+        if (!desc.trim()) {
+          window.localStorage.removeItem(STORAGE_KEYS.negotiationArgumentDraft)
+          return
+        }
+        window.localStorage.setItem(
+          STORAGE_KEYS.negotiationArgumentDraft,
+          JSON.stringify({ description: desc, type }),
+        )
+      } catch (error) {
+        console.warn('Failed to persist argument draft', error)
+      }
+    }, [desc, type])
+
     const handleAdd = useCallback(() => {
       if (!desc.trim() || maxReached) return
       onAddPoint({ description: desc.trim(), type })
@@ -40,10 +75,7 @@ export const ArgumentBuilder = forwardRef<ArgumentBuilderHandle, ArgumentBuilder
     )
 
     return (
-      <Card
-        padding="none"
-        className={`min-h-0 overflow-visible md:min-h-[420px] ${className ?? ''}`.trim()}
-      >
+      <Card padding="none" className={`min-h-0 overflow-visible ${className ?? ''}`.trim()}>
         {/* Header */}
         <div className="flex items-center justify-between gap-3 border-b border-[var(--border-light)] bg-[var(--surface-subtle)] px-4 py-3">
           <h2 className="flex items-center gap-2 text-sm font-bold text-[var(--text-main)]">

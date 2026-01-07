@@ -6,6 +6,7 @@ import { SsbInflationResponseSchema } from '@/lib/schemas'
 import { logServiceError } from '@/lib/logger'
 
 const SERVICE_NAME = 'inflationService'
+const FETCH_TIMEOUT_MS = 4000
 
 function createServiceError(message: string): Error {
   return new Error(`${SERVICE_NAME}: ${message}`)
@@ -21,7 +22,11 @@ const fetchInflation = async (): Promise<InflationDataPoint[]> => {
   cacheLife('inflation') // Uses custom profile from next.config.ts
   cacheTag('inflation')
 
-  const res = await fetch('https://data.ssb.no/api/v0/dataset/1086.json?lang=no')
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
+  const res = await fetch('https://data.ssb.no/api/v0/dataset/1086.json?lang=no', {
+    signal: controller.signal,
+  }).finally(() => clearTimeout(timeoutId))
   if (!res.ok) throw createServiceError(`SSB fetch failed (${res.status})`)
 
   const rawJson = await res.json()

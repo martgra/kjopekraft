@@ -1,9 +1,13 @@
 'use client'
 
-import { useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import { TEXT } from '@/lib/constants/text'
 import { useTheme } from '@/contexts/theme/ThemeContext'
+import { NEGOTIATION_DRAFT_COOKIE } from '@/lib/constants/cookies'
+import InfoTooltip from '@/components/ui/atoms/InfoTooltip'
+import { ModalShell } from '@/components/ui/atoms'
 
 type UserSession = {
   user?: {
@@ -22,11 +26,41 @@ type UserMenuProps = {
 export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className }: UserMenuProps) {
   const { isDarkMode, toggleTheme } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const menuId = useId()
   const menuRef = useRef<HTMLDivElement>(null)
 
-  const handleClose = () => setIsOpen(false)
+  const closeMenu = useCallback(() => setIsOpen(false), [])
+  const closeDeleteConfirm = useCallback(() => {
+    setIsDeleteOpen(false)
+  }, [])
+  const handleClose = useCallback(() => closeMenu(), [closeMenu])
+  const handleDeleteData = () => {
+    closeMenu()
+    setIsDeleteOpen(true)
+  }
 
+  const handleConfirmDelete = () => {
+    closeDeleteConfirm()
+    const keysToRemove = ['salary-calculator-points', 'salary-inflation-base-year']
+
+    keysToRemove.forEach(key => {
+      try {
+        localStorage.removeItem(key)
+      } catch {
+        // Ignore storage access errors (e.g., blocked by browser settings).
+      }
+    })
+
+    const cookieBase = `${NEGOTIATION_DRAFT_COOKIE}=; path=/; max-age=0; samesite=lax`
+    document.cookie = cookieBase
+    if (window.location.protocol === 'https:') {
+      document.cookie = `${cookieBase}; secure`
+    }
+
+    window.location.reload()
+  }
   useEffect(() => {
     if (!isOpen) return
 
@@ -49,6 +83,10 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [isOpen])
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   if (isPending) {
     return (
@@ -120,6 +158,24 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
             />
           </div>
 
+          <div className="mt-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-subtle)] p-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-sm font-semibold text-[var(--text-main)]">
+                {TEXT.settings.dataResetTitle}
+              </div>
+              <InfoTooltip label={TEXT.settings.dataResetDescription} side="left" align="end" />
+            </div>
+            <button
+              type="button"
+              onClick={handleDeleteData}
+              className="mt-3 flex w-full items-center justify-between gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-900/40"
+              role="menuitem"
+            >
+              {TEXT.settings.dataResetButton}
+              <span className="material-symbols-outlined text-sm">delete_sweep</span>
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => {
@@ -134,6 +190,59 @@ export function UserMenu({ session, isPending, onSignOut, onOpenLogin, className
           </button>
         </div>
       ) : null}
+      {isDeleteOpen && isMounted
+        ? createPortal(
+            <ModalShell
+              onClose={closeDeleteConfirm}
+              className="max-w-md overflow-hidden rounded-2xl"
+              backdropClassName="z-[70] bg-black/70"
+              wrapperClassName="z-[80]"
+            >
+              <div className="flex items-center justify-between border-b border-[var(--border-light)] px-5 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[var(--primary)]">
+                    delete_sweep
+                  </span>
+                  <h3 className="text-base font-bold text-[var(--text-main)]">
+                    {TEXT.settings.dataResetTitle}
+                  </h3>
+                </div>
+                <button
+                  onClick={closeDeleteConfirm}
+                  className="rounded-full p-2 text-[var(--text-muted)] hover:bg-[var(--surface-subtle)]"
+                  aria-label={TEXT.common.close}
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+              <div className="px-5 py-4">
+                <p className="text-sm text-[var(--text-main)]">
+                  {TEXT.settings.dataResetConfirmLabel}
+                </p>
+                <p className="mt-2 text-xs text-[var(--text-muted)]">
+                  {TEXT.settings.dataResetDescription}
+                </p>
+                <div className="mt-4 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={closeDeleteConfirm}
+                    className="flex-1 rounded-xl border border-[var(--border-light)] bg-[var(--surface-subtle)] px-3 py-2 text-sm font-semibold text-[var(--text-main)] transition-colors hover:bg-[var(--surface-light)]"
+                  >
+                    {TEXT.settings.dataResetCancel}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmDelete}
+                    className="flex-1 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-900/40"
+                  >
+                    {TEXT.settings.dataResetConfirmButton}
+                  </button>
+                </div>
+              </div>
+            </ModalShell>,
+            document.body,
+          )
+        : null}
     </div>
   )
 }

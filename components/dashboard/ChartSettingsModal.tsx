@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { TEXT } from '@/lib/constants/text'
 import type { OccupationSelection } from '@/lib/ssb/occupationSelection'
 import { createTestId } from '@/lib/testing/testIds'
@@ -33,14 +37,22 @@ export function ChartSettingsModal({
   onOccupationChange,
   onClose,
 }: ChartSettingsModalProps) {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   if (!isOpen) return null
 
   const testId = createTestId('chart-settings-modal')
 
-  return (
+  const modal = (
     <ModalShell
       onClose={onClose}
       className="flex max-h-[700px] w-full max-w-[350px] animate-[fadeIn_0.2s_ease-out] flex-col"
+      backdropClassName="bg-black/70"
+      wrapperClassName="z-[80]"
       data-testid={testId('container')}
     >
       {/* Modal header */}
@@ -93,4 +105,8 @@ export function ChartSettingsModal({
       </div>
     </ModalShell>
   )
+
+  if (!isMounted) return null
+
+  return createPortal(modal, document.body)
 }

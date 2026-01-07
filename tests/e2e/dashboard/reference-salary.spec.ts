@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/test-fixtures'
+import { test, expect, SAMPLE_SALARY_POINTS, STORAGE_KEYS } from '../../fixtures/test-fixtures'
 
 const STORTING_ROUTE = '**/api/reference/storting**'
 const STORTING_PAYLOAD = {
@@ -21,9 +21,13 @@ const STORTING_PAYLOAD = {
 test.describe('Reference salary (Stortinget)', () => {
   test.beforeEach(async ({ page }) => {
     await page.context().clearCookies()
-    await page.addInitScript(() => {
-      localStorage.clear()
-    })
+    await page.addInitScript(
+      ({ key, points }) => {
+        localStorage.clear()
+        localStorage.setItem(key, JSON.stringify(points))
+      },
+      { key: STORAGE_KEYS.SALARY_POINTS, points: SAMPLE_SALARY_POINTS },
+    )
   })
 
   test('enables reference line when Stortinget data loads', async ({ page }) => {
@@ -35,8 +39,7 @@ test.describe('Reference salary (Stortinget)', () => {
       }),
     )
 
-    await page.goto('/')
-    await page.getByRole('button', { name: /prøv med eksempeldata/i }).click()
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
     await expect(page.locator('canvas')).toBeVisible()
 
     await page.getByTestId('chart-section-open-settings').click()
@@ -67,8 +70,7 @@ test.describe('Reference salary (Stortinget)', () => {
       }),
     )
 
-    await page.goto('/')
-    await page.getByRole('button', { name: /prøv med eksempeldata/i }).click()
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
     await expect(page.locator('canvas')).toBeVisible()
 
     await page.getByTestId('chart-section-open-settings').click()

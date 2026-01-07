@@ -14,7 +14,7 @@ test.describe('Salary Tracking with Reasons', () => {
   })
 
   test('inflation base selection persists', async ({ dashboardPage, page, isMobile }) => {
-    await dashboardPage.addOwnDataButton.click()
+    await dashboardPage.primaryCtaButton.click()
 
     // Add points with events
     await dashboardPage.addSalaryPoint(2020, 500000, 'newJob')
@@ -50,7 +50,7 @@ test.describe('Salary Tracking with Reasons', () => {
     dashboardPage,
     isMobile,
   }) => {
-    await dashboardPage.addOwnDataButton.click()
+    await dashboardPage.primaryCtaButton.click()
     await dashboardPage.addSalaryPoint(2020, 500000, 'newJob')
     await dashboardPage.addSalaryPoint(2022, 600000, 'promotion')
 

@@ -1,7 +1,7 @@
 import type { YearlyTaxConfig, TrygdeConfig } from './taxTypes'
 
 /**
- * Yearly tax configurations (2007–2025). Adjust deduction caps/floors as needed.
+ * Yearly tax configurations (2007–2026). Adjust deduction caps/floors as needed.
  */
 export const YEARLY_TAX_CONFIG: YearlyTaxConfig[] = [
   // Surtax years (2007–2015)
@@ -105,7 +105,7 @@ export const YEARLY_TAX_CONFIG: YearlyTaxConfig[] = [
     standardDeduction: { rate: 0.43, floor: 4000, cap: 87000 },
   },
 
-  // Trinnskatt years (2016–2025)
+  // Trinnskatt years (2016–2026)
   {
     year: 2016,
     generalIncomeRate: 0.25,
@@ -236,10 +236,24 @@ export const YEARLY_TAX_CONFIG: YearlyTaxConfig[] = [
     ],
     standardDeduction: { rate: 0.46, floor: 4000, cap: 129850 },
   },
+  {
+    year: 2026,
+    generalIncomeRate: 0.22,
+    personalDeduction: 114540,
+    ruleType: 'bracket',
+    brackets: [
+      { threshold: 226100, rate: 0.017 },
+      { threshold: 318300, rate: 0.04 },
+      { threshold: 725050, rate: 0.137 },
+      { threshold: 980100, rate: 0.168 },
+      { threshold: 1467200, rate: 0.178 },
+    ],
+    standardDeduction: { rate: 0.46, floor: 4000, cap: 95700 },
+  },
 ]
 
 /**
- * Trygdeavgift configurations (2007–2025).
+ * Trygdeavgift configurations (2007–2026).
  * "threshold" is the annual fribeløp (income exempt from contribution).
  */
 export const TRYGDE_CONFIG: TrygdeConfig[] = [
@@ -282,4 +296,7 @@ export const TRYGDE_CONFIG: TrygdeConfig[] = [
 
   // 2025: threshold raised to 99 650
   { year: 2025, rate: 0.077, threshold: 99650, cap: null },
+
+  // 2026: rate adjusted to 7.6%
+  { year: 2026, rate: 0.076, threshold: 99650, cap: null },
 ]

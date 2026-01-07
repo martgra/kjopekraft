@@ -38,8 +38,8 @@ describe('SalaryPointForm', () => {
     const reasonSelect = screen.getByTestId('salary-form-reason-select')
     const options = Array.from(reasonSelect.querySelectorAll('option'))
 
-    expect(options).toHaveLength(4) // Empty + 3 reasons
-    expect(options.map(o => o.value)).toEqual(['', 'adjustment', 'promotion', 'newJob'])
+    expect(options).toHaveLength(3)
+    expect(options.map(o => o.value)).toEqual(['adjustment', 'promotion', 'newJob'])
   })
 
   it('calls onReasonChange when reason is changed', async () => {

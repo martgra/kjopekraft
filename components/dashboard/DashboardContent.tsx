@@ -19,11 +19,8 @@ interface DashboardContentProps {
   inflationData: InflationDataPoint[]
   currentYear: number
   hasData: boolean
-  isDemoMode: boolean
   isNetMode: boolean
   onToggleMode: () => void
-  onLoadDemo: () => void
-  onClearDemo: () => void
   onEditPoint: (point: PayPoint) => void
   onRemovePoint: (year: number, pay: number) => void
   onRequestAdd: () => void
@@ -38,11 +35,8 @@ export default function DashboardContent({
   inflationData,
   currentYear,
   hasData,
-  isDemoMode,
   isNetMode,
   onToggleMode,
-  onLoadDemo,
-  onClearDemo,
   onEditPoint,
   onRemovePoint,
   onRequestAdd,
@@ -53,11 +47,6 @@ export default function DashboardContent({
   const dashboardTestId = createTestId('dashboard')
   const chartWrapperClasses = `flex min-h-[350px] flex-1 ${chartWrapperClassName}`.trim()
   const shouldShowMetrics = hasData && showMetricGrid
-
-  const handleDemoCta = () => {
-    onClearDemo()
-    onRequestAdd()
-  }
 
   return (
     <PageShell className="gap-3 md:gap-6" data-testid={dashboardTestId('root')}>
@@ -80,9 +69,7 @@ export default function DashboardContent({
           <StatusBanner
             payPoints={payPoints}
             statistics={statistics}
-            isDemoMode={isDemoMode}
             onSinglePointCtaClick={onRequestAdd}
-            onDemoModeCtaClick={handleDemoCta}
           />
           {shouldShowMetrics && (
             <Suspense fallback={<MetricGridSkeleton />}>
@@ -108,7 +95,7 @@ export default function DashboardContent({
           </Suspense>
         </div>
       ) : (
-        <OnboardingEmptyState onLoadDemo={onLoadDemo} onOpenDrawer={onRequestAdd} />
+        <OnboardingEmptyState onOpenDrawer={onRequestAdd} />
       )}
     </PageShell>
   )

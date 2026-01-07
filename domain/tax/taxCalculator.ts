@@ -6,7 +6,7 @@ import type { YearlyTaxConfig, TrygdeConfig, TaxBreakdown } from './taxTypes'
  *
  * Breaks down tax calculation into components for easier debugging.
  * Covers ordinary income tax, bracket tax (trinnskatt), social security contribution (trygdeavgift),
- * and net income, for years 2007–2025.
+ * and net income, for years 2007–2026.
  */
 
 function roundToNearest10(amount: number): number {
@@ -115,7 +115,7 @@ export function calculateTaxBreakdown(year: number, grossIncome: number): TaxBre
  * Calculate net income after Norwegian taxes
  *
  * @param grossIncome - Yearly gross income in NOK
- * @param year - Tax year (2007-2025)
+ * @param year - Tax year (2007-2026)
  * @returns Net income after all taxes and deductions
  */
 export function calculateNetIncome(grossIncome: number, year: number): number {

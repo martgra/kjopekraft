@@ -4,32 +4,10 @@ import { Button } from '@/components/ui/atoms'
 import { TEXT } from '@/lib/constants/text'
 
 interface OnboardingEmptyStateProps {
-  onLoadDemo: () => void
   onOpenDrawer: () => void
 }
 
-const FEATURES = [
-  {
-    icon: 'trending_up',
-    title: TEXT.onboarding.features.trackSalary.title,
-    description: TEXT.onboarding.features.trackSalary.description,
-  },
-  {
-    icon: 'analytics',
-    title: TEXT.onboarding.features.compareInflation.title,
-    description: TEXT.onboarding.features.compareInflation.description,
-  },
-  {
-    icon: 'handshake',
-    title: TEXT.onboarding.features.negotiate.title,
-    description: TEXT.onboarding.features.negotiate.description,
-  },
-]
-
-export default function OnboardingEmptyState({
-  onLoadDemo,
-  onOpenDrawer,
-}: OnboardingEmptyStateProps) {
+export default function OnboardingEmptyState({ onOpenDrawer }: OnboardingEmptyStateProps) {
   const handleAddOwnData = () => {
     // On mobile, open the drawer. On desktop, scroll to the form in the sidebar
     if (window.innerWidth < 768) {
@@ -60,45 +38,10 @@ export default function OnboardingEmptyState({
       </p>
 
       {/* Action buttons */}
-      <div className="mb-6 flex flex-col items-center gap-4">
+      <div className="mb-8 flex flex-col items-center gap-4">
         <Button onClick={handleAddOwnData} variant="primary" icon="add" className="min-w-[200px]">
           {TEXT.onboarding.primaryCta}
         </Button>
-        <div className="flex flex-col items-center gap-2 text-sm sm:flex-row sm:gap-4">
-          <button
-            onClick={onLoadDemo}
-            className="text-[var(--text-muted)] underline-offset-2 hover:text-[var(--primary)] hover:underline"
-          >
-            {TEXT.onboarding.loadDemoLink}
-          </button>
-          <span className="hidden text-[var(--text-muted)] sm:inline">eller</span>
-          <button
-            onClick={handleAddOwnData}
-            className="text-[var(--text-muted)] underline-offset-2 hover:text-[var(--primary)] hover:underline"
-          >
-            {TEXT.onboarding.addOwnDataLink}
-          </button>
-        </div>
-      </div>
-
-      {/* Feature preview cards */}
-      <div className="mb-8 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        {FEATURES.map((feature, index) => (
-          <div
-            key={index}
-            className="flex flex-row items-center gap-3 rounded-lg border border-[var(--border-light)] bg-[var(--surface-light)] p-3 sm:flex-col sm:items-start sm:p-4"
-          >
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-green-100)] sm:mb-2">
-              <span className="material-symbols-outlined text-[24px] text-[var(--primary)]">
-                {feature.icon}
-              </span>
-            </div>
-            <div className="flex-1 sm:flex-none">
-              <h3 className="text-sm font-semibold text-[var(--text-main)]">{feature.title}</h3>
-              <p className="text-xs text-[var(--text-muted)]">{feature.description}</p>
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* Info box - hidden on mobile */}

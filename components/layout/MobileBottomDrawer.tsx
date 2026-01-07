@@ -80,7 +80,7 @@ export default function MobileBottomDrawer({
       <div
         className={`fixed bottom-0 z-50 flex max-h-[85vh] min-h-0 w-full flex-col overflow-hidden rounded-t-3xl bg-[var(--surface-light)] pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform duration-300 ease-out lg:hidden ${
           isSheet
-            ? 'left-1/2 h-[85vh] max-w-md -translate-x-1/2 border-t border-[var(--border-light)]'
+            ? 'left-1/2 max-w-md -translate-x-1/2 border-t border-[var(--border-light)]'
             : 'right-0 left-0'
         } translate-y-0`}
         role="dialog"
@@ -114,7 +114,7 @@ export default function MobileBottomDrawer({
         </div>
 
         {/* Content - scrollable with bottom padding for mobile nav */}
-        <div className={`min-h-0 flex-1 overflow-y-auto px-4 ${isNegotiation ? 'pb-6' : 'pb-8'}`}>
+        <div className={`min-h-0 flex-1 overflow-y-auto px-4 ${isNegotiation ? 'pb-2' : 'pb-8'}`}>
           {content}
         </div>
       </div>

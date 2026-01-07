@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import { mutate } from 'swr'
 import { useNegotiationData } from '../hooks/useNegotiationData'
 import { useNegotiationInsights } from '../hooks/useNegotiationInsights'
-import { DetailsForm, ContextForm, BenefitsForm } from './forms'
 import { ArgumentBuilder, GeneratedContent } from '@/components/ui/organisms'
 import type { ArgumentBuilderHandle } from '@/components/ui/organisms/ArgumentBuilder/ArgumentBuilder'
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -14,7 +13,7 @@ import { PageShell, Stack } from '@/components/ui/layout'
 import { TEXT } from '@/lib/constants/text'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { useSsbMedianSalary } from '@/features/negotiation/hooks/useSsbMedianSalary'
-import { NegotiationSummary } from './NegotiationSummary'
+import { NegotiationSalaryOverview } from './NegotiationSalaryOverview'
 import {
   NegotiationMarketSelector,
   type NegotiationOccupationSelection,
@@ -55,7 +54,6 @@ export default function NegotiationPage({
   const [isGeneratingEmail, setIsGeneratingEmail] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
   const prefilledCurrentSalary = useRef<string | null>(null)
-  const prefilledDesiredSalary = useRef<number | null>(null)
   const argumentBuilderRef = useRef<ArgumentBuilderHandle | null>(null)
   const { open: openLoginOverlay } = useLoginOverlay()
   const { showToast } = useToast()
@@ -106,10 +104,10 @@ export default function NegotiationPage({
   useEffect(() => {
     if (
       !userInfo.desiredSalary &&
-      desiredSalaryEstimate &&
-      prefilledDesiredSalary.current !== desiredSalaryEstimate
+      desiredSalaryEstimate !== null &&
+      Number.isFinite(desiredSalaryEstimate) &&
+      desiredSalaryEstimate > 0
     ) {
-      prefilledDesiredSalary.current = desiredSalaryEstimate
       persistUserInfo({ desiredSalary: formatCurrency(desiredSalaryEstimate) })
     }
   }, [desiredSalaryEstimate, persistUserInfo, userInfo.desiredSalary])
@@ -186,8 +184,6 @@ export default function NegotiationPage({
   }
 
   // Hydrate prompts from localStorage on mount (content is handled by the hook)
-  const showMarketData =
-    !occupationMatch || Boolean(medianError) || Boolean(userInfo.marketData.trim())
 
   const argumentBuilderContent = (
     <ArgumentBuilder
@@ -257,7 +253,9 @@ export default function NegotiationPage({
 
           {/* Forms */}
           <Stack gap="md">
-            <NegotiationSummary
+            <NegotiationSalaryOverview
+              userInfo={userInfo}
+              onChange={updateUserInfo}
               inflationGapPercent={inflationGapPercent}
               medianSalary={medianSalary}
               medianYear={medianYear}
@@ -280,17 +278,6 @@ export default function NegotiationPage({
               }
             />
             <NegotiationArguments points={points} onRemovePoint={removePoint} />
-            <DetailsForm
-              userInfo={userInfo}
-              onChange={updateUserInfo}
-              showIsNewJobControl={!hasSalaryHistory}
-            />
-            <ContextForm
-              userInfo={userInfo}
-              onChange={updateUserInfo}
-              showMarketData={showMarketData}
-            />
-            <BenefitsForm userInfo={userInfo} onChange={updateUserInfo} />
           </Stack>
 
           {/* Generated Content */}

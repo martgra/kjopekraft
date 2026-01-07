@@ -7,7 +7,7 @@ test.describe('Chart Controls', () => {
   })
 
   test('opens settings modal and exposes chart controls', async ({ dashboardPage }) => {
-    await dashboardPage.loadDemoData()
+    await dashboardPage.seedSalaryPoints()
 
     await expect(dashboardPage.chart).toBeVisible()
     await dashboardPage.openChartSettings()
@@ -19,7 +19,7 @@ test.describe('Chart Controls', () => {
   })
 
   test('view switcher shows graph, table, and analysis content', async ({ dashboardPage }) => {
-    await dashboardPage.loadDemoData()
+    await dashboardPage.seedSalaryPoints()
 
     // Graph by default
     await expect(dashboardPage.chart).toBeVisible()
@@ -38,7 +38,7 @@ test.describe('Chart Controls', () => {
   })
 
   test('net/gross toggle updates badge without breaking chart', async ({ dashboardPage }) => {
-    await dashboardPage.loadDemoData()
+    await dashboardPage.seedSalaryPoints()
     await dashboardPage.openChartSettings()
 
     // Switch to net

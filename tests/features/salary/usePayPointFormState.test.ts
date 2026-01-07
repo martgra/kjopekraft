@@ -5,16 +5,6 @@ import { usePayPointFormState } from '@/features/salary/hooks/usePayPointFormSta
 import type { PayPoint } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 
-const demoModeState = {
-  isDemoMode: false,
-  loadDemoData: vi.fn(),
-  clearDemoData: vi.fn(),
-}
-
-vi.mock('@/contexts/demoMode/DemoModeContext', () => ({
-  useDemoMode: () => demoModeState,
-}))
-
 const payPoints: PayPoint[] = [
   { id: 'p1', year: 2020, pay: 500000, reason: 'newJob' },
   { id: 'p2', year: 2021, pay: 520000, reason: 'adjustment' },
@@ -27,9 +17,6 @@ describe('usePayPointFormState', () => {
   beforeEach(() => {
     addPoint.mockClear()
     removePoint.mockClear()
-    demoModeState.isDemoMode = false
-    demoModeState.loadDemoData.mockClear()
-    demoModeState.clearDemoData.mockClear()
   })
 
   const setup = (overrides?: Partial<Parameters<typeof usePayPointFormState>[0]>) =>
@@ -86,19 +73,6 @@ describe('usePayPointFormState', () => {
 
     expect(addPoint).toHaveBeenCalled()
     expect(result.current.fields.year).toBe('2023')
-  })
-
-  it('clears demo state when adding real data in demo mode', () => {
-    demoModeState.isDemoMode = true
-    const { result } = setup()
-
-    act(() => result.current.setters.setYear('2022'))
-    act(() => result.current.setters.setPay('600000'))
-    act(() => result.current.setters.setReason('adjustment'))
-
-    act(() => result.current.submitPoint())
-
-    expect(demoModeState.clearDemoData).toHaveBeenCalled()
   })
 
   describe('editing behavior', () => {

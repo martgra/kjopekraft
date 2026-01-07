@@ -13,29 +13,13 @@ test.describe('Mobile Experience', () => {
     // Skip this test on desktop
     test.skip(!isMobile, 'This test is for mobile only')
 
-    await page.goto('/')
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
 
-    // Load demo data first
-    await page.getByRole('button', { name: /prøv med eksempeldata/i }).click()
-
-    // Verify we're on the dashboard - chart should be visible
-    await expect(page.locator('canvas')).toBeVisible()
-
-    // Wait for any auto-opening drawer to settle, then close it if open
-    await page.waitForTimeout(500)
-
-    // Check if dialog is open and close via keyboard
-    const dialog = page.getByRole('dialog')
-    if (await dialog.isVisible().catch(() => false)) {
-      // Press escape to close any open dialog
-      await page.keyboard.press('Escape')
-      await page.waitForTimeout(500)
-    }
-
-    // Click the FAB button to open drawer
-    await page.getByRole('button', { name: /åpne datapanel/i }).click()
+    // Open the drawer via the onboarding CTA
+    await page.getByRole('button', { name: /kom i gang/i }).click()
 
     // Drawer should be visible
+    const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible({ timeout: 3000 })
   })
 
@@ -43,7 +27,7 @@ test.describe('Mobile Experience', () => {
     // Skip this test on desktop
     test.skip(!isMobile, 'This test is for mobile only')
 
-    await page.goto('/')
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
 
     // Bottom navigation should be visible on mobile (the fixed nav at bottom)
     const bottomNav = page.locator('nav.fixed')

@@ -10,7 +10,7 @@ test.describe('Onboarding Experience', () => {
   })
 
   test('shows onboarding screen on first visit', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
 
     // Wait for page to load
     await expect(page).toHaveTitle(/Kjøpekraft/i)
@@ -20,37 +20,5 @@ test.describe('Onboarding Experience', () => {
 
     // Should show primary CTA button
     await expect(page.getByRole('button', { name: /kom i gang/i })).toBeVisible()
-
-    // Should show secondary links
-    await expect(page.getByRole('button', { name: /prøv med eksempeldata/i })).toBeVisible()
-    await expect(page.getByRole('button', { name: /legg til min egen lønn/i })).toBeVisible()
-
-    // Should show feature cards
-    await expect(page.getByText('Spor lønnsutvikling')).toBeVisible()
-    await expect(page.getByText('Sammenlign med prisstigning')).toBeVisible()
-    await expect(page.getByText('Forhandle smartere')).toBeVisible()
-  })
-
-  test('Try Demo button loads demo data and shows chart', async ({ page, isMobile }) => {
-    await page.goto('/')
-
-    // Click the Try Demo button
-    await page.getByRole('button', { name: /prøv med eksempeldata/i }).click()
-
-    // Onboarding should disappear
-    await expect(page.getByText('Velkommen til Kjøpekraft')).not.toBeVisible()
-
-    // Chart should be visible (canvas element)
-    await expect(page.locator('canvas')).toBeVisible()
-
-    // Dashboard header should be visible (desktop only)
-    if (!isMobile) {
-      await expect(page.getByRole('heading', { name: 'Lønnsoversikt' })).toBeVisible()
-    }
-
-    // Chart section with title should be visible
-    await expect(
-      page.getByRole('heading', { name: /Årlig lønnsvekst og prisstigning/i }),
-    ).toBeVisible()
   })
 })
