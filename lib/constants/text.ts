@@ -422,6 +422,7 @@ export const TEXT = {
     addArgument: 'Legg til argument',
     showArguments: 'Vis argumenter',
     hideArguments: 'Skjul argumenter',
+    openArgumentBuilder: 'Åpne argumentbygger',
     guide:
       'Legg inn dine viktigste argumenter for lønnsforhandling. Skriv fritt og bruk flere punkter – dette hjelper deg å forberede en god forhandlingsstrategi!',
     descriptionPlaceholder: 'Beskriv et argument, prestasjon eller markedssituasjon',
@@ -443,7 +444,6 @@ export const TEXT = {
       'Legg inn dine viktigste argumenter og generer et forslag til e-post. Dette hjelper deg å være best mulig forberedt!',
     minPointsWarning: 'Legg til minst ett forhandlingspunkt før du genererer innhold.',
     suggestionMorePoints: 'Tips: Legg til flere punkter for bedre resultater (anbefalt: 3+)',
-    addPointsHint: 'Legg til dine nøkkelpunkter ovenfor',
     maxPointsWarning: 'Du har nådd maks antall forhandlingspunkter.',
     maxGenerationsWarning: 'Du har nådd maks antall genereringer.',
     emailErrorTitle: 'Det oppstod en feil med e-post generering',
@@ -482,6 +482,7 @@ export const TEXT = {
     inflationLabel: 'Kjøpekraft',
     marketLabel: 'Marked',
     raiseLabel: 'Anbefalt spenn',
+    desiredLabel: 'Ønsket vs median',
     aboveInflation: (percent: string) => `Du ligger ${percent} over inflasjonen.`,
     belowInflation: (percent: string) => `Du ligger ${percent} under inflasjonen.`,
     noInflationData: 'Legg inn lønnsdata i oversikten for å se kjøpekraften din.',
@@ -495,9 +496,12 @@ export const TEXT = {
     desiredAtMedian: 'Ønsket lønn er på medianen.',
     noDesiredComparison: 'Legg inn ønsket lønn for å sammenligne med markedet.',
     suggestedRange: (min: string, max: string) => `${min}–${max}`,
+    closeGapPrompt: (range: string) => `For å tette kjøpekraftsgapet bør du be om ${range}.`,
     approximateMatch: (occupation: string) =>
       `Merk: Bruker nærmeste yrkeskategori (${occupation}).`,
     footer: 'Tips: Bruk tallene som støtte, men tilpass ønsket til din situasjon.',
+    showInsights: 'Vis mer innsikt',
+    hideInsights: 'Skjul innsikt',
   },
 
   negotiationSuggestions: {
