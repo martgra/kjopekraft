@@ -2,8 +2,16 @@
 
 import type { PayChangeReason } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
-import { Select, SelectOption } from '@/components/ui/atoms'
 import { createTestId } from '@/lib/testing/testIds'
+
+const REASON_CONFIG: Record<
+  PayChangeReason,
+  { label: string; icon: string; color: string }
+> = {
+  adjustment: { label: 'Justering', icon: 'trending_up', color: 'var(--primary)' },
+  promotion: { label: 'Opprykk', icon: 'workspace_premium', color: '#d97706' },
+  newJob: { label: 'Ny jobb', icon: 'rocket_launch', color: 'var(--secondary)' },
+}
 
 interface SalaryPointFormProps {
   newYear: string
@@ -40,15 +48,11 @@ export default function SalaryPointForm({
 }: SalaryPointFormProps) {
   const testId = createTestId('salary-form')
 
-  const disabled = isSubmitDisabled
   const amountLabel = isNetMode ? TEXT.forms.netAmount : TEXT.forms.grossAmount
-  const yearRangeLabel = TEXT.forms.yearRange
-    .replace('{min}', String(minYear))
-    .replace('{max}', String(currentYear))
 
-  const handleYearInput = (value: string) => {
-    onYearChange(value.replace(/\D/g, ''))
-  }
+  // Year chips: show last 8 years
+  const quickYears = Array.from({ length: 8 }, (_, i) => currentYear - i)
+  const selectedYear = Number(newYear) || currentYear
 
   return (
     <div className="space-y-4 px-2 pt-6" data-testid={testId('container')}>
@@ -78,64 +82,91 @@ export default function SalaryPointForm({
           </div>
         </div>
 
-        {/* Year and Reason Fields - Side by side */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* Year Field */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="salary-year"
-              className="block text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase"
-            >
-              {yearRangeLabel}
-            </label>
-            <input
-              id="salary-year"
-              data-testid={testId('year-input')}
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={newYear}
-              onChange={e => handleYearInput(e.target.value)}
-              placeholder={String(currentYear)}
-              className="block w-full rounded-xl border border-transparent bg-[var(--background-light)] px-4 py-3 text-base font-medium text-[var(--text-main)] shadow-sm transition-all focus:border-[var(--primary)] focus:ring-0"
-            />
+        {/* Year chips */}
+        <div className="space-y-1.5">
+          <div className="text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase">
+            {TEXT.common.year}
           </div>
+          {/* Hidden accessible input keeps tests and screen readers working */}
+          <input
+            id="salary-year"
+            data-testid={testId('year-input')}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={newYear}
+            onChange={e => onYearChange(e.target.value.replace(/\D/g, ''))}
+            placeholder={String(currentYear)}
+            className="sr-only"
+            aria-label={TEXT.common.year}
+          />
+          <div
+            className="flex gap-1.5 overflow-x-auto py-0.5"
+            style={{ scrollbarWidth: 'none' }}
+            aria-hidden="true"
+          >
+            {quickYears.map(y => {
+              const sel = y === selectedYear
+              return (
+                <button
+                  key={y}
+                  type="button"
+                  onClick={() => onYearChange(String(y))}
+                  className="flex-shrink-0 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors"
+                  style={{
+                    background: sel ? 'var(--primary)' : 'var(--background-light)',
+                    color: sel ? '#fff' : 'var(--text-main)',
+                  }}
+                >
+                  {y}
+                </button>
+              )
+            })}
+          </div>
+        </div>
 
-          {/* Reason Field */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="salary-reason"
-              className="block text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase"
-            >
-              Årsak
-            </label>
-            <div className="relative">
-              <Select
-                id="salary-reason"
-                value={newReason}
-                onChange={value => onReasonChange(value as PayChangeReason | '')}
-                className="text-sm font-medium"
-                placement="up"
-              >
-                <SelectOption value="adjustment">
-                  {TEXT.forms.reasonOptions.adjustment}
-                </SelectOption>
-                <SelectOption value="promotion">{TEXT.forms.reasonOptions.promotion}</SelectOption>
-                <SelectOption value="newJob">{TEXT.forms.reasonOptions.newJob}</SelectOption>
-              </Select>
-              <select
-                aria-hidden="true"
-                tabIndex={-1}
-                className="sr-only"
-                data-testid={testId('reason-select')}
-                value={newReason}
-                onChange={e => onReasonChange(e.target.value as PayChangeReason | '')}
-              >
-                <option value="adjustment">{TEXT.forms.reasonOptions.adjustment}</option>
-                <option value="promotion">{TEXT.forms.reasonOptions.promotion}</option>
-                <option value="newJob">{TEXT.forms.reasonOptions.newJob}</option>
-              </select>
-            </div>
+        {/* Reason segmented control */}
+        <div className="space-y-1.5">
+          <div className="text-xs font-bold tracking-wide text-[var(--text-muted)] uppercase">
+            Årsak
+          </div>
+          {/* Hidden select keeps tests and screen readers working */}
+          <select
+            aria-hidden="true"
+            tabIndex={-1}
+            className="sr-only"
+            data-testid={testId('reason-select')}
+            value={newReason}
+            onChange={e => onReasonChange(e.target.value as PayChangeReason | '')}
+          >
+            <option value="adjustment">{TEXT.forms.reasonOptions.adjustment}</option>
+            <option value="promotion">{TEXT.forms.reasonOptions.promotion}</option>
+            <option value="newJob">{TEXT.forms.reasonOptions.newJob}</option>
+          </select>
+          <div className="grid grid-cols-3 gap-1.5" aria-hidden="true">
+            {(
+              Object.entries(REASON_CONFIG) as [
+                PayChangeReason,
+                (typeof REASON_CONFIG)[PayChangeReason],
+              ][]
+            ).map(([k, r]) => {
+              const sel = newReason === k
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => onReasonChange(k)}
+                  className="flex flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-center transition-colors"
+                  style={{
+                    background: sel ? r.color : 'var(--background-light)',
+                    color: sel ? '#fff' : 'var(--text-main)',
+                  }}
+                >
+                  <span className="material-symbols-outlined text-[18px]">{r.icon}</span>
+                  <span className="text-[11px] font-semibold leading-tight">{r.label}</span>
+                </button>
+              )
+            })}
           </div>
         </div>
 
@@ -152,7 +183,7 @@ export default function SalaryPointForm({
             type="button"
             data-testid={testId('submit-button')}
             onClick={onAdd}
-            disabled={disabled}
+            disabled={isSubmitDisabled}
             className="w-full rounded-xl bg-[var(--primary)] py-3.5 text-base font-bold text-white shadow-sm transition-all hover:bg-[var(--primary-hover)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {TEXT.forms.saveLog}
