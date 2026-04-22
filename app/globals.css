@@ -197,6 +197,21 @@ body {
   }
 }
 
+@keyframes slideInUp {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.25s ease forwards;
+}
+
 @keyframes aiShimmer {
   0% {
     transform: translateX(-120%);

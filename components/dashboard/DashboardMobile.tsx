@@ -1,8 +1,7 @@
 'use client'
 
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
-import SalaryPointForm from './SalaryPointForm'
+import MobileAddSheet from './MobileAddSheet'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint, PayChangeReason, SalaryStatistics } from '@/domain/salary'
 import DashboardContent from './DashboardContent'
@@ -24,9 +23,9 @@ interface DashboardMobileProps {
   newPay: string
   newReason: PayChangeReason | ''
   newNote: string
-  minYear: number
   validationError: string
   isSubmitDisabled: boolean
+  editingPoint: PayPoint | null
 
   // Handlers
   onDrawerOpen: () => void
@@ -53,9 +52,9 @@ export default function DashboardMobile({
   newPay,
   newReason,
   newNote,
-  minYear,
   validationError,
   isSubmitDisabled,
+  editingPoint,
   onDrawerOpen,
   onDrawerClose,
   onToggleMode,
@@ -67,38 +66,35 @@ export default function DashboardMobile({
   onNoteChange,
   onSubmitPoint,
 }: DashboardMobileProps) {
-  const formProps = {
-    newYear,
-    newPay,
-    newReason,
-    newNote,
-    currentYear,
-    minYear,
-    validationError,
-    isSubmitDisabled,
-    isNetMode,
-    onYearChange,
-    onPayChange,
-    onReasonChange,
-    onNoteChange,
-    onAdd: onSubmitPoint,
+  const handleDelete = (point: PayPoint) => {
+    onRemovePoint(point.year, point.pay)
   }
-
-  // Drawer content for mobile
-  const drawerContent = (
-    <div className="flex flex-col">
-      <SalaryPointForm {...formProps} />
-    </div>
-  )
 
   return (
     <>
-      <MobileBottomDrawer
-        isOpen={isDrawerOpen}
+      {/* Full-screen add/edit sheet */}
+      <MobileAddSheet
+        open={isDrawerOpen}
         onClose={onDrawerClose}
-        dashboardContent={drawerContent}
-        pointsCount={payPoints.length}
+        newYear={newYear}
+        newPay={newPay}
+        newReason={newReason}
+        newNote={newNote}
+        currentYear={currentYear}
+        validationError={validationError}
+        isSubmitDisabled={isSubmitDisabled}
+        isNetMode={isNetMode}
+        payPoints={payPoints}
+        editingPoint={editingPoint}
+        inflationData={inflationData}
+        onYearChange={onYearChange}
+        onPayChange={onPayChange}
+        onReasonChange={onReasonChange}
+        onNoteChange={onNoteChange}
+        onAdd={onSubmitPoint}
+        onDelete={handleDelete}
       />
+
       <DashboardLayout>
         <DashboardContent
           payPoints={payPoints}

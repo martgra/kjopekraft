@@ -46,6 +46,7 @@ export default function Dashboard({
     closeFormModal,
     clearEditing,
     beginEditing,
+    editingPoint,
     submitPoint,
     removePayPoint,
   } = usePayPointFormState({
@@ -112,6 +113,7 @@ export default function Dashboard({
     minYear,
     validationError,
     isSubmitDisabled,
+    editingPoint,
     onToggleMode: toggleMode,
     onEditPoint: handleEditPoint,
     onRemovePoint: handleRemovePoint,
