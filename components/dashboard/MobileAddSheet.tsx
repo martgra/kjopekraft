@@ -5,10 +5,7 @@ import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { TEXT } from '@/lib/constants/text'
 
-const REASON_CONFIG: Record<
-  PayChangeReason,
-  { label: string; icon: string; color: string }
-> = {
+const REASON_CONFIG: Record<PayChangeReason, { label: string; icon: string; color: string }> = {
   adjustment: { label: 'Justering', icon: 'trending_up', color: 'var(--primary)' },
   promotion: { label: 'Opprykk', icon: 'workspace_premium', color: '#d97706' },
   newJob: { label: 'Ny jobb', icon: 'rocket_launch', color: 'var(--secondary)' },
@@ -121,8 +118,7 @@ export default function MobileAddSheet({
     })
     .sort((a, b) => b.year - a.year)[0]
 
-  const raise =
-    prevPoint && payNum > 0 ? ((payNum - prevPoint.pay) / prevPoint.pay) * 100 : null
+  const raise = prevPoint && payNum > 0 ? ((payNum - prevPoint.pay) / prevPoint.pay) * 100 : null
 
   const cumulativeInflation =
     inflationData && prevPoint && selectedYear > prevPoint.year
@@ -155,11 +151,9 @@ export default function MobileAddSheet({
   const canSave = !isSubmitDisabled && payNum > 0
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex flex-col bg-[var(--background)] animate-slide-in-up"
-    >
+    <div className="animate-slide-in-up fixed inset-0 z-50 flex flex-col bg-[var(--background)]">
       {/* Header */}
-      <div className="flex flex-shrink-0 items-center justify-between px-4 pb-2 pt-3">
+      <div className="flex flex-shrink-0 items-center justify-between px-4 pt-3 pb-2">
         <button
           onClick={onClose}
           className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-subtle)]"
@@ -193,7 +187,7 @@ export default function MobileAddSheet({
           }}
         >
           <div className="mb-1.5 flex items-center justify-between">
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            <div className="text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
               {isNetMode ? 'Netto' : 'Brutto'} årslønn · {selectedYear}
             </div>
             {!padOpen && payNum > 0 && (
@@ -211,7 +205,7 @@ export default function MobileAddSheet({
               payNum.toLocaleString('nb-NO') + ' kr'
             ) : (
               <span
-                className="font-normal italic text-[var(--text-muted)]"
+                className="font-normal text-[var(--text-muted)] italic"
                 style={{ fontSize: 28 }}
               >
                 Tapp for å skrive
@@ -256,7 +250,7 @@ export default function MobileAddSheet({
         >
           {/* Year chips */}
           <div className="mb-3 rounded-2xl border border-[var(--border-light)] bg-[var(--surface-light)] p-4">
-            <div className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            <div className="mb-3 text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
               År
             </div>
             <div
@@ -301,29 +295,32 @@ export default function MobileAddSheet({
 
           {/* Reason segmented control */}
           <div className="mb-3 rounded-2xl border border-[var(--border-light)] bg-[var(--surface-light)] p-4">
-            <div className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            <div className="mb-3 text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
               Årsak
             </div>
             <div className="grid grid-cols-3 gap-2">
-              {(Object.entries(REASON_CONFIG) as [PayChangeReason, (typeof REASON_CONFIG)[PayChangeReason]][]).map(
-                ([k, r]) => {
-                  const sel = newReason === k
-                  return (
-                    <button
-                      key={k}
-                      onClick={() => onReasonChange(k)}
-                      className="flex flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-center transition-colors"
-                      style={{
-                        background: sel ? r.color : 'var(--surface-subtle)',
-                        color: sel ? '#fff' : 'var(--text-main)',
-                      }}
-                    >
-                      <span className="material-symbols-outlined text-[20px]">{r.icon}</span>
-                      <span className="text-[12px] font-semibold leading-tight">{r.label}</span>
-                    </button>
-                  )
-                },
-              )}
+              {(
+                Object.entries(REASON_CONFIG) as [
+                  PayChangeReason,
+                  (typeof REASON_CONFIG)[PayChangeReason],
+                ][]
+              ).map(([k, r]) => {
+                const sel = newReason === k
+                return (
+                  <button
+                    key={k}
+                    onClick={() => onReasonChange(k)}
+                    className="flex flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-center transition-colors"
+                    style={{
+                      background: sel ? r.color : 'var(--surface-subtle)',
+                      color: sel ? '#fff' : 'var(--text-main)',
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">{r.icon}</span>
+                    <span className="text-[12px] leading-tight font-semibold">{r.label}</span>
+                  </button>
+                )
+              })}
             </div>
           </div>
 
@@ -386,7 +383,7 @@ export default function MobileAddSheet({
 
       {/* Numpad drawer — slides up from bottom */}
       <div
-        className="absolute bottom-0 left-0 right-0 rounded-t-2xl border-t border-[var(--border-light)] bg-[var(--surface-subtle)] px-4 pt-3"
+        className="absolute right-0 bottom-0 left-0 rounded-t-2xl border-t border-[var(--border-light)] bg-[var(--surface-subtle)] px-4 pt-3"
         style={{
           paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
           transform: padOpen ? 'translateY(0)' : 'translateY(110%)',
@@ -396,15 +393,14 @@ export default function MobileAddSheet({
         }}
       >
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+          <div className="text-[11px] font-bold tracking-widest text-[var(--text-muted)] uppercase">
             Skriv beløp
           </div>
           <button
             onClick={() => setPadOpen(false)}
             className="flex items-center gap-1.5 rounded-full bg-[var(--text-main)] px-4 py-2 text-[13px] font-bold text-white"
           >
-            Ferdig{' '}
-            <span className="material-symbols-outlined text-[16px]">check</span>
+            Ferdig <span className="material-symbols-outlined text-[16px]">check</span>
           </button>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -412,7 +408,7 @@ export default function MobileAddSheet({
             <button
               key={k}
               onClick={() => handleNumpadPress(k)}
-              className="flex h-[52px] items-center justify-center rounded-2xl border border-[var(--border-light)] font-semibold text-[var(--text-main)] transition-opacity active:opacity-60 select-none"
+              className="flex h-[52px] items-center justify-center rounded-2xl border border-[var(--border-light)] font-semibold text-[var(--text-main)] transition-opacity select-none active:opacity-60"
               style={{
                 background: k === '⌫' ? 'transparent' : 'var(--surface-light)',
                 fontSize: k === '000' ? 15 : 22,

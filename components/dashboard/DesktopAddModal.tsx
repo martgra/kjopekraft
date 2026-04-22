@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef } from 'react'
 import type { PayChangeReason, PayPoint } from '@/domain/salary'
 import type { InflationDataPoint } from '@/domain/inflation'
 import { TEXT } from '@/lib/constants/text'
@@ -95,8 +95,6 @@ export default function DesktopAddModal({
     return () => window.removeEventListener('keydown', handler)
   })
 
-  if (!open) return null
-
   const rawDigits = newPay.replace(/\s/g, '')
   const payNum = Number(rawDigits) || 0
   const selectedYear = Number(newYear) || currentYear
@@ -122,8 +120,7 @@ export default function DesktopAddModal({
     })
     .sort((a, b) => b.year - a.year)[0]
 
-  const raise =
-    prevPoint && payNum > 0 ? ((payNum - prevPoint.pay) / prevPoint.pay) * 100 : null
+  const raise = prevPoint && payNum > 0 ? ((payNum - prevPoint.pay) / prevPoint.pay) * 100 : null
 
   const cumulativeInflation =
     inflationData && prevPoint && selectedYear > prevPoint.year
@@ -146,16 +143,17 @@ export default function DesktopAddModal({
   }
 
   // Chart data for preview
-  const chartPoints = useMemo(() => {
-    const others = payPoints.filter(p => {
-      if (!editingPoint) return true
-      if (p.id && editingPoint.id) return p.id !== editingPoint.id
-      return p !== editingPoint
-    })
-    const all = [...others]
-    if (payNum > 0) all.push({ year: selectedYear, pay: payNum, reason: newReason || 'adjustment' })
-    return all.sort((a, b) => a.year - b.year)
-  }, [payPoints, editingPoint, payNum, selectedYear, newReason])
+  const chartPointsOthers = payPoints.filter(p => {
+    if (!editingPoint) return true
+    if (p.id && editingPoint.id) return p.id !== editingPoint.id
+    return p !== editingPoint
+  })
+  const chartPoints = [...chartPointsOthers]
+  if (payNum > 0)
+    chartPoints.push({ year: selectedYear, pay: payNum, reason: newReason || 'adjustment' })
+  chartPoints.sort((a, b) => a.year - b.year)
+
+  if (!open) return null
 
   return (
     <>
@@ -179,7 +177,7 @@ export default function DesktopAddModal({
             <div className="flex flex-col bg-[var(--surface-light)] px-8 py-7">
               {/* Modal header */}
               <div className="mb-1 flex items-center justify-between">
-                <div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <div className="text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
                   {editingPoint ? 'Rediger' : 'Nytt'} lønnspunkt
                 </div>
                 <button
@@ -201,7 +199,7 @@ export default function DesktopAddModal({
 
               {/* Amount input */}
               <div className="mb-5">
-                <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <div className="mb-2 text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
                   {isNetMode ? 'Netto' : 'Brutto'} årslønn
                 </div>
                 <div className="relative">
@@ -212,21 +210,17 @@ export default function DesktopAddModal({
                     value={payNum > 0 ? payNum.toLocaleString('nb-NO') : ''}
                     onChange={handleAmountInput}
                     placeholder="0"
-                    className="w-full border-b-2 bg-transparent pb-1 font-bold outline-none transition-colors text-[var(--text-main)] placeholder:text-[var(--text-muted)]"
+                    className="w-full border-b-2 bg-transparent pb-1 font-bold text-[var(--text-main)] transition-colors outline-none placeholder:text-[var(--text-muted)]"
                     style={{
                       fontSize: 48,
                       letterSpacing: '-0.02em',
                       borderBottomColor: 'var(--border-light)',
                     }}
-                    onFocus={e =>
-                      (e.currentTarget.style.borderBottomColor = 'var(--primary)')
-                    }
-                    onBlur={e =>
-                      (e.currentTarget.style.borderBottomColor = 'var(--border-light)')
-                    }
+                    onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--primary)')}
+                    onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--border-light)')}
                   />
                   <div
-                    className="absolute bottom-3 right-0 text-[13px] font-medium text-[var(--text-muted)]"
+                    className="absolute right-0 bottom-3 text-[13px] font-medium text-[var(--text-muted)]"
                     style={{ fontFamily: 'monospace' }}
                   >
                     NOK
@@ -236,12 +230,10 @@ export default function DesktopAddModal({
 
               {/* Year chips */}
               <div className="mb-5">
-                <div className="mb-2.5 text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <div className="mb-2.5 text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
                   År
                 </div>
-                <div
-                  className="flex flex-wrap gap-2"
-                >
+                <div className="flex flex-wrap gap-2">
                   {quickYears.map(y => {
                     const used = existingYearsOther.includes(y)
                     const sel = y === selectedYear
@@ -278,7 +270,7 @@ export default function DesktopAddModal({
 
               {/* Reason */}
               <div className="mb-5">
-                <div className="mb-2.5 text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <div className="mb-2.5 text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
                   Årsak
                 </div>
                 <div className="grid grid-cols-3 gap-2">
@@ -300,7 +292,7 @@ export default function DesktopAddModal({
                         }}
                       >
                         <span className="material-symbols-outlined text-[20px]">{r.icon}</span>
-                        <span className="text-[12px] font-semibold leading-tight">{r.label}</span>
+                        <span className="text-[12px] leading-tight font-semibold">{r.label}</span>
                       </button>
                     )
                   })}
@@ -368,7 +360,7 @@ export default function DesktopAddModal({
             <div className="flex flex-col gap-4 p-7">
               {/* Delta card */}
               <div className="rounded-2xl border border-[var(--border-light)] bg-[var(--surface-light)] p-5">
-                <div className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <div className="mb-3 text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
                   Forhåndsvisning
                 </div>
                 {payNum > 0 ? (
@@ -409,13 +401,11 @@ export default function DesktopAddModal({
                       </div>
                     )}
                     {!prevPoint && (
-                      <p className="mt-2 text-[13px] text-[var(--text-muted)]">
-                        Første lønnspunkt
-                      </p>
+                      <p className="mt-2 text-[13px] text-[var(--text-muted)]">Første lønnspunkt</p>
                     )}
                   </>
                 ) : (
-                  <p className="text-[14px] italic text-[var(--text-muted)]">
+                  <p className="text-[14px] text-[var(--text-muted)] italic">
                     Skriv inn et beløp for å se forhåndsvisning
                   </p>
                 )}
@@ -423,7 +413,7 @@ export default function DesktopAddModal({
 
               {/* Mini chart */}
               <div className="flex-1 rounded-2xl border border-[var(--border-light)] bg-[var(--surface-light)] p-4">
-                <div className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <div className="mb-3 text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">
                   Plassering i grafen
                 </div>
                 <MiniChart
@@ -454,7 +444,7 @@ function MiniChart({
   if (points.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-[13px] italic text-[var(--text-muted)]"
+        className="flex items-center justify-center text-[13px] text-[var(--text-muted)] italic"
         style={{ height: H }}
       >
         Ingen data ennå
@@ -470,11 +460,8 @@ function MiniChart({
   const maxP = Math.max(...pays) * 1.1
 
   const xScale = (y: number) =>
-    maxY === minY
-      ? W / 2
-      : PAD.l + ((y - minY) / (maxY - minY)) * (W - PAD.l - PAD.r)
-  const yScale = (p: number) =>
-    PAD.t + (1 - (p - minP) / (maxP - minP)) * (H - PAD.t - PAD.b)
+    maxY === minY ? W / 2 : PAD.l + ((y - minY) / (maxY - minY)) * (W - PAD.l - PAD.r)
+  const yScale = (p: number) => PAD.t + (1 - (p - minP) / (maxP - minP)) * (H - PAD.t - PAD.b)
 
   const nonPreview = points.filter(p => p.year !== previewYear)
   const previewPt = previewYear ? points.find(p => p.year === previewYear) : undefined
@@ -524,14 +511,23 @@ function MiniChart({
           </text>
         ))}
       {/* Fill area */}
-      {pathD && nonPreview.length > 1 && (
+      {pathD && nonPreview.length > 1 && nonPreview[0] && nonPreview[nonPreview.length - 1] && (
         <path
-          d={`${pathD} L ${xScale(nonPreview[nonPreview.length - 1].year)} ${H - PAD.b} L ${xScale(nonPreview[0].year)} ${H - PAD.b} Z`}
+          d={`${pathD} L ${xScale(nonPreview[nonPreview.length - 1]!.year)} ${H - PAD.b} L ${xScale(nonPreview[0]!.year)} ${H - PAD.b} Z`}
           fill="url(#miniChartFill)"
         />
       )}
       {/* Main line */}
-      {pathD && <path d={pathD} fill="none" stroke="var(--primary)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />}
+      {pathD && (
+        <path
+          d={pathD}
+          fill="none"
+          stroke="var(--primary)"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+      )}
       {/* Data dots */}
       {nonPreview.map(p => (
         <circle

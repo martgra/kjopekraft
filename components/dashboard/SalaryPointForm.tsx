@@ -4,10 +4,7 @@ import type { PayChangeReason } from '@/domain/salary'
 import { TEXT } from '@/lib/constants/text'
 import { createTestId } from '@/lib/testing/testIds'
 
-const REASON_CONFIG: Record<
-  PayChangeReason,
-  { label: string; icon: string; color: string }
-> = {
+const REASON_CONFIG: Record<PayChangeReason, { label: string; icon: string; color: string }> = {
   adjustment: { label: 'Justering', icon: 'trending_up', color: 'var(--primary)' },
   promotion: { label: 'Opprykk', icon: 'workspace_premium', color: '#d97706' },
   newJob: { label: 'Ny jobb', icon: 'rocket_launch', color: 'var(--secondary)' },
@@ -36,7 +33,7 @@ export default function SalaryPointForm({
   newReason,
   newNote: _newNote = '',
   currentYear,
-  minYear,
+  minYear: _minYear,
   validationError,
   isSubmitDisabled = false,
   onYearChange,
@@ -163,7 +160,7 @@ export default function SalaryPointForm({
                   }}
                 >
                   <span className="material-symbols-outlined text-[18px]">{r.icon}</span>
-                  <span className="text-[11px] font-semibold leading-tight">{r.label}</span>
+                  <span className="text-[11px] leading-tight font-semibold">{r.label}</span>
                 </button>
               )
             })}
