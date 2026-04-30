@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import DashboardMobile from './DashboardMobile'
 import DashboardDesktop from './DashboardDesktop'
 import { usePurchasingPower } from '@/features/salary/hooks/usePurchasingPower'
@@ -29,10 +29,10 @@ export default function Dashboard({
 }: DashboardProps) {
   const isMobile = useIsMobile()
 
-  const { payPoints, hasData, addPoint, removePoint, isLoading, error } = useSalaryDataContext()
+  const { payPoints, hasData, addPoint, editPoint, removePoint, isLoading, error } =
+    useSalaryDataContext()
   const { isNetMode, toggleMode } = useDisplayMode()
   const purchasingPower = usePurchasingPower(payPoints, inflationData, currentYear, {
-    // Kjøpekraft calculations should be net-first when available
     useNet: true,
   })
   const {
@@ -42,6 +42,7 @@ export default function Dashboard({
     validationError,
     isSubmitDisabled,
     isFormModalOpen,
+    editingPoint,
     openFormModal,
     closeFormModal,
     clearEditing,
@@ -70,7 +71,6 @@ export default function Dashboard({
 
   const handleEditPoint = (point: PayPoint) => {
     beginEditing(point)
-    // On mobile, use drawer; on desktop, use modal
     if (isMobile) {
       onDrawerOpen()
     } else {
@@ -81,6 +81,34 @@ export default function Dashboard({
   const handleRemovePoint = (year: number, pay: number) => {
     removePayPoint(year, pay)
   }
+
+  // New unified save handler used by the new modal/sheet components
+  const handleSavePoint = useCallback(
+    (data: PayPoint) => {
+      if (editingPoint) {
+        const updated: PayPoint = { ...data, id: editingPoint.id }
+        editPoint(editingPoint.year, editingPoint.pay, updated)
+      } else {
+        const { id: _id, ...pointData } = data
+        addPoint(pointData)
+      }
+      if (isMobile) {
+        onDrawerClose()
+      } else {
+        closeFormModal()
+      }
+      clearEditing()
+    },
+    [editingPoint, editPoint, addPoint, isMobile, onDrawerClose, closeFormModal, clearEditing],
+  )
+
+  const handleDeletePoint = useCallback(
+    (point: PayPoint) => {
+      removePoint(point.year, point.pay)
+      clearEditing()
+    },
+    [removePoint, clearEditing],
+  )
 
   if (isLoading) {
     return (
@@ -112,6 +140,7 @@ export default function Dashboard({
     minYear,
     validationError,
     isSubmitDisabled,
+    editingPoint,
     onToggleMode: toggleMode,
     onEditPoint: handleEditPoint,
     onRemovePoint: handleRemovePoint,
@@ -120,6 +149,8 @@ export default function Dashboard({
     onReasonChange: setReason,
     onNoteChange: setNote,
     onSubmitPoint: submitPoint,
+    onSavePoint: handleSavePoint,
+    onDeletePoint: handleDeletePoint,
   }
 
   return isMobile ? (

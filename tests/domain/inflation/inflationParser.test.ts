@@ -3,16 +3,15 @@
 import { parseJsonInflation } from '@/domain/inflation/inflationParser'
 import type { SsbRawResponse } from '@/domain/inflation/inflationTypes'
 
-const baseDataset: SsbRawResponse['dataset'] = {
+const baseResponse: SsbRawResponse = {
   value: [1.1, 2.2, 3.3, 4.4],
   label: 'CPI',
   source: 'SSB',
   updated: '2024-01-01',
+  id: ['ContentsCode', 'Tid'],
+  size: [1, 4],
+  role: { time: ['Tid'], metric: ['ContentsCode'] },
   dimension: {
-    size: [1, 4, 1],
-    id: ['Konsumgrp', 'Tid', 'ContentsCode'],
-    role: { time: ['Tid'], metric: ['ContentsCode'] },
-    Konsumgrp: { category: { index: { TOTAL: 0 } } },
     Tid: {
       category: {
         index: {
@@ -29,23 +28,27 @@ const baseDataset: SsbRawResponse['dataset'] = {
 
 describe('parseJsonInflation', () => {
   it('picks one value per year, preferring December', () => {
-    const result = parseJsonInflation(baseDataset)
+    const result = parseJsonInflation(baseResponse)
     expect(result).toEqual([
       { year: 2022, inflation: 2.2 },
       { year: 2023, inflation: 4.4 },
     ])
   })
 
-  it('throws if dimension sizes are missing', () => {
-    const brokenDataset: SsbRawResponse['dataset'] = {
-      ...baseDataset,
-      dimension: {
-        ...baseDataset.dimension,
-        size: [],
-      },
+  it('skips null and NaN values', () => {
+    const sparseResponse: SsbRawResponse = {
+      ...baseResponse,
+      value: [null, 2.5, NaN, 3.1],
     }
-    expect(() => parseJsonInflation(brokenDataset)).toThrow(
-      'parseJsonInflation: missing dimension sizes',
-    )
+    const result = parseJsonInflation(sparseResponse)
+    expect(result).toEqual([
+      { year: 2022, inflation: 2.5 },
+      { year: 2023, inflation: 3.1 },
+    ])
+  })
+
+  it('throws if value array is empty', () => {
+    const emptyResponse: SsbRawResponse = { ...baseResponse, value: [] }
+    expect(() => parseJsonInflation(emptyResponse)).toThrow('parseJsonInflation: empty value array')
   })
 })

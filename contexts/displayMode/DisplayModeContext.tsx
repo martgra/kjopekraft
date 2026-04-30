@@ -55,13 +55,18 @@ export function DisplayModeProvider({ children }: { children: ReactNode }) {
     [setDisplayMode, startTransition],
   )
 
-  // Hydrate from localStorage to respect previous preference
+  // Hydrate from localStorage on mount only. Re-running this on every displayMode
+  // change creates a race with the persist effect below: hydrate would queue a
+  // state change via startTransition while persist synchronously wrote the *old*
+  // displayMode back to localStorage, causing an infinite net/gross flip-flop.
+  // After mount, the persist effect is the single writer to localStorage.
   useEffect(() => {
     const storedMode = parseStoredMode(localStorage.getItem(STORAGE_KEY))
     if (storedMode && storedMode !== displayMode) {
       persistMode(storedMode)
     }
-  }, [displayMode, persistMode])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Persist preference for future visits
   useEffect(() => {

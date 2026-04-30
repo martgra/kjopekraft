@@ -29,7 +29,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
+
+
 USER ${USERNAME}
+
+RUN mkdir -p /home/${USERNAME}/.cache \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.cache
 
 RUN curl -fsSL https://bun.sh/install | bash
 

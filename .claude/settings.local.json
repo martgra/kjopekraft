@@ -9,7 +9,26 @@
       "Bash(bun run test:*)",
       "Bash(bun run test:e2e:*)",
       "Bash(find:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(mkdir -p /tmp/design)",
+      "Bash(tar -xf /tmp/design_output.html -C /tmp/design)",
+      "Bash(bun tsc *)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(bun pm *)",
+      "Bash(bun x *)",
+      "Bash(bun list *)",
+      "Bash(bun vitest *)",
+      "Bash(bun --print \"process.env.BUN_INSTALL\")",
+      "Bash(/workspace/node_modules/.bin/vitest run *)",
+      "Bash(bun --version)",
+      "Bash(bun install *)",
+      "Bash(bun run *)",
+      "Bash(curl -s -o /tmp/neg.html -w \"HTTP %{http_code}\\\\n\" http://localhost:3000/negotiation)",
+      "Bash(curl -s -o /dev/null -w \"Old: HTTP %{http_code}\\\\n\" \"https://data.ssb.no/api/v0/dataset/1086.json?lang=no\")",
+      "Bash(curl -s -o /dev/null -w \"Try v1: HTTP %{http_code}\\\\n\" \"https://data.ssb.no/api/v1/dataset/1086.json?lang=no\")",
+      "Bash(curl *)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }

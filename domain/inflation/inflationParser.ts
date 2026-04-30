@@ -1,50 +1,36 @@
 import type { InflationDataPoint, SsbRawResponse } from './inflationTypes'
 
 /**
- * Parse SSB inflation data from JSON-stat format
+ * Parse SSB inflation data from JSON-stat 2 (PxWebApi 2.0).
+ *
+ * Assumes the response was filtered to a single metric (`Tolvmanedersendring`,
+ * the 12-month % change), so the value array is one number per month.
+ * For each calendar year we keep December — or the last published month if December is missing.
  */
-export function parseJsonInflation(ds: SsbRawResponse['dataset']): InflationDataPoint[] {
-  // 1) pull out timeCount & metricCount from dimension.size
-  const timeCount = ds.dimension.size[1]
-  const metricCount = ds.dimension.size[2]
-
-  if (timeCount === undefined || metricCount === undefined) {
-    throw new Error('parseJsonInflation: missing dimension sizes')
-  }
-
-  // 2) raw values array
+export function parseJsonInflation(ds: SsbRawResponse): InflationDataPoint[] {
+  const timeIdxMap = ds.dimension.Tid.category.index
   const values = ds.value
   if (!values.length) {
-    throw new Error(`parseJsonInflation: no numeric array at ds.value.`)
+    throw new Error('parseJsonInflation: empty value array')
   }
 
-  // 3) pick the "all-groups" and "12-month change" indices
-  const grpIdx = ds.dimension.Konsumgrp.category.index['TOTAL']
-  const metricIdx = ds.dimension.ContentsCode.category.index['Tolvmanedersendring']
-  const timeIdxMap = ds.dimension.Tid.category.index
-
-  if (grpIdx === undefined || metricIdx === undefined) {
-    throw new Error('parseJsonInflation: missing required indices')
-  }
-
-  // 4) sort timestamps by their numeric index
+  // Sort months chronologically so December always wins last-write within a year.
   const times = Object.entries(timeIdxMap).sort(([, a], [, b]) => a - b)
 
-  // 5) pick one value per year (prefer December)
   const yearMap = new Map<number, number>()
-  for (const [monthKey, t] of times as [string, number][]) {
-    const offset = grpIdx * timeCount * metricCount + t * metricCount + metricIdx
-    const rawVal = values[offset]
-    if (rawVal == null || isNaN(rawVal)) continue
+  for (const [monthKey, idx] of times) {
+    const rawVal = values[idx]
+    if (rawVal == null || Number.isNaN(rawVal)) continue
 
     const year = parseInt(monthKey.slice(0, 4), 10)
     const monthNum = parseInt(monthKey.slice(5), 10)
+    if (Number.isNaN(year)) continue
+
     if (monthNum === 12 || !yearMap.has(year)) {
       yearMap.set(year, rawVal)
     }
   }
 
-  // 6) build sorted array
   return Array.from(yearMap.entries())
     .map(([year, inflation]) => ({ year, inflation }))
     .sort((a, b) => a.year - b.year)

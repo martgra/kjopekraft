@@ -282,37 +282,24 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Optimize mobile chart taps */
-@media (max-width: 768px) {
-  .chart-container {
-    touch-action: pan-y pinch-zoom;
-    padding: 0;
-    /* Keep chart within viewport while maximizing space */
-    max-height: var(--chart-dynamic-height, calc(100svh - 300px));
-    height: 100%;
-  }
-
-  .mobile-chart-container {
-    padding: 4px !important;
-  }
-
-  .chart-container canvas {
-    min-height: 240px;
-    max-height: 100%;
-    height: 100% !important;
-    margin: 0 auto;
-  }
+/* Chart container fills its wrapper height (set by the chart card) on all viewports */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
 }
 
-/* Desktop optimizations */
-@media (min-width: 769px) {
-  .chart-container {
-    padding: 0;
-  }
+.chart-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 auto;
+}
 
-  .chart-container canvas {
-    margin: 0 auto;
-  }
+@media (max-width: 768px) {
+  .chart-container { touch-action: pan-y pinch-zoom; }
+  .mobile-chart-container { padding: 4px !important; }
 }
 
 /* Additional mobile optimizations */

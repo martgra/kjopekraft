@@ -1,25 +1,28 @@
 'use client'
 
-import DashboardLayout from '@/components/layout/DashboardLayout'
-import MobileBottomDrawer from '@/components/layout/MobileBottomDrawer'
-import SalaryPointForm from './SalaryPointForm'
+import MobileAddSalarySheet from './MobileAddSalarySheet'
+import SalaryListCard from './SalaryListCard'
+import SimpleChartCard from './SimpleChartCard'
+import OnboardingEmptyState from '@/features/onboarding/OnboardingEmptyState'
+import MobileTopBar from './MobileTopBar'
+import MobileSalaryHero from './MobileSalaryHero'
+import NegotiationCtaCard from './NegotiationCtaCard'
+import FloatingAddButton from './FloatingAddButton'
+import { pageTheme, SANS } from '@/lib/constants/designTokens'
 import type { InflationDataPoint } from '@/domain/inflation'
 import type { PayPoint, PayChangeReason, SalaryStatistics } from '@/domain/salary'
-import DashboardContent from './DashboardContent'
 
 interface DashboardMobileProps {
-  // Data
   payPoints: PayPoint[]
   statistics: SalaryStatistics
   inflationData: InflationDataPoint[]
   currentYear: number
   hasData: boolean
-
-  // Display state
   isNetMode: boolean
   isDrawerOpen: boolean
+  editingPoint: PayPoint | null
 
-  // Form state
+  // Unused legacy form state, kept for Dashboard.tsx compatibility
   newYear: string
   newPay: string
   newReason: PayChangeReason | ''
@@ -28,12 +31,15 @@ interface DashboardMobileProps {
   validationError: string
   isSubmitDisabled: boolean
 
-  // Handlers
   onDrawerOpen: () => void
   onDrawerClose: () => void
   onToggleMode: () => void
   onEditPoint: (point: PayPoint) => void
   onRemovePoint: (year: number, pay: number) => void
+  onSavePoint: (data: PayPoint) => void
+  onDeletePoint: (point: PayPoint) => void
+
+  // Unused legacy handlers
   onYearChange: (year: string) => void
   onPayChange: (pay: string) => void
   onReasonChange: (reason: PayChangeReason | '') => void
@@ -49,73 +55,72 @@ export default function DashboardMobile({
   hasData,
   isNetMode,
   isDrawerOpen,
-  newYear,
-  newPay,
-  newReason,
-  newNote,
-  minYear,
-  validationError,
-  isSubmitDisabled,
+  editingPoint,
   onDrawerOpen,
   onDrawerClose,
   onToggleMode,
   onEditPoint,
-  onRemovePoint,
-  onYearChange,
-  onPayChange,
-  onReasonChange,
-  onNoteChange,
-  onSubmitPoint,
+  onSavePoint,
+  onDeletePoint,
 }: DashboardMobileProps) {
-  const formProps = {
-    newYear,
-    newPay,
-    newReason,
-    newNote,
-    currentYear,
-    minYear,
-    validationError,
-    isSubmitDisabled,
-    isNetMode,
-    onYearChange,
-    onPayChange,
-    onReasonChange,
-    onNoteChange,
-    onAdd: onSubmitPoint,
-  }
-
-  // Drawer content for mobile
-  const drawerContent = (
-    <div className="flex flex-col">
-      <SalaryPointForm {...formProps} />
-    </div>
-  )
-
   return (
     <>
-      <MobileBottomDrawer
-        isOpen={isDrawerOpen}
+      <MobileAddSalarySheet
+        open={isDrawerOpen}
         onClose={onDrawerClose}
-        dashboardContent={drawerContent}
-        pointsCount={payPoints.length}
+        onSave={onSavePoint}
+        onDelete={onDeletePoint}
+        editingPoint={editingPoint}
+        payPoints={payPoints}
+        currentYear={currentYear}
+        isNetMode={isNetMode}
       />
-      <DashboardLayout>
-        <DashboardContent
-          payPoints={payPoints}
-          statistics={statistics}
-          inflationData={inflationData}
-          currentYear={currentYear}
-          hasData={hasData}
-          isNetMode={isNetMode}
-          onToggleMode={onToggleMode}
-          onEditPoint={onEditPoint}
-          onRemovePoint={onRemovePoint}
-          onRequestAdd={onDrawerOpen}
-          showHeader={false}
-          showMetricGrid={false}
-          chartWrapperClassName="mb-4"
-        />
-      </DashboardLayout>
+
+      <div style={{
+        ...pageTheme,
+        background: 'var(--paper)',
+        position: 'relative',
+        minHeight: '100vh',
+        fontFamily: SANS,
+        color: 'var(--ink)',
+        paddingBottom: 100,
+      }}>
+        {hasData ? (
+          <>
+            <MobileTopBar />
+            <MobileSalaryHero
+              payPoints={payPoints}
+              statistics={statistics}
+              currentYear={currentYear}
+              isNetMode={isNetMode}
+              onToggleMode={onToggleMode}
+            />
+
+            <div style={{ margin: '16px 16px 0' }}>
+              <NegotiationCtaCard currentYear={currentYear} variant="mobile" />
+            </div>
+
+            <div style={{ padding: '16px 16px 0' }}>
+              <SimpleChartCard
+                payPoints={payPoints}
+                inflationData={inflationData}
+                currentYear={currentYear}
+                isNetMode={isNetMode}
+                height={200}
+                padding="14px"
+              />
+            </div>
+
+            <SalaryListCard payPoints={payPoints} onEditPoint={onEditPoint} />
+
+            <FloatingAddButton onClick={onDrawerOpen} />
+          </>
+        ) : (
+          <div style={{ padding: '20px 16px' }}>
+            <OnboardingEmptyState onOpenDrawer={onDrawerOpen} />
+          </div>
+        )}
+      </div>
     </>
   )
 }

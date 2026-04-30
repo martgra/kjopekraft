@@ -7,12 +7,21 @@ import MobileHeader from './MobileHeader'
 import { DrawerProvider, useDrawer } from '@/contexts/drawer/DrawerContext'
 import GlobalHeader from '@/components/layout/GlobalHeader'
 
+// Design pages render their own top bar/navigation (matching the design system),
+// so we skip the global chrome on them.
+const DESIGN_PAGES = new Set(['/', '/negotiation'])
+
 interface ClientLayoutWrapperProps {
   children: ReactNode
 }
 
 function ClientLayoutWrapperInner({ children }: ClientLayoutWrapperProps) {
+  const pathname = usePathname()
   const { toggleDrawer, pointsCount, isOpen } = useDrawer()
+
+  if (DESIGN_PAGES.has(pathname)) {
+    return <>{children}</>
+  }
 
   return (
     <>
