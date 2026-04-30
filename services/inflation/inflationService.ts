@@ -24,7 +24,14 @@ const fetchInflation = async (): Promise<InflationDataPoint[]> => {
 
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
-  const res = await fetch('https://data.ssb.no/api/v0/dataset/1086.json?lang=no', {
+  const SSB_URL =
+    'https://data.ssb.no/api/pxwebapi/v2/tables/03013/data' +
+    '?lang=no&outputformat=json-stat2' +
+    '&valueCodes[Konsumgrp]=TOTAL' +
+    '&valueCodes[ContentsCode]=Tolvmanedersendring' +
+    '&valueCodes[Tid]=*'
+
+  const res = await fetch(SSB_URL, {
     signal: controller.signal,
   }).finally(() => clearTimeout(timeoutId))
   if (!res.ok) throw createServiceError(`SSB fetch failed (${res.status})`)
@@ -41,7 +48,7 @@ const fetchInflation = async (): Promise<InflationDataPoint[]> => {
     throw createServiceError('Invalid SSB response format')
   }
 
-  return parseJsonInflation(parseResult.data.dataset)
+  return parseJsonInflation(parseResult.data)
 }
 
 // Memoize per-request to avoid duplicate fetch/parse in the same render pass

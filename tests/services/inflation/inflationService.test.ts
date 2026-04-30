@@ -12,30 +12,37 @@ const mockFetch = vi.fn()
 global.fetch = mockFetch as unknown as typeof fetch
 vi.spyOn(logger, 'error').mockImplementation(() => {})
 
+const SSB_URL =
+  'https://data.ssb.no/api/pxwebapi/v2/tables/03013/data' +
+  '?lang=no&outputformat=json-stat2' +
+  '&valueCodes[Konsumgrp]=TOTAL' +
+  '&valueCodes[ContentsCode]=Tolvmanedersendring' +
+  '&valueCodes[Tid]=*'
+
 const validResponse = {
-  dataset: {
-    value: [1.1, 2.2, 3.3, 4.4],
-    label: 'CPI',
-    source: 'SSB',
-    updated: '2024-01-01',
-    dimension: {
-      size: [1, 4, 1],
-      id: ['Konsumgrp', 'Tid', 'ContentsCode'],
-      role: { time: ['Tid'], metric: ['ContentsCode'] },
-      Konsumgrp: { category: { index: { TOTAL: 0 } } },
-      Tid: {
-        category: {
-          index: {
-            '2022M11': 0,
-            '2022M12': 1,
-            '2023M01': 2,
-            '2023M12': 3,
-          },
+  version: '2.0',
+  class: 'dataset',
+  label: 'CPI',
+  source: 'SSB',
+  updated: '2024-01-01',
+  id: ['Konsumgrp', 'Tid', 'ContentsCode'],
+  size: [1, 4, 1],
+  role: { time: ['Tid'], metric: ['ContentsCode'] },
+  dimension: {
+    Konsumgrp: { category: { index: { TOTAL: 0 } } },
+    Tid: {
+      category: {
+        index: {
+          '2022M11': 0,
+          '2022M12': 1,
+          '2023M01': 2,
+          '2023M12': 3,
         },
       },
-      ContentsCode: { category: { index: { Tolvmanedersendring: 0 } } },
     },
+    ContentsCode: { category: { index: { Tolvmanedersendring: 0 } } },
   },
+  value: [1.1, 2.2, 3.3, 4.4],
 }
 
 describe('inflationService', () => {
@@ -55,7 +62,7 @@ describe('inflationService', () => {
       { year: 2023, inflation: 4.4 },
     ])
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://data.ssb.no/api/v0/dataset/1086.json?lang=no',
+      SSB_URL,
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     )
   })

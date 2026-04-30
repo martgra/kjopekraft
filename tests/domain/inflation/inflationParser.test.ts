@@ -3,15 +3,16 @@
 import { parseJsonInflation } from '@/domain/inflation/inflationParser'
 import type { SsbRawResponse } from '@/domain/inflation/inflationTypes'
 
-const baseDataset: SsbRawResponse['dataset'] = {
-  value: [1.1, 2.2, 3.3, 4.4],
+const baseDataset: SsbRawResponse = {
+  version: '2.0',
+  class: 'dataset',
   label: 'CPI',
   source: 'SSB',
   updated: '2024-01-01',
+  id: ['Konsumgrp', 'Tid', 'ContentsCode'],
+  size: [1, 4, 1],
+  role: { time: ['Tid'], metric: ['ContentsCode'] },
   dimension: {
-    size: [1, 4, 1],
-    id: ['Konsumgrp', 'Tid', 'ContentsCode'],
-    role: { time: ['Tid'], metric: ['ContentsCode'] },
     Konsumgrp: { category: { index: { TOTAL: 0 } } },
     Tid: {
       category: {
@@ -25,6 +26,7 @@ const baseDataset: SsbRawResponse['dataset'] = {
     },
     ContentsCode: { category: { index: { Tolvmanedersendring: 0 } } },
   },
+  value: [1.1, 2.2, 3.3, 4.4],
 }
 
 describe('parseJsonInflation', () => {
@@ -37,12 +39,9 @@ describe('parseJsonInflation', () => {
   })
 
   it('throws if dimension sizes are missing', () => {
-    const brokenDataset: SsbRawResponse['dataset'] = {
+    const brokenDataset: SsbRawResponse = {
       ...baseDataset,
-      dimension: {
-        ...baseDataset.dimension,
-        size: [],
-      },
+      size: [],
     }
     expect(() => parseJsonInflation(brokenDataset)).toThrow(
       'parseJsonInflation: missing dimension sizes',
