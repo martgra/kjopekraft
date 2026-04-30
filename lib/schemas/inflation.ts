@@ -15,7 +15,8 @@ const InflationDataPointSchema = z.object({
 const InflationDataSchema = z.array(InflationDataPointSchema)
 void InflationDataSchema
 
-// SSB raw response structure for inflation
+// SSB raw response structure for inflation — JSON-stat2 top-level format
+// (PxWebApi v2: https://data.ssb.no/api/pxwebapi/v2/tables/03013/data)
 const SsbInflationDimensionSchema = z.object({
   category: z.object({
     index: z.record(z.string(), z.number()),
@@ -23,19 +24,19 @@ const SsbInflationDimensionSchema = z.object({
 })
 
 export const SsbInflationResponseSchema = z.object({
-  dataset: z.object({
-    value: z.array(z.number()),
-    label: z.string(),
-    source: z.string(),
-    updated: z.string(),
-    dimension: z.object({
-      size: z.array(z.number()),
-      id: z.array(z.string()),
-      // JSON-stat role maps semantic roles to dimension ids (arrays)
-      role: z.record(z.string(), z.array(z.string())),
-      Konsumgrp: SsbInflationDimensionSchema,
-      Tid: SsbInflationDimensionSchema,
-      ContentsCode: SsbInflationDimensionSchema,
-    }),
+  version: z.string(),
+  class: z.literal('dataset'),
+  label: z.string(),
+  source: z.string(),
+  updated: z.string(),
+  // JSON-stat2: id, size, role are top-level (not inside dimension)
+  id: z.array(z.string()),
+  size: z.array(z.number()),
+  role: z.record(z.string(), z.array(z.string())),
+  dimension: z.object({
+    Konsumgrp: SsbInflationDimensionSchema,
+    Tid: SsbInflationDimensionSchema,
+    ContentsCode: SsbInflationDimensionSchema,
   }),
+  value: z.array(z.number().nullable()),
 })
